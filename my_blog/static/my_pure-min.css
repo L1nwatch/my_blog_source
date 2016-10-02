@@ -117,6 +117,10 @@ code, kbd, pre, samp {
     font-size: 1em
 }
 
+code {
+    background-color: #f9f2f4;
+}
+
 pre {
     white-space: pre;
     white-space: pre-wrap;

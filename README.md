@@ -38,3 +38,5 @@ INSTALLED_APPS = [
 BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
 ```
 
+* 安装 Markdown：`pip install markdown  #记得激活虚拟环境`
+* 代码高亮：[找到自己喜欢的 CSS 文件](http://richleland.github.io/pygments-css/)，安装 `pip install pygments` 库，然后添加 link 到 html 中即可。
