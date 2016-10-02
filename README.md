@@ -15,11 +15,26 @@
 
 ## 开发过程记录
 
-安装好 virtualenv 后进入：`source virtual/bin/activate`
+* 安装好 virtualenv 后进入：`source virtual/bin/activate`
+* 接着安装 `Django`：`pip install django`
+* 然后创建博客工程：`./virtual/lib/python3.4/site-packages/django/bin/django-admin.py  startproject my_blog`
+* 接着建立 `Django app`：`python manage.py startapp article`
+* 数据库迁移：`python manage.py makemigrations` 以及 `python manage.py migrate`
+* 超级管理员创建：`python manage.py createsuperuser`
+* 应用 `bootstrap-admin` 进行美化，先 `pip` 进行安装，然后修改 `settings.py` 文件中：
 
-接着安装 `Django`：`pip install django`
+```python
+INSTALLED_APPS = [
+    'bootstrap_admin',  # 一定要放在`django.contrib.admin`前面
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    "articles"
+]
 
-然后创建博客工程：`./virtual/lib/python3.4/site-packages/django/bin/django-admin.py  startproject my_blog`
-
-接着建立 `Django app`：`python manage.py startapp article`
+BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
+```
 
