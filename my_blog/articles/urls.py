@@ -9,8 +9,7 @@ import articles.views
 __author__ = '__L1n__w@tch'
 
 urlpatterns = [
-    url(r"^$", articles.views.home, name="home"),
-    url(r"^(\d+)/$", articles.views.detail, name="detail")
+    url(r"^(\d+)/$", articles.views.detail, name="detail"),
 ]
 
 if __name__ == "__main__":

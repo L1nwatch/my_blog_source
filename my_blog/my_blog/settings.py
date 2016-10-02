@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 ]
 
 BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
+TEMPLATE_DIRS = (os.path.join(BASE_DIR, "articles", 'templates'),)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
