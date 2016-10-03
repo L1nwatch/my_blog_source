@@ -4,17 +4,19 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Article
 
+HOME_PAGE_ARTICLES_NUMBERS = 2
+
 
 def home(request):
-    posts = Article.objects.all()  # 获取全部的Article对象
-    paginator = Paginator(posts, 2)  # 每页显示两个
+    articles = Article.objects.all()  # 获取全部的Article对象
+    paginator = Paginator(articles, HOME_PAGE_ARTICLES_NUMBERS)  # 每页显示 HOME_PAGE_ARTICLES_NUMBERS 篇
     page = request.GET.get('page')
     try:
         post_list = paginator.page(page)
     except PageNotAnInteger:
         post_list = paginator.page(1)
-    except EmptyPage:
-        post_list = paginator.paginator(paginator.num_pages)
+    # except EmptyPage: # 没用到, 不知道干啥的
+    #     post_list = paginator.paginator(paginator.num_pages)
     return render(request, 'home.html', {'post_list': post_list})
 
 
