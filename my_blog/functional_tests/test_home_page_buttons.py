@@ -6,12 +6,18 @@
 2016.10.03 编写功能测试, 第一个编写的功能测试测试首页各个按钮, 包括主页,about 按钮,github 按钮,archive 按钮,email 按钮
 """
 from .base import FunctionalTest
+from articles.models import Article, Tag
 import unittest
+from selenium.common.exceptions import NoSuchElementException
 
 __author__ = '__L1n__w@tch'
 
 
 class TestHomePageButtons(FunctionalTest):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+
     def setUp(self):
         super().setUp()
         # Y 访问首页
@@ -50,16 +56,76 @@ class TestHomePageButtons(FunctionalTest):
         self.assertIn("github", self.browser.current_url)
         self.assertIn("L1nwatch", self.browser.current_url)
 
-    @unittest.skipIf(True, "还没开始编写")
     def test_archive_button(self):
+        # 创建测试数据
+        self._create_test_db_data()
+
+        # 刷新首页
+        self.browser.refresh()
         home_page_source = self.browser.page_source
+        home_page_url = self.browser.current_url
 
         # 看到了归档按钮, 不知道有什么用, 点击看看
-        self.browser.find_element_by_id("id_archive").click()
+        self.browser.find_element_by_id("id_archives").click()
 
-        # 看见现在每一个文章都不会显示内容了, 而只是显示标题/时间等信息
+        # 发现 URL 变了
+        self.assertNotEqual(self.browser.current_url, home_page_url)
+
+        # 看见页面显示的内容跟首页不一样了
         self.assertNotEqual(self.browser.page_source, home_page_source)
 
+        # 而且不显示文章内容
+        with self.assertRaises(NoSuchElementException):
+            # 如果找不到会抛出 NoSuchElementException 异常
+            self.browser.find_element_by_id("id_article_content")
+
+        # 重新点击首页按钮, 发现首页是会显示文章部分内容的
+        self.browser.find_element_by_id("id_home_page").click()
+        self.browser.find_element_by_id("id_article_content")
+
+    @staticmethod
+    def _create_test_db_data():
+        """
+        创建测试用的相关数据
+        :return:
+        """
+        # 创建三个标签, Python, Markdown, Others
+        tag_python = Tag.objects.create(tag_name="Python")
+        tag_markdown = Tag.objects.create(tag_name="Markdown")
+        tag_others = Tag.objects.create(tag_name="Others")
+
+        # 创建一篇文章, 分类为默认值 Others, 无标签, 内容为默认值空
+        Article.objects.create(title="article_with_nothing")
+
+        # 创建一篇文章, 分类为默认值 Others, 无标签, 有内容
+        Article.objects.create(title="article_with_no_tag_category", content="I only have content and title")
+
+        # 创建一篇文章, 有分类, 无标签, 有内容
+        Article.objects.create(title="article_with_markdown", category="Markdown", content="""
+## I am 2nd title
+* test markdown1
+* test markdown2
+* test markdown3 and `inline code`
+
+```python
+import time
+
+while True:
+    time.sleep(50)
+    print "hello world!"
+```""")
+
+        # 创建文章二, 有分类, 有标签, 有内容
+        new_article = Article.objects.create(title="article_with_python", category="Python", content="I am `Python`")
+        new_article.tag = (tag_python,)
+
+        # 创建三篇文章, 带标签 Others 以及分类 Test_Category
+        for i in range(3):
+            new_article = Article.objects.create(title="article_with_same_category", category="Test_Category",
+                                                 content="Same category {}".format(i + 1))
+            new_article.tag = (tag_others,)
+
+        # TODO:创建文章, 带 2 个标签
         pass
 
     def test_email_button(self):
@@ -69,6 +135,7 @@ class TestHomePageButtons(FunctionalTest):
         # 点击后发现页面跳转了, 而且可以看到 url 中有个 mail to 字母, 后面跟着作者的邮箱: "watch1602@gmail.com"
         # 发现如果使用 click 会使用默认浏览器打开然后就无法测试了, 所以就改用下面这种方法
         self.assertEqual("mailto:watch1602@gmail.com", email_button.get_attribute("href"))
+
 
 if __name__ == "__main__":
     pass
