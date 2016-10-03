@@ -9,9 +9,9 @@
                 <h2 class="post-title"><a href="{% url 'detail' id=post.id %}">{{ post.title }}</a></h2>
 
                     <p class="post-meta">
-                        Time: <a class="post-description" href="#">{{ post.date_time |date:'Y 年 m 月 d 号 H 时'}}</a>&nbsp&nbsp
-                        Category: <a class="post-category post-category-js" href="{% url 'search_tag' tag=post.category %}">{{ post.category|title }}</a>&nbsp&nbsp
-                        Tag:
+                        <label class="post-description">Time: {{ post.date_time |date:'Y 年 m 月 d 号 H 时'}}</label>&nbsp&nbsp
+                        <label class="post-description">Category: </label><a class="post-category post-category-js" href="{% url 'search_tag' tag=post.category %}">{{ post.category|title }}</a>&nbsp&nbsp
+                        <label class="post-description">Tag: </label>
                           {% for tag in post.tag.all %}
                             <a class="post-category post-category-design" href="#">{{ tag }}</a>
                           {% endfor %}
