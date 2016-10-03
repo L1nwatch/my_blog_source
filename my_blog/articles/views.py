@@ -39,7 +39,7 @@ def archives(request):
 
 
 def about_me(request):
-    return render(request, 'aboutme.html')
+    return render(request, 'about_me.html')
 
 
 def search_tag(request, tag):

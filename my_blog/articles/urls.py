@@ -11,7 +11,7 @@ __author__ = '__L1n__w@tch'
 urlpatterns = [
     url(r"^(?P<id>\d+)/$", articles.views.detail, name="detail"),
     url(r'^archives/$', articles.views.archives, name='archives'),
-    url(r'^aboutme/$', articles.views.about_me, name='about_me'),
+    url(r'^about_me/$', articles.views.about_me, name='about_me'),
     url(r'^tag(?P<tag>\w+)/$', articles.views.search_tag, name='search_tag'),
     url(r'^search/$', articles.views.blog_search, name='search'),
 ]

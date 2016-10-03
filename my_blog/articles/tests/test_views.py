@@ -13,7 +13,7 @@ __author__ = '__L1n__w@tch'
 
 
 class HomeViewTest(TestCase):
-    def test_use_home_templates(self):
+    def test_use_home_template(self):
         """
         测试是否使用了首页的模板
         :return:
@@ -37,6 +37,42 @@ class HomeViewTest(TestCase):
             if article_url.encode("utf8") in response.content:
                 counts += 1
             self.assertFalse(counts > HOME_PAGE_ARTICLES_NUMBERS, error_message)
+
+
+class DetailViewTest(TestCase):
+    def test_use_article_template(self):
+        Article.objects.create(title="test_article_1")
+        response = self.client.get("/articles/{}/".format(1))
+        self.assertTemplateUsed(response, "article.html")
+
+
+class AboutMeViewTest(TestCase):
+    def test_use_about_me_template(self):
+        response = self.client.get("/articles/about_me/")
+        self.assertTemplateUsed(response, "about_me.html")
+
+
+class ArchivesViewTest(TestCase):
+    def test_use_archives_template(self):
+        response = self.client.get("/articles/archives/")
+        self.assertTemplateUsed(response, "archives.html")
+
+
+class SearchTagViewTest(TestCase):
+    def test_can_get_same_category(self):
+        test_category_name = "test_category"
+        article_1 = Article.objects.create(title="article_1", category=test_category_name)
+        article_2 = Article.objects.create(title="article_2", category=test_category_name)
+        article_3 = Article.objects.create(title="article_3")
+
+        # 查找同一分类下的所有文章
+        response = self.client.get("/articles/tag{}/".format(test_category_name))
+        self.assertTemplateUsed(response, "tag.html")
+
+        # 不属于这个分类的都不会找到
+        self.assertContains(response, article_1.title)
+        self.assertContains(response, article_2.title)
+        self.assertNotContains(response, article_3.title)
 
 
 if __name__ == "__main__":
