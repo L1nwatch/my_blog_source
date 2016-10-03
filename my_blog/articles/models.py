@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 class Tag(models.Model):
     tag_name = models.CharField(max_length=64)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.tag_name
 
 
