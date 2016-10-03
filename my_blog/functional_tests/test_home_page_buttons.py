@@ -14,8 +14,8 @@ __author__ = '__L1n__w@tch'
 class TestHomePageButtons(FunctionalTest):
     def test_home_page_button(self):
         # Y 访问首页
-        home_page_url = self.server_url
-        self.browser.get(home_page_url)
+        self.browser.get(self.server_url)
+        home_page_url = self.browser.current_url
         home_page_source = self.browser.page_source
 
         # 看到左边第一个按钮, 主页按钮, 点击进去, 没什么反应, 发现自己原来已经在首页了
@@ -29,7 +29,7 @@ class TestHomePageButtons(FunctionalTest):
         self.browser.find_element_by_id("id_about_me").click()
         # url 变化了, 页面内容也变化了
         self.assertNotEqual(self.browser.current_url, home_page_url)
-        self.assertEqual(self.browser.page_source, home_page_source)
+        self.assertNotEqual(self.browser.page_source, home_page_source)
 
     @unittest.skipIf(True, "还没开始编写")
     def test_about_me_button(self):
