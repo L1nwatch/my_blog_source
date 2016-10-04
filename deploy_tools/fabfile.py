@@ -26,6 +26,8 @@ def deploy():
     source_folder = os.path.join(site_folder, "source")
     virtualenv_folder = os.path.join(source_folder, "../virtualenv")
     site_name = "my_blog"
+    host_name = env.host
+    user = env.user
 
     # 创建结构树
     _create_directory_structure_if_necessary(site_folder)
@@ -46,7 +48,7 @@ def deploy():
     _update_database(source_folder, virtualenv_folder, site_name)
 
     # 设置服务器配置等
-    _set_nginx_gunicorn(source_folder, site_name)
+    _set_nginx_gunicorn(source_folder, host_name, site_name, user)
 
 
 def _create_directory_structure_if_necessary(site_folder):
@@ -117,33 +119,38 @@ def _update_database(source_folder, virtualenv_folder, site_name):
         .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder, site_name=site_name))
 
 
-def _set_nginx_gunicorn(source_folder, site_name):
+def _set_nginx_gunicorn(source_folder, host_name, site_name, user):
     """
     自己写的, 利用 sed 来配置 nginx 以及 gunicorn
     :param source_folder: 文件夹路径
-    :param site_name: 网站名, 比如 "watch0.top"
+    :param host_name: 主机名, 比如 "watch0.top"
+    :param site_name: 网站名, 比如 "my_blog"
+    :param user: 用户名, 比如 "watch"
     :return:
     """
     # 这里，使用 s/replaceme/withthis/g 句法把字符串 SITENAME 替换成网站的地址。
     # 然后使用管道操作（|）把文本流传给一个有 root 权限的用户处理（sudo），把传入的文本流写入一个文件
     # 即 sites-available 文件夹中的一个虚拟主机配置文件。
-    # TODO: SITENAME 要重构一下, 还有需要添加 USERNAME
+    # TODO: 还有需要添加 USERNAME
     sudo('cd {}'
-         ' && sed "s/SITENAME/{host}/g" deploy_tools/nginx.template.conf'
+         ' && sed "s/HOST_NAME/{host}/g" deploy_tools/nginx.template.conf'
+         ' && sed "s/SITE_NAME/{site_name}/g" deploy_tools/nginx.template.conf'
+         ' && sed "s/USER_NAME/{user}/g" deploy_tools/nginx.template.conf'
          ' | tee /etc/nginx/sites-available/{host}'
-         .format(source_folder, host=site_name))
+         .format(source_folder, host=host_name, user=user, site_name=site_name))
 
     # 激活这个文件配置的虚拟主机
-    sudo('ln -sf ../sites-available/{host} /etc/nginx/sites-enabled/{host}'.format(host=site_name))
+    sudo('ln -sf ../sites-available/{host} /etc/nginx/sites-enabled/{host}'.format(host=host_name))
 
     # 编写 Upstart 脚本
     sudo('cd {}'
-         ' && sed "s/SITENAME/{host}/g" deploy_tools/gunicorn-upstart.template.conf'
+         ' && sed "s/HOST_NAME/{host}/g" deploy_tools/gunicorn-upstart.template.conf'
+         ' && sed "s/USER_NAME/{user}/g" deploy_tools/gunicorn-upstart.template.conf'
          ' | tee /etc/init/gunicorn-{host}.conf'
-         .format(source_folder, host=site_name))
+         .format(source_folder, host=host_name, user=user))
 
     # 最后，启动这两个服务
-    sudo('service nginx reload && restart gunicorn-{host}'.format(host=site_name))
+    sudo('service nginx reload && restart gunicorn-{host}'.format(host=host_name))
 
 
 if __name__ == "__main__":
