@@ -130,7 +130,7 @@ def _set_nginx_gunicorn(source_folder, site_name):
     # TODO: SITENAME 要重构一下, 还有需要添加 USERNAME
     sudo('cd {}'
          ' && sed "s/SITENAME/{host}/g" deploy_tools/nginx.template.conf'
-         ' | sudo tee /etc/nginx/sites-available/{host}'
+         ' | tee /etc/nginx/sites-available/{host}'
          .format(source_folder, host=site_name))
 
     # 激活这个文件配置的虚拟主机
