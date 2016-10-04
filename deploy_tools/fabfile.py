@@ -134,16 +134,16 @@ def _set_nginx_gunicorn(source_folder, site_name):
          .format(source_folder, host=site_name))
 
     # 激活这个文件配置的虚拟主机
-    run('sudo ln -sf ../sites-available/{host} /etc/nginx/sites-enabled/{host}'.format(host=site_name))
+    sudo('ln -sf ../sites-available/{host} /etc/nginx/sites-enabled/{host}'.format(host=site_name))
 
     # 编写 Upstart 脚本
-    run('cd {}'
+    sudo('cd {}'
         ' && sed "s/SITENAME/{host}/g" deploy_tools/gunicorn-upstart.template.conf'
-        ' | sudo tee /etc/init/gunicorn-{host}.conf'
+        ' | tee /etc/init/gunicorn-{host}.conf'
         .format(source_folder, host=site_name))
 
     # 最后，启动这两个服务
-    run('sudo service nginx reload && sudo restart gunicorn-{host}'.format(host=site_name))
+    sudo('service nginx reload && restart gunicorn-{host}'.format(host=site_name))
 
 
 if __name__ == "__main__":
