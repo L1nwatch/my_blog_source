@@ -121,17 +121,18 @@ def _update_database(source_folder, virtualenv_folder, site_name):
 
 def _set_nginx_gunicorn(source_folder, host_name, site_name, user):
     """
-    自己写的, 利用 sed 来配置 nginx 以及 gunicorn
+    利用 sed 来配置 nginx 以及 gunicorn
+    # 这里，使用 "s/replace_me/with_this/g" 句法把字符串 SITE_NAME 替换成网站名, 还有主机名和用户名也类似。
+    # 然后使用管道操作（|）把文本流传给一个有 root 权限的用户处理（sudo），把传入的文本流写入一个文件
+    # 即 sites-available 文件夹中的一个虚拟主机配置文件。
+    # 这里可以用 sudo() 替代 run() 这样就可以在命令行中指定 sudo 密码不用每次都手打了
     :param source_folder: 文件夹路径
     :param host_name: 主机名, 比如 "watch0.top"
     :param site_name: 网站名, 比如 "my_blog"
     :param user: 用户名, 比如 "watch"
     :return:
     """
-    # 这里，使用 s/replaceme/withthis/g 句法把字符串 SITENAME 替换成网站的地址。
-    # 然后使用管道操作（|）把文本流传给一个有 root 权限的用户处理（sudo），把传入的文本流写入一个文件
-    # 即 sites-available 文件夹中的一个虚拟主机配置文件。
-    # TODO: 还有需要添加 USERNAME
+    # 编写 nginx 配置文件
     sudo('cd {}'
          ' && sed "s/HOST_NAME/{host}/g" deploy_tools/nginx.template.conf'
          ' && sed "s/SITE_NAME/{site_name}/g" deploy_tools/nginx.template.conf'
