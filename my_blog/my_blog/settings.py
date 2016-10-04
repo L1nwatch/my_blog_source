@@ -105,7 +105,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Shanghai' # TODO: 放到服务器上的时候需要更改这一项, 原来的时区为 UTC
+TIME_ZONE = 'Asia/Shanghai'  # TODO: 放到服务器上的时候需要更改这一项, 原来的时区为 UTC
 
 USE_I18N = True
 
@@ -116,6 +116,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, "/static")
+STATIC_ROOT = os.path.join(BASE_DIR, "../static")
 STATIC_URL = "/static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
