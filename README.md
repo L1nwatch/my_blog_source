@@ -51,3 +51,5 @@ BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
 * 安装 Markdown：`pip install markdown  #记得激活虚拟环境`
 * 代码高亮：[找到自己喜欢的 CSS 文件](http://richleland.github.io/pygments-css/)，安装 `pip install pygments` 库，然后添加 link 到 html 中即可。
 * 前端样式参考：[网址](http://www.purecss.org/layouts/blog/)，还有更全面的[不止是博客](http://www.purecss.org/layouts/)
+* fab 文档参考，[中文版](http://fabric-chs.readthedocs.io/zh_CN/chs/index.html)，[英文版](http://www.fabfile.org/)
+
