@@ -18,9 +18,9 @@
 
 1. 进入 `/home/watch/sites/watch0.top` 目录，进行克隆操作，主要是为了获取 `deploy_tools` 文件夹下的自动化部署脚本
 2. 执行命令，获取仓库中的所有文件，并放在文件夹 `source` 下：`git clone https://github.com/L1nwatch/my_blog_source.git source`
-3. 进入自动化部署脚本目录：`/home/watch/sites/watch0.top/source/deploy_tools`
-4. 执行命令，开始自动化部署操作：`fab deploy:host=watch@watch0.top:端口号 --password=ssh密码 --sudo-password=sudo密码`
-5. ​
+3. 安装 nginx 服务器：`sudo apt-get install nginx`
+4. 进入自动化部署脚本目录：`/home/watch/sites/watch0.top/source/deploy_tools`
+5. 执行命令，开始自动化部署操作：`fab deploy:host=watch@watch0.top:端口号 --password=ssh密码 --sudo-password=sudo密码`
 
 
 ## 开发过程记录
@@ -52,4 +52,3 @@ BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
 * 代码高亮：[找到自己喜欢的 CSS 文件](http://richleland.github.io/pygments-css/)，安装 `pip install pygments` 库，然后添加 link 到 html 中即可。
 * 前端样式参考：[网址](http://www.purecss.org/layouts/blog/)，还有更全面的[不止是博客](http://www.purecss.org/layouts/)
 * fab 文档参考，[中文版](http://fabric-chs.readthedocs.io/zh_CN/chs/index.html)，[英文版](http://www.fabfile.org/)
-

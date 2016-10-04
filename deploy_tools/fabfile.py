@@ -140,7 +140,7 @@ def _set_nginx_gunicorn(source_folder, host_name, site_name, user):
          .format(source_folder, host=host_name, user=user))
 
     # 激活这个文件配置的虚拟主机
-    sudo('ln -sf ../sites-available/{host} /etc/nginx/sites-enabled/{host}'.format(host=host_name))
+    sudo('ln -sf /etc/nginx/sites-available/{host} /etc/nginx/sites-enabled/{host}'.format(host=host_name))
 
     # 编写 Upstart 脚本
     sudo('cd {}'
