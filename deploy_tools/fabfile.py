@@ -134,7 +134,7 @@ def _set_nginx_gunicorn(source_folder, host_name, site_name, user):
     """
     # 编写 nginx 配置文件
     sudo('cd {}'
-         ' && sed "s/HOST_NAME/{host}/g deploy_tools/nginx.template.conf'
+         ' && sed "s/HOST_NAME/{host}/g" deploy_tools/nginx.template.conf'
          ' | sed "s/USER_NAME/{user}/g"'
          ' | tee /etc/nginx/sites-available/{host}'
          .format(source_folder, host=host_name, user=user))
