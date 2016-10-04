@@ -36,7 +36,7 @@ def deploy():
     _get_latest_source(source_folder)
 
     # 更新 setting 文件
-    _update_settings(source_folder, site_name)
+    _update_settings(source_folder, site_name, host_name)
 
     # 更新虚拟环境以及所需的各个包
     _update_virtualenv(source_folder, virtualenv_folder)
@@ -78,13 +78,12 @@ def _get_latest_source(source_folder):
     run("cd {} && git pull".format(source_folder, current_commit))
 
 
-def _update_settings(source_folder, site_name):
+def _update_settings(source_folder, site_name, host_name):
     settings_path = source_folder + "/{site_name}/{site_name}/settings.py".format(site_name=site_name)
     # Fabric 提供的 sed 函数作用是在文本中替换字符串。这里把 DEBUG 的值由 True 改成 False
     sed(settings_path, "DEBUG = True", "DEBUG = False")
     # 这里使用 sed 调整 ALLOWED_HOSTS 的值，使用正则表达式匹配正确的代码行
-    # sed(settings_path, "ALLOWED_HOSTS = .+$", 'ALLOWED_HOSTS = ["{}"]'.format(site_name))
-    sed(settings_path, 'DOMAIN = "localhost"', 'DOMAIN = "{}"'.format(site_name))
+    sed(settings_path, 'DOMAIN = "localhost"', 'DOMAIN = "{}"'.format(host_name))
     secret_key_file = source_folder + "/{site_name}/{site_name}/secret_key.py".format(site_name=site_name)
 
     # Django 有几处加密操作要使用 SECRET_KEY: cookie 和 CSRF 保护。在服务器中和(可能公开的)源码仓库中使用不同的密钥是个好习惯。
