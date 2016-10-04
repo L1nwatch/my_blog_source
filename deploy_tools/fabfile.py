@@ -7,7 +7,7 @@ import random
 import string
 import os
 from fabric.contrib.files import append, exists, sed
-from fabric.api import env, local, run
+from fabric.api import env, local, run, sudo
 
 __author__ = '__L1n__w@tch'
 
@@ -128,10 +128,10 @@ def _set_nginx_gunicorn(source_folder, site_name):
     # 然后使用管道操作（|）把文本流传给一个有 root 权限的用户处理（sudo），把传入的文本流写入一个文件
     # 即 sites-available 文件夹中的一个虚拟主机配置文件。
     # TODO: SITENAME 要重构一下, 还有需要添加 USERNAME
-    run('cd {}'
-        ' && sed "s/SITENAME/{host}/g" deploy_tools/nginx.template.conf'
-        ' | sudo tee /etc/nginx/sites-available/{host}'
-        .format(source_folder, host=site_name))
+    sudo('cd {}'
+         ' && sed "s/SITENAME/{host}/g" deploy_tools/nginx.template.conf'
+         ' | sudo tee /etc/nginx/sites-available/{host}'
+         .format(source_folder, host=site_name))
 
     # 激活这个文件配置的虚拟主机
     run('sudo ln -sf ../sites-available/{host} /etc/nginx/sites-enabled/{host}'.format(host=site_name))
