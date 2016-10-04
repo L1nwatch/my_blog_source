@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2016.10.04 更新一下关于首页搜索按钮的测试, 现在要求能够搜索各个文章的标题
 2016.10.03 编写功能测试, 第一个编写的功能测试测试首页各个按钮, 包括主页,about 按钮,github 按钮,archive 按钮,email 按钮
 """
 from .base import FunctionalTest
@@ -121,8 +122,8 @@ while True:
 
         # 创建三篇文章, 带标签 Others 以及分类 Test_Category
         for i in range(3):
-            new_article = Article.objects.create(title="article_with_same_category", category="Test_Category",
-                                                 content="Same category {}".format(i + 1))
+            new_article = Article.objects.create(title="article_with_same_category{}".format(i + 1),
+                                                 category="Test_Category", content="Same category {}".format(i + 1))
             new_article.tag = (tag_others,)
 
         # TODO:创建文章, 带 2 个标签
@@ -135,6 +136,34 @@ while True:
         # 点击后发现页面跳转了, 而且可以看到 url 中有个 mail to 字母, 后面跟着作者的邮箱: "watch1602@gmail.com"
         # 发现如果使用 click 会使用默认浏览器打开然后就无法测试了, 所以就改用下面这种方法
         self.assertEqual("mailto:watch1602@gmail.com", email_button.get_attribute("href"))
+
+    def test_search_button(self):
+        """
+        2016.10.04 要求能够搜索各个文章的标题即可
+        :return:
+        """
+        # 创建测试数据
+        self._create_test_db_data()
+
+        # 刷新首页
+        self.browser.refresh()
+
+        # Y 看到了这个搜索按钮
+        search_button = self.browser.find_element_by_id("id_search")
+
+        # 看着首页右边已经存在的文章, 随便打了一个进去, 然后按下回车键
+        newest_article = Article.objects.first()
+        search_button.send_keys(newest_article.title + "\n")
+
+        # 发现确实能够搜索出对应的文章出来
+        self.assertIn(newest_article.title, self.browser.page_source)
+
+        # Y 想试试如果搜索一篇不存在的文章会怎样, 就随便打了一串字符, 尝试进行搜索
+        search_button = self.browser.find_element_by_id("id_search")
+        search_button.send_keys("不应该有这篇文章的存在\n")
+
+        # 发现搜索结果为: 没有相关文章题目
+        self.assertIn("没有相关文章题目", self.browser.page_source)
 
 
 if __name__ == "__main__":

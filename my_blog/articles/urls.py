@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^archives/$', articles.views.archives, name='archives'),
     url(r'^about_me/$', articles.views.about_me, name='about_me'),
     url(r'^tag(?P<tag>\w+)/$', articles.views.search_tag, name='search_tag'),
-    url(r'^search/$', articles.views.blog_search, name='search'),
+    url(r'^search/$', articles.views.blog_search, name='search_title'),
 ]
 
 if __name__ == "__main__":

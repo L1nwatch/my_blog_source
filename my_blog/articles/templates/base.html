@@ -37,8 +37,9 @@
                         <a class="button-success pure-button" href="/">专题</a>
                     </li>
                     <li>
-                        <form class="pure-form" action="/search/" method="get">
-                            <input class="pure-input-3-3" type="text" name="s" placeholder="search">
+                        <form class="pure-form" action="{% url 'search_title' %}" method="get">
+                            <input class="pure-input-3-3" id="id_search" type="text" name="s"
+                                   placeholder="title to search">
                         </form>
                     </li>
                     <li class="nav-item">
