@@ -1,11 +1,13 @@
 # 说明
 
-此仓库保存的是我搭建自己博客的源码，本来一开始想跟着廖雪峰的教程搭的，后来发现还是用我自己比较熟悉的 Django 来搭吧。
+此仓库保存的是我搭建自己博客的源码，本来一开始想跟着廖雪峰的教程搭的，后来发现还是用我自己比较熟悉的 Django 来搭吧，结合网上的简易博客教程做了个模板，然后自己又编写了对应的功能测试和单元测试以便接下来的扩展，还有实现了自动化部署脚本，这样以后部署网站就方便多了。
 
 ## 参考资料
 
 * [Django 搭建简易博客教程](http://wiki.jikexueyuan.com/project/django-set-up-blog/)
 * [Bootstrap 中文文档](http://v3.bootcss.com/getting-started/#download)
+* Fab 文档参考，[中文版](http://fabric-chs.readthedocs.io/zh_CN/chs/index.html)，[英文版](http://www.fabfile.org/)
+* 前端样式参考：[博客模板网址](http://www.purecss.org/layouts/blog/)，还有更全面的[不止是博客](http://www.purecss.org/layouts/)
 
 ## 开发环境
 
@@ -28,9 +30,11 @@
 
 6. 访问首页，看是否正常，接着创建超级管理员，使用命令 `python manage.py createsuperuser` 创建。
 
-7. （2016.10.04 版本）的界面如图所示：
+7. 访问 `/admin` ，添加文章，我添加的是本 readme 进去。
 
-   ![20161004界面]()
+8. 回到首页，可以看到刚更新的文章了。（2016.10.04 版本）的界面如图所示：
+
+   ![20161004界面](https://github.com/L1nwatch/my_blog_source/blob/master/2016-10-04%E7%BD%91%E7%AB%99%E6%88%AA%E5%9B%BE.png?raw=true)
 
 
 ## 开发过程记录
@@ -60,5 +64,3 @@ BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
 
 * 安装 Markdown：`pip install markdown  #记得激活虚拟环境`
 * 代码高亮：[找到自己喜欢的 CSS 文件](http://richleland.github.io/pygments-css/)，安装 `pip install pygments` 库，然后添加 link 到 html 中即可。
-* 前端样式参考：[网址](http://www.purecss.org/layouts/blog/)，还有更全面的[不止是博客](http://www.purecss.org/layouts/)
-* fab 文档参考，[中文版](http://fabric-chs.readthedocs.io/zh_CN/chs/index.html)，[英文版](http://www.fabfile.org/)
