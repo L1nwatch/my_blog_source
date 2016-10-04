@@ -17,10 +17,20 @@
 ## 自动化部署方法
 
 1. 进入 `/home/watch/sites/watch0.top` 目录，进行克隆操作，主要是为了获取 `deploy_tools` 文件夹下的自动化部署脚本
+
 2. 执行命令，获取仓库中的所有文件，并放在文件夹 `source` 下：`git clone https://github.com/L1nwatch/my_blog_source.git source`
+
 3. 安装 nginx 服务器：`sudo apt-get install nginx`
+
 4. 进入自动化部署脚本目录：`/home/watch/sites/watch0.top/source/deploy_tools`
-5. 执行命令，开始自动化部署操作：`fab deploy:host=watch@watch0.top:端口号 --password=ssh密码 --sudo-password=sudo密码`
+
+5. 执行命令，开始自动化部署操作：`fab deploy:host=watch@watch0.top:端口号 --password=ssh密码 --sudo-password=sudo密码`。如果一切顺利，应该会有 `Done` 这个字样出现。
+
+6. 访问首页，看是否正常，接着创建超级管理员，使用命令 `python manage.py createsuperuser` 创建。
+
+7. （2016.10.04 版本）的界面如图所示：
+
+   ![20161004界面]()
 
 
 ## 开发过程记录
