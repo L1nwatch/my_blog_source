@@ -85,7 +85,7 @@ def _update_settings(source_folder, site_name):
     # 如果还没有密钥，这段代码会生成一个新密钥，然后写入密钥文件。有密钥后，每次部署都要使用相同的密钥。
     # 更多信息参见 [Django 文档](https://docs.djangoproject.com/en/1.7/topics/signing/)
     if not exists(secret_key_file):
-        chars = string.printable
+        chars = string.ascii_letters + string.digits + "!@#$%^&*(-_=+)"
         key = "".join(random.SystemRandom().choice(chars) for _ in range(50))
         append(secret_key_file, "SECRET_KEY = '{}'".format(key))
     # append 的作用是在文件末尾添加一行内容
@@ -138,9 +138,9 @@ def _set_nginx_gunicorn(source_folder, site_name):
 
     # 编写 Upstart 脚本
     sudo('cd {}'
-        ' && sed "s/SITENAME/{host}/g" deploy_tools/gunicorn-upstart.template.conf'
-        ' | tee /etc/init/gunicorn-{host}.conf'
-        .format(source_folder, host=site_name))
+         ' && sed "s/SITENAME/{host}/g" deploy_tools/gunicorn-upstart.template.conf'
+         ' | tee /etc/init/gunicorn-{host}.conf'
+         .format(source_folder, host=site_name))
 
     # 最后，启动这两个服务
     sudo('service nginx reload && restart gunicorn-{host}'.format(host=site_name))
