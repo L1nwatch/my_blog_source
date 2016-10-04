@@ -25,10 +25,10 @@ def deploy():
     site_folder = "/home/{}/sites/{}".format(env.user, env.host)
     source_folder = os.path.join(site_folder, "source")
     virtualenv_folder = os.path.join(source_folder, "../virtualenv")
-    site_name = env.host
+    site_name = "my_blog"
 
     # 创建结构树
-    _create_directory_structure_if_necessary(source_folder)
+    _create_directory_structure_if_necessary(site_folder)
 
     # 更新代码
     _get_latest_source(source_folder)
@@ -49,11 +49,11 @@ def deploy():
     _set_nginx_gunicorn(source_folder, site_name)
 
 
-def _create_directory_structure_if_necessary(source_folder):
+def _create_directory_structure_if_necessary(site_folder):
     for sub_folder in ("static", "virtualenv"):
         # run 的作用是在服务器中执行指定的 shell 命令
         # mkdir -p 是 mkdir 的一个有用变种，它有两个优势，其一是深入多个文件夹层级创建目录；其二，只在必要时创建目录。
-        run("mkdir -p {}/{}".format(source_folder, sub_folder))
+        run("mkdir -p {}/{}".format(site_folder, sub_folder))
 
 
 def _get_latest_source(source_folder):

@@ -12,6 +12,16 @@
 * macOSX 10.10.5
 * Python 3.4
 * virtualenv
+* 部署服务器为 Ubuntu 系统
+
+## 自动化部署方法
+
+1. 进入 `/home/watch/sites/watch0.top` 目录，进行克隆操作，主要是为了获取 `deploy_tools` 文件夹下的自动化部署脚本
+2. 执行命令，获取仓库中的所有文件，并放在文件夹 `source` 下：`git clone https://github.com/L1nwatch/my_blog_source.git source`
+3. 进入自动化部署脚本目录：`/home/watch/sites/watch0.top/source/deploy_tools`
+4. 执行命令，开始自动化部署操作：`fab deploy:host=watch@watch0.top:端口号 --password 你的密码`
+5. ​
+
 
 ## 开发过程记录
 
