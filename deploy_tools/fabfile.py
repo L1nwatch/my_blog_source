@@ -52,7 +52,7 @@ def deploy():
 
 
 def _create_directory_structure_if_necessary(site_folder):
-    for sub_folder in ("static", "virtualenv"):
+    for sub_folder in ["virtualenv"]:
         # run 的作用是在服务器中执行指定的 shell 命令
         # mkdir -p 是 mkdir 的一个有用变种，它有两个优势，其一是深入多个文件夹层级创建目录；其二，只在必要时创建目录。
         run("mkdir -p {}/{}".format(site_folder, sub_folder))
