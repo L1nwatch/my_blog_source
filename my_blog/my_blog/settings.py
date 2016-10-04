@@ -24,7 +24,10 @@ SECRET_KEY = 'xu)@fc2^=xyttqp-=strs4au0x(ik)%#q*8+hai+l3m1b=*b%_'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# 部署脚本会修改这个变量
+DOMAIN = "localhost"
+
+ALLOWED_HOSTS = [DOMAIN]
 
 # Application definition
 
@@ -119,3 +122,26 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, "../static")
 STATIC_URL = "/static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+        },
+        "accounts": {
+            "handlers": ["console"],
+        },
+        "lists": {
+            "handlers": ["console"],
+        },
+    },
+    "root": {"level": "INFO"}
+}
