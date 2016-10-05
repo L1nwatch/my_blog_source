@@ -7,6 +7,7 @@ from .models import Article
 
 import os
 import chardet
+import logging
 
 HOME_PAGE_ARTICLES_NUMBERS = 2
 TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
@@ -124,7 +125,6 @@ def update_notes(request):
                 article = each_file.rstrip(".md")
                 article_category, article_title = article.split("-")
                 file_path = os.path.join(root, each_file)
-                logger.error("正在测试文件: {}".format(file_path))
                 logging.error("正在测试文件: {}".format(file_path))
                 article_content = get_right_content_from_file(file_path)
 
