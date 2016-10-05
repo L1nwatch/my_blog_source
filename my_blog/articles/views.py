@@ -105,8 +105,11 @@ def update_notes(request):
                 try:
                     article_from_db = Article.objects.get(title=article_title)
                     # 已经存在
-                    # TODO: 进行更新操作
-                    pass
+                    file_path = os.path.join(root, each_file)
+                    with open(file_path, "r") as f:
+                        article_from_db.content = f.read()
+                    article_from_db.category = article_category
+                    article_from_db.save()
                 except Article.DoesNotExist:
                     # 不存在
                     Article.objects.create(title=article_title, category=article_category)
