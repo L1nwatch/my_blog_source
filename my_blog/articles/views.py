@@ -1,10 +1,14 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.conf import settings
 
 from .models import Article
 
+import os
+
 HOME_PAGE_ARTICLES_NUMBERS = 2
+TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
 
 
 def home(request):
@@ -67,4 +71,13 @@ def blog_search(request):
 
 
 def update_notes(request):
+    notes_path_name = "notes"
+    notes_path_parent_dir = os.path.dirname(settings.BASE_DIR)
+
+    notes_git_path = os.path.join(notes_path_parent_dir, notes_path_name)
+
+    # 没有进行过 git 操作
+    if not os.path.exists(os.path.join(notes_git_path, ".git")):
+        command = "cd {} && git clone {} {}".format(notes_path_parent_dir, TEST_GIT_REPOSITORY, notes_path_name)
+    os.system(command)
     return redirect("/")

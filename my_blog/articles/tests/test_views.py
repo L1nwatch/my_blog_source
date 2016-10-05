@@ -7,8 +7,11 @@
 """
 from django.test import TestCase
 from django.conf import settings
+
 from articles.models import Article
 from articles.views import HOME_PAGE_ARTICLES_NUMBERS
+
+import os
 
 __author__ = '__L1n__w@tch'
 
@@ -79,8 +82,54 @@ class SearchTagViewTest(TestCase):
 
 
 class UpdateNotesViweTest(TestCase):
+    test_md_file_name = "测试笔记-测试用的笔记.md"
+    notes_path_name = "notes"
+    notes_path_parent_dir = os.path.dirname(settings.BASE_DIR)
+
+    notes_git_path = os.path.join(notes_path_parent_dir, notes_path_name)
+    test_md_file_path = os.path.join(notes_git_path, test_md_file_name)
+
     def test_can_get_md_from_git(self):
-        print(settings.TEST_GIT_REPOSITORY)
+        self.client.get("/articles/update_notes/")
+
+        if not os.path.exists(self.test_md_file_path):
+            self.fail("从 git 上获取文件失败了")
+
+    def test_can_sync_md_from_git(self):
+        """
+        确保获取到的是 git 上的最新版本
+        :return:
+        """
+        # 已经进行过 git 操作
+        if not os.path.exists(os.path.join(self.notes_git_path, ".git")):
+            self.client.get("/articles/update_notes/")
+
+        # 保存旧的测试文件
+        with open(self.test_md_file_path, "r") as f:
+            old_file_content = f.read()
+
+        # 更改文件夹中的测试文件, git 提交到仓库上
+        with open(self.test_md_file_path, "w") as f:
+            test_content = "# test1234"
+            f.write(test_content)
+        command = "cd {} && git commit && git push".format(self.notes_git_path)
+        os.system(command)
+
+        # 恢复旧的测试文件
+        with open(self.test_md_file_path, "w") as f:
+            f.write(old_file_content)
+
+        # 再次执行该视图函数, 发现文件夹里的旧测试文件已经变成新的测试文件了
+        self.client.get("/articles/update_notes/")
+        with open(self.test_md_file_path, "r") as f:
+            data = f.read()
+        self.assertEqual(data, test_content, "更新测试文件失败")
+
+        # 恢复测试文件, 提交内容
+        with open(self.test_md_file_path, "w") as f:
+            f.write(old_file_content)
+        command = "cd {} && git commit && git push".format(self.notes_git_path)
+        os.system(command)
 
 
 if __name__ == "__main__":
