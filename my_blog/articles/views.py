@@ -7,7 +7,7 @@ from .models import Article
 
 import os
 import chardet
-import logging
+import locale
 
 HOME_PAGE_ARTICLES_NUMBERS = 2
 TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
@@ -127,7 +127,7 @@ def update_notes(request):
                 file_path = os.path.join(root, each_file)
                 article_content = get_right_content_from_file(file_path)
                 with open("./log.text", "w") as f:
-                    f.write("测试")
+                    f.write(locale.getlocale())
 
                 try:
                     article_from_db = Article.objects.get(title=article_title)
