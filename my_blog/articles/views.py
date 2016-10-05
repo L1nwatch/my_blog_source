@@ -14,6 +14,7 @@ TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
 NOTES_PATH_NAME = "notes"
 NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
 NOTES_GIT_PATH = os.path.join(NOTES_PATH_PARENT_DIR, NOTES_PATH_NAME)
+logger = logging.getLogger(__name__)
 
 
 def get_right_content_from_file(file_path):
@@ -125,7 +126,7 @@ def update_notes(request):
                 article = each_file.rstrip(".md")
                 article_category, article_title = article.split("-")
                 file_path = os.path.join(root, each_file)
-                logging.warning("正在测试文件: {}".format(file_path))
+                logger.warning("正在测试文件: {}".format(file_path))
                 article_content = get_right_content_from_file(file_path)
 
                 try:
