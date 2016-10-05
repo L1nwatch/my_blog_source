@@ -125,8 +125,9 @@ def update_notes(request):
                 article = each_file.rstrip(".md")
                 article_category, article_title = article.split("-")
                 file_path = os.path.join(root, each_file)
-                logging.error("正在测试文件: {}".format(file_path))
                 article_content = get_right_content_from_file(file_path)
+                with open("./log.text", "w") as f:
+                    f.write(file_path)
 
                 try:
                     article_from_db = Article.objects.get(title=article_title)
