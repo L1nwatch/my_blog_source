@@ -8,6 +8,7 @@ from .models import Article
 import os
 import chardet
 import locale
+import sys
 
 HOME_PAGE_ARTICLES_NUMBERS = 2
 TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
@@ -128,9 +129,11 @@ def update_notes(request):
                 article_category, article_title = article.split("-")
                 file_path = os.path.join(root, each_file)
                 article_content = get_right_content_from_file(file_path)
-                with open("./log.text", "w") as f:
+                with open("../../my_log.log", "w") as f:
                     print(locale.getlocale(), file=f)
                     print("1", file=f)
+                    print(sys.getdefaultencoding(), file=f)
+                    print("test path={}".format(file_path), file=f)
                     print("正在测试文件: {}, 文件内容为: {}".format(file_path, article_content[:100]), file=f)
 
                 try:
