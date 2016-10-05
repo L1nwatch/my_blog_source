@@ -4,28 +4,35 @@
 {% block content %}
 <div class="posts">
     {% for post in post_list %}
-        <section class="post">
-            <header class="post-header">
-                <h2 class="post-title"><a href="{% url 'detail' id=post.id %}">{{ post.title }}</a></h2>
+    <section class="post">
+        <header class="post-header">
+            <h2 class="post-title">
+                <a id="id_article_title" href="{% url 'detail' id=post.id %}">{{ post.title }}</a>
+            </h2>
 
-                    <p class="post-meta">
-                        <label class="post-description">Time: {{ post.date_time |date:'Y 年 m 月 d 号 H 时'}}</label>&nbsp&nbsp
-                        <label class="post-description">Category: </label><a class="post-category post-category-js" href="{% url 'search_tag' tag=post.category %}">{{ post.category|title }}</a>&nbsp&nbsp
-                        <label class="post-description">Tag: </label>
-                          {% for tag in post.tag.all %}
-                            <a class="post-category post-category-design" href="#">{{ tag }}</a>
-                          {% endfor %}
-                    </p>
-            </header>
+            <p class="post-meta">
+                <label class="post-description">
+                    Time: {{ post.date_time |date:'Y 年 m 月 d 号 H 时'}}
+                </label>&nbsp&nbsp
+                <label class="post-description">Category: </label>
+                <a class="post-category post-category-js" href="{% url 'search_tag' tag=post.category %}">
+                    {{ post.category|title }}
+                </a>&nbsp&nbsp
+                <label class="post-description">Tag: </label>
+                {% for tag in post.tag.all %}
+                <a class="post-category post-category-design" href="#">{{ tag }}</a>
+                {% endfor %}
+            </p>
+        </header>
 
-                <div class="post-description" id="id_article_content">
-                    <p>
-                        <!--{{ post.content|custom_markdown|truncatewords_html:15 }}-->
-                        {{ post.content|custom_markdown|truncatewords:15 }}
-                    </p>
-                </div>
-                <a class="pure-button" href="{% url 'detail' id=post.id %}">Read More >>> </a>
-        </section>
+        <div class="post-description" id="id_article_content">
+            <p>
+                <!--{{ post.content|custom_markdown|truncatewords_html:15 }}-->
+                {{ post.content|custom_markdown|truncatewords:15 }}
+            </p>
+        </div>
+        <a class="pure-button" href="{% url 'detail' id=post.id %}">Read More >>> </a>
+    </section>
     {% endfor %}
 
     {% if post_list.object_list and post_list.paginator.num_pages > 1 %}
