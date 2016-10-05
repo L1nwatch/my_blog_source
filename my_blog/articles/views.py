@@ -127,7 +127,7 @@ def update_notes(request):
                 file_path = os.path.join(root, each_file)
                 article_content = get_right_content_from_file(file_path)
                 with open("./log.text", "w") as f:
-                    f.write(locale.getlocale())
+                    print(locale.getlocale(), file=f)
 
                 try:
                     article_from_db = Article.objects.get(title=article_title)
