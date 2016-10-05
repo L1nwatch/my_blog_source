@@ -1,7 +1,3 @@
-#!/bin/env python3
-# -*- coding: utf-8 -*-
-# version: Python3.X
-
 from django.shortcuts import render, redirect
 from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
