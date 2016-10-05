@@ -12,6 +12,7 @@ from articles.models import Article
 from articles.views import HOME_PAGE_ARTICLES_NUMBERS
 
 import os
+import unittest
 
 __author__ = '__L1n__w@tch'
 
@@ -81,20 +82,23 @@ class SearchTagViewTest(TestCase):
         self.assertNotContains(response, article_3.title)
 
 
-class UpdateNotesViweTest(TestCase):
+class UpdateNotesViewTest(TestCase):
     test_md_file_name = "测试笔记-测试用的笔记.md"
     notes_path_name = "notes"
-    notes_path_parent_dir = os.path.dirname(settings.BASE_DIR)
+    global_want_to_run_git_test = input("确定要进行 git 测试?(yes?)")
 
+    notes_path_parent_dir = os.path.dirname(settings.BASE_DIR)
     notes_git_path = os.path.join(notes_path_parent_dir, notes_path_name)
     test_md_file_path = os.path.join(notes_git_path, test_md_file_name)
 
+    @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
     def test_can_get_md_from_git(self):
         self.client.get("/articles/update_notes/")
 
         if not os.path.exists(self.test_md_file_path):
             self.fail("从 git 上获取文件失败了")
 
+    @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
     def test_can_sync_md_from_git(self):
         """
         确保获取到的是 git 上的最新版本
@@ -112,7 +116,7 @@ class UpdateNotesViweTest(TestCase):
         with open(self.test_md_file_path, "w") as f:
             test_content = "# test1234"
             f.write(test_content)
-        command = "cd {} && git commit && git push".format(self.notes_git_path)
+        command = "cd {} && git add -A && git commit -m '测试开始' && git push".format(self.notes_git_path)
         os.system(command)
 
         # 恢复旧的测试文件
@@ -124,15 +128,15 @@ class UpdateNotesViweTest(TestCase):
         with open(self.test_md_file_path, "r") as f:
             data = f.read()
         try:
-            self.assertEqual(data, test_content, "更新测试文件失败")
+            self.assertEqual(data, test_content)
         except AssertionError:
-            raise AssertionError
+            raise AssertionError("更新测试文件失败")
         finally:
             print("[*] 成功执行了这一句")
             # 恢复测试文件, 提交内容
             with open(self.test_md_file_path, "w") as f:
                 f.write(old_file_content)
-            command = "cd {} && git commit && git push".format(self.notes_git_path)
+            command = "cd {} && git add -A && git commit -m '测试完毕' && git push".format(self.notes_git_path)
             os.system(command)
 
 
