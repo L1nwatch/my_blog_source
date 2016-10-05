@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, Http404
+from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
 
 from .models import Article
 
 import os
+import logging
 import chardet
 
 HOME_PAGE_ARTICLES_NUMBERS = 2
@@ -124,6 +125,7 @@ def update_notes(request):
                 article = each_file.rstrip(".md")
                 article_category, article_title = article.split("-")
                 file_path = os.path.join(root, each_file)
+                logging.warning("正在测试文件: {}".format(file_path))
                 article_content = get_right_content_from_file(file_path)
 
                 try:
