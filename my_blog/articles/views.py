@@ -6,7 +6,6 @@ from django.conf import settings
 from .models import Article
 
 import os
-import logging
 
 HOME_PAGE_ARTICLES_NUMBERS = 2
 TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
@@ -102,16 +101,18 @@ def update_notes(request):
             if __is_valid_md_file(each_file):
                 article = each_file.rstrip(".md")
                 article_category, article_title = article.split("-")
+                file_path = os.path.join(root, each_file)
+                with open(file_path, "r") as f:
+                    article_content = f.read()
+
                 try:
                     article_from_db = Article.objects.get(title=article_title)
                     # 已经存在
-                    file_path = os.path.join(root, each_file)
-                    with open(file_path, "r") as f:
-                        article_from_db.content = f.read()
+                    article_from_db.content = article_content
                     article_from_db.category = article_category
                     article_from_db.save()
                 except Article.DoesNotExist:
                     # 不存在
-                    Article.objects.create(title=article_title, category=article_category)
+                    Article.objects.create(title=article_title, category=article_category, content=article_content)
 
     return redirect("/")

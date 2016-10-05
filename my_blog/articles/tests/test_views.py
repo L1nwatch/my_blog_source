@@ -156,6 +156,8 @@ class UpdateNotesViewTest(TestCase):
         # 每个 md 笔记的文件名类似于: "测试笔记-测试用的笔记.md"
         test_article = self.test_md_file_name.rstrip(".md")  # 去掉 .md
         test_article_title = test_article.split("-")[1]  # 去掉 "测试笔记-"
+        with open(self.test_md_file_path, "r") as f:
+            test_article_content = f.read()
         article = None
 
         # 一开始没有这篇文章
@@ -168,6 +170,7 @@ class UpdateNotesViewTest(TestCase):
         try:
             article = Article.objects.get(title=test_article_title)
             self.assertTrue(article is not None, "没有成功更新数据库啊")
+            self.assertEqual(article.content, test_article_content, "文件内容不对啊")
         except Article.DoesNotExist:
             self.fail("没有成功更新数据库啊")
 
