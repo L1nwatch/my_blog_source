@@ -126,7 +126,8 @@ def update_notes(request):
                 article = each_file.rstrip(".md")
                 article_category, article_title = article.split("-")
                 file_path = os.path.join(root, each_file)
-                logger.warning("正在测试文件: {}".format(file_path))
+                logger.error("正在测试文件: {}".format(file_path))
+                logging.error("正在测试文件: {}".format(file_path))
                 article_content = get_right_content_from_file(file_path)
 
                 try:
