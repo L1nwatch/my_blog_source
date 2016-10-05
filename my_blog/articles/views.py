@@ -73,11 +73,12 @@ def blog_search(request):
 def update_notes(request):
     notes_path_name = "notes"
     notes_path_parent_dir = os.path.dirname(settings.BASE_DIR)
-
     notes_git_path = os.path.join(notes_path_parent_dir, notes_path_name)
 
     # 没有进行过 git 操作
     if not os.path.exists(os.path.join(notes_git_path, ".git")):
         command = "cd {} && git clone {} {}".format(notes_path_parent_dir, TEST_GIT_REPOSITORY, notes_path_name)
+    else:
+        command = "cd {} && git reset --hard && git pull".format(notes_path_parent_dir)
     os.system(command)
     return redirect("/")
