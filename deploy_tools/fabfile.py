@@ -81,7 +81,7 @@ def _get_latest_source(source_folder):
 def _update_settings(source_folder, site_name, host_name):
     settings_path = source_folder + "/{site_name}/{site_name}/settings.py".format(site_name=site_name)
     # Fabric 提供的 sed 函数作用是在文本中替换字符串。这里把 DEBUG 的值由 True 改成 False
-    sed(settings_path, "DEBUG = True", "DEBUG = False")
+    # sed(settings_path, "DEBUG = True", "DEBUG = False")
     # 这里使用 sed 调整 ALLOWED_HOSTS 的值，使用正则表达式匹配正确的代码行
     sed(settings_path, 'DOMAIN = "localhost"', 'DOMAIN = "{}"'.format(host_name))
     secret_key_file = source_folder + "/{site_name}/{site_name}/secret_key.py".format(site_name=site_name)
