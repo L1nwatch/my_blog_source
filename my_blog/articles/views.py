@@ -6,12 +6,34 @@ from django.conf import settings
 from .models import Article
 
 import os
+import chardet
 
 HOME_PAGE_ARTICLES_NUMBERS = 2
 TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
 NOTES_PATH_NAME = "notes"
 NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
 NOTES_GIT_PATH = os.path.join(NOTES_PATH_PARENT_DIR, NOTES_PATH_NAME)
+
+
+def get_right_content_from_file(file_path):
+    """
+    读取文件时涉及到编码问题, 于是就专门写个函数来解决吧
+    :param file_path: 文件路径
+    :return: 文件内容, str() 形式
+    """
+    with open(file_path, "rb") as f:
+        data = f.read()
+        encoding = chardet.detect(data)["encoding"]
+
+    try:
+        data = data.decode("utf8")
+    except UnicodeDecodeError:
+        try:
+            data = data.decode("gbk")
+        except UnicodeDecodeError:
+            data = data.decode(encoding)
+
+    return data
 
 
 def home(request):
@@ -102,8 +124,7 @@ def update_notes(request):
                 article = each_file.rstrip(".md")
                 article_category, article_title = article.split("-")
                 file_path = os.path.join(root, each_file)
-                with open(file_path, "r") as f:
-                    article_content = f.read()
+                article_content = get_right_content_from_file(file_path)
 
                 try:
                     article_from_db = Article.objects.get(title=article_title)

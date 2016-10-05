@@ -8,7 +8,7 @@
 from django.test import TestCase
 from django.conf import settings
 from articles.models import Article
-from articles.views import HOME_PAGE_ARTICLES_NUMBERS
+from articles.views import HOME_PAGE_ARTICLES_NUMBERS, get_right_content_from_file
 
 import os
 import unittest
@@ -101,8 +101,7 @@ class UpdateNotesViewTest(TestCase):
             self.client.get("/articles/update_notes/")
 
         # 保存旧的测试文件
-        with open(self.test_md_file_path, "r") as f:
-            self.old_file_content = f.read()
+        self.old_file_content = get_right_content_from_file(self.test_md_file_path)
 
     def tearDown(self):
         """
@@ -148,16 +147,14 @@ class UpdateNotesViewTest(TestCase):
 
         # 再次执行该视图函数, 发现文件夹里的旧测试文件已经变成新的测试文件了
         self.client.get("/articles/update_notes/")
-        with open(self.test_md_file_path, "r") as f:
-            data = f.read()
-            self.assertEqual(data, test_content, "更新测试文件失败")
+        data = get_right_content_from_file(self.test_md_file_path)
+        self.assertEqual(data, test_content, "更新测试文件失败")
 
     def test_create_notes_from_md(self):
         # 每个 md 笔记的文件名类似于: "测试笔记-测试用的笔记.md"
         test_article = self.test_md_file_name.rstrip(".md")  # 去掉 .md
         test_article_title = test_article.split("-")[1]  # 去掉 "测试笔记-"
-        with open(self.test_md_file_path, "r") as f:
-            test_article_content = f.read()
+        test_article_content = get_right_content_from_file(self.test_md_file_path)
         article = None
 
         # 一开始没有这篇文章
