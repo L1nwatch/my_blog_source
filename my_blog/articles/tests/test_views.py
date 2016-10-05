@@ -123,13 +123,17 @@ class UpdateNotesViweTest(TestCase):
         self.client.get("/articles/update_notes/")
         with open(self.test_md_file_path, "r") as f:
             data = f.read()
-        self.assertEqual(data, test_content, "更新测试文件失败")
-
-        # 恢复测试文件, 提交内容
-        with open(self.test_md_file_path, "w") as f:
-            f.write(old_file_content)
-        command = "cd {} && git commit && git push".format(self.notes_git_path)
-        os.system(command)
+        try:
+            self.assertEqual(data, test_content, "更新测试文件失败")
+        except AssertionError:
+            raise AssertionError
+        finally:
+            print("[*] 成功执行了这一句")
+            # 恢复测试文件, 提交内容
+            with open(self.test_md_file_path, "w") as f:
+                f.write(old_file_content)
+            command = "cd {} && git commit && git push".format(self.notes_git_path)
+            os.system(command)
 
 
 if __name__ == "__main__":

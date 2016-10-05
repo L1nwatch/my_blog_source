@@ -79,6 +79,6 @@ def update_notes(request):
     if not os.path.exists(os.path.join(notes_git_path, ".git")):
         command = "cd {} && git clone {} {}".format(notes_path_parent_dir, TEST_GIT_REPOSITORY, notes_path_name)
     else:
-        command = "cd {} && git reset --hard && git pull".format(notes_path_parent_dir)
+        command = "cd {} && git reset --hard && git pull".format(notes_git_path)
     os.system(command)
     return redirect("/")
