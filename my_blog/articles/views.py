@@ -132,7 +132,7 @@ def update_notes(request):
                 with open("../../my_log.log", "w") as f:
                     print(locale.getlocale(), file=f)
                     print(sys.getdefaultencoding(), file=f)
-                    print("test path={}".format(file_path.decode("unicode_escape")), file=f)
+                    print("test path={}".format(file_path.encode("unicode_escape")), file=f)
                     print("正在测试文件: {}, 文件内容为: {}".format(file_path, article_content[:100]), file=f)
 
                 try:
