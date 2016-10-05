@@ -123,9 +123,6 @@ def __is_valid_md_file(file_name):
 
 
 def update_notes(request):
-    user_language = 'zh_CN.utf8'
-    translation.activate(user_language)
-
     __get_latest_notes()
 
     for root, dirs, file_list in os.walk(NOTES_GIT_PATH):
