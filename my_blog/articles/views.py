@@ -130,6 +130,7 @@ def update_notes(request):
                 article_content = get_right_content_from_file(file_path)
                 with open("./log.text", "w") as f:
                     print(locale.getlocale(), file=f)
+                    print("1", file=f)
                     print("正在测试文件: {}, 文件内容为: {}".format(file_path, article_content[:100]), file=f)
 
                 try:
