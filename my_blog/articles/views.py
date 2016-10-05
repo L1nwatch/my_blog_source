@@ -6,7 +6,6 @@ from django.conf import settings
 from .models import Article
 
 import os
-import logging
 import chardet
 
 HOME_PAGE_ARTICLES_NUMBERS = 2
@@ -14,7 +13,6 @@ TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
 NOTES_PATH_NAME = "notes"
 NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
 NOTES_GIT_PATH = os.path.join(NOTES_PATH_PARENT_DIR, NOTES_PATH_NAME)
-logger = logging.getLogger(__name__)
 
 
 def get_right_content_from_file(file_path):

@@ -124,26 +124,23 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "console": {
-            "level": "DEBUG",
-            "class": "logging.StreamHandler",
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+        'logfile': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, "../log_everything.log")
         },
     },
-    "loggers": {
-        "django": {
-            "handlers": ["console"],
-        },
-        "accounts": {
-            "handlers": ["console"],
-        },
-        "lists": {
-            "handlers": ["console"],
-        },
+    'root': {
+        'level': 'INFO',
+        'handlers': ['console', 'logfile']
     },
-    "root": {"level": "INFO"}
 }
 
 TEST_GIT_REPOSITORY = "https://github.com/L1nwatch/notes_set.git"
