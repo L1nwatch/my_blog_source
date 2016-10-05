@@ -6,9 +6,13 @@ from django.conf import settings
 from .models import Article
 
 import os
+import logging
 
 HOME_PAGE_ARTICLES_NUMBERS = 2
 TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
+NOTES_PATH_NAME = "notes"
+NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
+NOTES_GIT_PATH = os.path.join(NOTES_PATH_PARENT_DIR, NOTES_PATH_NAME)
 
 
 def home(request):
@@ -70,15 +74,41 @@ def blog_search(request):
     return redirect('/')
 
 
-def update_notes(request):
-    notes_path_name = "notes"
-    notes_path_parent_dir = os.path.dirname(settings.BASE_DIR)
-    notes_git_path = os.path.join(notes_path_parent_dir, notes_path_name)
-
-    # 没有进行过 git 操作
-    if not os.path.exists(os.path.join(notes_git_path, ".git")):
-        command = "cd {} && git clone {} {}".format(notes_path_parent_dir, TEST_GIT_REPOSITORY, notes_path_name)
+def __get_latest_notes():
+    # 进行 git 操作, 获取最新版本的笔记
+    if not os.path.exists(os.path.join(NOTES_GIT_PATH, ".git")):
+        command = "cd {} && git clone {} {}".format(NOTES_PATH_PARENT_DIR, TEST_GIT_REPOSITORY, NOTES_PATH_NAME)
     else:
-        command = "cd {} && git reset --hard && git pull".format(notes_git_path)
+        command = "cd {} && git reset --hard && git pull".format(NOTES_GIT_PATH)
     os.system(command)
+
+
+def __is_valid_md_file(file_name):
+    """
+    判断文件名是否满足 测试笔记-测试标题.md 这种格式
+    :param file_name: "测试笔记-测试标题.md"
+    :return: True
+    """
+    if file_name.endswith(".md") and "-" in file_name:
+        return True
+    return False
+
+
+def update_notes(request):
+    __get_latest_notes()
+
+    for root, dirs, file_list in os.walk(NOTES_GIT_PATH):
+        for each_file in file_list:
+            if __is_valid_md_file(each_file):
+                article = each_file.rstrip(".md")
+                article_category, article_title = article.split("-")
+                try:
+                    article_from_db = Article.objects.get(title=article_title)
+                    # 已经存在
+                    # TODO: 进行更新操作
+                    pass
+                except Article.DoesNotExist:
+                    # 不存在
+                    Article.objects.create(title=article_title, category=article_category)
+
     return redirect("/")
