@@ -122,7 +122,7 @@ def __is_valid_md_file(file_name):
 
 
 def update_notes(request):
-    locale.setlocale(locale.LC_ALL, "zh_CN.utf8")
+    os.system("export LANG=zh_CN.utf8")
 
     __get_latest_notes()
 
