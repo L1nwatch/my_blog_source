@@ -6,29 +6,45 @@
 2016.10.05 想要实现的功能, 自动获取 git 仓库上最新的笔记, 然后更新到数据库中
 """
 from .base import FunctionalTest
+from selenium.common.exceptions import NoSuchElementException
+from django.conf import settings
 import unittest
 
 __author__ = '__L1n__w@tch'
 
+TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
 
 class AutoUpdateDatabaseTest(FunctionalTest):
-    def test_update_db_button(self):
+    def test_update_notes_button(self):
         """
          测试更新按钮可以实现最基本的功能, 就是把 git 仓库中的笔记更新到数据库中
         :return:
         """
         # Y 访问首页, 发现首页上一篇文章都没有
         self.browser.get(self.server_url)
-        self.browser.find_element_by_id()
-
-        # 发现了一个更新数据库的按钮
+        with self.assertRaises(NoSuchElementException):
+            self.browser.find_element_by_id("id_article_title")
 
         # Y 发现博主的仓库中存在笔记
+        if self.__git_repo_has_notes():
+            # 同时 Y 发现了一个更新数据库的按钮, 点击
+            self.browser.find_element_by_id("id_update_notes").click()
 
-        # 点击更新数据库的按钮
+            # Y 发现首页刷新了 TODO: 自动刷新
+            self.browser.refresh()
 
-        # 刷新首页后可以看到博主仓库中的笔记放到了网站上了
-        pass
+            # 首页上终于能看到文章了
+            try:
+                self.browser.find_element_by_id("id_article_title")
+            except NoSuchElementException:
+                self.fail("更新按钮没有起作用, 首页依然没有文章")
+        else:
+            self.fail("笔记仓库中没数据没法测试啊")
+
+    @staticmethod
+    def __git_repo_has_notes():
+        # TODO: 还没实现
+        return True
 
     @unittest.skipIf(True, "还没开始编写")
     def test_can_not_continue_click_update_db_button(self):

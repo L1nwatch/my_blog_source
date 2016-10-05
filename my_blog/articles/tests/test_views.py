@@ -6,10 +6,13 @@
 2016.10.03 测试视图函数是否正常
 """
 from django.test import TestCase
+from django.conf import settings
 from articles.models import Article
 from articles.views import HOME_PAGE_ARTICLES_NUMBERS
 
 __author__ = '__L1n__w@tch'
+
+TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
 
 
 class HomeViewTest(TestCase):
@@ -73,6 +76,11 @@ class SearchTagViewTest(TestCase):
         self.assertContains(response, article_1.title)
         self.assertContains(response, article_2.title)
         self.assertNotContains(response, article_3.title)
+
+
+class UpdateNotesViweTest(TestCase):
+    def test_can_get_md_from_git(self):
+        print(settings.TEST_GIT_REPOSITORY)
 
 
 if __name__ == "__main__":

@@ -64,3 +64,7 @@ def blog_search(request):
                 return render(request, 'archives.html', {'post_list': post_list,
                                                          'error': False})
     return redirect('/')
+
+
+def update_notes(request):
+    return redirect("/")

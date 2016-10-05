@@ -145,3 +145,5 @@ LOGGING = {
     },
     "root": {"level": "INFO"}
 }
+
+TEST_GIT_REPOSITORY = "https://github.com/L1nwatch/notes_set.git"
