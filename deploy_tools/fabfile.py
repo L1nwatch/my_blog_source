@@ -163,7 +163,6 @@ def __set_locale_for_supervisor(source_folder):
             is_in_supervisord_section = False
 
     with open(temp_file2_path, "w") as f:
-        result_content_list = [each_line + os.linesep for each_line in result_content_list]
         f.writelines(result_content_list)
 
     sudo("cd {} "
