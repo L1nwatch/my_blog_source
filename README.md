@@ -28,11 +28,11 @@
 
 5. 执行命令，开始自动化部署操作：`fab deploy:host=watch@watch0.top:端口号 --password=ssh密码 --sudo-password=sudo密码`。如果一切顺利，应该会有 `Done` 这个字样出现。
 
-6. 访问首页，看是否正常，接着创建超级管理员，使用命令 `python manage.py createsuperuser` 创建。
+6. 访问首页，看是否正常。【可选】接着创建超级管理员，使用命令 `python manage.py createsuperuser` 创建。
 
-7. 访问 `/admin` ，添加文章，我添加的是本 readme 进去。
+7. 修改 `my_blog/settings.py` 中的 `TEST_GIT_REPOSITORY`，将其改为笔记的 git 仓库。然后点击首页上的 `手动更新笔记` 按钮，如果失败可以尝试重新运行自动化部署命令，然后再次点击 `手动更新笔记` 按钮。
 
-8. 回到首页，可以看到刚更新的文章了。（2016.10.04 版本）的界面如图所示：
+8. 回到首页，可以看到刚更新的文章了。（2016.10.06 版本）的界面如图所示：
 
    ![20161004界面](https://github.com/L1nwatch/my_blog_source/blob/master/2016-10-04%E7%BD%91%E7%AB%99%E6%88%AA%E5%9B%BE.png?raw=true)
 
