@@ -123,16 +123,18 @@ def _update_database(source_folder, virtualenv_folder, site_name):
         .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder, site_name=site_name))
 
 
-def __set_locale_for_supervisor():
+def __set_locale_for_supervisor(source_folder):
     """
     查找 supervisord.conf 中是否已经设定了 environment, 如果没有就添加该行设定
     :return:
     """
     temp_file_name = "tEmP_conf"
-    sudo("cp /etc/supervisor/supervisord.conf {}".format(temp_file_name))
+    temp_file_path = os.path.join(source_folder, temp_file_name)
+    sudo("cd {}"
+         " && cp /etc/supervisor/supervisord.conf {}".format(source_folder, temp_file_name))
 
     result_content_list = list()
-    with open(temp_file_name, "r") as f:
+    with open(temp_file_path, "r") as f:
         old_content = f.readlines()
 
     is_in_supervisord_section = False
@@ -158,11 +160,12 @@ def __set_locale_for_supervisor():
         elif each_line.startswith("; the below section must"):
             is_in_supervisord_section = False
 
-    with open(temp_file_name, "w") as f:
+    with open(temp_file_path, "w") as f:
         result_content_list = [each_line + os.linesep for each_line in result_content_list]
         f.writelines(result_content_list)
 
-    sudo("cp {} /etc/supervisor/supervisord.conf".format(temp_file_name))
+    sudo("cd {} "
+         " && cp {} /etc/supervisor/supervisord.conf".format(source_folder, temp_file_name))
 
 
 def _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user):
@@ -197,7 +200,7 @@ def _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user):
          .format(source_folder, host=host_name, user=user, site_name=site_name))
 
     # 给 supervisor 添加 locale 配置
-    __set_locale_for_supervisor()
+    __set_locale_for_supervisor(source_folder)
 
     # 重启 nginx 服务以及 supervisor
     sudo('service nginx reload'
