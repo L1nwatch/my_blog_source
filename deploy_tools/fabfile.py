@@ -146,15 +146,16 @@ def _set_nginx_gunicorn(source_folder, host_name, site_name, user):
     sudo('ln -sf /etc/nginx/sites-available/{host} /etc/nginx/sites-enabled/{host}'.format(host=host_name))
 
     # 编写 Upstart 脚本
-    sudo('cd {}'
-         ' && sed "s/HOST_NAME/{host}/g" deploy_tools/gunicorn-upstart.template.conf'
-         ' | sed "s/USER_NAME/{user}/g"'
-         ' | sed "s/SITE_NAME/{site_name}/g"'
-         ' | tee /etc/init/gunicorn-{host}.conf'
-         .format(source_folder, host=host_name, user=user, site_name=site_name))
+    # sudo('cd {}'
+    #      ' && sed "s/HOST_NAME/{host}/g" deploy_tools/gunicorn-upstart.template.conf'
+    #      ' | sed "s/USER_NAME/{user}/g"'
+    #      ' | sed "s/SITE_NAME/{site_name}/g"'
+    #      ' | tee /etc/init/gunicorn-{host}.conf'
+    #      .format(source_folder, host=host_name, user=user, site_name=site_name))
 
     # 最后，启动这两个服务
-    sudo('service nginx reload && restart gunicorn-{host}'.format(host=host_name))
+    # sudo('service nginx reload && restart gunicorn-{host}'.format(host=host_name))
+    sudo('service nginx reload')
 
 
 if __name__ == "__main__":
