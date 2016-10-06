@@ -141,19 +141,21 @@ def _set_nginx_gunicorn(source_folder, host_name, site_name, user):
     sudo('cd {}'
          ' && sed "s/HOST_NAME/{host}/g" deploy_tools/nginx.template.conf'
          ' | sed "s/USER_NAME/{user}/g"'
-         ' | tee /etc/nginx/sites-available/{host}'
-         .format(source_folder, host=host_name, user=user))
+         ' | tee /etc/nginx/sites-available/{host}'.format(source_folder, host=host_name, user=user)
+         )
 
     # 激活这个文件配置的虚拟主机
     sudo('ln -sf /etc/nginx/sites-available/{host} /etc/nginx/sites-enabled/{host}'.format(host=host_name))
 
-    # 配置 supervisor 配置文件, /etc/supervisor/conf.d/sites.conf
+    # 配置 supervisor 配置文件
     sudo('cd {}'
          ' && sed "s/HOST_NAME/{host}/g" deploy_tools/supervisor.template.conf '
-         ' | tee /etc/supervisor/conf.d/{host}.conf'.format(source_folder, host=host_name)
-         )
+         ' | sed "s/USER_NAME/{user}/g'
+         ' | sed "s/SITE_NAME/{site_name}/g'
+         ' | tee /etc/supervisor/conf.d/{host}.conf'
+         .format(source_folder, host=host_name, user=user, site_name=site_name))
 
-    # 重启服务
+    # 重启 nginx 服务以及 supervisor
     sudo('service nginx reload'
          ' && supervisorctl update'
          ' && supervisorctl restart gunicorn')
