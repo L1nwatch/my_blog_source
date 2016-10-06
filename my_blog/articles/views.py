@@ -130,13 +130,9 @@ def update_notes(request):
             if __is_valid_md_file(each_file):
                 article = each_file.rstrip(".md")
                 article_category, article_title = article.split("-")
+
                 file_path = os.path.join(root, each_file)
                 article_content = get_right_content_from_file(file_path)
-                with open("../../my_log.log", "w") as f:
-                    print(locale.getlocale(), file=f)
-                    print(locale.getdefaultlocale(), file=f)
-                    print("test path={}".format(file_path.encode("unicode_escape")), file=f)
-                    print("正在测试文件: {}, 文件内容为: {}".format(file_path, article_content[:100]), file=f)
 
                 try:
                     article_from_db = Article.objects.get(title=article_title)
