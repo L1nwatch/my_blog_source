@@ -61,23 +61,28 @@ def _create_directory_structure_if_necessary(site_folder):
 
 
 def _get_latest_source(source_folder):
+    """
+    执行 git 命令获取最新版本的代码
+    # 2016.10.06 觉得原先的版本老是没办法帮我得到最新的版本, 所以重新布置了一下
+    :param source_folder: 代码所在的文件夹路径
+    :return:
+    """
     # exists 检查服务器中是否有指定的文件夹或文件。我们指定的是隐藏文件夹 .git，检查仓库是否已经克隆到文件夹中。
     if exists(source_folder + "/.git"):
         # 很多命令都以 cd 开头，其目的是设定当前工作目录。Fabric 没有状态记忆，所以下次运行 run 命令时不知道在哪个目录中
         # 在现有仓库中执行 git fetch 命令是从网络中拉取最新提交
-        run("cd {} && git fetch".format(source_folder))
+        # run("cd {} && git fetch".format(source_folder))
+        # Fabric 中的 local 函数在本地电脑中执行命令，这个函数其实是对 subprocess.Popen 的再包装。
+        # 我们捕获 git log 命令的输出，获取本地仓库中当前提交的哈希值，这么做的结果是，服务器中代码将和本地检出的代码版本一致
+        # current_commit = local("git log -n 1 --format=%H", capture=True)
+        # 执行 git reset --hard 命令，切换到指定的提交。这个命令会撤销在服务器中对代码仓库所做的任何改动。
+        # run("cd {} && git reset --hard {}".format(source_folder, current_commit))
+        run("cd {} && git reset --hard".format(source_folder))
+        # 发现书中给的没法获取最新版本, 所以自己又多添加了一条来进行确保
+        run("cd {} && git pull".format(source_folder))
     else:
         # 如果仓库不存在，就执行 git clone 命令克隆一份全新的源码。
         run("git clone {} {}".format(REPO_URL, source_folder))
-    # Fabric 中的 local 函数在本地电脑中执行命令，这个函数其实是对 subprocess.Popen 的再包装。
-    # 我们捕获 git log 命令的输出，获取本地仓库中当前提交的哈希值，这么做的结果是，服务器中代码将和本地检出的代码版本一致
-
-    current_commit = local("git log -n 1 --format=%H", capture=True)
-    # 执行 git reset --hard 命令，切换到指定的提交。这个命令会撤销在服务器中对代码仓库所做的任何改动。
-    run("cd {} && git reset --hard {}".format(source_folder, current_commit))
-
-    # 发现书中给的没法获取最新版本, 所以自己又多添加了一条来进行确保
-    run("cd {} && git pull".format(source_folder, current_commit))
 
 
 def _update_settings(source_folder, site_name, host_name):
