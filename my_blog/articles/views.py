@@ -117,7 +117,7 @@ def __is_valid_md_file(file_name):
     """
     if not file_name.endswith(".md"):
         return False
-    elif "-" in file_name:
+    elif "-" not in file_name:
         return False
     elif file_name.startswith("测试笔记"):
         return False
