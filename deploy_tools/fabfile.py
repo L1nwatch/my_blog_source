@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """ 使用 Fabric 进行自动化部署
+
+2016.10.06 本来是使用 gunicorn 模板来自动运行 gunicorn 的, 但是发现这样存在一个问题, 就是 gunicorn 的 locale 默认为空, 于是改为使用 supervisor
 """
 import random
 import string
@@ -145,6 +147,18 @@ def _set_nginx_gunicorn(source_folder, host_name, site_name, user):
     # 激活这个文件配置的虚拟主机
     sudo('ln -sf /etc/nginx/sites-available/{host} /etc/nginx/sites-enabled/{host}'.format(host=host_name))
 
+    # 配置 supervisor 配置文件, /etc/supervisor/conf.d/sites.conf
+    sudo('cd {}'
+         ' && sed "s/HOST_NAME/{host}/g" deploy_tools/supervisor.template.conf '
+         ' | tee /etc/supervisor/conf.d/{host}.conf'.format(source_folder, host=host_name)
+         )
+
+    # 重启服务
+    sudo('service nginx reload'
+         ' && supervisorctl update'
+         ' && supervisorctl restart gunicorn')
+
+    # 2016.10.06 以前的版本, 使用 gunicorn 模板自启动, 后来发现问题后改用 supervisor 了
     # 编写 Upstart 脚本
     # sudo('cd {}'
     #      ' && sed "s/HOST_NAME/{host}/g" deploy_tools/gunicorn-upstart.template.conf'
@@ -155,7 +169,7 @@ def _set_nginx_gunicorn(source_folder, host_name, site_name, user):
 
     # 最后，启动这两个服务
     # sudo('service nginx reload && restart gunicorn-{host}'.format(host=host_name))
-    sudo('service nginx reload')
+    pass
 
 
 if __name__ == "__main__":

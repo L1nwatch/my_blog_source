@@ -18,7 +18,7 @@
 
 ## 自动化部署方法
 
-1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric 等：`sudo apt-get install nginx git python3 python3-pip`
+1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等：`sudo apt-get install nginx supervisor git python3 python3-pip fabric`
 
 2. 进入 `/home/watch/sites/watch0.top` 目录，进行克隆操作，主要是为了获取 `deploy_tools` 文件夹下的自动化部署脚本
 
@@ -32,7 +32,9 @@
 
 7. 修改 `my_blog/settings.py` 中的 `TEST_GIT_REPOSITORY`，将其改为笔记的 git 仓库。然后点击首页上的 `手动更新笔记` 按钮，如果失败可以尝试重新运行自动化部署命令，然后再次点击 `手动更新笔记` 按钮。
 
-8. 回到首页，可以看到刚更新的文章了。（2016.10.06 版本）的界面如图所示：
+8. 如果 `手动更新笔记` 还是失败，请确保 `locale -a` 中可以查看到 `zh_CN.utf8` (可以使用 `sudo locale-gen zh_CN.utf8` 安装)，然后设置默认 locale： `sudo vim /etc/default/locale` ，文件内容为：`LC_ALL="zh_CN.utf8"`
+
+9. 回到首页，可以看到刚更新的文章了。（2016.10.06 版本）的界面如图所示：
 
    ![20161006界面](https://github.com/L1nwatch/my_blog_source/blob/master/2016-10-06-%E7%BD%91%E7%AB%99%E6%88%AA%E5%9B%BE.png?raw=true)
 
