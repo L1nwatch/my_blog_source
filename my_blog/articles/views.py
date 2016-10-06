@@ -12,8 +12,6 @@ from .models import Article
 
 import os
 import chardet
-import locale
-import sys
 
 HOME_PAGE_ARTICLES_NUMBERS = 2
 TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
@@ -117,9 +115,13 @@ def __is_valid_md_file(file_name):
     :param file_name: "测试笔记-测试标题.md"
     :return: True
     """
-    if file_name.endswith(".md") and "-" in file_name:
-        return True
-    return False
+    if not file_name.endswith(".md"):
+        return False
+    elif "-" in file_name:
+        return False
+    elif file_name.startswith("测试笔记"):
+        return False
+    return True
 
 
 def update_notes(request):

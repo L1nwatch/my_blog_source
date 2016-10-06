@@ -50,7 +50,7 @@ def deploy():
     _update_database(source_folder, virtualenv_folder, site_name)
 
     # 设置服务器配置等
-    _set_nginx_gunicorn(source_folder, host_name, site_name, user)
+    _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user)
 
 
 def _create_directory_structure_if_necessary(site_folder):
@@ -84,7 +84,6 @@ def _update_settings(source_folder, site_name, host_name):
     settings_path = source_folder + "/{site_name}/{site_name}/settings.py".format(site_name=site_name)
     # Fabric 提供的 sed 函数作用是在文本中替换字符串。这里把 DEBUG 的值由 True 改成 False
     # sed(settings_path, "DEBUG = True", "DEBUG = False")
-    # 这里使用 sed 调整 ALLOWED_HOSTS 的值，使用正则表达式匹配正确的代码行
     sed(settings_path, 'DOMAIN = "localhost"', 'DOMAIN = "{}"'.format(host_name))
     secret_key_file = source_folder + "/{site_name}/{site_name}/secret_key.py".format(site_name=site_name)
 
@@ -124,7 +123,49 @@ def _update_database(source_folder, virtualenv_folder, site_name):
         .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder, site_name=site_name))
 
 
-def _set_nginx_gunicorn(source_folder, host_name, site_name, user):
+def __set_locale_for_supervisor():
+    """
+    查找 supervisord.conf 中是否已经设定了 environment, 如果没有就添加该行设定
+    :return:
+    """
+    temp_file_name = "tEmP_conf"
+    sudo("cp /etc/supervisor/supervisord.conf {}".format(temp_file_name))
+
+    result_content_list = list()
+    with open(temp_file_name, "r") as f:
+        old_content = f.readlines()
+
+    is_in_supervisord_section = False
+    has_set_environment = False
+    for each_line in old_content:
+        if is_in_supervisord_section:
+            # 已经存在 environment 设定, 那就不理了
+            if each_line.startswith("environment"):
+                has_set_environment = True
+            # 到达该节的末尾了
+            if each_line.startswith("; the below section must"):
+                # 没设定的话就添加 locale 设定
+                if not has_set_environment:
+                    locale_setting = 'environment=LANG="zh_CN.utf8", LC_ALL="zh_CN.utf8", LC_LANG="zh_CN.utf8"'
+                    result_content_list.append(locale_setting)
+            result_content_list.append(each_line)
+        else:
+            result_content_list.append(each_line)
+
+        # 设置 section 节标志位
+        if each_line.startswith("[supervisord]"):
+            is_in_supervisord_section = True
+        elif each_line.startswith("; the below section must"):
+            is_in_supervisord_section = False
+
+    with open(temp_file_name, "w") as f:
+        result_content_list = [each_line + os.linesep for each_line in result_content_list]
+        f.writelines(result_content_list)
+
+    sudo("cp {} /etc/supervisor/supervisord.conf".format(temp_file_name))
+
+
+def _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user):
     """
     利用 sed 来配置 nginx 以及 gunicorn
     # 这里，使用 "s/replace_me/with_this/g" 句法把字符串 SITE_NAME 替换成网站名, 还有主机名和用户名也类似。
@@ -154,6 +195,9 @@ def _set_nginx_gunicorn(source_folder, host_name, site_name, user):
          ' | sed "s/SITE_NAME/{site_name}/g"'
          ' | tee /etc/supervisor/conf.d/{host}.conf'
          .format(source_folder, host=host_name, user=user, site_name=site_name))
+
+    # 给 supervisor 添加 locale 配置
+    __set_locale_for_supervisor()
 
     # 重启 nginx 服务以及 supervisor
     sudo('service nginx reload'

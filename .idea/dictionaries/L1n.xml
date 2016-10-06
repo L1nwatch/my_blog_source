@@ -4,6 +4,7 @@
       <w>gunicorn</w>
       <w>nginx</w>
       <w>sudo</w>
+      <w>supervisord</w>
     </words>
   </dictionary>
 </component>
