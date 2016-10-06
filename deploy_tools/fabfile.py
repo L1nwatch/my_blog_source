@@ -150,8 +150,8 @@ def _set_nginx_gunicorn(source_folder, host_name, site_name, user):
     # 配置 supervisor 配置文件
     sudo('cd {}'
          ' && sed "s/HOST_NAME/{host}/g" deploy_tools/supervisor.template.conf'
-         ' | sed "s/USER_NAME/{user}/g'
-         ' | sed "s/SITE_NAME/{site_name}/g'
+         ' | sed "s/USER_NAME/{user}/g"'
+         ' | sed "s/SITE_NAME/{site_name}/g"'
          ' | tee /etc/supervisor/conf.d/{host}.conf'
          .format(source_folder, host=host_name, user=user, site_name=site_name))
 
