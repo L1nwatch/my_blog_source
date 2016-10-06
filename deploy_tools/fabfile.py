@@ -128,13 +128,15 @@ def __set_locale_for_supervisor(source_folder):
     查找 supervisord.conf 中是否已经设定了 environment, 如果没有就添加该行设定
     :return:
     """
-    temp_file_name = "tEmP_conf"
-    temp_file_path = os.path.join(source_folder, temp_file_name)
+    temp_file1_name = "tEmP_conf1"
+    temp_file2_name = "tEmP_conf2"
+    temp_file1_path = os.path.join(source_folder, temp_file1_name)
+    temp_file2_path = os.path.join(source_folder, temp_file2_name)
     sudo("cd {}"
-         " && cp /etc/supervisor/supervisord.conf {}".format(source_folder, temp_file_name))
+         " && cp /etc/supervisor/supervisord.conf {}".format(source_folder, temp_file1_name))
 
     result_content_list = list()
-    with open(temp_file_path, "r") as f:
+    with open(temp_file1_path, "r") as f:
         old_content = f.readlines()
 
     is_in_supervisord_section = False
@@ -160,12 +162,12 @@ def __set_locale_for_supervisor(source_folder):
         elif each_line.startswith("; the below section must"):
             is_in_supervisord_section = False
 
-    with open(temp_file_path, "w") as f:
+    with open(temp_file2_path, "w") as f:
         result_content_list = [each_line + os.linesep for each_line in result_content_list]
         f.writelines(result_content_list)
 
     sudo("cd {} "
-         " && cp {} /etc/supervisor/supervisord.conf".format(source_folder, temp_file_name))
+         " && cp {} /etc/supervisor/supervisord.conf".format(source_folder, temp_file2_name))
 
 
 def _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user):
