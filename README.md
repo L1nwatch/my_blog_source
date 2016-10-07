@@ -9,6 +9,7 @@
 * Fab 文档参考，[中文版](http://fabric-chs.readthedocs.io/zh_CN/chs/index.html)，[英文版](http://www.fabfile.org/)
 * 前端样式参考：[博客模板网址](http://www.purecss.org/layouts/blog/)，还有更全面的[不止是博客](http://www.purecss.org/layouts/)
 * [supervisor 配置教程](https://3rgb.com/entry/daemon_control_autostart_with_supervisor)
+* Python 探针(OneAPM) [blueware](http://blog.oneapm.com/apm-tech/202.html)
 
 ## 开发环境
 

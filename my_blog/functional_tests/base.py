@@ -14,10 +14,10 @@ from selenium.common.exceptions import WebDriverException
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.conf import settings
 
-from .server_tools import reset_database
-from .server_tools import create_session_on_server
+# from .server_tools import reset_database
+# from .server_tools import create_session_on_server
 
-from .management.commands.create_session import create_pre_authenticated_session
+# from .management.commands.create_session import create_pre_authenticated_session
 
 from datetime import datetime
 
@@ -62,8 +62,8 @@ class FunctionalTest(StaticLiveServerTestCase):
         :return:
         """
         # 在两次测试之间还原服务器中数据库的方法
-        if self.against_staging:
-            reset_database(self.server_host)
+        # if self.against_staging:
+        #     reset_database(self.server_host)
         self.browser = webdriver.Firefox()
         self.browser.implicitly_wait(DEFAULT_WAIT)  # 等待 DEFAULT_WAIT 秒钟
 
@@ -117,21 +117,21 @@ class FunctionalTest(StaticLiveServerTestCase):
             lambda b: b.find_element_by_id(element_id), "Could not find element with id {}. Page text was {}"
                 .format(element_id, self.browser.find_element_by_tag_name("body").text))
 
-    def create_pre_authenticated_session(self, email):
-        if self.against_staging:
-            print("[*] 远程服务器")
-            session_key = create_session_on_server(self.server_host, email)
-        else:
-            print("[*] 本地服务器")
-            session_key = create_pre_authenticated_session(email)
-        ## 为了设定 cookie，我们要先访问网站
-        ## 而 404 页面是加载最快的
-        self.browser.get(self.server_url + "/404_no_such_url/")
-        self.browser.add_cookie(dict(
-            name=settings.SESSION_COOKIE_NAME,
-            value=session_key,
-            path="/",
-        ))
+    # def create_pre_authenticated_session(self, email):
+    #     if self.against_staging:
+    #         print("[*] 远程服务器")
+    #         session_key = create_session_on_server(self.server_host, email)
+    #     else:
+    #         print("[*] 本地服务器")
+    #         session_key = create_pre_authenticated_session(email)
+    #     ## 为了设定 cookie，我们要先访问网站
+    #     ## 而 404 页面是加载最快的
+    #     self.browser.get(self.server_url + "/404_no_such_url/")
+    #     self.browser.add_cookie(dict(
+    #         name=settings.SESSION_COOKIE_NAME,
+    #         value=session_key,
+    #         path="/",
+    #     ))
 
     def wait_for(self, function_with_assertion, timeout=DEFAULT_WAIT):
         start_time = time.time()
