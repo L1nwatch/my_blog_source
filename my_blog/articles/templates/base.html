@@ -34,10 +34,9 @@
                         <a class="button-error pure-button" id="id_email" href="mailto:watch1602@gmail.com">Email</a>
                     </li>
                     <li>
-                        <form class="pure-form" action="{% url 'search_title' %}" method="get">
+                        <form class="pure-form" action="{% url 'search_title' %}" method="post">
+                            {{ form.title }}
                             {% csrf_token %}
-                            <input class="pure-input-3-3" id="id_search" type="text" name="s"
-                                   placeholder="title to search">
                         </form>
                     </li>
                     <li class="nav-item">

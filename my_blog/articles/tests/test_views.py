@@ -9,6 +9,7 @@ from django.test import TestCase
 from django.conf import settings
 from articles.models import Article
 from articles.views import HOME_PAGE_ARTICLES_NUMBERS, get_right_content_from_file
+from articles.forms import ArticleForm, EMPTY_ARTICLE_ERROR
 
 import os
 import unittest
@@ -16,6 +17,7 @@ import unittest
 __author__ = '__L1n__w@tch'
 
 TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
+DEBUG_GIT = False
 
 
 class HomeViewTest(TestCase):
@@ -44,27 +46,60 @@ class HomeViewTest(TestCase):
                 counts += 1
             self.assertFalse(counts > HOME_PAGE_ARTICLES_NUMBERS, error_message)
 
+    def test_home_page_uses_article_form(self):
+        response = self.client.get("/")
+        # 使用 assertIsInstance 确认视图使用的是正确的表单类
+        self.assertIsInstance(response.context["form"], ArticleForm)
+        self.assertContains(response, 'name="title"')
+
 
 class DetailViewTest(TestCase):
+    unique_url = "/articles/{}/"
+
     def test_use_article_template(self):
         Article.objects.create(title="test_article_1")
-        response = self.client.get("/articles/{}/".format(1))
+        response = self.client.get(self.unique_url.format(1))
         self.assertTemplateUsed(response, "article.html")
+
+        # 测试是否有将 form 传递给模板
+        self.assertIsInstance(response.context["form"], ArticleForm)
 
 
 class AboutMeViewTest(TestCase):
+    unique_url = "/articles/about_me/"
+
     def test_use_about_me_template(self):
-        response = self.client.get("/articles/about_me/")
+        response = self.client.get(self.unique_url)
         self.assertTemplateUsed(response, "about_me.html")
+
+    def test_view_passes_form_to_template(self):
+        """
+        测试是否有将 form 传递给模板
+        :return:
+        """
+        response = self.client.get(self.unique_url)
+        self.assertIsInstance(response.context["form"], ArticleForm)
 
 
 class ArchivesViewTest(TestCase):
+    unique_url = "/articles/archives/"
+
     def test_use_archives_template(self):
-        response = self.client.get("/articles/archives/")
+        response = self.client.get(self.unique_url)
         self.assertTemplateUsed(response, "archives.html")
+
+    def test_view_passes_form_to_template(self):
+        """
+        测试是否有将 form 传递给模板
+        :return:
+        """
+        response = self.client.get(self.unique_url)
+        self.assertIsInstance(response.context["form"], ArticleForm)
 
 
 class SearchTagViewTest(TestCase):
+    unique_url = "/articles/tag{}/"
+
     def test_can_get_same_category(self):
         test_category_name = "test_category"
         article_1 = Article.objects.create(title="article_1", category=test_category_name)
@@ -72,7 +107,7 @@ class SearchTagViewTest(TestCase):
         article_3 = Article.objects.create(title="article_3")
 
         # 查找同一分类下的所有文章
-        response = self.client.get("/articles/tag{}/".format(test_category_name))
+        response = self.client.get(self.unique_url.format(test_category_name))
         self.assertTemplateUsed(response, "tag.html")
 
         # 不属于这个分类的都不会找到
@@ -80,11 +115,20 @@ class SearchTagViewTest(TestCase):
         self.assertContains(response, article_2.title)
         self.assertNotContains(response, article_3.title)
 
+    def test_view_passes_form_to_template(self):
+        """
+        测试是否有将 form 传递给模板
+        :return:
+        """
+        response = self.client.get(self.unique_url.format("just_a_test"))
+        self.assertIsInstance(response.context["form"], ArticleForm)
+
 
 class UpdateNotesViewTest(TestCase):
+    unique_url = "/articles/update_notes/"
     test_md_file_name = "测试笔记-测试用的笔记.md"
     notes_path_name = "notes"
-    global_want_to_run_git_test = input("确定要进行 git 测试?(yes?)")
+    global_want_to_run_git_test = input("确定要进行 git 测试?(yes?)") if DEBUG_GIT else False
 
     notes_path_parent_dir = os.path.dirname(settings.BASE_DIR)
     notes_git_path = os.path.join(notes_path_parent_dir, notes_path_name)
@@ -97,7 +141,7 @@ class UpdateNotesViewTest(TestCase):
         """
         # 确保已经进行过 git 操作
         if not os.path.exists(os.path.join(self.notes_git_path, ".git")):
-            self.client.get("/articles/update_notes/")
+            self.client.get(self.unique_url)
 
         # 保存旧的测试文件
         self.old_file_content = get_right_content_from_file(self.test_md_file_path)
@@ -125,7 +169,7 @@ class UpdateNotesViewTest(TestCase):
 
     @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
     def test_can_get_md_from_git(self):
-        self.client.get("/articles/update_notes/")
+        self.client.get(self.unique_url)
 
         if not os.path.exists(self.test_md_file_path):
             self.fail("从 git 上获取文件失败了")
@@ -145,10 +189,11 @@ class UpdateNotesViewTest(TestCase):
             f.write(self.old_file_content)
 
         # 再次执行该视图函数, 发现文件夹里的旧测试文件已经变成新的测试文件了
-        self.client.get("/articles/update_notes/")
+        self.client.get(self.unique_url)
         data = get_right_content_from_file(self.test_md_file_path)
         self.assertEqual(data, test_content, "更新测试文件失败")
 
+    @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
     def test_create_notes_from_md(self):
         # 每个 md 笔记的文件名类似于: "测试笔记-测试用的笔记.md"
         test_article = self.test_md_file_name.rstrip(".md")  # 去掉 .md
@@ -162,7 +207,7 @@ class UpdateNotesViewTest(TestCase):
         self.assertEqual(article, None, "一开始不应该有这篇文章的")
 
         # 执行完该视图函数之后就有了
-        self.client.get("/articles/update_notes/")
+        self.client.get(self.unique_url)
         try:
             article = Article.objects.get(title=test_article_title)
             self.assertTrue(article is not None, "没有成功更新数据库啊")
@@ -170,6 +215,7 @@ class UpdateNotesViewTest(TestCase):
         except Article.DoesNotExist:
             self.fail("没有成功更新数据库啊")
 
+    @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
     def test_update_notes_from_md(self):
         # 每个 md 笔记的文件名类似于: "测试笔记-测试用的笔记.md"
         test_article = self.test_md_file_name.rstrip(".md")  # 去掉 .md
@@ -181,7 +227,7 @@ class UpdateNotesViewTest(TestCase):
         self.__update_test_md_file_and_git_push(test_content)
 
         # 再次执行该视图函数, 发现数据库也跟着更新了
-        self.client.get("/articles/update_notes/")
+        self.client.get(self.unique_url)
         latest_article = Article.objects.get(title=test_article_title)
         self.assertEqual(latest_article.content, test_content, "数据库中依然是老文章的内容")
         self.assertEqual(latest_article.category, test_article_category, "数据库中依然是老文章的分类")
@@ -193,16 +239,38 @@ class UpdateNotesViewTest(TestCase):
 
         pass
 
+    @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
+    def test_view_passes_form_to_template(self):
+        """
+        测试是否有将 form 传递给模板
+        :return:
+        """
+        response = self.client.get(self.unique_url)
+        self.assertIsInstance(response.context["form"], ArticleForm)
+
 
 class BlogSearchViewTest(TestCase):
-    def test_post_data_success(self):
-        pass
+    unique_url = "/articles/search/"
 
-    def test_not_post_data_will_return_to_home_page(self):
-        pass
+    def test_for_invalid_input_passes_form_to_template(self):
+        response = self.client.post(self.unique_url, data={"title": ""})
+        self.assertIsInstance(response.context["form"], ArticleForm)
 
-    def test_post_success_will_use_archives_template(self):
-        pass
+    def test_for_valid_input_passes_form_to_template(self):
+        response = self.client.post(self.unique_url, data={"title": "不应该有这篇文章的"})
+        self.assertIsInstance(response.context["form"], ArticleForm)
+
+    def test_form_input_not_exist_title(self):
+        form = ArticleForm(data={"title": ""})
+        self.assertEqual(form.errors["title"], [EMPTY_ARTICLE_ERROR])
+
+    def test_view_passes_form_to_template(self):
+        """
+        测试是否有将 form 传递给模板
+        :return:
+        """
+        response = self.client.get(self.unique_url)
+        self.assertIsInstance(response.context["form"], ArticleForm)
 
 
 if __name__ == "__main__":

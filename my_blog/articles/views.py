@@ -8,6 +8,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
 
 from .models import Article
+from .forms import ArticleForm, EMPTY_ARTICLE_ERROR
 
 import os
 import chardet
@@ -45,12 +46,12 @@ def home(request):
     paginator = Paginator(articles, HOME_PAGE_ARTICLES_NUMBERS)  # 每页显示 HOME_PAGE_ARTICLES_NUMBERS 篇
     page = request.GET.get('page')
     try:
-        post_list = paginator.page(page)
+        article_list = paginator.page(page)
     except PageNotAnInteger:
-        post_list = paginator.page(1)
+        article_list = paginator.page(1)
     # except EmptyPage: # 没用到, 不知道干啥的
-    #     post_list = paginator.paginator(paginator.num_pages)
-    return render(request, 'home.html', {'post_list': post_list})
+    #     article_list = paginator.paginator(paginator.num_pages)
+    return render(request, 'home.html', {'post_list': article_list, "form": ArticleForm()})
 
 
 def detail(request, id):
@@ -59,7 +60,7 @@ def detail(request, id):
         tags = db_data.tag.all()
     except Article.DoesNotExist:
         raise Http404
-    return render(request, "article.html", {"post": db_data, "tags": tags})
+    return render(request, "article.html", {"post": db_data, "tags": tags, "form": ArticleForm()})
 
 
 def archives(request):
@@ -68,11 +69,11 @@ def archives(request):
     except Article.DoesNotExist:
         raise Http404
     return render(request, 'archives.html', {'post_list': post_list,
-                                             'error': False})
+                                             'error': False, "form": ArticleForm()})
 
 
 def about_me(request):
-    return render(request, 'about_me.html')
+    return render(request, 'about_me.html', {"form": ArticleForm()})
 
 
 def search_tag(request, tag):
@@ -80,23 +81,21 @@ def search_tag(request, tag):
         post_list = Article.objects.filter(category__iexact=tag)  # contains
     except Article.DoesNotExist:
         raise Http404
-    return render(request, 'tag.html', {'post_list': post_list})
+    return render(request, 'tag.html', {'post_list': post_list, "form": ArticleForm()})
 
 
 def blog_search(request):
-    if 's' in request.GET:
-        s = request.GET['s']
-        if not s:
-            return render(request, 'home.html')
-        else:
-            post_list = Article.objects.filter(title__icontains=s)
-            if len(post_list) == 0:
-                return render(request, 'archives.html', {'post_list': post_list,
-                                                         'error': True})
+    if request.method == "POST":
+        form = ArticleForm(data=request.POST)
+        if form.is_valid():
+            article_list = Article.objects.filter(title__icontains=form.data["title"])
+            if len(article_list) == 0:
+                return render(request, 'archives.html', {'post_list': article_list,
+                                                         'error': EMPTY_ARTICLE_ERROR, "form": form})
             else:
-                return render(request, 'archives.html', {'post_list': post_list,
-                                                         'error': False})
-    return redirect('/')
+                return render(request, 'archives.html', {'post_list': article_list,
+                                                         'error': False, "form": form})
+    return home(request)
 
 
 def __get_latest_notes():
@@ -145,4 +144,4 @@ def update_notes(request):
                     # 不存在
                     Article.objects.create(title=article_title, category=article_category, content=article_content)
 
-    return redirect("/")
+    return home(request)

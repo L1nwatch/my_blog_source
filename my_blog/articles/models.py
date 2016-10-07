@@ -13,7 +13,7 @@ class Tag(models.Model):
 
 
 class Article(models.Model):
-    title = models.CharField(max_length=100, unique=True)  # 博客题目, 作为主键存在
+    title = models.CharField(max_length=100, blank=False, unique=True)  # 博客题目
     category = models.CharField(max_length=50, default="Others")  # 博客分类, 默认值为 Others
     tag = models.ManyToManyField(Tag, blank=True)  # 博客标签, 可为空
     date_time = models.DateTimeField(auto_now_add=True)  # 博客日期
