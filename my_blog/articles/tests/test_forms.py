@@ -21,7 +21,7 @@ class ArticleFormTest(TestCase):
         """
         article_form = ArticleForm()
         self.assertIn('placeholder="{}"'.format(PLACE_HOLDER), article_form.as_p())
-        self.assertIn('class="pure-input-3-3"', article_form.as_p(), "class 属性没有设置?还是说设置错了?")
+        self.assertIn('class="pure-input-2-3"', article_form.as_p(), "class 属性没有设置?还是说设置错了?")
         self.assertIn('id="id_search"', article_form.as_p(), "id 属性没有设置?还是说设置错了?")
 
     def test_form_validation_for_blank_input(self):
