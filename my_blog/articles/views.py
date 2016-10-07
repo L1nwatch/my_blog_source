@@ -6,7 +6,6 @@ from django.shortcuts import render, redirect
 from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
-from django.utils import translation
 
 from .models import Article
 
@@ -119,8 +118,8 @@ def __is_valid_md_file(file_name):
         return False
     elif "-" not in file_name:
         return False
-    elif file_name.startswith("测试笔记"):
-        return False
+    # elif file_name.startswith("测试笔记"):
+    #     return False
     return True
 
 

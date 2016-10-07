@@ -31,9 +31,8 @@ class TestHomePageButtons(FunctionalTest):
         # 看到左边第一个按钮, 主页按钮, 点击进去, 没什么反应, 发现自己原来已经在首页了
         home_page_button = self.browser.find_element_by_id("id_home_page")
         home_page_button.click()
-        # url 没变化, 页面内容也没变化
+        # url 没变化
         self.assertEqual(self.browser.current_url, home_page_url)
-        self.assertEqual(self.browser.page_source, home_page_source)
 
         # 点击另一个按钮, about_me 按钮, 发现界面已经变化了, 然后再点击主页按钮, 发现确实可以回到首页
         self.browser.find_element_by_id("id_about_me").click()

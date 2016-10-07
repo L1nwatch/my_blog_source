@@ -84,8 +84,7 @@ class SearchTagViewTest(TestCase):
 class UpdateNotesViewTest(TestCase):
     test_md_file_name = "测试笔记-测试用的笔记.md"
     notes_path_name = "notes"
-    # global_want_to_run_git_test = input("确定要进行 git 测试?(yes?)")
-    global_want_to_run_git_test = "yes"
+    global_want_to_run_git_test = input("确定要进行 git 测试?(yes?)")
 
     notes_path_parent_dir = os.path.dirname(settings.BASE_DIR)
     notes_git_path = os.path.join(notes_path_parent_dir, notes_path_name)
@@ -192,6 +191,17 @@ class UpdateNotesViewTest(TestCase):
 
         # 再次执行该视图函数, 发现数据库中该文章也不见了
 
+        pass
+
+
+class BlogSearchViewTest(TestCase):
+    def test_post_data_success(self):
+        pass
+
+    def test_not_post_data_will_return_to_home_page(self):
+        pass
+
+    def test_post_success_will_use_archives_template(self):
         pass
 
 
