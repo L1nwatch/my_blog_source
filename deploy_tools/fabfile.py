@@ -77,7 +77,7 @@ def _get_latest_source(source_folder):
         # current_commit = local("git log -n 1 --format=%H", capture=True)
         # 执行 git reset --hard 命令，切换到指定的提交。这个命令会撤销在服务器中对代码仓库所做的任何改动。
         # run("cd {} && git reset --hard {}".format(source_folder, current_commit))
-        run("cd {} && git reset --hard".format(source_folder))
+        run("cd {} && git reset --hard && git reset --hard".format(source_folder))
         # 发现书中给的没法获取最新版本, 所以自己又多添加了一条来进行确保
         run("cd {} && git pull".format(source_folder))
     else:
