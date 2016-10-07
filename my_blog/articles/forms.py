@@ -23,7 +23,7 @@ class ArticleForm(forms.models.ModelForm):
             "title": forms.fields.TextInput(attrs={
                 "id": "id_search",
                 "placeholder": PLACE_HOLDER,
-                "class": "pure-input-3-3"
+                "class": "pure-input-3-3",
             })
         }
         error_messages = {
