@@ -88,7 +88,7 @@ def blog_search(request):
     if request.method == "POST":
         form = ArticleForm(data=request.POST)
         if form.is_valid():
-            article_list = Article.objects.filter(title__icontains=form.data["title"])
+            article_list = Article.objects.filter(title__icontains=form.cleaned_data["title"])
             if len(article_list) == 0:
                 return render(request, 'archives.html', {'post_list': article_list,
                                                          'error': EMPTY_ARTICLE_ERROR, "form": form})
