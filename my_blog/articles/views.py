@@ -98,50 +98,68 @@ def blog_search(request):
     return home(request)
 
 
-def __get_latest_notes():
-    # 进行 git 操作, 获取最新版本的笔记
-    if not os.path.exists(os.path.join(NOTES_GIT_PATH, ".git")):
-        command = "cd {} && git clone {} {}".format(NOTES_PATH_PARENT_DIR, TEST_GIT_REPOSITORY, NOTES_PATH_NAME)
-    else:
-        command = "cd {} && git reset --hard && git pull".format(NOTES_GIT_PATH)
-    os.system(command)
-
-
-def __is_valid_md_file(file_name):
-    """
-    判断文件名是否满足 测试笔记-测试标题.md 这种格式
-    :param file_name: "测试笔记-测试标题.md"
-    :return: True
-    """
-    if not file_name.endswith(".md"):
-        return False
-    elif "-" not in file_name:
-        return False
-    # elif file_name.startswith("测试笔记"):
-    #     return False
-    return True
-
-
 def update_notes(request):
+    def __get_latest_notes():
+        # 进行 git 操作, 获取最新版本的笔记
+        if not os.path.exists(os.path.join(NOTES_GIT_PATH, ".git")):
+            command = "cd {} && git clone {} {}".format(NOTES_PATH_PARENT_DIR, TEST_GIT_REPOSITORY, NOTES_PATH_NAME)
+        else:
+            command = "cd {} && git reset --hard && git pull".format(NOTES_GIT_PATH)
+        os.system(command)
+
+    def __content_change(old_content, newest_content):
+        """
+        关于字符串比较的性能问题, 现在还没想到一个好的解决方法, 所以还是用最原始的字符串比较就是了
+        :param old_content: 原来的内容
+        :param newest_content: 现在的内容
+        :return:
+        """
+        return old_content != newest_content
+
+    def __sync_database(file_name, file_path):
+        article = file_name.rstrip(".md")
+        article_category, article_title = article.split("-")
+        article_content = get_right_content_from_file(file_path)
+
+        try:
+            article_from_db = Article.objects.get(title=article_title)
+            # 已经存在
+            if __content_change(article_from_db.content, article_content):
+                # 内容有所改变
+                article_from_db.content = article_content
+            article_from_db.category = article_category
+            article_from_db.save()
+        except Article.DoesNotExist:
+            # 不存在
+            Article.objects.create(title=article_title, category=article_category, content=article_content)
+
+    def __is_valid_md_file(file_name):
+        """
+        判断文件名是否满足 测试笔记-测试标题.md 这种格式
+        :param file_name: "测试笔记-测试标题.md"
+        :return: True
+        """
+        if not file_name.endswith(".md"):
+            return False
+        elif "-" not in file_name:
+            return False
+        return True
+
     __get_latest_notes()
 
+    # 将 git 仓库中的所有笔记进行更新
+    notes_in_git = set()
     for root, dirs, file_list in os.walk(NOTES_GIT_PATH):
-        for each_file in file_list:
-            if __is_valid_md_file(each_file):
-                article = each_file.rstrip(".md")
-                article_category, article_title = article.split("-")
+        for each_file_name in file_list:
+            if __is_valid_md_file(each_file_name):
+                path = os.path.join(root, each_file_name)
+                __sync_database(each_file_name, path)
+                notes_in_git.add(each_file_name)
 
-                file_path = os.path.join(root, each_file)
-                article_content = get_right_content_from_file(file_path)
-
-                try:
-                    article_from_db = Article.objects.get(title=article_title)
-                    # 已经存在
-                    article_from_db.content = article_content
-                    article_from_db.category = article_category
-                    article_from_db.save()
-                except Article.DoesNotExist:
-                    # 不存在
-                    Article.objects.create(title=article_title, category=article_category, content=article_content)
+    # 删除数据库中多余的笔记
+    for each_note_in_db in Article.objects.all():
+        note_in_db_full_name = "{}-{}.md".format(each_note_in_db.category,each_note_in_db.title)
+        if note_in_db_full_name not in notes_in_git:
+            each_note_in_db.delete()
 
     return home(request)

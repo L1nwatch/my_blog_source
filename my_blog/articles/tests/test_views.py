@@ -17,7 +17,7 @@ import unittest
 __author__ = '__L1n__w@tch'
 
 TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
-DEBUG_GIT = False
+DEBUG_GIT = True
 
 
 class HomeViewTest(TestCase):
@@ -128,11 +128,21 @@ class UpdateNotesViewTest(TestCase):
     unique_url = "/articles/update_notes/"
     test_md_file_name = "测试笔记-测试用的笔记.md"
     notes_path_name = "notes"
-    global_want_to_run_git_test = input("确定要进行 git 测试?(yes?)") if DEBUG_GIT else False
+    global_want_to_run_git_test = input("确定要进行 git 测试(慢)?(yes/no)") if DEBUG_GIT else False
 
     notes_path_parent_dir = os.path.dirname(settings.BASE_DIR)
     notes_git_path = os.path.join(notes_path_parent_dir, notes_path_name)
     test_md_file_path = os.path.join(notes_git_path, test_md_file_name)
+
+    def __update_test_md_file_and_git_push(self, test_content):
+        """
+        更新测试文件并将内容上传到仓库中
+        :return:
+        """
+        with open(self.test_md_file_path, "w") as f:
+            f.write(test_content)
+        command = "cd {} && git add -A && git commit -m '测试开始' && git push".format(self.notes_git_path)
+        os.system(command)
 
     def setUp(self):
         """
@@ -143,28 +153,21 @@ class UpdateNotesViewTest(TestCase):
         if not os.path.exists(os.path.join(self.notes_git_path, ".git")):
             self.client.get(self.unique_url)
 
-        # 保存旧的测试文件
-        self.old_file_content = get_right_content_from_file(self.test_md_file_path)
+        # 创建测试文件并上传到 git 仓库中
+        self.old_file_content = "# 测试1234"
+        self.__update_test_md_file_and_git_push(self.old_file_content)
 
     def tearDown(self):
         """
         主要是在测试结束之后恢复笔记文件
         :return:
         """
-        # 恢复测试文件, 提交内容
-        with open(self.test_md_file_path, "w") as f:
-            f.write(self.old_file_content)
-        command = "cd {} && git add -A && git commit -m '测试完毕' && git push".format(self.notes_git_path)
-        os.system(command)
-
-    def __update_test_md_file_and_git_push(self, test_content):
-        """
-        更新测试文件并将内容上传到仓库中
-        :return:
-        """
-        with open(self.test_md_file_path, "w") as f:
-            f.write(test_content)
-        command = "cd {} && git add -A && git commit -m '测试开始' && git push".format(self.notes_git_path)
+        # 删除测试文件
+        command = "cd {}" \
+                  " && rm {}" \
+                  " && git add -A" \
+                  " && git commit -m '测试完毕'" \
+                  " && git push".format(self.notes_git_path, self.test_md_file_name)
         os.system(command)
 
     @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
@@ -232,13 +235,6 @@ class UpdateNotesViewTest(TestCase):
         self.assertEqual(latest_article.content, test_content, "数据库中依然是老文章的内容")
         self.assertEqual(latest_article.category, test_article_category, "数据库中依然是老文章的分类")
 
-        # 文章被删除了
-        # self.fail("编写单元测试中")
-
-        # 再次执行该视图函数, 发现数据库中该文章也不见了
-
-        pass
-
     @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
     def test_view_passes_form_to_template(self):
         """
@@ -247,6 +243,24 @@ class UpdateNotesViewTest(TestCase):
         """
         response = self.client.get(self.unique_url)
         self.assertIsInstance(response.context["form"], ArticleForm)
+
+    def test_delete_notes_from_md(self):
+        """
+        原先在数据库中已经存在某个笔记, 但是最新版本的 git 仓库中并没有这个笔记, 那么从数据库中删除掉
+        :return:
+        """
+        should_not_exist_note = Article.objects.create(title="不应该存在的笔记", category="测试笔记")
+
+        # 确认仓库中没有这个笔记
+        not_exist_note_full_name = "{}-{}.md".format(should_not_exist_note.category, should_not_exist_note.title)
+        self.assertNotIn(not_exist_note_full_name, os.listdir(self.notes_git_path))
+
+        # 执行视图函数
+        self.client.get(self.unique_url)
+
+        # 发现数据库中已经不存在该笔记了
+        with self.assertRaises(Article.DoesNotExist):
+            Article.objects.get(title=should_not_exist_note.title)
 
 
 class BlogSearchViewTest(TestCase):
