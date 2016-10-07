@@ -36,17 +36,21 @@
     {% endfor %}
 
     {% if post_list.object_list and post_list.paginator.num_pages > 1 %}
-    <div>
-        <ul class="pager">
-            {% if post_list.has_previous %}
-            <li><a href="?page={{ post_list.previous_page_number }}">上一页</a></li>
-            {% endif %}
 
-            {% if post_list.has_next %}
-            <li><a href="?page={{ post_list.next_page_number }}">下一页</a></li>
-            {% endif %}
-        </ul>
-    </div>
+
+    <ul class="pure-paginator">
+        <li><a class="pure-button prev" href="?page=1">&#171;</a></li>
+        {% if post_list.has_previous %}
+        <li><a class="pure-button" href="?page={{ post_list.previous_page_number }}">
+            {{ post_list.previous_page_number }}</a></li>
+        {% endif %}
+        <li><a class="pure-button pure-button-active" href="#">{{ post_list.number }}</a></li>
+        {% if post_list.has_next %}
+        <li><a class="pure-button" href="?page={{ post_list.next_page_number }}">{{ post_list.next_page_number }}</a>
+        </li>
+        {% endif %}
+        <li><a class="pure-button next" href="?page={{ post_list.paginator.num_pages}}">&#187;</a></li>
+    </ul>
     {% endif %}
-</div><!-- /.blog-post -->
+</div>
 {% endblock %}

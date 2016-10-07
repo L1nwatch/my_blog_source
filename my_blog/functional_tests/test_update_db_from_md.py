@@ -9,7 +9,6 @@ from .base import FunctionalTest
 from selenium.common.exceptions import NoSuchElementException
 from django.conf import settings
 import unittest
-import sys
 
 __author__ = '__L1n__w@tch'
 
