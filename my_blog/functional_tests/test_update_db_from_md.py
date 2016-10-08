@@ -49,20 +49,24 @@ class AutoUpdateDatabaseTest(FunctionalTest):
         # TODO: 还没实现
         return True
 
-    @unittest.skipIf(True, "还没开始编写")
     def test_can_not_continue_click_update_db_button(self):
         """
         防止恶意点击更新数据库导致后台一直运行, 相邻两次点击之间存在时间间隔
         :return:
         """
         # Y 想当一个坏人, 试图利用更新数据库的按钮就进行 dos 攻击
+        update_note_button = self.browser.find_element_by_id("id_update_notes")
 
         # Y 点击了第一次更新数据库按钮
+        update_note_button.click()
 
         # 紧接着 Y 又点击了第二次
+        update_note_button.click()
 
-        # 但是发现网站弹出了个提示, 说是一定时间内不允许再次更新数据库了
-        pass
+        # 但是发现网站弹出了个提示, 说是操作频繁, 于是只好点击确认
+        message = self.browser.switch_to_alert()
+        self.assertEqual(message, "操作频繁")
+        self.browser.switch_to_alert().accept()
 
 
 if __name__ == "__main__":
