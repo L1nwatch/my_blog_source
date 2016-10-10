@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.http import Http404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf import settings
@@ -12,12 +12,14 @@ from .forms import ArticleForm, EMPTY_ARTICLE_ERROR
 
 import os
 import chardet
+import datetime
 
 HOME_PAGE_ARTICLES_NUMBERS = 2
 TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
 NOTES_PATH_NAME = "notes"
 NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
 NOTES_GIT_PATH = os.path.join(NOTES_PATH_PARENT_DIR, NOTES_PATH_NAME)
+LAST_UPDATE_TIME = None
 
 
 def get_right_content_from_file(file_path):
@@ -41,7 +43,7 @@ def get_right_content_from_file(file_path):
     return data
 
 
-def home(request):
+def home(request, valid_click="True"):
     articles = Article.objects.all()  # 获取全部的Article对象
     paginator = Paginator(articles, HOME_PAGE_ARTICLES_NUMBERS)  # 每页显示 HOME_PAGE_ARTICLES_NUMBERS 篇
     page = request.GET.get('page')
@@ -51,7 +53,8 @@ def home(request):
         article_list = paginator.page(1)
     # except EmptyPage: # 没用到, 不知道干啥的
     #     article_list = paginator.paginator(paginator.num_pages)
-    return render(request, 'home.html', {'post_list': article_list, "form": ArticleForm()})
+    return render(request, 'home.html',
+                  {'post_list': article_list, "form": ArticleForm(), "is_valid_click": valid_click})
 
 
 def detail(request, id):
@@ -145,9 +148,18 @@ def update_notes(request):
             return False
         return True
 
+    # settings.UPDATE_TIME_LIMIT s 内不允许重新点击
+    global LAST_UPDATE_TIME
+    now = datetime.datetime.today()
+    if LAST_UPDATE_TIME is not None and (now - LAST_UPDATE_TIME).total_seconds() < settings.UPDATE_TIME_LIMIT:
+        return home(request, "invalid_click")
+    else:
+        LAST_UPDATE_TIME = now
+
+    # 将 git 仓库中的所有笔记更新到本地
     __get_latest_notes()
 
-    # 将 git 仓库中的所有笔记进行更新
+    # 将从 git 中获取到本地的笔记更新到数据库中
     notes_in_git = set()
     for root, dirs, file_list in os.walk(NOTES_GIT_PATH):
         for each_file_name in file_list:
@@ -158,7 +170,7 @@ def update_notes(request):
 
     # 删除数据库中多余的笔记
     for each_note_in_db in Article.objects.all():
-        note_in_db_full_name = "{}-{}.md".format(each_note_in_db.category,each_note_in_db.title)
+        note_in_db_full_name = "{}-{}.md".format(each_note_in_db.category, each_note_in_db.title)
         if note_in_db_full_name not in notes_in_git:
             each_note_in_db.delete()
 

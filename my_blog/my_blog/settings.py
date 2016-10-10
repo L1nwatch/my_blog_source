@@ -144,3 +144,4 @@ LOGGING = {
 }
 
 TEST_GIT_REPOSITORY = "https://github.com/L1nwatch/notes_set.git"
+UPDATE_TIME_LIMIT = 30
