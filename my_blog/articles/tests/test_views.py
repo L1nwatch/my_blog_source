@@ -5,7 +5,7 @@
 
 2016.10.03 测试视图函数是否正常
 """
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.conf import settings
 from articles.models import Article
 from articles.views import HOME_PAGE_ARTICLES_NUMBERS, get_right_content_from_file
@@ -124,6 +124,7 @@ class SearchTagViewTest(TestCase):
         self.assertIsInstance(response.context["form"], ArticleForm)
 
 
+@override_settings(UPDATE_TIME_LIMIT=0.1)
 class UpdateNotesViewTest(TestCase):
     unique_url = "/articles/update_notes/"
     test_md_file_name = "测试笔记-测试用的笔记.md"
