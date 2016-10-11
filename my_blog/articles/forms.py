@@ -12,7 +12,7 @@ from .models import Article
 __author__ = '__L1n__w@tch'
 
 EMPTY_ARTICLE_ERROR = "没有相关文章题目"
-PLACE_HOLDER = "title to search"
+PLACE_HOLDER = "word to search"
 
 
 class ArticleForm(forms.models.ModelForm):

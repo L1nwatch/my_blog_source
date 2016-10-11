@@ -342,6 +342,11 @@ class BlogSearchViewTest(TestCase):
         :return:
         """
         test_article = Article.objects.create(title="test_title_文章", content="test content content2")
+        # 仅存在其中一个关键词
+        response = self.client.post(self.unique_url, data={"title": "content3 test"})
+        self.assertNotContains(response, test_article.title)
+
+        # 两个关键词都存在
         response = self.client.post(self.unique_url, data={"title": "content2 test"})
         self.assertContains(response, test_article.title)
 

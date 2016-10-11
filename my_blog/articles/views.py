@@ -95,11 +95,18 @@ def blog_search(request):
     """
 
     def __search_keyword_in_articles(keyword):
-        result = set()
-        for each_key_word in keyword.split(" "):
-            result.update(Article.objects.filter(title__icontains=each_key_word))
-            result.update(Article.objects.filter(content__icontains=each_key_word))
-        return result
+        key_word_list = keyword.split(" ")
+        result_set = set()
+        articles_from_title_filter, articles_from_content_filter = list(), list()
+
+        for each_key_word in key_word_list:
+            articles_from_title_filter.append(set(Article.objects.filter(title__icontains=each_key_word)))
+            articles_from_content_filter.append(set(Article.objects.filter(content__icontains=each_key_word)))
+        if len(articles_from_title_filter) > 0:
+            result_set.update(set.intersection(*articles_from_title_filter))
+        if len(articles_from_content_filter) > 0:
+            result_set.update(set.intersection(*articles_from_content_filter))
+        return result_set
 
     def __form_is_valid_and_ignore_exist_article_error(my_form):
         """

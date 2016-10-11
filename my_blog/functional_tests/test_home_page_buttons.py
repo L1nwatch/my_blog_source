@@ -135,26 +135,22 @@ class TestSearchButton(FunctionalTest):
         # Y 记得以前看过的某篇文章中有 time.sleep 方法的示例, 但是不记得文章标题了, 于是搜索这个关键词
         search_button.send_keys("time.sleep\n")
 
-        # Y 发现搜出来了文章, 打开每篇文章, 可以看到确实是有 time.sleep 的存在
-        articles_after_search = self.browser.find_elements_by_id("id_article_title")
-        self.assertTrue(len(articles_after_search) >= 1, "找不到任何文章")
-        for each_article in articles_after_search:
-            each_article.click()
-            self.assertIn("time.sleep", self.browser.find_element_by_tag_name('body').text)
+        # Y 发现搜出来了文章, 随便打开一篇文章, 可以看到确实是有 time.sleep 的存在
+        articles_after_search = self.browser.find_element_by_id("id_article_title")
+        articles_after_search.click()
+        self.assertIn("time.sleep", self.browser.find_element_by_tag_name('body').text)
 
         # Y 想知道这个搜索功能是否类似于 google 搜索, 即可以用空格来区分多个关键词然后进行搜索
         search_button = self.browser.find_element_by_id("id_search")
 
-        # Y 搜索了这么一个关键词: and I, 发现确实搜出来结果了, 而且每篇文章里面都可以找到 and 和 I, 而且不是连在一起的
+        # Y 搜索了这么一个关键词: and I, 发现确实搜出来结果了, 而且随便打开一片文章里面可以找到 and 和 I, 而且不是连在一起的
         search_button.send_keys("and I\n")
-        articles_after_search = self.browser.find_elements_by_id("id_article_title")
-        self.assertTrue(len(articles_after_search) >= 1, "找不到任何文章")
-        for each_article in articles_after_search:
-            each_article.click()
-            body_text = self.browser.find_element_by_tag_name('body').text
-            self.assertIn("and", body_text)
-            self.assertIn("I", body_text)
-            self.assertNotIn("and I", body_text)
+        articles_after_search = self.browser.find_element_by_id("id_article_title")
+        articles_after_search.click()
+        body_text = self.browser.find_element_by_tag_name('body').text
+        self.assertIn("and", body_text)
+        self.assertIn("I", body_text)
+        self.assertNotIn("and I", body_text)
 
         # Y 尝试随便输入一些东西, 看是不是能搜出什么
         search_button = self.browser.find_element_by_id("id_search")
