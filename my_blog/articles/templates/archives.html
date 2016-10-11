@@ -8,7 +8,9 @@
     {% for post in post_list %}
     <section class="post">
         <header class="post-header">
-            <h2 class="post-title"><a href="{% url 'detail' id=post.id %}">{{ post.title }}</a></h2>
+            <h2 class="post-title">
+                <a id="id_article_title" href="{% url 'detail' id=post.id %}">{{ post.title }}</a>
+            </h2>
 
             <p class="post-meta">
                 <label class="post-description">Time: {{ post.date_time |date:'Y 年 m 月 d 号 H 时' }}</label>&nbsp&nbsp

@@ -17,7 +17,7 @@ import unittest
 __author__ = '__L1n__w@tch'
 
 TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
-DEBUG_GIT = True
+DEBUG_GIT = False
 
 
 class HomeViewTest(TestCase):
@@ -245,6 +245,7 @@ class UpdateNotesViewTest(TestCase):
         response = self.client.get(self.unique_url)
         self.assertIsInstance(response.context["form"], ArticleForm)
 
+    @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
     def test_delete_notes_from_md(self):
         """
         原先在数据库中已经存在某个笔记, 但是最新版本的 git 仓库中并没有这个笔记, 那么从数据库中删除掉
@@ -286,6 +287,63 @@ class BlogSearchViewTest(TestCase):
         """
         response = self.client.get(self.unique_url)
         self.assertIsInstance(response.context["form"], ArticleForm)
+
+    def test_valid_input_will_get_response_using_right_template(self):
+        test_article = Article.objects.create(title="test_article")
+        response = self.client.post(self.unique_url, data={"title": test_article.title})
+        self.assertTemplateUsed(response, "archives.html")
+
+    def test_id_article_exist(self):
+        """
+        搜索存在的文章, 显示出来的界面中每篇文章应该有 id_article_title 这个属性
+        :return:
+        """
+        test_article_title = "test_for_search_button"
+        Article.objects.create(title=test_article_title)
+
+        response = self.client.post(self.unique_url, data={"title": test_article_title})
+        self.assertContains(response, 'id="id_article_title"')
+
+    def test_can_search_content(self):
+        """
+        测试搜索文章的时候会去搜索文章内容
+        :return:
+        """
+        test_article = Article.objects.create(title="test_title_文章", content="test_content")
+        response = self.client.post(self.unique_url, data={"title": test_article.content})
+        self.assertContains(response, test_article.title)
+
+    def test_search_content_without_case(self):
+        """
+        测试搜索文章内容的时候会忽略大小写
+        :return:
+        """
+        test_article = Article.objects.create(title="test_title_文章", content="test_content")
+        response = self.client.post(self.unique_url, data={"title": "TeSt_ConTeNt"})
+        self.assertContains(response, test_article.title)
+
+    def test_can_search_content_and_title(self):
+        """
+        测试搜索出来的内容会从文章以及标题去查找
+        :return:
+        """
+        test_article = Article.objects.create(title="test_title_文章", content="test_content")
+        # 从标题中查找
+        response = self.client.post(self.unique_url, data={"title": "title"})
+        self.assertContains(response, test_article.title)
+
+        # 从内容中查找
+        response = self.client.post(self.unique_url, data={"title": "content"})
+        self.assertContains(response, test_article.title)
+
+    def test_search_multiple_words(self):
+        """
+        测试能够同时搜索多个关键词
+        :return:
+        """
+        test_article = Article.objects.create(title="test_title_文章", content="test content content2")
+        response = self.client.post(self.unique_url, data={"title": "content2 test"})
+        self.assertContains(response, test_article.title)
 
 
 if __name__ == "__main__":

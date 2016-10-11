@@ -88,16 +88,44 @@ def search_tag(request, tag):
 
 
 def blog_search(request):
+    """
+    2016.10.11 添加能够搜索文章内容的功能
+    :param request: django 传给视图函数的参数 request, 包含 HTTP 请求的各种信息
+    :return:
+    """
+
+    def __search_keyword_in_articles(keyword):
+        result = set()
+        for each_key_word in keyword.split(" "):
+            result.update(Article.objects.filter(title__icontains=each_key_word))
+            result.update(Article.objects.filter(content__icontains=each_key_word))
+        return result
+
+    def __form_is_valid_and_ignore_exist_article_error(my_form):
+        """
+        2016.10.11 重定义验证函数, 不再使用简单的 form.is_valid, 原因是执行搜索的时候发现不能搜索跟已存在的文章一模一样的标题关键词
+        :param my_form: form = ArticleForm(data=request.POST)
+        :return:
+        """
+        if my_form.is_valid() is True:
+            return True
+        elif len(my_form.errors) == 1 and "具有 Title 的 Article 已存在。" in str(my_form.errors):
+            return True
+        return False
+
     if request.method == "POST":
         form = ArticleForm(data=request.POST)
-        if form.is_valid():
-            article_list = Article.objects.filter(title__icontains=form.cleaned_data["title"])
+        if __form_is_valid_and_ignore_exist_article_error(form):
+            # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
+            article_list = __search_keyword_in_articles(form.data["title"])
+
+            data_return_to_template = {'post_list': article_list, 'error': None, "form": form}
             if len(article_list) == 0:
-                return render(request, 'archives.html', {'post_list': article_list,
-                                                         'error': EMPTY_ARTICLE_ERROR, "form": form})
+                data_return_to_template["error"] = EMPTY_ARTICLE_ERROR
             else:
-                return render(request, 'archives.html', {'post_list': article_list,
-                                                         'error': False, "form": form})
+                data_return_to_template["error"] = False
+            return render(request, 'archives.html', data_return_to_template)
+
     return home(request)
 
 

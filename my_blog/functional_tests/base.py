@@ -12,14 +12,16 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import WebDriverException
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.conf import settings
+from articles.models import Article, Tag
+
+from datetime import datetime
 
 # from .server_tools import reset_database
 # from .server_tools import create_session_on_server
 
 # from .management.commands.create_session import create_pre_authenticated_session
 
-from datetime import datetime
+
 
 DEFAULT_WAIT = 5
 SCREEN_DUMP_LOCATION = os.path.abspath(
@@ -142,6 +144,52 @@ class FunctionalTest(StaticLiveServerTestCase):
                 time.sleep(0.1)
         # 再试一次，如果还不行就抛出所有异常
         return function_with_assertion()
+
+    @staticmethod
+    def _create_test_db_data():
+        """
+        创建测试用的相关数据
+        :return:
+        """
+        # 创建三个标签, Python, Markdown, Others
+        tag_python = Tag.objects.create(tag_name="Python")
+        tag_markdown = Tag.objects.create(tag_name="Markdown")
+        tag_others = Tag.objects.create(tag_name="Others")
+
+        # 创建一篇文章, 分类为默认值 Others, 无标签, 内容为默认值空
+        Article.objects.create(title="article_with_nothing")
+
+        # 创建一篇文章, 分类为默认值 Others, 无标签, 有内容
+        Article.objects.create(title="article_with_no_tag_category", content="I only have content and title")
+
+        # 创建一篇文章, 有分类, 无标签, 有内容
+        Article.objects.create(title="article_with_markdown", category="Markdown", content="""
+## I am 2nd title
+* test markdown1
+* test markdown2
+* test markdown3 and `inline code`
+
+```python
+import time
+
+while True:
+    time.sleep(50)
+    print "hello world!"
+```""")
+
+        # 创建文章二, 有分类, 有标签, 有内容
+        new_article = Article.objects.create(title="article_with_python", category="Python",
+                                             content="I am `Python`")
+        new_article.tag = (tag_python,)
+
+        # 创建三篇文章, 带标签 Others 以及分类 Test_Category
+        for i in range(3):
+            new_article = Article.objects.create(title="article_with_same_category{}".format(i + 1),
+                                                 category="Test_Category", content="Same category {}".format(i + 1))
+            new_article.tag = (tag_others,)
+
+        # TODO:创建文章, 带 2 个标签
+        pass
 
 
 if __name__ == "__main__":

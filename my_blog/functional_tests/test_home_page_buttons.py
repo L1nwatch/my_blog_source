@@ -83,51 +83,6 @@ class TestHomePageButtons(FunctionalTest):
         self.browser.find_element_by_id("id_home_page").click()
         self.browser.find_element_by_id("id_article_content")
 
-    @staticmethod
-    def _create_test_db_data():
-        """
-        创建测试用的相关数据
-        :return:
-        """
-        # 创建三个标签, Python, Markdown, Others
-        tag_python = Tag.objects.create(tag_name="Python")
-        tag_markdown = Tag.objects.create(tag_name="Markdown")
-        tag_others = Tag.objects.create(tag_name="Others")
-
-        # 创建一篇文章, 分类为默认值 Others, 无标签, 内容为默认值空
-        Article.objects.create(title="article_with_nothing")
-
-        # 创建一篇文章, 分类为默认值 Others, 无标签, 有内容
-        Article.objects.create(title="article_with_no_tag_category", content="I only have content and title")
-
-        # 创建一篇文章, 有分类, 无标签, 有内容
-        Article.objects.create(title="article_with_markdown", category="Markdown", content="""
-## I am 2nd title
-* test markdown1
-* test markdown2
-* test markdown3 and `inline code`
-
-```python
-import time
-
-while True:
-    time.sleep(50)
-    print "hello world!"
-```""")
-
-        # 创建文章二, 有分类, 有标签, 有内容
-        new_article = Article.objects.create(title="article_with_python", category="Python", content="I am `Python`")
-        new_article.tag = (tag_python,)
-
-        # 创建三篇文章, 带标签 Others 以及分类 Test_Category
-        for i in range(3):
-            new_article = Article.objects.create(title="article_with_same_category{}".format(i + 1),
-                                                 category="Test_Category", content="Same category {}".format(i + 1))
-            new_article.tag = (tag_others,)
-
-        # TODO:创建文章, 带 2 个标签
-        pass
-
     def test_email_button(self):
         # Y 想联系网站拥有者, 发现了个 email 按钮
         email_button = self.browser.find_element_by_id("id_email")
@@ -136,17 +91,22 @@ while True:
         # 发现如果使用 click 会使用默认浏览器打开然后就无法测试了, 所以就改用下面这种方法
         self.assertEqual("mailto:watch1602@gmail.com", email_button.get_attribute("href"))
 
-    def test_search_button(self):
-        """
-        2016.10.04 要求能够搜索各个文章的标题即可
-        :return:
-        """
+
+class TestSearchButton(FunctionalTest):
+    def setUp(self):
+        super().setUp()
+
         # 创建测试数据
         self._create_test_db_data()
 
-        # 刷新首页
-        self.browser.refresh()
+        # Y 访问首页
+        self.browser.get(self.server_url)
 
+    def test_can_search_title(self):
+        """
+        2016.10.04 测试能够搜索各个文章的标题即可
+        :return:
+        """
         # Y 看到了这个搜索按钮
         search_button = self.browser.find_element_by_id("id_search")
 
@@ -163,6 +123,46 @@ while True:
 
         # 发现搜索结果为: 没有相关文章题目
         self.assertIn("没有相关文章题目", self.browser.page_source)
+
+    def test_can_search_content(self):
+        """
+        2016.10.11 测试能够搜索文章内容
+        :return:
+        """
+        # Y 看到了搜索按钮
+        search_button = self.browser.find_element_by_id("id_search")
+
+        # Y 记得以前看过的某篇文章中有 time.sleep 方法的示例, 但是不记得文章标题了, 于是搜索这个关键词
+        search_button.send_keys("time.sleep\n")
+
+        # Y 发现搜出来了文章, 打开每篇文章, 可以看到确实是有 time.sleep 的存在
+        articles_after_search = self.browser.find_elements_by_id("id_article_title")
+        self.assertTrue(len(articles_after_search) >= 1, "找不到任何文章")
+        for each_article in articles_after_search:
+            each_article.click()
+            self.assertIn("time.sleep", self.browser.find_element_by_tag_name('body').text)
+
+        # Y 想知道这个搜索功能是否类似于 google 搜索, 即可以用空格来区分多个关键词然后进行搜索
+        search_button = self.browser.find_element_by_id("id_search")
+
+        # Y 搜索了这么一个关键词: and I, 发现确实搜出来结果了, 而且每篇文章里面都可以找到 and 和 I, 而且不是连在一起的
+        search_button.send_keys("and I\n")
+        articles_after_search = self.browser.find_elements_by_id("id_article_title")
+        self.assertTrue(len(articles_after_search) >= 1, "找不到任何文章")
+        for each_article in articles_after_search:
+            each_article.click()
+            body_text = self.browser.find_element_by_tag_name('body').text
+            self.assertIn("and", body_text)
+            self.assertIn("I", body_text)
+            self.assertNotIn("and I", body_text)
+
+        # Y 尝试随便输入一些东西, 看是不是能搜出什么
+        search_button = self.browser.find_element_by_id("id_search")
+        search_button.send_keys("随便输入了一些什么啊肯定是搜索不到的\n")
+
+        # 果然关键词打得太随意了, 啥都没有啊
+        articles_after_search = self.browser.find_elements_by_id("id_article_title")
+        self.assertTrue(len(articles_after_search) == 0, "居然找到文章了?!")
 
 
 if __name__ == "__main__":
