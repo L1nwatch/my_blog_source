@@ -55,9 +55,9 @@ def home(request, valid_click="True"):
                   {'post_list': article_list, "form": ArticleForm(), "is_valid_click": valid_click})
 
 
-def detail(request, id):
+def detail(request, article_id):
     try:
-        db_data = Article.objects.get(id=str(id))
+        db_data = Article.objects.get(id=str(article_id))
         tags = db_data.tag.all()
     except Article.DoesNotExist:
         raise Http404

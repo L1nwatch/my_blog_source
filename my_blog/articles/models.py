@@ -20,7 +20,7 @@ class Article(models.Model):
     content = models.TextField(null=True, default=str())  # 博客文章正文
 
     def get_absolute_url(self):
-        path = reverse('detail', kwargs={'id': self.id})
+        path = reverse('detail', kwargs={'article_id': self.id})
         return "http://127.0.0.1:8000{}".format(path)
 
     # python3使用__str__

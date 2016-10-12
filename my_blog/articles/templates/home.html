@@ -7,7 +7,7 @@
     <section class="post">
         <header class="post-header">
             <h2 class="post-title">
-                <a id="id_article_title" href="{% url 'detail' id=post.id %}">{{ post.title }}</a>
+                <a id="id_article_title" href="{% url 'detail' article_id=post.id %}">{{ post.title }}</a>
             </h2>
 
             <p class="post-meta">
@@ -31,7 +31,7 @@
                 {{ post.content|custom_markdown|truncatewords:15 }}
             </p>
         </div>
-        <a class="pure-button" href="{% url 'detail' id=post.id %}">Read More >>> </a>
+        <a class="pure-button" href="{% url 'detail' article_id=post.id %}">Read More >>> </a>
     </section>
     {% endfor %}
 
