@@ -4,21 +4,19 @@
 
 from django.shortcuts import render
 from django.http import Http404
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import Paginator, PageNotAnInteger
 from django.conf import settings
 
 from .models import Article
-from .forms import ArticleForm, EMPTY_ARTICLE_ERROR
+from .forms import ArticleForm
+from my_constant import const
 
 import os
 import chardet
 import datetime
 
-HOME_PAGE_ARTICLES_NUMBERS = 2
-TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
-NOTES_PATH_NAME = "notes"
 NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
-NOTES_GIT_PATH = os.path.join(NOTES_PATH_PARENT_DIR, NOTES_PATH_NAME)
+NOTES_GIT_PATH = os.path.join(NOTES_PATH_PARENT_DIR, const.NOTES_PATH_NAME)
 LAST_UPDATE_TIME = None
 
 
@@ -45,7 +43,7 @@ def get_right_content_from_file(file_path):
 
 def home(request, valid_click="True"):
     articles = Article.objects.all()  # 获取全部的Article对象
-    paginator = Paginator(articles, HOME_PAGE_ARTICLES_NUMBERS)  # 每页显示 HOME_PAGE_ARTICLES_NUMBERS 篇
+    paginator = Paginator(articles, const.HOME_PAGE_ARTICLES_NUMBERS)  # 每页显示 HOME_PAGE_ARTICLES_NUMBERS 篇
     page = request.GET.get('page')
     try:
         article_list = paginator.page(page)
@@ -128,7 +126,7 @@ def blog_search(request):
 
             data_return_to_template = {'post_list': article_list, 'error': None, "form": form}
             if len(article_list) == 0:
-                data_return_to_template["error"] = EMPTY_ARTICLE_ERROR
+                data_return_to_template["error"] = const.EMPTY_ARTICLE_ERROR
             else:
                 data_return_to_template["error"] = False
             return render(request, 'archives.html', data_return_to_template)
@@ -140,7 +138,8 @@ def update_notes(request):
     def __get_latest_notes():
         # 进行 git 操作, 获取最新版本的笔记
         if not os.path.exists(os.path.join(NOTES_GIT_PATH, ".git")):
-            command = "cd {} && git clone {} {}".format(NOTES_PATH_PARENT_DIR, TEST_GIT_REPOSITORY, NOTES_PATH_NAME)
+            command = ("cd {} && git clone {} {}"
+                       .format(NOTES_PATH_PARENT_DIR, const.TEST_GIT_REPOSITORY, const.NOTES_PATH_NAME))
         else:
             command = "cd {} && git reset --hard && git pull".format(NOTES_GIT_PATH)
         os.system(command)

@@ -5,19 +5,17 @@
 
 2016.10.03 测试视图函数是否正常
 """
-from django.test import TestCase, override_settings
-from django.conf import settings
-from articles.models import Article
-from articles.views import HOME_PAGE_ARTICLES_NUMBERS, get_right_content_from_file
-from articles.forms import ArticleForm, EMPTY_ARTICLE_ERROR
-
 import os
 import unittest
 
-__author__ = '__L1n__w@tch'
+from articles.forms import ArticleForm
+from articles.models import Article
+from articles.views import get_right_content_from_file
+from my_constant import const
+from django.conf import settings
+from django.test import TestCase, override_settings
 
-TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
-DEBUG_GIT = False
+__author__ = '__L1n__w@tch'
 
 
 class HomeViewTest(TestCase):
@@ -34,8 +32,8 @@ class HomeViewTest(TestCase):
         测试是否只显示了部分的文章, 而不是显示所有文章
         :return:
         """
-        error_message = "显示了超过 {} 篇文章在首页了".format(HOME_PAGE_ARTICLES_NUMBERS)
-        for i in range(HOME_PAGE_ARTICLES_NUMBERS + 10):
+        error_message = "显示了超过 {} 篇文章在首页了".format(const.HOME_PAGE_ARTICLES_NUMBERS)
+        for i in range(const.HOME_PAGE_ARTICLES_NUMBERS + 10):
             Article.objects.create(title="test_article_{}".format(i + 1))
 
         response = self.client.get("/")
@@ -44,7 +42,7 @@ class HomeViewTest(TestCase):
             article_url = "/articles/{}/".format(article.id)
             if article_url.encode("utf8") in response.content:
                 counts += 1
-            self.assertFalse(counts > HOME_PAGE_ARTICLES_NUMBERS, error_message)
+            self.assertFalse(counts > const.HOME_PAGE_ARTICLES_NUMBERS, error_message)
 
     def test_home_page_uses_article_form(self):
         response = self.client.get("/")
@@ -129,7 +127,7 @@ class UpdateNotesViewTest(TestCase):
     unique_url = "/articles/update_notes/"
     test_md_file_name = "测试笔记-测试用的笔记.md"
     notes_path_name = "notes"
-    global_want_to_run_git_test = input("确定要进行 git 测试(慢)?(yes/no)") if DEBUG_GIT else False
+    global_want_to_run_git_test = input("确定要进行 git 测试(慢)?(yes/no)") if const.DEBUG_GIT else print("忽略 git 测试")
 
     notes_path_parent_dir = os.path.dirname(settings.BASE_DIR)
     notes_git_path = os.path.join(notes_path_parent_dir, notes_path_name)
@@ -278,7 +276,7 @@ class BlogSearchViewTest(TestCase):
 
     def test_form_input_not_exist_title(self):
         form = ArticleForm(data={"title": ""})
-        self.assertEqual(form.errors["title"], [EMPTY_ARTICLE_ERROR])
+        self.assertEqual(form.errors["title"], [const.EMPTY_ARTICLE_ERROR])
 
     def test_view_passes_form_to_template(self):
         """

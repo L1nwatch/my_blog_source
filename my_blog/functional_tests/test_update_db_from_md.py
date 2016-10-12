@@ -9,13 +9,12 @@ from .base import FunctionalTest
 from selenium.common.exceptions import NoSuchElementException, NoAlertPresentException
 from django.conf import settings
 from django.test.utils import override_settings
+from my_constant import const
 
 import time
 import unittest
 
 __author__ = '__L1n__w@tch'
-
-TEST_GIT_REPOSITORY = settings.TEST_GIT_REPOSITORY
 
 
 @override_settings(UPDATE_TIME_LIMIT=5)

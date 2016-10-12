@@ -9,10 +9,9 @@ from django import forms
 
 from .models import Article
 
-__author__ = '__L1n__w@tch'
+from my_constant import const
 
-EMPTY_ARTICLE_ERROR = "没有相关文章题目"
-PLACE_HOLDER = "word to search"
+__author__ = '__L1n__w@tch'
 
 
 class ArticleForm(forms.models.ModelForm):
@@ -22,12 +21,12 @@ class ArticleForm(forms.models.ModelForm):
         widgets = {
             "title": forms.fields.TextInput(attrs={
                 "id": "id_search",
-                "placeholder": PLACE_HOLDER,
+                "placeholder": const.PLACE_HOLDER,
                 "class": "pure-input-2-3",
             })
         }
         error_messages = {
-            "title": {"required": EMPTY_ARTICLE_ERROR}
+            "title": {"required": const.EMPTY_ARTICLE_ERROR}
         }
 
 

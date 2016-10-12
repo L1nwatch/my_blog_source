@@ -6,9 +6,9 @@
 2016.10.07 添加了 ArticleForm 后要进行测试
 """
 
+from articles.forms import ArticleForm
 from django.test import TestCase
-
-from articles.forms import ArticleForm, EMPTY_ARTICLE_ERROR, PLACE_HOLDER
+from my_constant import const
 
 __author__ = '__L1n__w@tch'
 
@@ -21,14 +21,15 @@ class ArticleFormTest(TestCase):
         :return:
         """
         article_form = ArticleForm()
-        self.assertIn('placeholder="{}"'.format(PLACE_HOLDER), article_form.as_p())
+        self.assertIn('placeholder="{}"'.format(const.PLACE_HOLDER), article_form.as_p())
         self.assertIn('class="pure-input-2-3"', article_form.as_p(), "class 属性没有设置?还是说设置错了?")
         self.assertIn('id="id_search"', article_form.as_p(), "id 属性没有设置?还是说设置错了?")
 
     def test_form_validation_for_blank_input(self):
         form = ArticleForm(data={"title": ""})
         self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors["title"], [EMPTY_ARTICLE_ERROR])
+        self.assertEqual(form.errors["title"], [const.EMPTY_ARTICLE_ERROR])
+
 
 if __name__ == "__main__":
     pass
