@@ -2,15 +2,6 @@
 
 此仓库保存的是我搭建自己博客的源码，本来一开始想跟着廖雪峰的教程搭的，后来发现还是用我自己比较熟悉的 Django 来搭吧，结合网上的简易博客教程做了个模板，然后自己又编写了对应的功能测试和单元测试以便接下来的扩展，还有实现了自动化部署脚本，这样以后部署网站就方便多了。
 
-## 参考资料
-
-* [Django 搭建简易博客教程](http://wiki.jikexueyuan.com/project/django-set-up-blog/)
-* [Bootstrap 中文文档](http://v3.bootcss.com/getting-started/#download)
-* Fab 文档参考，[中文版](http://fabric-chs.readthedocs.io/zh_CN/chs/index.html)，[英文版](http://www.fabfile.org/)
-* 前端样式参考：[博客模板网址](http://www.purecss.org/layouts/blog/)，还有更全面的[不止是博客](http://www.purecss.org/layouts/)
-* [supervisor 配置教程](https://3rgb.com/entry/daemon_control_autostart_with_supervisor)
-* Python 探针(OneAPM) [blueware](http://blog.oneapm.com/apm-tech/202.html)
-
 ## 开发环境
 
 * macOSX 10.10.5
@@ -65,3 +56,12 @@ BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
 
 * 安装 Markdown：`pip install markdown  #记得激活虚拟环境`
 * 代码高亮：[找到自己喜欢的 CSS 文件](http://richleland.github.io/pygments-css/)，安装 `pip install pygments` 库，然后添加 link 到 html 中即可。
+
+## 参考资料
+
+* [Django 搭建简易博客教程](http://wiki.jikexueyuan.com/project/django-set-up-blog/)
+* [Bootstrap 中文文档](http://v3.bootcss.com/getting-started/#download)
+* Fab 文档参考，[中文版](http://fabric-chs.readthedocs.io/zh_CN/chs/index.html)，[英文版](http://www.fabfile.org/)
+* 前端样式参考：[博客模板网址](http://www.purecss.org/layouts/blog/)，还有更全面的[不止是博客](http://www.purecss.org/layouts/)
+* [supervisor 配置教程](https://3rgb.com/entry/daemon_control_autostart_with_supervisor)
+* Python 探针(OneAPM) [blueware](http://blog.oneapm.com/apm-tech/202.html)
