@@ -22,7 +22,7 @@
 
 （2016.10.17 版本）的界面如图所示：
 
-![20161006界面](https://github.com/L1nwatch/my_blog_source/blob/master/2016-10-06-%E7%BD%91%E7%AB%99%E6%88%AA%E5%9B%BE.png?raw=true)
+![20161017界面](https://github.com/L1nwatch/my_blog_source/blob/master/2016-10-17-%E7%BD%91%E7%AB%99%E6%88%AA%E5%9B%BE.png?raw=true)
 
 ## 自动化部署方法
 
