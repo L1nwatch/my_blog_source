@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """ 使用 Fabric 进行自动化部署
-
+2016.10.17 增加一个定时任务, 每隔两个小时自动更新数据库
 2016.10.06 本来是使用 gunicorn 模板来自动运行 gunicorn 的, 但是发现这样存在一个问题, 就是 gunicorn 的 locale 默认为空, 于是改为使用 supervisor
 """
 import random
@@ -51,6 +51,20 @@ def deploy():
 
     # 设置服务器配置等
     _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user)
+
+    # 定时任务
+    _set_cron_job(source_folder, virtualenv_folder, site_name)
+
+
+def _set_cron_job(source_folder, virtualenv_folder, site_name):
+    """
+    2016.10.17 添加第一个定时任务, 自动更新数据库
+    :param source_folder: manage.py 所在的文件夹
+    :return:
+    """
+    # 如果需要执行 Django 的 manage.py 命令，就要指定虚拟环境中二进制文件夹，确保使用的是虚拟环境中的 Django 版本，而不是系统中的版本
+    run("cd {source_folder} && {virtualenv_folder}/bin/python3 {site_name}/manage.py runcrons"
+        .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder, site_name=site_name))
 
 
 def _create_directory_structure_if_necessary(site_folder):

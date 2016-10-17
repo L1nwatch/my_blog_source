@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "articles"
+    "articles",
+    "django_cron"
 ]
 
 BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
@@ -144,3 +145,7 @@ LOGGING = {
 }
 
 UPDATE_TIME_LIMIT = 30
+
+CRON_CLASSES = [
+    "django_cron.cron.AutoUpdateNotes",
+]

@@ -134,7 +134,7 @@ def blog_search(request):
     return home(request)
 
 
-def update_notes(request):
+def update_notes(request=None):
     def __get_latest_notes():
         # 进行 git 操作, 获取最新版本的笔记
         if not os.path.exists(os.path.join(NOTES_GIT_PATH, ".git")):
@@ -186,7 +186,7 @@ def update_notes(request):
     global LAST_UPDATE_TIME
     now = datetime.datetime.today()
     if LAST_UPDATE_TIME is not None and (now - LAST_UPDATE_TIME).total_seconds() < settings.UPDATE_TIME_LIMIT:
-        return home(request, "invalid_click")
+        return home(request, "invalid_click") if request is not None else None
     else:
         LAST_UPDATE_TIME = now
 
@@ -208,4 +208,4 @@ def update_notes(request):
         if note_in_db_full_name not in notes_in_git:
             each_note_in_db.delete()
 
-    return home(request)
+    return home(request) if request is not None else None
