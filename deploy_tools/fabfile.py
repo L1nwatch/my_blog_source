@@ -63,7 +63,7 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name):
     :return:
     """
     # 如果需要执行 Django 的 manage.py 命令，就要指定虚拟环境中二进制文件夹，确保使用的是虚拟环境中的 Django 版本，而不是系统中的版本
-    run("cd {source_folder} && {virtualenv_folder}/bin/python3 {site_name}/manage.py runcrons"
+    run("cd {source_folder} && {virtualenv_folder}/bin/python3 {site_name}/manage.py runcrons --force"
         .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder, site_name=site_name))
 
 
