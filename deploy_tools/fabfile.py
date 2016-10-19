@@ -8,7 +8,6 @@
 import random
 import string
 import os
-import logging
 from fabric.contrib.files import append, exists, sed
 from fabric.api import env, local, run, sudo
 
@@ -54,20 +53,21 @@ def deploy():
     _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user)
 
     # 定时任务
-    _set_cron_job(source_folder, virtualenv_folder, site_name)
+    _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder)
 
 
-def _update_setting_to_conf_file(old_content, log_file_path):
+def _update_setting_to_conf_file(old_content, log_file_path, cron_job):
     """
     给配置文件添加对应的参数行
     # 2016.10.19 重构一下 _set_cron_job, 将其中关于修改文件内容的代码封装成函数
+    :param old_content: 原来 crontab 已经存在的内容
+    :param cron_job: 要添加到 crontab 的命令
     :return:
     """
     with open(log_file_path, "w") as f:
         result_content_list = list()
         is_in_command_section = False
         has_set_cron_job = False
-        f.write("进入循环了\n")
         for each_line in old_content:
             f.write("当前读取的行的内容是: {}\n".format(each_line))
             f.write("each_line.strip() = {}\n".format(each_line))
@@ -83,10 +83,7 @@ def _update_setting_to_conf_file(old_content, log_file_path):
                     # 没设定的话就添加 run_cron 设定
                     if not has_set_cron_job:
                         f.write("添加 run_cron 设定")
-                        run_cron_job = ('*/5 * * * * root cd /home/watch/sites/watch0.top/source'
-                                        ' && ../virtualenv/bin/python3 my_blog/manage.py runcrons --force'
-                                        ' > /home/watch/sites/watch0.top/log/cron_job.log')
-                        result_content_list.append(run_cron_job)
+                        result_content_list.append(cron_job)
                 result_content_list.append(each_line)
             else:
                 result_content_list.append(each_line)
@@ -105,11 +102,14 @@ def _update_setting_to_conf_file(old_content, log_file_path):
     return result_content_list
 
 
-def _set_cron_job(source_folder, virtualenv_folder, site_name):
+def _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder):
     """
     2016.10.19 仿照 __set_locale_for_supervisor 方法, 通过修改 /etc/crontab 文件来实现定时功能
     2016.10.17 添加第一个定时任务, 自动更新数据库
     :param source_folder: manage.py 所在的文件夹
+    :param virtualenv_folder: 虚拟环境所在的文件夹
+    :param site_name: 工程 app 名, 比如 my_blog
+    :param site_folder: 网站所在的根目录, 即 source 的父目录
     :return:
     """
     # 大部分代码与 __set_locale_for_supervisor 类似, 这里是第 2 次使用, 如果使用了 3 次的话就要重构了
@@ -124,7 +124,13 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name):
     with open(temp_file1_path, "r") as f:
         old_content = f.readlines()
 
-    result_content_list = _update_setting_to_conf_file(old_content, temp_file3_path)
+    run_cron_job = ('*/5 * * * * root cd {source_folder}'
+                    ' && {virtualenv_folder}/bin/python3 {site_name}/manage.py runcrons --force'
+                    ' > {site_folder}/log/cron_job.log'
+                    .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder,
+                            site_name=site_name, site_folder=site_folder))
+
+    result_content_list = _update_setting_to_conf_file(old_content, temp_file3_path, run_cron_job)
 
     with open(temp_file2_path, "w") as f:
         f.writelines(result_content_list)
@@ -133,9 +139,9 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name):
          " && cp {} /etc/crontab".format(source_folder, temp_file2_name))
 
     # 清除临时文件
-    # sudo("cd {}"
-    #      " && rm {}"
-    #      " && rm {}".format(source_folder, temp_file1_name, temp_file2_name))
+    sudo("cd {}"
+         " && rm {}"
+         " && rm {}".format(source_folder, temp_file1_name, temp_file2_name))
 
     # 重启 cron 服务
     sudo("/etc/init.d/cron restart")
