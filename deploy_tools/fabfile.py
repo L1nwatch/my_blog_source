@@ -58,14 +58,63 @@ def deploy():
 
 def _set_cron_job(source_folder, virtualenv_folder, site_name):
     """
+    2016.10.19 仿照 __set_locale_for_supervisor 方法, 通过修改 /etc/crontab 文件来实现定时功能
     2016.10.17 添加第一个定时任务, 自动更新数据库
     :param source_folder: manage.py 所在的文件夹
     :return:
     """
-    # 如果需要执行 Django 的 manage.py 命令，就要指定虚拟环境中二进制文件夹，确保使用的是虚拟环境中的 Django 版本，而不是系统中的版本
-    sudo("cd {source_folder} && {virtualenv_folder}/bin/python3 {site_name}/manage.py runcrons --force"
-        .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder, site_name=site_name))
+    # 大部分代码与 __set_locale_for_supervisor 类似, 这里是第 2 次使用, 如果使用了 3 次的话就要重构了
+    temp_file1_name, temp_file2_name = "tEmP_conf1", "tEmP_conf2"
+    temp_file1_path = os.path.join(source_folder, temp_file1_name)
+    temp_file2_path = os.path.join(source_folder, temp_file2_name)
+    sudo("cd {}"
+         " && cp /etc/crontab {}".format(source_folder, temp_file1_name))
 
+    # 读取原来的 conf 文件到一个临时文件中
+    with open(temp_file1_path, "r") as f:
+        old_content = f.readlines()
+
+    result_content_list = list()
+    is_in_command_section = False
+    has_set_cron_job = False
+    for each_line in old_content:
+        if is_in_command_section:
+            # 已经存在 run_cron 设定, 那就不理了
+            if "manage.py runcrons --force" in each_line.lower():
+                has_set_cron_job = True
+            # 到达该节的末尾了
+            if each_line.startswith("; the below section must"):
+                # 没设定的话就添加 run_cron 设定
+                if not has_set_cron_job:
+                    run_cron_job = ('*/5 * * * * root cd /home/watch/sites/watch0.top/source'
+                                    ' && ../virtualenv/bin/python3 my_blog/manage.py runcrons --force'
+                                    ' > /home/watch/sites/watch0.top/log/cron_job.log')
+                    result_content_list.append(run_cron_job)
+            result_content_list.append(each_line)
+        else:
+            result_content_list.append(each_line)
+
+        # 设置 command 节标志位
+        if each_line.strip() == "# m h dom mon dow user  command":
+            is_in_command_section = True
+        elif is_in_command_section and each_line.strip() == "#":
+            is_in_command_section = False
+
+    with open(temp_file2_path, "w") as f:
+        result_content_list = [each_line.strip() for each_line in result_content_list]
+        result_content_list = [each_line + os.linesep for each_line in result_content_list]
+        f.writelines(result_content_list)
+
+    sudo("cd {}"
+         " && cp {} /etc/crontab".format(source_folder, temp_file2_name))
+
+    # 清除临时文件
+    # sudo("cd {}"
+    #      " && rm {}"
+    #      " && rm {}".format(source_folder, temp_file1_name, temp_file2_name))
+
+    # 重启 cron 服务
+    sudo("/etc/init.d/cron restart")
 
 def _create_directory_structure_if_necessary(site_folder):
     for sub_folder in ["virtualenv", "log"]:

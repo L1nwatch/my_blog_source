@@ -1,9 +1,11 @@
 <component name="ProjectDictionaryState">
   <dictionary name="L1n">
     <words>
+      <w>crontab</w>
       <w>csrf</w>
       <w>gunicorn</w>
       <w>nginx</w>
+      <w>runcrons</w>
       <w>sudo</w>
       <w>supervisord</w>
     </words>
