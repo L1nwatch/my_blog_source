@@ -57,6 +57,49 @@ def deploy():
     _set_cron_job(source_folder, virtualenv_folder, site_name)
 
 
+def _update_setting_to_conf_file(old_content):
+    """
+    给配置文件添加对应的参数行
+    # 2016.10.19 重构一下 _set_cron_job, 将其中关于修改文件内容的代码封装成函数
+    :return:
+    """
+    result_content_list = list()
+    is_in_command_section = False
+    has_set_cron_job = False
+    for each_line in old_content:
+        if is_in_command_section:
+            # 已经存在 run_cron 设定, 那就不理了
+            if "manage.py runcrons --force" in each_line.lower():
+                print("已经存在 run_cron 设定")
+                has_set_cron_job = True
+            # 到达该节的末尾了
+            if each_line.strip() == "#":
+                print("到达 command 节末尾了")
+                # 没设定的话就添加 run_cron 设定
+                if not has_set_cron_job:
+                    print("添加 run_cron 设定")
+                    run_cron_job = ('*/5 * * * * root cd /home/watch/sites/watch0.top/source'
+                                    ' && ../virtualenv/bin/python3 my_blog/manage.py runcrons --force'
+                                    ' > /home/watch/sites/watch0.top/log/cron_job.log')
+                    result_content_list.append(run_cron_job)
+            result_content_list.append(each_line)
+        else:
+            result_content_list.append(each_line)
+
+        # 设置 command 节标志位
+        if each_line.strip() == "# m h dom mon dow user  command":
+            print("进入 command 节")
+            is_in_command_section = True
+        elif is_in_command_section and each_line.strip() == "#":
+            print("离开 command 节")
+            is_in_command_section = False
+
+    result_content_list = [each_line.strip() for each_line in result_content_list]
+    result_content_list = [each_line + os.linesep for each_line in result_content_list]
+
+    return result_content_list
+
+
 def _set_cron_job(source_folder, virtualenv_folder, site_name):
     """
     2016.10.19 仿照 __set_locale_for_supervisor 方法, 通过修改 /etc/crontab 文件来实现定时功能
@@ -75,40 +118,9 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name):
     with open(temp_file1_path, "r") as f:
         old_content = f.readlines()
 
-    result_content_list = list()
-    is_in_command_section = False
-    has_set_cron_job = False
-    for each_line in old_content:
-        if is_in_command_section:
-            # 已经存在 run_cron 设定, 那就不理了
-            if "manage.py runcrons --force" in each_line.lower():
-                logging.debug("已经存在 run_cron 设定")
-                has_set_cron_job = True
-            # 到达该节的末尾了
-            if each_line.strip() == "#":
-                logging.debug("到达 command 节末尾了")
-                # 没设定的话就添加 run_cron 设定
-                if not has_set_cron_job:
-                    logging.debug("添加 run_cron 设定")
-                    run_cron_job = ('*/5 * * * * root cd /home/watch/sites/watch0.top/source'
-                                    ' && ../virtualenv/bin/python3 my_blog/manage.py runcrons --force'
-                                    ' > /home/watch/sites/watch0.top/log/cron_job.log')
-                    result_content_list.append(run_cron_job)
-            result_content_list.append(each_line)
-        else:
-            result_content_list.append(each_line)
-
-        # 设置 command 节标志位
-        if each_line.strip() == "# m h dom mon dow user  command":
-            logging.debug("进入 command 节")
-            is_in_command_section = True
-        elif is_in_command_section and each_line.strip() == "#":
-            logging.debug("离开 command 节")
-            is_in_command_section = False
+    result_content_list = _update_setting_to_conf_file(old_content)
 
     with open(temp_file2_path, "w") as f:
-        result_content_list = [each_line.strip() for each_line in result_content_list]
-        result_content_list = [each_line + os.linesep for each_line in result_content_list]
         f.writelines(result_content_list)
 
     sudo("cd {}"
