@@ -26,7 +26,7 @@ def deploy():
     # env.host 的值是在命令行中指定的服务器地址，例如 watch0.top, env.user 的值是登录服务器时使用的用户名
     site_folder = "/home/{}/sites/{}".format(env.user, env.host)
     source_folder = os.path.join(site_folder, "source")
-    virtualenv_folder = os.path.join(source_folder, "../virtualenv")
+    virtualenv_folder = os.path.join(site_folder, "virtualenv")
     site_name = "my_blog"
     host_name = env.host
     user = env.user
@@ -124,11 +124,9 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder):
     with open(temp_file1_path, "r") as f:
         old_content = f.readlines()
 
-    run_cron_job = ('*/5 * * * * root cd {source_folder}'
-                    ' && {virtualenv_folder}/bin/python3 {site_name}/manage.py runcrons --force'
+    run_cron_job = ('*/5 * * * * root {virtualenv_folder}/bin/python3 {site_name}/manage.py runcrons --force'
                     ' > {site_folder}/log/cron_job.log'
-                    .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder,
-                            site_name=site_name, site_folder=site_folder))
+                    .format(virtualenv_folder=virtualenv_folder, site_name=site_name, site_folder=site_folder))
 
     result_content_list = _update_setting_to_conf_file(old_content, temp_file3_path, run_cron_job)
 
