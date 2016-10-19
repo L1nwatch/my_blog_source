@@ -124,9 +124,11 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder):
     with open(temp_file1_path, "r") as f:
         old_content = f.readlines()
 
-    run_cron_job = ('*/5 * * * * root {virtualenv_folder}/bin/python3 {site_name}/manage.py runcrons --force'
+    run_cron_job = ('*/5 * * * * root cd {source_folder}'
+                    ' && {virtualenv_folder}/bin/python3 {site_name}/manage.py runcrons --force'
                     ' > {site_folder}/log/cron_job.log'
-                    .format(virtualenv_folder=virtualenv_folder, site_name=site_name, site_folder=site_folder))
+                    .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder,
+                            site_name=site_name, site_folder=site_folder))
 
     result_content_list = _update_setting_to_conf_file(old_content, temp_file3_path, run_cron_job)
 
