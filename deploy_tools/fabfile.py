@@ -92,7 +92,7 @@ def _update_setting_to_conf_file(old_content, log_file_path):
                 result_content_list.append(each_line)
 
             # 设置 command 节标志位
-            if each_line.strip() == "# m h dom mon dow user  command":
+            if "# m h dom mon dow user" in each_line.strip():
                 f.write("进入 command 节")
                 is_in_command_section = True
             elif is_in_command_section and each_line.strip() == "#":
