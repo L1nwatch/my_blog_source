@@ -132,6 +132,7 @@ def _create_directory_structure_if_necessary(site_folder):
 def _get_latest_source(source_folder):
     """
     执行 git 命令获取最新版本的代码
+    # 2016.10.19 依旧得执行 2 次才能 git 到最新版本, 所以优化一下
     # 2016.10.06 觉得原先的版本老是没办法帮我得到最新的版本, 所以重新布置了一下
     :param source_folder: 代码所在的文件夹路径
     :return:
@@ -146,8 +147,11 @@ def _get_latest_source(source_folder):
         # current_commit = local("git log -n 1 --format=%H", capture=True)
         # 执行 git reset --hard 命令，切换到指定的提交。这个命令会撤销在服务器中对代码仓库所做的任何改动。
         # run("cd {} && git reset --hard {}".format(source_folder, current_commit))
-        run("cd {} && git reset --hard && git reset --hard".format(source_folder))
-        # 发现书中给的没法获取最新版本, 所以自己又多添加了一条来进行确保
+        run("cd {} && git reset --hard".format(source_folder))
+        run("cd {} && git pull".format(source_folder))
+
+        # 再次确保获取最新版本
+        run("cd {} && git reset --hard".format(source_folder))
         run("cd {} && git pull".format(source_folder))
     else:
         # 如果仓库不存在，就执行 git clone 命令克隆一份全新的源码。
