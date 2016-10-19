@@ -25,7 +25,7 @@ class TestModifyCrontabFile(unittest.TestCase):
         self.assertNotIn("manage.py runcrons --force", old_content)
 
         # 运行完函数之后就有了配置行了
-        new_content = str().join(_update_setting_to_conf_file(old_content))
+        new_content = str().join(_update_setting_to_conf_file(old_content, "dsadsadas.txt"))
         self.assertIn("manage.py runcrons --force", new_content)
 
     def test_do_nothing_when_exist(self):

@@ -71,14 +71,14 @@ def _update_setting_to_conf_file(old_content, log_file_path):
             if is_in_command_section:
                 # 已经存在 run_cron 设定, 那就不理了
                 if "manage.py runcrons --force" in each_line.lower():
-                    print("已经存在 run_cron 设定", file=f)
+                    f.write("已经存在 run_cron 设定")
                     has_set_cron_job = True
                 # 到达该节的末尾了
                 if each_line.strip() == "#":
-                    print("到达 command 节末尾了", file=f)
+                    f.write("到达 command 节末尾了")
                     # 没设定的话就添加 run_cron 设定
                     if not has_set_cron_job:
-                        print("添加 run_cron 设定", file=f)
+                        f.write("添加 run_cron 设定")
                         run_cron_job = ('*/5 * * * * root cd /home/watch/sites/watch0.top/source'
                                         ' && ../virtualenv/bin/python3 my_blog/manage.py runcrons --force'
                                         ' > /home/watch/sites/watch0.top/log/cron_job.log')
@@ -89,10 +89,10 @@ def _update_setting_to_conf_file(old_content, log_file_path):
 
             # 设置 command 节标志位
             if each_line.strip() == "# m h dom mon dow user  command":
-                print("进入 command 节", file=f)
+                f.write("进入 command 节")
                 is_in_command_section = True
             elif is_in_command_section and each_line.strip() == "#":
-                print("离开 command 节", file=f)
+                f.write("离开 command 节")
                 is_in_command_section = False
 
         result_content_list = [each_line.strip() for each_line in result_content_list]
