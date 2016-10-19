@@ -67,7 +67,11 @@ def _update_setting_to_conf_file(old_content, log_file_path):
         result_content_list = list()
         is_in_command_section = False
         has_set_cron_job = False
+        f.write("进入循环了\n")
         for each_line in old_content:
+            f.write("当前读取的行的内容是: {}\n".format(each_line))
+            f.write("each_line.strip() = {}\n".format(each_line))
+            f.write("*" * 30 + "\n")
             if is_in_command_section:
                 # 已经存在 run_cron 设定, 那就不理了
                 if "manage.py runcrons --force" in each_line.lower():
