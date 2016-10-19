@@ -109,9 +109,10 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name):
     :return:
     """
     # 大部分代码与 __set_locale_for_supervisor 类似, 这里是第 2 次使用, 如果使用了 3 次的话就要重构了
-    temp_file1_name, temp_file2_name = "tEmP_conf1", "tEmP_conf2"
+    temp_file1_name, temp_file2_name, temp_file3_name = "tEmP_conf1", "tEmP_conf2", "tEmP_conf3"
     temp_file1_path = os.path.join(source_folder, temp_file1_name)
     temp_file2_path = os.path.join(source_folder, temp_file2_name)
+    temp_file3_path = os.path.join(source_folder, temp_file3_name)
     sudo("cd {}"
          " && cp /etc/crontab {}".format(source_folder, temp_file1_name))
 
@@ -119,7 +120,7 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name):
     with open(temp_file1_path, "r") as f:
         old_content = f.readlines()
 
-    result_content_list = _update_setting_to_conf_file(old_content)
+    result_content_list = _update_setting_to_conf_file(old_content, temp_file3_path)
 
     with open(temp_file2_path, "w") as f:
         f.writelines(result_content_list)
