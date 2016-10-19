@@ -81,11 +81,14 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name):
         if is_in_command_section:
             # 已经存在 run_cron 设定, 那就不理了
             if "manage.py runcrons --force" in each_line.lower():
+                print("已经存在 run_cron 设定")
                 has_set_cron_job = True
             # 到达该节的末尾了
-            if each_line.startswith("; the below section must"):
+            if each_line.strip() == "#":
+                print("到达 command 节末尾了")
                 # 没设定的话就添加 run_cron 设定
                 if not has_set_cron_job:
+                    print("添加 run_cron 设定")
                     run_cron_job = ('*/5 * * * * root cd /home/watch/sites/watch0.top/source'
                                     ' && ../virtualenv/bin/python3 my_blog/manage.py runcrons --force'
                                     ' > /home/watch/sites/watch0.top/log/cron_job.log')
@@ -96,8 +99,10 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name):
 
         # 设置 command 节标志位
         if each_line.strip() == "# m h dom mon dow user  command":
+            print("进入 command 节")
             is_in_command_section = True
         elif is_in_command_section and each_line.strip() == "#":
+            print("离开 command 节")
             is_in_command_section = False
 
     with open(temp_file2_path, "w") as f:
@@ -115,6 +120,7 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name):
 
     # 重启 cron 服务
     sudo("/etc/init.d/cron restart")
+
 
 def _create_directory_structure_if_necessary(site_folder):
     for sub_folder in ["virtualenv", "log"]:
