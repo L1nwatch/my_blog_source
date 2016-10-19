@@ -129,8 +129,8 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name):
     with open(temp_file2_path, "w") as f:
         f.writelines(result_content_list)
 
-    # sudo("cd {}"
-    #      " && cp {} /etc/crontab".format(source_folder, temp_file2_name))
+    sudo("cd {}"
+         " && cp {} /etc/crontab".format(source_folder, temp_file2_name))
 
     # 清除临时文件
     # sudo("cd {}"
