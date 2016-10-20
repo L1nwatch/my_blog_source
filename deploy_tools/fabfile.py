@@ -65,44 +65,33 @@ def _update_setting_to_conf_file(old_content, log_file_path, cron_job):
     :param cron_job: 要添加到 crontab 的命令
     :return:
     """
-    with open(log_file_path, "w") as f:
-        result_content_list = list()
-        is_in_command_section = False
-        has_set_cron_job = False
-        for each_line in old_content:
-            f.write("当前读取的行的内容是: {}\n".format(each_line))
-            f.write("each_line.strip() = {}\n".format(each_line))
-            f.write("*" * 30 + "\n")
-            if is_in_command_section:
-                # 已经存在 run_cron 设定, 那就不理了
-                if "manage.py runcrons --force" in each_line.lower():
-                    if each_line.strip().lower() != cron_job:
-                        each_line = cron_job
-                        f.write("替换已经存在 run_cron 设定")
-                    else:
-                        f.write("已经存在 run_cron 设定")
-                    has_set_cron_job = True
-                # 到达该节的末尾了
-                if each_line.strip() == "#":
-                    f.write("到达 command 节末尾了")
-                    # 没设定的话就添加 run_cron 设定
-                    if not has_set_cron_job:
-                        f.write("添加 run_cron 设定")
-                        result_content_list.append(cron_job)
-                result_content_list.append(each_line)
-            else:
-                result_content_list.append(each_line)
+    result_content_list = list()
+    is_in_command_section = False
+    has_set_cron_job = False
+    for each_line in old_content:
+        if is_in_command_section:
+            # 已经存在 run_cron 设定, 那就不理了
+            if "manage.py runcrons --force" in each_line.lower():
+                if each_line.strip().lower() != cron_job:
+                    each_line = cron_job
+                has_set_cron_job = True
+            # 到达该节的末尾了
+            if each_line.strip() == "#":
+                # 没设定的话就添加 run_cron 设定
+                if not has_set_cron_job:
+                    result_content_list.append(cron_job)
+            result_content_list.append(each_line)
+        else:
+            result_content_list.append(each_line)
 
-            # 设置 command 节标志位
-            if "# m h dom mon dow user" in each_line.strip():
-                f.write("进入 command 节")
-                is_in_command_section = True
-            elif is_in_command_section and each_line.strip() == "#":
-                f.write("离开 command 节")
-                is_in_command_section = False
+        # 设置 command 节标志位
+        if "# m h dom mon dow user" in each_line.strip():
+            is_in_command_section = True
+        elif is_in_command_section and each_line.strip() == "#":
+            is_in_command_section = False
 
-        result_content_list = [each_line.strip() for each_line in result_content_list]
-        result_content_list = [each_line + os.linesep for each_line in result_content_list]
+    result_content_list = [each_line.strip() for each_line in result_content_list]
+    result_content_list = [each_line + os.linesep for each_line in result_content_list]
 
     return result_content_list
 
