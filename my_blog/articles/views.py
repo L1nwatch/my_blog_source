@@ -189,7 +189,6 @@ def update_notes(request=None):
         return home(request, "invalid_click") if request is not None else None
     else:
         LAST_UPDATE_TIME = now
-        print("[*] 更新于: {}---".format(now))
 
     # 将 git 仓库中的所有笔记更新到本地
     __get_latest_notes()
