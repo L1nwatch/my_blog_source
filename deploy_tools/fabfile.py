@@ -76,7 +76,7 @@ def _update_setting_to_conf_file(old_content, log_file_path, cron_job):
             if is_in_command_section:
                 # 已经存在 run_cron 设定, 那就不理了
                 if "manage.py runcrons --force" in each_line.lower():
-                    if each_line.lower != cron_job:
+                    if each_line.strip().lower() != cron_job:
                         each_line = cron_job
                         f.write("替换已经存在 run_cron 设定")
                     else:
