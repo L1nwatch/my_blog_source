@@ -76,7 +76,11 @@ def _update_setting_to_conf_file(old_content, log_file_path, cron_job):
             if is_in_command_section:
                 # 已经存在 run_cron 设定, 那就不理了
                 if "manage.py runcrons --force" in each_line.lower():
-                    f.write("已经存在 run_cron 设定")
+                    if each_line.lower != cron_job:
+                        each_line = cron_job
+                        f.write("替换已经存在 run_cron 设定")
+                    else:
+                        f.write("已经存在 run_cron 设定")
                     has_set_cron_job = True
                 # 到达该节的末尾了
                 if each_line.strip() == "#":
@@ -127,7 +131,7 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder):
 
     run_cron_job = ('*/5 * * * * root cd {source_folder}'
                     ' && {virtualenv_folder}/bin/python3 {site_name}/manage.py runcrons --force'
-                    ' > {site_folder}/log/cron_job.log'
+                    ' >> {site_folder}/log/cron_job.log'
                     .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder,
                             site_name=site_name, site_folder=site_folder))
 
