@@ -13,6 +13,5 @@ class AutoUpdateNotes(CronJobBase):
 
     def do(self):
         now = datetime.datetime.today()
-        print("[*] [{}] {separator} 定时更新开始 {separator}".format(now, separator="*" * 30))
         update_notes()
         print("[*] [{}] {separator} 定时更新结束 {separator}".format(now, separator="*" * 30))
