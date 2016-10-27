@@ -44,9 +44,6 @@
                         </form>
                     </li>
                     <li class="nav-item">
-                        <a class="button-success pure-button" id="id_about_me" href="{% url 'about_me' %}">About Me</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="button-success pure-button" id="id_update_notes" href="{% url 'update_notes' %}"
                            onclick="check_is_valid_click()">手动更新笔记</a>
                     </li>
@@ -62,7 +59,7 @@
             <div class="footer">
                 <div class="pure-menu pure-menu-horizontal pure-menu-open">
                     <ul>
-                        <li><a href="http://andrewliu.tk/about/">Test1</a></li>
+                        <li><a id="id_about_me" href="{% url 'about_me' %}">About Me</a></li>
                         <li><a href="http://twitter.com/yuilibrary/">Test2</a></li>
                         <li><a href="http://github.com/yahoo/pure/">Test3</a></li>
                     </ul>
