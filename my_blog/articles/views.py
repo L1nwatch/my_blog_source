@@ -68,7 +68,8 @@ def get_context_data(update_data=None):
     :param update_data: 以需要发送给 base.html 的数据为基础, 需要额外发送给模板的数据
     :return: dict(), 发送给模板的全部数据
     """
-    data_return_to_base_template = {"form": ArticleForm(), "is_valid_click": "True"}
+    data_return_to_base_template = {"form": ArticleForm(), "is_valid_click": "True",
+                                    "articles_numbers": len(Article.objects.all())}
     if update_data is not None:
         data_return_to_base_template.update(update_data)
 

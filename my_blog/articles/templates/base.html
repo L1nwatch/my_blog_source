@@ -50,6 +50,20 @@
                 </ul>
             </nav>
         </div>
+        <div class="footer">
+            <nav class="nav">
+                <ul class="nav-list">
+                    <label>
+                        <li>文章数: {{ articles_numbers }}</li>
+                    </label>
+                    &nbsp
+                    <label>
+                        <li>创建博客日期: 2016.10.04</li>
+                    </label>
+                </ul>
+            </nav>
+        </div>
+
     </div>
 
     <div class="content pure-u-1 pure-u-md-3-4">
@@ -60,6 +74,7 @@
                 <div class="pure-menu pure-menu-horizontal pure-menu-open">
                     <ul>
                         <li><a id="id_about_me" href="{% url 'about_me' %}">About Me</a></li>
+                        <li><a href="#">回到顶部</a></li>
                     </ul>
                 </div>
             </div>
