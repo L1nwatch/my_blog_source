@@ -138,7 +138,7 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder):
          " && rm {}".format(source_folder, temp_file1_name, temp_file2_name))
 
     # 重启 cron 服务
-    sudo("/etc/init.d/cron restart")
+    sudo("service cron restart")
 
 
 def _create_directory_structure_if_necessary(site_folder):

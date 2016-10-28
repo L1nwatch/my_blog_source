@@ -224,7 +224,8 @@ def update_notes(request=None):
             return False
         return True
 
-    logger.info("ip: {} 更新了笔记".format(get_ip_from_django_request(request)))
+    if request:
+        logger.info("ip: {} 更新了笔记".format(get_ip_from_django_request(request)))
 
     # settings.UPDATE_TIME_LIMIT s 内不允许重新点击
     global LAST_UPDATE_TIME
