@@ -13,7 +13,6 @@ from my_constant import const
 __author__ = '__L1n__w@tch'
 
 
-# TODO: form 表单在搜索的时候老是 is_valid 验证失败
 class ArticleFormTest(TestCase):
     def test_form_item_input_has_placeholder_and_css_classes(self):
         """

@@ -58,6 +58,7 @@ class AutoUpdateDatabaseTest(FunctionalTest):
         # TODO: 还没实现
         return True
 
+    # TODO: 暂时没办法通过这个测试
     @unittest.skipIf(True, "等学了 ajax 才能通过这个功能测试吧")
     def test_can_not_continue_click_update_db_button(self):
         """

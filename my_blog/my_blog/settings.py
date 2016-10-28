@@ -8,8 +8,12 @@ https://docs.djangoproject.com/en/1.10/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
-"""
 
+更新日志:
+2016.10.28 在更新时间的时候遇到了这么个问题:
+    RuntimeWarning: DateTimeField Article.update_time received a naive datetime ... while time zone support is active
+    搜索得到解决方案: https://my.oschina.net/lyroge/blog/76298, 把 settings.USE_TZ 设置为 False 即可
+"""
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -115,7 +119,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/

@@ -5,11 +5,11 @@ from .models import Tag
 
 # Register your models here.
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('title', 'category', 'date_time')
+    list_display = ('title', 'category', 'create_time', "update_time")
     search_fields = ('title', 'category', 'tag', 'content')
-    list_filter = ("date_time",)
+    list_filter = ("update_time",)
     raw_id_fields = ('tag',)
-    date_hierarchy = 'date_time'
+    date_hierarchy = 'update_time'
 
 
 admin.site.register(Article, ArticleAdmin)

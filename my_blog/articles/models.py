@@ -16,7 +16,8 @@ class Article(models.Model):
     title = models.CharField(max_length=100, blank=False, unique=True)  # 博客题目
     category = models.CharField(max_length=50, default="Others")  # 博客分类, 默认值为 Others
     tag = models.ManyToManyField(Tag, blank=True)  # 博客标签, 可为空
-    date_time = models.DateTimeField(auto_now_add=True)  # 博客日期
+    create_time = models.DateTimeField(auto_now_add=True)  # 文章创建日期
+    update_time = models.DateTimeField(auto_now_add=True)  # 文章更新日期
     content = models.TextField(null=True, default=str())  # 博客文章正文
 
     def get_absolute_url(self):
@@ -28,4 +29,4 @@ class Article(models.Model):
         return self.title
 
     class Meta:
-        ordering = ['-date_time']
+        ordering = ['-update_time']

@@ -1,7 +1,17 @@
 <p class="post-meta">
-    <label class="post-description">Time: {{ post.date_time |date:'Y 年 m 月 d 号 H 时' }}</label>&nbsp&nbsp
-    <label class="post-description">Category: </label><a class="post-category post-category-js" href=
-        "{% url 'search_tag' tag=post.category %}">{{ post.category }}</a>&nbsp&nbsp
+    <label id="id_create_time" class="post-description">
+        Create: {{ post.create_time |date:'Y 年 m 月 d 号 H 时' }}
+    </label>&nbsp&nbsp
+
+    <label id="id_update_time" class="post-description">
+        Update: {{ post.update_time |date:'Y 年 m 月 d 号 H 时' }}
+    </label>&nbsp&nbsp
+
+    <label class="post-description">Category: </label>
+    <a class="post-category post-category-js" href=
+            "{% url 'search_tag' tag=post.category %}">{{ post.category }}
+    </a>&nbsp&nbsp
+
     <label class="post-description">Tag: </label>
     {% for tag in post.tag.all %}
     <a class="post-category post-category-design" href="#">{{ tag }}</a>

@@ -164,6 +164,7 @@ def update_notes(request=None):
             if __content_change(article_from_db.content, article_content):
                 # 内容有所改变
                 article_from_db.content = article_content
+                article_from_db.update_time = datetime.datetime.now()
             article_from_db.category = article_category
             article_from_db.save()
         except Article.DoesNotExist:

@@ -127,7 +127,7 @@ class UpdateNotesViewTest(TestCase):
     unique_url = "/articles/update_notes/"
     test_md_file_name = "测试笔记-测试用的笔记.md"
     notes_path_name = "notes"
-    global_want_to_run_git_test = input("确定要进行 git 测试(慢)?(yes/no)") if const.DEBUG_GIT else print("忽略 git 测试")
+    want_to_run_git_test = input("确定要进行 git 测试(慢)?(yes/no)") if const.DEBUG_GIT else print("忽略 git 测试")
 
     notes_path_parent_dir = os.path.dirname(settings.BASE_DIR)
     notes_git_path = os.path.join(notes_path_parent_dir, notes_path_name)
@@ -169,14 +169,14 @@ class UpdateNotesViewTest(TestCase):
                   " && git push".format(self.notes_git_path, self.test_md_file_name)
         os.system(command)
 
-    @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
+    @unittest.skipUnless(want_to_run_git_test == "yes", "决定进行 git 测试")
     def test_can_get_md_from_git(self):
         self.client.get(self.unique_url)
 
         if not os.path.exists(self.test_md_file_path):
             self.fail("从 git 上获取文件失败了")
 
-    @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
+    @unittest.skipUnless(want_to_run_git_test == "yes", "决定进行 git 测试")
     def test_can_sync_md_from_git(self):
         """
         确保获取到的是 git 上的最新版本
@@ -195,7 +195,7 @@ class UpdateNotesViewTest(TestCase):
         data = get_right_content_from_file(self.test_md_file_path)
         self.assertEqual(data, test_content, "更新测试文件失败")
 
-    @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
+    @unittest.skipUnless(want_to_run_git_test == "yes", "决定进行 git 测试")
     def test_create_notes_from_md(self):
         # 每个 md 笔记的文件名类似于: "测试笔记-测试用的笔记.md"
         test_article = self.test_md_file_name.rstrip(".md")  # 去掉 .md
@@ -217,7 +217,7 @@ class UpdateNotesViewTest(TestCase):
         except Article.DoesNotExist:
             self.fail("没有成功更新数据库啊")
 
-    @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
+    @unittest.skipUnless(want_to_run_git_test == "yes", "决定进行 git 测试")
     def test_update_notes_from_md(self):
         # 每个 md 笔记的文件名类似于: "测试笔记-测试用的笔记.md"
         test_article = self.test_md_file_name.rstrip(".md")  # 去掉 .md
@@ -234,7 +234,23 @@ class UpdateNotesViewTest(TestCase):
         self.assertEqual(latest_article.content, test_content, "数据库中依然是老文章的内容")
         self.assertEqual(latest_article.category, test_article_category, "数据库中依然是老文章的分类")
 
-    @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
+    @unittest.skipUnless(want_to_run_git_test == "yes", "决定进行 git 测试")
+    def test_update_time_when_update_notes(self):
+        # 旧的一份笔记
+        test_article = self.test_md_file_name.rstrip(".md")  # 去掉 .md
+        test_article_category, test_article_title = test_article.split("-")  # 去掉 "测试笔记-"
+        old_article = Article.objects.create(title=test_article_title, category="old_category", content="old content")
+
+        # 文章进行了跟新
+        test_content = "# test_hello"
+        self.__update_test_md_file_and_git_push(test_content)
+
+        # 再次执行该视图函数, 发现数据库也跟着更新了, 尤其是更新时间刷新了
+        self.client.get(self.unique_url)
+        latest_article = Article.objects.get(title=test_article_title)
+        self.assertNotEqual(old_article.update_time, latest_article.update_time)
+
+    @unittest.skipUnless(want_to_run_git_test == "yes", "决定进行 git 测试")
     def test_view_passes_form_to_template(self):
         """
         测试是否有将 form 传递给模板
@@ -243,7 +259,7 @@ class UpdateNotesViewTest(TestCase):
         response = self.client.get(self.unique_url)
         self.assertIsInstance(response.context["form"], ArticleForm)
 
-    @unittest.skipUnless(global_want_to_run_git_test == "yes", "决定进行 git 测试")
+    @unittest.skipUnless(want_to_run_git_test == "yes", "决定进行 git 测试")
     def test_delete_notes_from_md(self):
         """
         原先在数据库中已经存在某个笔记, 但是最新版本的 git 仓库中并没有这个笔记, 那么从数据库中删除掉
