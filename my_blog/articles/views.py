@@ -51,15 +51,16 @@ def get_ip_from_django_request(request):
     # 参考
     ## https://my.oschina.net/u/167994/blog/156184
     ## http://stackoverflow.com/questions/4581789/how-do-i-get-user-ip-address-in-django
-    :param request:
-    :return:
+    :param request: 传给视图函数的 request
+    :return: ip 地址, 比如 116.26.110.36
     """
-    logger.debug("测试: {}, {}, {}".format(get_ip(request), get_real_ip(request), get_trusted_ip(request)))
+    logger.debug("获取 ip 情况, get_ip:{}, get_real_ip:{}, get_trusted_ip:{}"
+                 .format(get_ip(request), get_real_ip(request), get_trusted_ip(request)))
     return get_ip(request)
 
 
 def home(request, valid_click="True"):
-    logger.debug("有人访问主页了, 访问者 ip: {}".format(get_ip_from_django_request(request)))
+    logger.debug("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
     articles = Article.objects.all()  # 获取全部的Article对象
     paginator = Paginator(articles, const.HOME_PAGE_ARTICLES_NUMBERS)  # 每页显示 HOME_PAGE_ARTICLES_NUMBERS 篇
     page = request.GET.get('page')
@@ -139,7 +140,7 @@ def blog_search(request):
         if __form_is_valid_and_ignore_exist_article_error(form):
             # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
             article_list = __search_keyword_in_articles(form.data["title"])
-            logger.debug("有人使用了搜索功能, 访问者 ip: {}, 搜索: {}"
+            logger.debug("ip: {} 搜索: {}"
                          .format(get_ip_from_django_request(request), form.data["title"]))
 
             data_return_to_template = {'post_list': article_list, 'error': None, "form": form}
@@ -202,7 +203,7 @@ def update_notes(request=None):
             return False
         return True
 
-    logger.debug("有人使用了更新笔记功能, 访问者 ip: {}".format(get_ip_from_django_request(request)))
+    logger.debug("ip: {} 更新了笔记".format(get_ip_from_django_request(request)))
 
     # settings.UPDATE_TIME_LIMIT s 内不允许重新点击
     global LAST_UPDATE_TIME
