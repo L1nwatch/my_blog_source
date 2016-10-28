@@ -44,8 +44,21 @@ def get_right_content_from_file(file_path):
     return data
 
 
+def get_ip_from_django_request(request):
+    """
+    # 用来获取访问者 IP 的
+    # 参考 https://my.oschina.net/u/167994/blog/156184
+    :param request:
+    :return:
+    """
+    if 'HTTP_X_FORWARDED_FOR' in request.META:
+        return request.META['HTTP_X_FORWARDED_FOR']
+    else:
+        return request.META['REMOTE_ADDR']
+
+
 def home(request, valid_click="True"):
-    logger.debug("有人访问主页了")
+    logger.debug("有人访问主页了, 访问者 ip: {}".format(get_ip_from_django_request(request)))
     articles = Article.objects.all()  # 获取全部的Article对象
     paginator = Paginator(articles, const.HOME_PAGE_ARTICLES_NUMBERS)  # 每页显示 HOME_PAGE_ARTICLES_NUMBERS 篇
     page = request.GET.get('page')
@@ -125,7 +138,8 @@ def blog_search(request):
         if __form_is_valid_and_ignore_exist_article_error(form):
             # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
             article_list = __search_keyword_in_articles(form.data["title"])
-            logger.debug("有人使用了搜索功能, 搜索: {}".format(form.data["title"]))
+            logger.debug("有人使用了搜索功能, 访问者 ip: {}, 搜索: {}"
+                         .format(get_ip_from_django_request(request), form.data["title"]))
 
             data_return_to_template = {'post_list': article_list, 'error': None, "form": form}
             if len(article_list) == 0:
@@ -187,7 +201,7 @@ def update_notes(request=None):
             return False
         return True
 
-    logger.debug("有人使用了更新笔记功能")
+    logger.debug("有人使用了更新笔记功能, 访问者 ip: {}".format(get_ip_from_django_request(request)))
 
     # settings.UPDATE_TIME_LIMIT s 内不允许重新点击
     global LAST_UPDATE_TIME
