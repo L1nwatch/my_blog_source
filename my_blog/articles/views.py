@@ -14,10 +14,13 @@ from my_constant import const
 import os
 import chardet
 import datetime
+import logging
 
 NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
 NOTES_GIT_PATH = os.path.join(NOTES_PATH_PARENT_DIR, const.NOTES_PATH_NAME)
 LAST_UPDATE_TIME = None
+
+logger = logging.getLogger("my_blog.articles.views")
 
 
 def get_right_content_from_file(file_path):
@@ -42,6 +45,7 @@ def get_right_content_from_file(file_path):
 
 
 def home(request, valid_click="True"):
+    logger.debug("有人访问主页了")
     articles = Article.objects.all()  # 获取全部的Article对象
     paginator = Paginator(articles, const.HOME_PAGE_ARTICLES_NUMBERS)  # 每页显示 HOME_PAGE_ARTICLES_NUMBERS 篇
     page = request.GET.get('page')
@@ -49,8 +53,6 @@ def home(request, valid_click="True"):
         article_list = paginator.page(page)
     except PageNotAnInteger:
         article_list = paginator.page(1)
-    # except EmptyPage: # 没用到, 不知道干啥的
-    #     article_list = paginator.paginator(paginator.num_pages)
     return render(request, 'home.html',
                   {'post_list': article_list, "form": ArticleForm(), "is_valid_click": valid_click})
 
@@ -123,12 +125,14 @@ def blog_search(request):
         if __form_is_valid_and_ignore_exist_article_error(form):
             # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
             article_list = __search_keyword_in_articles(form.data["title"])
+            logger.debug("有人使用了搜索功能, 搜索: {}".format(form.data["title"]))
 
             data_return_to_template = {'post_list': article_list, 'error': None, "form": form}
             if len(article_list) == 0:
                 data_return_to_template["error"] = const.EMPTY_ARTICLE_ERROR
             else:
                 data_return_to_template["error"] = False
+
             return render(request, 'archives.html', data_return_to_template)
 
     return home(request)
@@ -182,6 +186,8 @@ def update_notes(request=None):
         elif "-" not in file_name:
             return False
         return True
+
+    logger.debug("有人使用了更新笔记功能")
 
     # settings.UPDATE_TIME_LIMIT s 内不允许重新点击
     global LAST_UPDATE_TIME
