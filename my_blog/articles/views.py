@@ -1,6 +1,8 @@
-#!/bin/env python3
 # -*- coding: utf-8 -*-
 # version: Python3.X
+"""
+2016.10.28 重构了一下模板传参, 封装成一个函数来处理了, 要不然每个视图都得专门处理传给模板的参数
+"""
 
 from django.shortcuts import render
 from django.http import Http404
@@ -60,7 +62,20 @@ def get_ip_from_django_request(request):
     return get_ip(request)
 
 
-def home(request, valid_click="True"):
+def get_context_data(update_data=None):
+    """
+    定制要发送给模板的相关数据
+    :param update_data: 以需要发送给 base.html 的数据为基础, 需要额外发送给模板的数据
+    :return: dict(), 发送给模板的全部数据
+    """
+    data_return_to_base_template = {"form": ArticleForm(), "is_valid_click": "True"}
+    if update_data is not None:
+        data_return_to_base_template.update(update_data)
+
+    return data_return_to_base_template
+
+
+def home(request, invalid_click="True"):
     logger.info("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
     articles = Article.objects.all()  # 获取全部的Article对象
     paginator = Paginator(articles, const.HOME_PAGE_ARTICLES_NUMBERS)  # 每页显示 HOME_PAGE_ARTICLES_NUMBERS 篇
@@ -69,8 +84,8 @@ def home(request, valid_click="True"):
         article_list = paginator.page(page)
     except PageNotAnInteger:
         article_list = paginator.page(1)
-    return render(request, 'home.html',
-                  {'post_list': article_list, "form": ArticleForm(), "is_valid_click": valid_click})
+
+    return render(request, 'home.html', get_context_data({"post_list": article_list, "invalid_click": invalid_click}))
 
 
 def detail(request, article_id):
@@ -80,7 +95,8 @@ def detail(request, article_id):
         tags = db_data.tag.all()
     except Article.DoesNotExist:
         raise Http404
-    return render(request, "article.html", {"post": db_data, "tags": tags, "form": ArticleForm()})
+
+    return render(request, "article.html", get_context_data({"post": db_data, "tags": tags}))
 
 
 def archives(request):
@@ -89,13 +105,14 @@ def archives(request):
         post_list = Article.objects.all()
     except Article.DoesNotExist:
         raise Http404
-    return render(request, 'archives.html', {'post_list': post_list,
-                                             'error': False, "form": ArticleForm()})
+
+    return render(request, 'archives.html', get_context_data({'post_list': post_list, 'error': False}))
 
 
 def about_me(request):
     logger.info("ip: {} 查看 about me".format(get_ip_from_django_request(request)))
-    return render(request, 'about_me.html', {"form": ArticleForm()})
+
+    return render(request, 'about_me.html', get_context_data())
 
 
 def search_tag(request, tag):
@@ -104,7 +121,8 @@ def search_tag(request, tag):
         post_list = Article.objects.filter(category__iexact=tag)  # contains
     except Article.DoesNotExist:
         raise Http404
-    return render(request, 'tag.html', {'post_list': post_list, "form": ArticleForm()})
+
+    return render(request, 'tag.html', get_context_data({'post_list': post_list}))
 
 
 def blog_search(request):
@@ -148,13 +166,10 @@ def blog_search(request):
             logger.info("ip: {} 搜索: {}"
                         .format(get_ip_from_django_request(request), form.data["title"]))
 
-            data_return_to_template = {'post_list': article_list, 'error': None, "form": form}
-            if len(article_list) == 0:
-                data_return_to_template["error"] = const.EMPTY_ARTICLE_ERROR
-            else:
-                data_return_to_template["error"] = False
+            context_data = get_context_data({'post_list': article_list, 'error': None, "form": form})
+            context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(article_list) == 0 else False
 
-            return render(request, 'archives.html', data_return_to_template)
+            return render(request, 'archives.html', context_data)
 
     return home(request)
 
