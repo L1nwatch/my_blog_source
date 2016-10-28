@@ -5,6 +5,15 @@
     box-sizing: border-box;
 }
 
+.back-to {
+    bottom: 35px;
+    overflow: hidden;
+    position: fixed;
+    right: 10px;
+    width: 110px;
+    z-index: 999;
+}
+
 a {
     text-decoration: none;
     color: rgb(61, 146, 201);

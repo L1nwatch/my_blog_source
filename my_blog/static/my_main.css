@@ -3,3 +3,18 @@
     -moz-box-sizing: content-box;
     box-sizing: content-box;
 }
+
+.back-to .back-top {
+    background: url("back-top.png") no-repeat scroll 0 0 transparent;
+    display: block;
+    float: right;
+    height: 34px;
+    margin-left: 10px;
+    outline: 0 none;
+    text-indent: -9999em;
+    width: 34px;
+}
+
+.back-to .back-top:hover {
+    background-position: 0 -34px
+}
