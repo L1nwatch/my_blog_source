@@ -54,8 +54,10 @@ def get_ip_from_django_request(request):
     :param request: 传给视图函数的 request
     :return: ip 地址, 比如 116.26.110.36
     """
-    logger.debug("获取 ip 情况, get_ip:{}, get_real_ip:{}, get_trusted_ip:{}"
-                 .format(get_ip(request), get_real_ip(request), get_trusted_ip(request)))
+    ip_1, ip_2, ip_3 = get_ip(request), get_real_ip(request), get_trusted_ip(request)
+    if ip_1 != ip_2 or ip_3 is not None:
+        logger.debug("获取 ip 情况, get_ip:{}, get_real_ip:{}, get_trusted_ip:{}"
+                     .format(ip_1, ip_2, ip_3))
     return get_ip(request)
 
 
