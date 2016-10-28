@@ -1,3 +1,7 @@
+<!--
+更新日志:
+    2016.10.28 添加一个滑动到顶部的图标, 参考: http://www.ccvita.com/427.html 实现
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -100,14 +104,6 @@
 <script type="text/javascript">
     $(document).ready(function () {
         var bt = $('#toolBackTop');
-//        下面被注释掉的是自动获取 right 边距
-//        var sw = $(document.body)[0].clientWidth;
-//        var limitsw = (sw - 840) / 2 - 140;
-//        var limitsw = 30;
-//        if (limitsw > 0) {
-//            limitsw = parseInt(limitsw);
-//            bt.css("right", limitsw);
-//        }
         bt.css("right", 30);
 
         $(window).scroll(function () {
