@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.http import Http404
 from django.core.paginator import Paginator, PageNotAnInteger
 from django.conf import settings
+from ipware.ip import get_ip, get_real_ip, get_trusted_ip
 
 from .models import Article
 from .forms import ArticleForm
@@ -47,21 +48,14 @@ def get_right_content_from_file(file_path):
 def get_ip_from_django_request(request):
     """
     # 用来获取访问者 IP 的
-    # 参考 https://my.oschina.net/u/167994/blog/156184
+    # 参考
+    ## https://my.oschina.net/u/167994/blog/156184
+    ## http://stackoverflow.com/questions/4581789/how-do-i-get-user-ip-address-in-django
     :param request:
     :return:
     """
-    if "HTTP_X_FORWARDED_FOR" in request.META:
-        logger.debug("测试1: {}".format(request.META['HTTP_X_FORWARDED_FOR']))
-    if "REMOTE_ADDR" in request.META:
-        logger.debug("测试2: {}".format(request.META['REMOTE_ADDR']))
-
-    if 'HTTP_X_FORWARDED_FOR' in request.META and len(request.META['HTTP_X_FORWARDED_FOR']) > 1:
-        return request.META['HTTP_X_FORWARDED_FOR']
-    elif "REMOTE_ADDR" in request.META and len(request.META["REMOTE_ADDR"]) > 1:
-        return request.META["REMOTE_ADDR"]
-    else:
-        return "未知 IP"
+    logger.debug("测试: {}, {}, {}".format(get_ip(request), get_real_ip(request), get_trusted_ip(request)))
+    return get_ip(request)
 
 
 def home(request, valid_click="True"):
