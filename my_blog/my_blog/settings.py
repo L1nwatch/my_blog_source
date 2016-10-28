@@ -135,6 +135,9 @@ LOGGING = {
         'standard': {
             # 日志格式
             'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(module)s:%(funcName)s] [%(levelname)s]- %(message)s'
+        },
+        "info": {
+            'format': '[**] %(asctime)s [%(levelname)s]- %(message)s'
         }
     },
     'handlers': {
@@ -145,6 +148,14 @@ LOGGING = {
             'maxBytes': 1024 * 1024 * 5,  # 文件大小
             'backupCount': 5,  # 备份份数
             'formatter': 'standard',  # 使用哪种 formatter 日志格式
+        },
+        "info": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "../../log/django_info.log"),
+            'maxBytes': 1024 * 1024 * 5,  # 文件大小
+            'backupCount': 5,  # 备份份数
+            'formatter': 'info',  # 使用哪种 formatter 日志格式
         },
         'error': {
             'level': 'ERROR',
@@ -167,34 +178,15 @@ LOGGING = {
             'backupCount': 5,
             'formatter': 'standard',
         },
-        'scripts_handler': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, "../../log/django_scripts.log"),
-            'maxBytes': 1024 * 1024 * 5,
-            'backupCount': 5,
-            'formatter': 'standard',
-        }
     },
     'loggers': {
-        # "django" 会记录所有日志
-        # 'django': {
-        #     'handlers': ['default'],
-        #     'level': 'DEBUG',
-        #     'propagate': False
-        # },
         'django.request': {
             'handlers': ['request_handler'],
             'level': 'DEBUG',
             'propagate': False,
         },
-        'scripts': {
-            'handlers': ['scripts_handler'],
-            'level': 'INFO',
-            'propagate': False
-        },
         'my_blog.articles.views': {
-            'handlers': ['default', 'error'],
+            'handlers': ['default', 'error', "info"],
             'level': 'DEBUG',
             'propagate': True
         },

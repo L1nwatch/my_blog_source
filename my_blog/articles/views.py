@@ -30,6 +30,7 @@ def get_right_content_from_file(file_path):
     :param file_path: 文件路径
     :return: 文件内容, str() 形式
     """
+    logging.debug("读取文件内容: {}".format(file_path))
     with open(file_path, "rb") as f:
         data = f.read()
         encoding = chardet.detect(data)["encoding"]
@@ -54,15 +55,13 @@ def get_ip_from_django_request(request):
     :param request: 传给视图函数的 request
     :return: ip 地址, 比如 116.26.110.36
     """
-    ip_1, ip_2, ip_3 = get_ip(request), get_real_ip(request), get_trusted_ip(request)
-    if ip_1 != ip_2 or ip_3 is not None:
-        logger.debug("获取 ip 情况, get_ip:{}, get_real_ip:{}, get_trusted_ip:{}"
-                     .format(ip_1, ip_2, ip_3))
+    logger.debug("获取 ip 情况, get_ip:{}, get_real_ip:{}, get_trusted_ip:{}"
+                 .format(get_ip(request), get_real_ip(request), get_trusted_ip(request)))
     return get_ip(request)
 
 
 def home(request, valid_click="True"):
-    logger.debug("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
+    logger.info("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
     articles = Article.objects.all()  # 获取全部的Article对象
     paginator = Paginator(articles, const.HOME_PAGE_ARTICLES_NUMBERS)  # 每页显示 HOME_PAGE_ARTICLES_NUMBERS 篇
     page = request.GET.get('page')
@@ -77,6 +76,7 @@ def home(request, valid_click="True"):
 def detail(request, article_id):
     try:
         db_data = Article.objects.get(id=str(article_id))
+        logger.info("ip: {} 查看文章: {}".format(get_ip_from_django_request(request), db_data.title))
         tags = db_data.tag.all()
     except Article.DoesNotExist:
         raise Http404
@@ -84,6 +84,7 @@ def detail(request, article_id):
 
 
 def archives(request):
+    logger.info("ip: {} 查看文章列表".format(get_ip_from_django_request(request)))
     try:
         post_list = Article.objects.all()
     except Article.DoesNotExist:
@@ -93,10 +94,12 @@ def archives(request):
 
 
 def about_me(request):
+    logger.info("ip: {} 查看 about me".format(get_ip_from_django_request(request)))
     return render(request, 'about_me.html', {"form": ArticleForm()})
 
 
 def search_tag(request, tag):
+    logger.info("ip: {} 搜索 tag: {}".format(get_ip_from_django_request(request), tag))
     try:
         post_list = Article.objects.filter(category__iexact=tag)  # contains
     except Article.DoesNotExist:
@@ -142,8 +145,8 @@ def blog_search(request):
         if __form_is_valid_and_ignore_exist_article_error(form):
             # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
             article_list = __search_keyword_in_articles(form.data["title"])
-            logger.debug("ip: {} 搜索: {}"
-                         .format(get_ip_from_django_request(request), form.data["title"]))
+            logger.info("ip: {} 搜索: {}"
+                        .format(get_ip_from_django_request(request), form.data["title"]))
 
             data_return_to_template = {'post_list': article_list, 'error': None, "form": form}
             if len(article_list) == 0:
@@ -205,7 +208,7 @@ def update_notes(request=None):
             return False
         return True
 
-    logger.debug("ip: {} 更新了笔记".format(get_ip_from_django_request(request)))
+    logger.info("ip: {} 更新了笔记".format(get_ip_from_django_request(request)))
 
     # settings.UPDATE_TIME_LIMIT s 内不允许重新点击
     global LAST_UPDATE_TIME
