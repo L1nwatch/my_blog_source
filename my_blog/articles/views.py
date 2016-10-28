@@ -51,10 +51,12 @@ def get_ip_from_django_request(request):
     :param request:
     :return:
     """
-    if 'HTTP_X_FORWARDED_FOR' in request.META:
+    if 'HTTP_X_FORWARDED_FOR' in request.META and len(request.META['HTTP_X_FORWARDED_FOR']) > 1:
         return request.META['HTTP_X_FORWARDED_FOR']
+    elif "REMOTE_ADDR" in request.META and len(request.META["REMOTE_ADDR"]) > 1:
+        return request.META["REMOTE_ADDR"]
     else:
-        return request.META['REMOTE_ADDR']
+        return "未知 IP"
 
 
 def home(request, valid_click="True"):
