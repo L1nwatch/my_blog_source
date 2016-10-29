@@ -170,7 +170,7 @@ def blog_search(request):
             context_data = get_context_data({'post_list': article_list, 'error': None, "form": form})
             context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(article_list) == 0 else False
 
-            return render(request, 'archives.html', context_data)
+            return render(request, 'search_content.html', context_data)
 
     return home(request)
 

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load custom_markdown %}
+
+{% block content %}
+<div class="posts">
+    {% if error %}
+    <h2 class="post-title">{{ error }}</h2>
+    {% else %}
+    {% for post in post_list %}
+    <section class="post">
+        <header class="post-header">
+            <h2 class="post-title">
+                <a id="id_article_title" href="{% url 'detail' article_id=post.id %}">{{ post.title }}</a>
+            </h2>
+
+            {% include "article_info.html" %}
+        </header>
+
+        <div class="post-description">
+            <p>
+                {{ post.content|custom_markdown|truncatewords:15 }}
+            </p>
+        </div>
+        <a class="pure-button" href="{% url 'detail' article_id=post.id %}">Read More >>> </a>
+    </section>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -305,7 +305,7 @@ class BlogSearchViewTest(TestCase):
     def test_valid_input_will_get_response_using_right_template(self):
         test_article = Article.objects.create(title="test_article")
         response = self.client.post(self.unique_url, data={"title": test_article.title})
-        self.assertTemplateUsed(response, "archives.html")
+        self.assertTemplateUsed(response, "search_content.html")
 
     def test_id_article_exist(self):
         """
