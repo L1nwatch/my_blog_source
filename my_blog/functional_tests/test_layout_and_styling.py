@@ -62,6 +62,23 @@ class ArticleTimeInfoTest(FunctionalTest):
                                              str(self.test_time.day).zfill(2), str(self.test_time.hour).zfill(2)))
         self.assertIn(update_time_label_content, self.browser.page_source)
 
+    def test_tag_html_has_right_time(self):
+        """
+        测试 tag.html 显示的时间是正确的
+        :return:
+        """
+        # 访问首页
+        self.browser.get(self.server_url)
+
+        # 发现分类包含个超链接, 点击进去看看
+        self.browser.find_element_by_id("id_category").click()
+
+        # 出现了一个新页面, 页面上显示了每篇文章的发布时间
+        publish_time_label_content = ("发布：{} 年 {} 月 {} 号 {} 时"
+                                      .format(self.test_time.year, str(self.test_time.month).zfill(2),
+                                              str(self.test_time.day).zfill(2), str(self.test_time.hour).zfill(2)))
+        self.assertIn(publish_time_label_content, self.browser.page_source)
+
 
 if __name__ == "__main__":
     pass
