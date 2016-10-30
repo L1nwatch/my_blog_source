@@ -16,7 +16,7 @@ __author__ = '__L1n__w@tch'
 
 
 @override_settings(UPDATE_TIME_LIMIT=0.1)
-@unittest.skipUnless(const.DEBUG_GIT, "值为 True 表示要进行 git 测试")
+@unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "值为 True 表示要进行 git 测试")
 class UpdateGitBookCodesViewTest(TestCase):
     unique_url = "/gitbook_notes/update_notes/"
     notes_path_name = "gitbook_notes"

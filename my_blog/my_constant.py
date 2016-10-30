@@ -29,7 +29,7 @@ const.EMPTY_ARTICLE_ERROR = "没有相关文章题目"
 const.PLACE_HOLDER = "word to search"
 const.ARTICLES_GIT_REPOSITORY = "https://github.com/L1nwatch/notes_set.git"
 const.HOME_PAGE_ARTICLES_NUMBERS = 2
-const.DEBUG_GIT = True if input("确定要进行 git 测试(慢)?(yes/no)") == "yes" else False
+const.SLOW_CONNECT_DEBUG = True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
 const.NOTES_PATH_NAME = "notes"
 
 if __name__ == "__main__":
