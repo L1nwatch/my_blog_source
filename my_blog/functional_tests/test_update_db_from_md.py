@@ -18,6 +18,7 @@ __author__ = '__L1n__w@tch'
 
 
 @override_settings(UPDATE_TIME_LIMIT=5)
+@unittest.skipUnless(const.DEBUG_GIT, "值为 True 表示要进行 git 测试")
 class AutoUpdateDatabaseTest(FunctionalTest):
     def setUp(self):
         super().setUp()

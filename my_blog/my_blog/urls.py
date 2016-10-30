@@ -20,5 +20,6 @@ import articles.views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r"^$", articles.views.home, name="home"),
-    url(r"^articles/", include("articles.urls"))
+    url(r"^articles/", include("articles.urls")),
+    url(r"^gitbook_notes/", include("gitbook_notes.urls"))
 ]

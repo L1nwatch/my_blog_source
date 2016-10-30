@@ -180,7 +180,7 @@ def update_notes(request=None):
         # 进行 git 操作, 获取最新版本的笔记
         if not os.path.exists(os.path.join(NOTES_GIT_PATH, ".git")):
             command = ("cd {} && git clone {} {}"
-                       .format(NOTES_PATH_PARENT_DIR, const.TEST_GIT_REPOSITORY, const.NOTES_PATH_NAME))
+                       .format(NOTES_PATH_PARENT_DIR, const.ARTICLES_GIT_REPOSITORY, const.NOTES_PATH_NAME))
         else:
             command = "cd {} && git reset --hard && git pull".format(NOTES_GIT_PATH)
         os.system(command)

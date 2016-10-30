@@ -23,7 +23,7 @@
 4. 进入自动化部署脚本目录：`/home/watch/sites/watch0.top/source/deploy_tools`
 5. 执行命令，开始自动化部署操作：`fab deploy:host=watch@watch0.top:端口号 --password=ssh密码 --sudo-password=sudo密码`。如果一切顺利，应该会有 `Done` 这个字样出现。
 6. 访问首页，看是否正常。【可选】接着创建超级管理员，使用命令 `python manage.py createsuperuser` 创建。
-7. 修改 `my_blog/settings.py` 中的 `TEST_GIT_REPOSITORY`，将其改为笔记的 git 仓库。然后点击首页上的 `手动更新笔记` 按钮，如果失败可以尝试重新运行自动化部署命令，然后再次点击 `手动更新笔记` 按钮。
+7. 修改 `my_blog/settings.py` 中的 `ARTICLES_GIT_REPOSITORY`，将其改为笔记的 git 仓库。然后点击首页上的 `手动更新笔记` 按钮，如果失败可以尝试重新运行自动化部署命令，然后再次点击 `手动更新笔记` 按钮。
 8. 如果 `手动更新笔记` 还是失败，请确保 `locale -a` 中可以查看到 `zh_CN.utf8` (可以使用 `sudo locale-gen zh_CN.utf8` 安装)，然后设置默认 locale： `sudo vim /etc/default/locale` ，文件内容为：`LC_ALL="zh_CN.utf8"`
 9. 回到首页，可以看到刚更新的文章了。
 10. `2016.10.17` 更新：现在在自动化部署代码中会有自动更新数据库的定时任务在执行，所以不用手动更新数据库也行（定时任务默认每隔 2 个小时更新一次）
