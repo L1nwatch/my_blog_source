@@ -19,8 +19,6 @@ import chardet
 import datetime
 import logging
 
-NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
-NOTES_GIT_PATH = os.path.join(NOTES_PATH_PARENT_DIR, const.NOTES_PATH_NAME)
 LAST_UPDATE_TIME = None
 
 logger = logging.getLogger("my_blog.articles.views")
@@ -177,12 +175,14 @@ def blog_search(request):
 
 def update_notes(request=None):
     def __get_latest_notes():
+        nonlocal notes_git_path
+
         # 进行 git 操作, 获取最新版本的笔记
-        if not os.path.exists(os.path.join(NOTES_GIT_PATH, ".git")):
+        if not os.path.exists(os.path.join(notes_git_path, ".git")):
             command = ("cd {} && git clone {} {}"
-                       .format(NOTES_PATH_PARENT_DIR, const.ARTICLES_GIT_REPOSITORY, const.NOTES_PATH_NAME))
+                       .format(const.NOTES_PATH_PARENT_DIR, const.ARTICLES_GIT_REPOSITORY, const.NOTES_PATH_NAME))
         else:
-            command = "cd {} && git reset --hard && git pull".format(NOTES_GIT_PATH)
+            command = "cd {} && git reset --hard && git pull".format(notes_git_path)
         os.system(command)
 
     def __content_change(old_content, newest_content):
@@ -224,6 +224,8 @@ def update_notes(request=None):
             return False
         return True
 
+    notes_git_path = const.NOTES_GIT_PATH
+
     if request:
         logger.info("ip: {} 更新了笔记".format(get_ip_from_django_request(request)))
 
@@ -240,7 +242,7 @@ def update_notes(request=None):
 
     # 将从 git 中获取到本地的笔记更新到数据库中
     notes_in_git = set()
-    for root, dirs, file_list in os.walk(NOTES_GIT_PATH):
+    for root, dirs, file_list in os.walk(notes_git_path):
         for each_file_name in file_list:
             if __is_valid_md_file(each_file_name):
                 path = os.path.join(root, each_file_name)

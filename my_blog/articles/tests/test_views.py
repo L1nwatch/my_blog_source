@@ -128,8 +128,7 @@ class UpdateNotesViewTest(TestCase):
     unique_url = "/articles/update_notes/"
     test_md_file_name = "测试笔记-测试用的笔记.md"
 
-    notes_path_parent_dir = os.path.dirname(settings.BASE_DIR)
-    notes_git_path = os.path.join(notes_path_parent_dir, const.NOTES_PATH_NAME)
+    notes_git_path = os.path.join(const.NOTES_PATH_PARENT_DIR, const.NOTES_PATH_NAME)
     test_md_file_path = os.path.join(notes_git_path, test_md_file_name)
 
     def __update_test_md_file_and_git_push(self, test_content):
