@@ -17,11 +17,20 @@
 
 ## 自动化部署方法
 
-1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等：`sudo apt-get install nginx supervisor git python3 python3-pip fabric`
-2. 进入 `/home/watch/sites/watch0.top` 目录，进行克隆操作，主要是为了获取 `deploy_tools` 文件夹下的自动化部署脚本
+1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：
+   1. `sudo apt-get update`
+   2. `sudo apt-get install nginx`
+   3. `sudo apt-get install supervisor`
+   4. `sudo apt-get install git`
+   5. `sudo apt-get install python3`
+   6. `sudo apt-get install python3-pip`
+   7. `sudo apt-get install fabric`
+   8. `sudo apt-get install python3-dev` 可能还需要安装 gcc，如果装 pycrypto 出错的话
+   9. `sudo pip3 install virtualenv`
+2. 进入 `/home/watch/sites/watch0.top` 目录，进行克隆操作，主要是为了获取 `deploy_tools` 文件夹下的自动化部署脚本【注意这里的 watch0.top，是能够访问到该台主机的域名】
 3. 执行命令，获取仓库中的所有文件，并放在文件夹 `source` 下：`git clone https://github.com/L1nwatch/my_blog_source.git source`
 4. 进入自动化部署脚本目录：`/home/watch/sites/watch0.top/source/deploy_tools`
-5. 执行命令，开始自动化部署操作：`fab deploy:host=watch@watch0.top:端口号 --password=ssh密码 --sudo-password=sudo密码`。如果一切顺利，应该会有 `Done` 这个字样出现。
+5. 执行命令，开始自动化部署操作：`fab deploy:host=watch@watch0.top:端口号 --password=ssh密码 --sudo-password=sudo密码`。如果一切顺利，应该会有 `Done` 这个字样出现。【新版本的 fab 可能不需要 `--sudo-password=sudo密码`了，直接留下一个 `--password` 即可】
 6. 访问首页，看是否正常。【可选】接着创建超级管理员，使用命令 `python manage.py createsuperuser` 创建。
 7. 修改 `my_blog/settings.py` 中的 `ARTICLES_GIT_REPOSITORY`，将其改为笔记的 git 仓库。然后点击首页上的 `手动更新笔记` 按钮，如果失败可以尝试重新运行自动化部署命令，然后再次点击 `手动更新笔记` 按钮。
 8. 如果 `手动更新笔记` 还是失败，请确保 `locale -a` 中可以查看到 `zh_CN.utf8` (可以使用 `sudo locale-gen zh_CN.utf8` 安装)，然后设置默认 locale： `sudo vim /etc/default/locale` ，文件内容为：`LC_ALL="zh_CN.utf8"`
