@@ -31,11 +31,12 @@
 3. 执行命令，获取仓库中的所有文件，并放在文件夹 `source` 下：`git clone https://github.com/L1nwatch/my_blog_source.git source`
 4. 进入自动化部署脚本目录：`/home/watch/sites/watch0.top/source/deploy_tools`
 5. 执行命令，开始自动化部署操作：`fab deploy:host=watch@watch0.top:端口号 --password=ssh密码 --sudo-password=sudo密码`。如果一切顺利，应该会有 `Done` 这个字样出现。【新版本的 fab 可能不需要 `--sudo-password=sudo密码`了，直接留下一个 `--password` 即可】
-6. 访问首页，看是否正常。【可选】接着创建超级管理员，使用命令 `python manage.py createsuperuser` 创建。
-7. 修改 `my_blog/settings.py` 中的 `ARTICLES_GIT_REPOSITORY`，将其改为笔记的 git 仓库。然后点击首页上的 `手动更新笔记` 按钮，如果失败可以尝试重新运行自动化部署命令，然后再次点击 `手动更新笔记` 按钮。
-8. 如果 `手动更新笔记` 还是失败，请确保 `locale -a` 中可以查看到 `zh_CN.utf8` (可以使用 `sudo locale-gen zh_CN.utf8` 安装)，然后设置默认 locale： `sudo vim /etc/default/locale` ，文件内容为：`LC_ALL="zh_CN.utf8"`
-9. 回到首页，可以看到刚更新的文章了。
-10. `2016.10.17` 更新：现在在自动化部署代码中会有自动更新数据库的定时任务在执行，所以不用手动更新数据库也行（定时任务默认每隔 2 个小时更新一次）
+6. 访问首页，看是否正常。如果报出编码错误，则进行编码设置：`sudo vi /etc/default/locale`，这里使用的是：`LANG="zh_CN.utf8"\nLANGUAGE="zh_CN.utf8"\nLC_ALL="zh_CN.utf8"`
+7. 【可选】创建超级管理员，使用命令 `python manage.py createsuperuser` 创建。
+8. 修改 `my_blog/settings.py` 中的 `ARTICLES_GIT_REPOSITORY`，将其改为笔记的 git 仓库。然后点击首页上的 `手动更新笔记` 按钮，如果失败可以尝试重新运行自动化部署命令，然后再次点击 `手动更新笔记` 按钮。
+9. 如果 `手动更新笔记` 还是失败，请确保 `locale -a` 中可以查看到 `zh_CN.utf8` (可以使用 `sudo locale-gen zh_CN.utf8` 安装)，然后设置默认 locale： `sudo vim /etc/default/locale` ，文件内容为：`LC_ALL="zh_CN.utf8"`
+10. 回到首页，可以看到刚更新的文章了。
+11. `2016.10.17` 更新：现在在自动化部署代码中会有自动更新数据库的定时任务在执行，所以不用手动更新数据库也行（定时任务默认每隔 2 个小时更新一次）
 
 
 ## 开发过程记录
@@ -74,3 +75,5 @@ BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
 * 前端样式参考：[博客模板网址](http://www.purecss.org/layouts/blog/)，还有更全面的[不止是博客](http://www.purecss.org/layouts/)
 * [supervisor 配置教程](https://3rgb.com/entry/daemon_control_autostart_with_supervisor)
 * Python 探针(OneAPM) [blueware](http://blog.oneapm.com/apm-tech/202.html)
+* [使用virtualenv在ubuntu上搭建python 3开发环境](https://my.oschina.net/xiaoiaozi/blog/129769)
+* [如何更改Linux（Ubuntu）语言和编码设置](http://blog.csdn.net/bang987918/article/details/7711019)
