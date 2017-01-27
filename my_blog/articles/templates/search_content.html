@@ -17,9 +17,9 @@
         </header>
 
         <div class="post-description">
-            <p>
+            <article class="markdown-body">
                 {{ post.content|custom_markdown|truncatewords:15 }}
-            </p>
+            </article>
         </div>
         <a class="pure-button" href="{% url 'detail' article_id=post.id %}">Read More >>> </a>
     </section>
