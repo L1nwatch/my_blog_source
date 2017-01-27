@@ -30,7 +30,7 @@ const = _Const()
 const.EMPTY_ARTICLE_ERROR = "没有相关文章题目"
 const.PLACE_HOLDER = "word to search"
 const.HOME_PAGE_ARTICLES_NUMBERS = 2
-const.SLOW_CONNECT_DEBUG = True  # if input("是否要访问被墙网站?(yes/no)") == "yes" else False
+const.SLOW_CONNECT_DEBUG = False  # if input("是否要访问被墙网站?(yes/no)") == "yes" else False
 const.NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
 
 # 用来形成博客的文章 git

@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """ 配置 markdown
+
+2017.01.27 添加表格解析的支持, 添加 bleach 库用于清除不安全的 html 代码
 """
 import markdown
+import bleach
 # import markdown2
 
 from django import template
@@ -19,9 +22,10 @@ register = template.Library()  # 自定义filter时必须加上
 @register.filter(is_safe=True)  # 注册template filter
 @stringfilter  # 希望字符串作为参数
 def custom_markdown(value):
+    value = bleach.clean(value)  # 清除不安全因素
+
     return mark_safe(markdown.markdown(value,
-                                       extensions=["codehilite", "fenced_code"],
-                                       safe_mode=True,
+                                       extensions=["codehilite", "fenced_code", "tables"],
                                        enable_attributes=False))
 
 

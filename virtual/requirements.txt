@@ -6,8 +6,8 @@ django-ipware==1.1.6
 ecdsa==0.13
 Fabric3==1.12.post1
 gunicorn==19.6.0
-Markdown==2.6.7
-markdown2==2.3.1
+Markdown==2.6.8
+markdown2==2.3.2
 paramiko==1.17.2
 pycrypto==2.6.1
 Pygments==2.1.3
