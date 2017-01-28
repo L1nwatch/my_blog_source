@@ -12,15 +12,15 @@
     <meta name="description" content="w@tch web site">
 
     <title>w@tch site</title>
-    {% load staticfiles %}
-    <link rel="stylesheet" href="{% static 'my_pure-min.css' %}">
-    <link rel="stylesheet" href="{% static 'my_grids-responsive-min.css' %}">
-    <link rel="stylesheet" href="{% static 'my_blog.css' %}">
-    <link rel="stylesheet" href="{% static 'my_monokai.css' %}">
-    <link rel="stylesheet" href="{% static 'my_main.css' %}">
-    <link rel="stylesheet" href="{% static 'font-awesome/css/font-awesome.min.css' %}">
-{#    <link rel="stylesheet" href="{% static 'test.css' %}">#}
-    <link rel="shortcut icon" href="{% static 'favicon.ico' %}">
+    {% load static %}
+    <link rel="stylesheet" href="{% static "my_pure-min.css" %}">
+    <link rel="stylesheet" href="{% static "my_grids-responsive-min.css" %}">
+    <link rel="stylesheet" href="{% static "my_blog.css" %}">
+    <link rel="stylesheet" href="{% static "my_monokai.css" %}">
+    <link rel="stylesheet" href="{% static "my_main.css" %}">
+    <link rel="stylesheet" href="{% static "font-awesome/css/font-awesome.min.css" %}">
+    {#    <link rel="stylesheet" href="{% static 'test.css' %}">#}
+    <link rel="shortcut icon" href="{% static "favicon.ico" %}">
 </head>
 <body>
 <div id="layout" class="pure-g">
