@@ -1,25 +1,25 @@
 {% extends "base.html" %}
 {% load custom_markdown %}
 
-{% block content %}
+{% block sidebar_content %}
 {% endblock %}
 
 
 {% block content %}
-<div class="posts">
-    <section class="post">
-        <header class="post-header">
-            <h2 class="post-title">{{ post.title }}</h2>
+    <div class="posts">
+        <section class="post">
+            <header class="post-header">
+                <h2 class="post-title">{{ post.title }}</h2>
 
-            {% include "article_info.html" %}
-        </header>
+                {% include "article_info.html" %}
+            </header>
 
-        <div class="post-description">
-            <article class="markdown-body">
-                {{ post.content|custom_markdown }}
-            </article>
-        </div>
-    </section>
-</div>
+            <div class="post-description">
+                <article class="markdown-body">
+                    {{ post.content|custom_markdown }}
+                </article>
+            </div>
+        </section>
+    </div>
 
 {% endblock %}

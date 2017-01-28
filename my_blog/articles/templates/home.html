@@ -2,47 +2,48 @@
 {% load custom_markdown %}
 
 {% block sidebar_content %}
-{% include "sidebar.html" %}
+    {% include "sidebar.html" %}
 {% endblock %}
 
 {% block content %}
-<div class="posts">
-    {% for post in post_list %}
-    <section class="post">
-        <header class="post-header">
-            <h2 class="post-title">
-                <a id="id_article_title" href="{% url 'detail' article_id=post.id %}">{{ post.title }}</a>
-            </h2>
+    <div class="posts">
+        {% for post in post_list %}
+            <section class="post">
+                <header class="post-header">
+                    <h2 class="post-title">
+                        <a id="id_article_title" href="{% url 'detail' article_id=post.id %}">{{ post.title }}</a>
+                    </h2>
 
-            {% include "article_info.html" %}
-        </header>
+                    {% include "article_info.html" %}
+                </header>
 
-        <div class="post-description" id="id_article_content">
-            <article class="markdown-body">
-                <!--{{ post.content|custom_markdown|truncatewords_html:15 }}-->
-                {{ post.content|custom_markdown|truncatewords:15 }}
-            </article>
-        </div>
-        <a class="pure-button" href="{% url 'detail' article_id=post.id %}">Read More >>> </a>
-    </section>
-    {% endfor %}
+                <div class="post-description" id="id_article_content">
+                    <article class="markdown-body">
+                        <!--{{ post.content|custom_markdown|truncatewords_html:15 }}-->
+                        {{ post.content|custom_markdown|truncatewords:15 }}
+                    </article>
+                </div>
+                <a class="pure-button" href="{% url 'detail' article_id=post.id %}">Read More >>> </a>
+            </section>
+        {% endfor %}
 
-    {% if post_list.object_list and post_list.paginator.num_pages > 1 %}
+        {% if post_list.object_list and post_list.paginator.num_pages > 1 %}
 
 
-    <ul class="pure-paginator">
-        <li><a class="pure-button prev" href="?page=1">&#171;</a></li>
-        {% if post_list.has_previous %}
-        <li><a class="pure-button" href="?page={{ post_list.previous_page_number }}">
-            {{ post_list.previous_page_number }}</a></li>
+            <ul class="pure-paginator">
+                <li><a class="pure-button prev" href="?page=1">&#171;</a></li>
+                {% if post_list.has_previous %}
+                    <li><a class="pure-button" href="?page={{ post_list.previous_page_number }}">
+                        {{ post_list.previous_page_number }}</a></li>
+                {% endif %}
+                <li><a class="pure-button pure-button-active" href="#">{{ post_list.number }}</a></li>
+                {% if post_list.has_next %}
+                    <li><a class="pure-button"
+                           href="?page={{ post_list.next_page_number }}">{{ post_list.next_page_number }}</a>
+                    </li>
+                {% endif %}
+                <li><a class="pure-button next" href="?page={{ post_list.paginator.num_pages }}">&#187;</a></li>
+            </ul>
         {% endif %}
-        <li><a class="pure-button pure-button-active" href="#">{{ post_list.number }}</a></li>
-        {% if post_list.has_next %}
-        <li><a class="pure-button" href="?page={{ post_list.next_page_number }}">{{ post_list.next_page_number }}</a>
-        </li>
-        {% endif %}
-        <li><a class="pure-button next" href="?page={{ post_list.paginator.num_pages}}">&#187;</a></li>
-    </ul>
-    {% endif %}
-</div>
+    </div>
 {% endblock %}

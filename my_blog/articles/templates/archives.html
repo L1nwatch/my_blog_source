@@ -1,25 +1,25 @@
 {% extends "base.html" %}
 
 {% block sidebar_content %}
-{% include "sidebar.html" %}
+    {% include "sidebar.html" %}
 {% endblock %}
 
 {% block content %}
-<div class="posts">
-    {% if error %}
-    <h2 class="post-title">{{ error }}</h2>
-    {% else %}
-    {% for post in post_list %}
-    <section class="post">
-        <header class="post-header">
-            <h2 class="post-title">
-                <a id="id_article_title" href="{% url 'detail' article_id=post.id %}">{{ post.title }}</a>
-            </h2>
+    <div class="posts">
+        {% if error %}
+            <h2 class="post-title">{{ error }}</h2>
+        {% else %}
+            {% for post in post_list %}
+                <section class="post">
+                    <header class="post-header">
+                        <h2 class="post-title">
+                            <a id="id_article_title" href="{% url 'detail' article_id=post.id %}">{{ post.title }}</a>
+                        </h2>
 
-            {% include "article_info.html" %}
-        </header>
-    </section>
-    {% endfor %}
-    {% endif %}
-</div>
+                        {% include "article_info.html" %}
+                    </header>
+                </section>
+            {% endfor %}
+        {% endif %}
+    </div>
 {% endblock %}
