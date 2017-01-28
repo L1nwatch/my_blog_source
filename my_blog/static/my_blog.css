@@ -623,3 +623,33 @@ h3 {
     margin: 4px 6px;
     margin-bottom: 0.809em;
 }
+
+.sidebar-search input {
+    width: 100%;
+    border-radius: 50px;
+    padding: 6px 12px;
+    -webkit-appearance: none;
+    display: inline-block;
+    border: 1px solid #cccccc;
+    font-size: 80%;
+    font-family: "Lato", "proxima-nova", "Helvetica Neue", Arial, sans-serif;
+    box-shadow: inset 0 1px 3px #ddd;
+    transition: border 0.3s;
+    -webkit-font-smoothing: antialiased;
+    line-height: normal;
+    margin: 0;
+    vertical-align: baseline;
+    box-sizing: border-box;
+    background: white;
+    -webkit-rtl-ordering: logical;
+    user-select: text;
+    cursor: auto;
+    word-spacing: normal;
+    text-align: start;
+    text-rendering: auto;
+    user-focus: none;
+}
+
+.sidebar-search input:focus {
+    outline-width: 0;
+}

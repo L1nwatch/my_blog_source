@@ -1,66 +1,60 @@
 <div class="sidebar">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-        <div class="wy-side-scroll">
+    <nav>
+        <div>
             <div class="sidebar-search">
                 <a href="{% url 'home' %}" class="fa fa-home">w@tch</a>
-                <div class="version">
-                    stable
-                </div>
-                <div role="search">
-                    <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-                        <input type="text" name="q" placeholder="Search docs">
-                        <input type="hidden" name="check_keywords" value="yes">
-                        <input type="hidden" name="area" value="default">
-                    </form>
-                </div>
+                <form action="{% url 'search_title' %}" method="post">
+                    {{ form.title }}
+                    {% csrf_token %}
+                </form>
             </div>
-{#            <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">#}
-{#                <ul class="current">#}
-{#                    <li class="toctree-l1 current"><a class="current reference internal" href=""><span#}
-{#                            class="toctree-expand"></span>Overview / Install</a>#}
-{#                        <ul>#}
-{#                            <li class="toctree-l2 current"><a class="reference internal" href="#requirements">Requirements</a>#}
-{#                            </li>#}
-{#                            <li class="toctree-l2"><a class="reference internal" href="#installing-gitpython">Installing#}
-{#                                GitPython</a></li>#}
-{#                            <li class="toctree-l2"><a class="reference internal" href="#limitations"><span#}
-{#                                    class="toctree-expand"></span>Limitations</a>#}
-{#                                <ul>#}
-{#                                    <li class="toctree-l3"><a class="reference internal"#}
-{#                                                              href="#leakage-of-system-resources">Leakage of System#}
-{#                                        Resources</a></li>#}
-{#                                    <li class="toctree-l3"><a class="reference internal"#}
-{#                                                              href="#best-effort-for-python-2-6-and-windows-support">Best-effort#}
-{#                                        for Python 2.6 and Windows support</a></li>#}
-{#                                </ul>#}
-{#                            </li>#}
-{#                            <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting#}
-{#                                Started</a></li>#}
-{#                            <li class="toctree-l2"><a class="reference internal" href="#api-reference">API#}
-{#                                Reference</a>#}
-{#                            </li>#}
-{#                            <li class="toctree-l2"><a class="reference internal" href="#source-code">Source Code</a>#}
-{#                            </li>#}
-{#                            <li class="toctree-l2"><a class="reference internal" href="#questions-and-answers">Questions#}
-{#                                and Answers</a></li>#}
-{#                            <li class="toctree-l2"><a class="reference internal" href="#issue-tracker">Issue#}
-{#                                Tracker</a>#}
-{#                            </li>#}
-{#                            <li class="toctree-l2"><a class="reference internal" href="#license-information">License#}
-{#                                Information</a></li>#}
-{#                        </ul>#}
-{#                    </li>#}
-{#                    <li class="toctree-l1"><a class="reference internal" href="tutorial.html">GitPython Tutorial</a>#}
-{#                    </li>#}
-{#                    <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a>#}
-{#                    </li>#}
-{#                    <li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>#}
-{#                    <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>#}
-{#                </ul>#}
-{##}
-{##}
-{#            </div>#}
-{#            <div class="rst-pro-wrapper"></div>#}
+            {#            <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">#}
+            {#                <ul class="current">#}
+            {#                    <li class="toctree-l1 current"><a class="current reference internal" href=""><span#}
+            {#                            class="toctree-expand"></span>Overview / Install</a>#}
+            {#                        <ul>#}
+            {#                            <li class="toctree-l2 current"><a class="reference internal" href="#requirements">Requirements</a>#}
+            {#                            </li>#}
+            {#                            <li class="toctree-l2"><a class="reference internal" href="#installing-gitpython">Installing#}
+            {#                                GitPython</a></li>#}
+            {#                            <li class="toctree-l2"><a class="reference internal" href="#limitations"><span#}
+            {#                                    class="toctree-expand"></span>Limitations</a>#}
+            {#                                <ul>#}
+            {#                                    <li class="toctree-l3"><a class="reference internal"#}
+            {#                                                              href="#leakage-of-system-resources">Leakage of System#}
+            {#                                        Resources</a></li>#}
+            {#                                    <li class="toctree-l3"><a class="reference internal"#}
+            {#                                                              href="#best-effort-for-python-2-6-and-windows-support">Best-effort#}
+            {#                                        for Python 2.6 and Windows support</a></li>#}
+            {#                                </ul>#}
+            {#                            </li>#}
+            {#                            <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting#}
+            {#                                Started</a></li>#}
+            {#                            <li class="toctree-l2"><a class="reference internal" href="#api-reference">API#}
+            {#                                Reference</a>#}
+            {#                            </li>#}
+            {#                            <li class="toctree-l2"><a class="reference internal" href="#source-code">Source Code</a>#}
+            {#                            </li>#}
+            {#                            <li class="toctree-l2"><a class="reference internal" href="#questions-and-answers">Questions#}
+            {#                                and Answers</a></li>#}
+            {#                            <li class="toctree-l2"><a class="reference internal" href="#issue-tracker">Issue#}
+            {#                                Tracker</a>#}
+            {#                            </li>#}
+            {#                            <li class="toctree-l2"><a class="reference internal" href="#license-information">License#}
+            {#                                Information</a></li>#}
+            {#                        </ul>#}
+            {#                    </li>#}
+            {#                    <li class="toctree-l1"><a class="reference internal" href="tutorial.html">GitPython Tutorial</a>#}
+            {#                    </li>#}
+            {#                    <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a>#}
+            {#                    </li>#}
+            {#                    <li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>#}
+            {#                    <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>#}
+            {#                </ul>#}
+            {##}
+            {##}
+            {#            </div>#}
+            {#            <div class="rst-pro-wrapper"></div>#}
         </div>
     </nav>
 </div>
