@@ -142,6 +142,11 @@ def __create_search_result(article_list, keyword_set):
         # 遍历每一行, 提取出关键词所在行
         for each_line in each_article.content.splitlines():
             temp_keyword_set = set(copy.copy(keyword_set))
+
+            # 已经搜索完所有关键词了, 就不浪费时间了
+            if len(temp_keyword_set) <= 0:
+                break
+
             for each_keyword in temp_keyword_set:
                 if each_keyword.lower() in each_line.lower():
                     result_content += each_line + os.linesep
