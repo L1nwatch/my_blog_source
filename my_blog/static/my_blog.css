@@ -602,3 +602,24 @@ h3 {
     background: #f8f8f8;
     border-top: 0
 }
+
+.sidebar-search {
+    display: block;
+    width: 300px;
+    padding: 0.809em;
+    margin-bottom: 0.809em;
+    z-index: 200;
+    background-color: #2980B9;
+    text-align: center;
+    color: #fcfcfc;
+    letter-spacing: normal;
+}
+
+.sidebar-search > a {
+    color: #fcfcfc;
+    font-size: 100%;
+    font-weight: bold;
+    display: inline-block;
+    margin: 4px 6px;
+    margin-bottom: 0.809em;
+}
