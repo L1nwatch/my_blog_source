@@ -18,6 +18,7 @@ import os
 import chardet
 import datetime
 import logging
+import copy
 
 LAST_UPDATE_TIME = None
 
@@ -60,7 +61,7 @@ def get_ip_from_django_request(request):
     return get_ip(request)
 
 
-def get_context_data(update_data=None):
+def __get_context_data(update_data=None):
     """
     定制要发送给模板的相关数据
     :param update_data: 以需要发送给 base.html 的数据为基础, 需要额外发送给模板的数据
@@ -84,7 +85,7 @@ def home(request, invalid_click="True"):
     except PageNotAnInteger:
         article_list = paginator.page(1)
 
-    return render(request, 'home.html', get_context_data({"post_list": article_list, "invalid_click": invalid_click}))
+    return render(request, 'home.html', __get_context_data({"post_list": article_list, "invalid_click": invalid_click}))
 
 
 def detail(request, article_id):
@@ -95,7 +96,7 @@ def detail(request, article_id):
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, "article.html", get_context_data({"post": db_data, "tags": tags}))
+    return render(request, "article.html", __get_context_data({"post": db_data, "tags": tags}))
 
 
 def archives(request):
@@ -105,13 +106,13 @@ def archives(request):
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, 'archives.html', get_context_data({'post_list': post_list, 'error': False}))
+    return render(request, 'archives.html', __get_context_data({'post_list': post_list, 'error': False}))
 
 
 def about_me(request):
     logger.info("ip: {} 查看 about me".format(get_ip_from_django_request(request)))
 
-    return render(request, 'about_me.html', get_context_data())
+    return render(request, 'about_me.html', __get_context_data())
 
 
 def search_tag(request, tag):
@@ -121,28 +122,72 @@ def search_tag(request, tag):
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, 'tag.html', get_context_data({'post_list': post_list}))
+    return render(request, 'tag.html', __get_context_data({'post_list': post_list}))
+
+
+def __create_search_result(article_list, keyword_set):
+    """
+    创建搜索结果以便返回给页面
+    :param article_list: 存在关键词的文章列表
+    :param keyword_set: set(), 每一个是一个用户搜索的关键词
+    :return: list(), 每一个元素都是一个命名元组, 每一个元素的格式类似于: (id, title, content)
+    """
+    result_list = list()
+    raw_keyword_set = copy.copy(keyword_set)
+
+    for each_article in article_list:
+        keyword_set = copy.copy(raw_keyword_set)
+
+        result_content = str()
+        # 遍历每一行, 提取出关键词所在行
+        for each_line in each_article.content.splitlines():
+            temp_keyword_set = set(copy.copy(keyword_set))
+            for each_keyword in temp_keyword_set:
+                if each_keyword.lower() in each_line.lower():
+                    result_content += each_line + os.linesep
+                    keyword_set.remove(each_keyword)
+                    continue
+
+        if len(result_content) <= 0:
+            # 设置默认值
+            result_content = const.KEYWORD_IN_TITLE
+
+        result_list.append(const.ARTICLE_STRUCTURE(each_article.id, each_article.title, result_content))
+
+    return result_list
 
 
 def blog_search(request):
     """
+    2017.01.27 重构搜索视图函数, 现在要显示搜索结果等的
     2016.10.11 添加能够搜索文章内容的功能
     :param request: django 传给视图函数的参数 request, 包含 HTTP 请求的各种信息
     :return:
     """
 
-    def __search_keyword_in_articles(keyword):
-        key_word_list = keyword.split(" ")
+    def __search_keyword_in_articles(keyword_set):
         result_set = set()
-        articles_from_title_filter, articles_from_content_filter = list(), list()
+        first_time = True
 
-        for each_key_word in key_word_list:
-            articles_from_title_filter.append(set(Article.objects.filter(title__icontains=each_key_word)))
-            articles_from_content_filter.append(set(Article.objects.filter(content__icontains=each_key_word)))
-        if len(articles_from_title_filter) > 0:
-            result_set.update(set.intersection(*articles_from_title_filter))
-        if len(articles_from_content_filter) > 0:
-            result_set.update(set.intersection(*articles_from_content_filter))
+        # 对每个关键词进行处理
+        for each_key_word in keyword_set:
+            # 获取上一次过滤剩下的文章列表, 如果是第一次则为全部文章
+            if first_time:
+                first_time = False
+                articles_from_title_filter = Article.objects.filter(title__icontains=each_key_word)
+                articles_from_content_filter = Article.objects.filter(content__icontains=each_key_word)
+
+                result_set.update(articles_from_title_filter)
+                result_set.update(articles_from_content_filter)
+            else:
+                temp_result_set = set()
+                # 对每篇文章进行查找, 先查找标题, 然后查找内容
+                for each_article in result_set:
+                    if each_key_word in each_article.title or each_key_word in each_article.content:
+                        temp_result_set.add(each_article)
+
+                result_set = temp_result_set
+
         return result_set
 
     def __form_is_valid_and_ignore_exist_article_error(my_form):
@@ -160,15 +205,17 @@ def blog_search(request):
     if request.method == "POST":
         form = ArticleForm(data=request.POST)
         if __form_is_valid_and_ignore_exist_article_error(form):
+            keywords = set(form.data["title"].split(" "))
             # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
-            article_list = __search_keyword_in_articles(form.data["title"])
+            article_list = __search_keyword_in_articles(keywords)
             logger.info("ip: {} 搜索: {}"
                         .format(get_ip_from_django_request(request), form.data["title"]))
 
-            context_data = get_context_data({'post_list': article_list, 'error': None, "form": form})
+            context_data = __get_context_data({'post_list': __create_search_result(article_list, keywords),
+                                               'error': None, "form": form})
             context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(article_list) == 0 else False
 
-            return render(request, 'search_content.html', context_data)
+            return render(request, 'search_result.html', context_data)
 
     return home(request)
 

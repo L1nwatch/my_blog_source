@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load custom_markdown %}
+
+{% block content %}
+<div class="posts">
+    {% if error %}
+    <h2 class="post-title">{{ error }}</h2>
+    {% else %}
+
+    <table border="1">
+        <thead>
+        <tr>
+            <th>文章标题</th>
+            <th>搜索结果</th>
+            <th>跟踪阅读</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            {% for post in post_list %}
+            <th>
+                <a id="id_article_title" href="{% url 'detail' article_id=post.id %}">{{ post.title }}</a>
+            </th>
+            <th align="left">
+                {{ post.content|custom_markdown }}
+            </th>
+            <th>
+                <a class="pure-button" href="{% url 'detail' article_id=post.id %}">Read More >>> </a>
+            </th>
+        </tr>
+        {% endfor %}
+
+
+        </tbody>
+    </table>
+
+    {% endif %}
+</div>
+{% endblock %}

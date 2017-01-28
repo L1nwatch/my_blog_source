@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
-
+2017.01.28 加强了搜索结果显示
 2016.10.03 测试视图函数是否正常
 """
 import os
@@ -296,7 +296,7 @@ class BlogSearchViewTest(TestCase):
     def test_valid_input_will_get_response_using_right_template(self):
         test_article = Article.objects.create(title="test_article")
         response = self.client.post(self.unique_url, data={"title": test_article.title})
-        self.assertTemplateUsed(response, "search_content.html")
+        self.assertTemplateUsed(response, "search_result.html")
 
     def test_id_article_exist(self):
         """
@@ -354,6 +354,80 @@ class BlogSearchViewTest(TestCase):
         # 两个关键词都存在
         response = self.client.post(self.unique_url, data={"title": "content2 test"})
         self.assertContains(response, test_article.title)
+
+    def test_search_one_word_can_show_content_and_title(self):
+        """
+        测试只搜索一个关键词的时候, 能找到对应的内容及标题
+        """
+        test_article = Article.objects.create(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
+
+        # 关键词在内容中, 搜索 bbb
+        response = self.client.post(self.unique_url, data={"title": "bBb"})  # 搜索要支持大小写
+
+        # 对应文章的标题存在
+        self.assertContains(response, test_article.title)
+        # 对应行的内容存在
+        self.assertContains(response, "bbb")
+        # 没搜索的行不应该存在
+        self.assertNotContains(response, "ccc")
+        # 信息也不应该是提示信息
+        self.assertNotContains(response, const.KEYWORD_IN_TITLE)
+
+        # 关键词在标题中, 搜索 article
+        response = self.client.post(self.unique_url, data={"title": "arTicle"})
+        # 对应文章的标题存在
+        self.assertContains(response, test_article.title)
+        # 对应行的内容存在, 行内容为常量, 类似于 "关键词仅出现标题中" 等的提示信息
+        self.assertContains(response, const.KEYWORD_IN_TITLE)
+
+        # 关键词不在标题也不在内容, 搜索 bbbb
+        response = self.client.post(self.unique_url, data={"title": "bbbb"})
+        # 对应文章的标题不存在
+        self.assertNotContains(response, test_article.title)
+        # 显示文章找不到的提示信息
+        self.assertContains(response, const.EMPTY_ARTICLE_ERROR)
+
+    def test_search_multiple_words_can_show_contents_and_title(self):
+        """
+        测试搜索多个关键词的时候, 每个关键词对应的行都显示了出来
+        """
+        test_article = Article.objects.create(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
+
+        # 关键词在内容中, 搜索 ccc 和 aaa
+        response = self.client.post(self.unique_url, data={"title": "ccc aaa"})
+
+        # 对应文章的标题存在
+        self.assertContains(response, test_article.title)
+        # 对应行的内容存在
+        self.assertContains(response, "ccc")
+        self.assertContains(response, "aaa")
+        # 没搜索的行不应该存在
+        self.assertNotContains(response, "bbb")
+
+        # 关键词在标题和内容中, 搜索 article 和 bbb
+        response = self.client.post(self.unique_url, data={"title": "article bbb"})
+        # 对应文章的标题存在
+        self.assertContains(response, test_article.title)
+        # 对应行的内容存在, 行内容为常量, 类似于 "关键词仅出现标题中" 等的提示信息
+        self.assertContains(response, "bbb")
+        self.assertNotContains(response, const.KEYWORD_IN_TITLE)
+
+    def test_search_multiple_articles(self):
+        """
+        没想到自己手测才发现这个错误, 就是只有第一个搜索结果是正确的, 其他几篇文章的搜索结果都是错误的
+        """
+        test_article = Article.objects.create(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
+        test_article2 = Article.objects.create(title="test_title_article2", content="eee\nbbb\nfff\nddd\n")
+
+        # 关键词在内容中, 搜索 bbb
+        response = self.client.post(self.unique_url, data={"title": "bbb"})
+
+        # 两篇文章都存在
+        self.assertContains(response, test_article.title)
+        self.assertContains(response, test_article2.title)
+
+        # bbb 至少出现了 2 次, 比如搜索框里还有一次
+        self.assertTrue(response.content.decode("utf8").count("bbb") >= 2)
 
 
 if __name__ == "__main__":

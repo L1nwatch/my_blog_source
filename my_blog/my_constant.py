@@ -2,10 +2,13 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 const 变量
+
+2017.01.28 把要传给模板的命名数组作为一个常量放进来了
 """
 import os
 
 from django.conf import settings
+from collections import namedtuple
 
 __author__ = '__L1n__w@tch'
 
@@ -28,10 +31,12 @@ class _Const:
 # sys.modules[__name__] = _Const()
 const = _Const()
 const.EMPTY_ARTICLE_ERROR = "没有相关文章题目"
+const.KEYWORD_IN_TITLE = "关键词仅出现标题中"
 const.PLACE_HOLDER = "word to search"
 const.HOME_PAGE_ARTICLES_NUMBERS = 2
-const.SLOW_CONNECT_DEBUG = False  # if input("是否要访问被墙网站?(yes/no)") == "yes" else False
+const.SLOW_CONNECT_DEBUG = True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
 const.NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
+const.ARTICLE_STRUCTURE = namedtuple("article_post", ["id", "title", "content"])
 
 # 用来形成博客的文章 git
 const.NOTES_PATH_NAME = "notes"

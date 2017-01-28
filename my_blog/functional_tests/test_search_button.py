@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.01.27 添加搜索时显示对应内容的测试相关代码
 2016.10.29 将搜索按钮的测试分离出来, 成为一个单独的测试文件
 2016.10.04 更新一下关于首页搜索按钮的测试, 现在要求能够搜索各个文章的标题
 """
@@ -18,15 +19,13 @@ class TestSearchButton(FunctionalTest):
         # 创建测试数据
         self._create_test_db_data()
 
-        # Y 访问首页
-        self.browser.get(self.server_url)
-
     def test_can_search_title(self):
         """
         2016.10.04 测试能够搜索各个文章的标题即可
         :return:
         """
-        # Y 看到了这个搜索按钮
+        # Y 打开首页, 看到了搜索按钮
+        self.browser.get(self.server_url)
         search_button = self.browser.find_element_by_id("id_search")
 
         # 看着首页右边已经存在的文章, 随便打了一个进去, 然后按下回车键
@@ -48,7 +47,8 @@ class TestSearchButton(FunctionalTest):
         2016.10.11 测试能够搜索文章内容
         :return:
         """
-        # Y 看到了搜索按钮
+        # Y 打开首页, 看到了搜索按钮
+        self.browser.get(self.server_url)
         search_button = self.browser.find_element_by_id("id_search")
 
         # Y 记得以前看过的某篇文章中有 time.sleep 方法的示例, 但是不记得文章标题了, 于是搜索这个关键词
@@ -78,6 +78,29 @@ class TestSearchButton(FunctionalTest):
         # 果然关键词打得太随意了, 啥都没有啊
         articles_after_search = self.browser.find_elements_by_id("id_article_title")
         self.assertTrue(len(articles_after_search) == 0, "居然找到文章了?!")
+
+    def test_search_result_display(self):
+        """
+        测试搜索的结果, 应该显示对应的文章及对应到的搜索内容
+        """
+        # Y 打开首页, 看到了搜索按钮
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+
+        # Y 知道文章 <article_with_markdown> 有这么一个关键字 <markdown1>, 所在行内容为 <* test markdown1>
+        # 于是 Y 搜索 markdown1, 看是否显示这篇文章及结果出来
+        search_button.send_keys("markdown1\n")
+
+        # 搜索结果出来了, Y 看到了自己搜索的关键词
+        search_keyword = self.browser.find_element_by_id("id_search").get_attribute("value")
+        self.assertEqual(search_keyword, "markdown1")
+
+        # Y 查看搜索结果, 发现其找到对应文章了
+        search_result = self.browser.find_element_by_tag_name("body").text
+        self.assertIn("article_with_markdown", search_result)
+
+        # 显示对应搜索结果
+        self.assertIn("test markdown1", search_result)
 
 
 if __name__ == "__main__":
