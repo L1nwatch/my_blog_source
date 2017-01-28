@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load custom_markdown %}
 
+{% block sidebar_content %}
+{% include "sidebar.html" %}
+{% endblock %}
+
 {% block content %}
 <div class="posts">
     {% if error %}

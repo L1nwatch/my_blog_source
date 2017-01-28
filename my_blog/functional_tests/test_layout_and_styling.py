@@ -142,6 +142,29 @@ class ArticleDisplayTest(FunctionalTest):
         # Y 记得还有些特殊符号在表格中, 想看下这些特殊符号是否能够显示出来
         self.assertIn("{:.2f}", self.browser.find_element_by_tag_name('body').text)
 
+    def test_sidebar_button_display(self):
+        """
+        测试打开一篇文章的时候左边的菜单显示
+        """
+        # Y 访问首页
+        self.browser.get(self.server_url)
+
+        # Y 随便打开了一篇文章
+        articles_after_search = self.browser.find_element_by_id("id_article_title")
+        articles_after_search.click()
+
+        # 发现左边的按钮变化了, 只剩下一个可以链接到首页的作者名以及一个搜索框
+        sidebar = self.browser.find_element_by_id("id_sidebar")
+        self.assertIn("W@TCH", sidebar.text)
+        self.assertNotIn("EMAIL", sidebar.text)
+        search_button = self.browser.find_element_by_id("id_search")
+
+        # TODO: Y 还发现左边显示了一堆目录树, 居然是跟右边的文章有一一对应关系的
+
+
+        # TODO: Y 发现直接点击目录树, 右边就会跳转到对应的地方进行显示
+        pass
+
 
 if __name__ == "__main__":
     pass

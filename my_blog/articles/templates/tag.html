@@ -6,6 +6,10 @@
 {% endfor %}
 {% endblock %}
 
+{% block sidebar_content %}
+{% include "sidebar.html" %}
+{% endblock %}
+
 {% block content %}
 <div class="blog-post">
     {% for post in post_list %}

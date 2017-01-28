@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block sidebar_content %}
+{% include "sidebar.html" %}
+{% endblock %}
+
 {% block content %}
 <div class="posts">
     {% if error %}
