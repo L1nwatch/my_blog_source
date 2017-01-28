@@ -605,7 +605,7 @@ h3 {
 
 .sidebar-search {
     display: block;
-    width: 300px;
+    width: 100%;
     padding: 0.809em;
     margin-bottom: 0.809em;
     z-index: 200;
