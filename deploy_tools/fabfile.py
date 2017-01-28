@@ -46,7 +46,7 @@ def deploy():
     _update_virtualenv(source_folder, virtualenv_folder)
 
     # 打包 static 文件
-    _update_static_files(source_folder, virtualenv_folder, site_name)
+    # _update_static_files(source_folder, virtualenv_folder, site_name)
 
     # 数据库迁移
     _update_database(source_folder, virtualenv_folder, site_name)
