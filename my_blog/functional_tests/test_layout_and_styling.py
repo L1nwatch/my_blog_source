@@ -155,7 +155,7 @@ class ArticleDisplayTest(FunctionalTest):
 
         # 发现左边的按钮变化了, 只剩下一个可以链接到首页的作者名以及一个搜索框
         sidebar = self.browser.find_element_by_id("id_sidebar")
-        self.assertIn("W@TCH", sidebar.text)
+        self.assertIn("w@tch", sidebar.text)
         self.assertNotIn("EMAIL", sidebar.text)
         search_button = self.browser.find_element_by_id("id_search")
 
