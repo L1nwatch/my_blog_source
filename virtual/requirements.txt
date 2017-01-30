@@ -1,5 +1,7 @@
+beautifulsoup4==4.5.3
 bleach==1.5.0
 bootstrap-admin==0.3.7.1
+bs4==0.0.1
 chardet==2.3.0
 Django==1.10.1
 django-common-helpers==0.8.0
@@ -10,6 +12,7 @@ gunicorn==19.6.0
 html5lib==0.9999999
 Markdown==2.6.8
 markdown2==2.3.2
+md2py==0.0.1
 paramiko==1.17.2
 pycrypto==2.6.1
 Pygments==2.1.3
