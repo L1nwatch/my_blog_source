@@ -9,8 +9,10 @@
 """
 from .base import FunctionalTest
 from articles.models import Article
+from django.conf import settings
 
 import datetime
+import os
 import unittest
 
 __author__ = '__L1n__w@tch'
@@ -98,7 +100,7 @@ class ArticleDisplayTest(FunctionalTest):
         """
         # 1. 测试点: ``` 行中带空格
 
-        with open("functional_tests/markdown_file_for_test.md", "r") as f:
+        with open(os.path.join(settings.BASE_DIR, "markdown_file_for_test.md"), "r") as f:
             content1 = f.read()
 
         # 创建一篇 Markdown 文章, 含有测试用的各个内容
@@ -157,10 +159,33 @@ class ArticleDisplayTest(FunctionalTest):
         sidebar = self.browser.find_element_by_id("id_sidebar")
         self.assertIn("w@tch", sidebar.text)
         self.assertNotIn("EMAIL", sidebar.text)
-        search_button = self.browser.find_element_by_id("id_search")
 
-        # TODO: Y 还发现左边显示了一堆目录树, 居然是跟右边的文章有一一对应关系的
+        self.browser.find_element_by_id("id_search")
 
+    def test_sidebar_tree_display(self):
+        """
+        测试打开一篇文章, 可以看到左边显示了目录树, 跟文章内容一一对应
+        :return:
+        """
+        # Y 访问首页, 并且随机打开了一篇文章
+        self.browser.get(self.server_url)
+        articles_after_search = self.browser.find_element_by_id("id_article_title")
+        articles_after_search.click()
+
+        # Y 发现左边显示了一堆目录树, 居然是跟右边的文章有一一对应关系的
+        sidebar = self.browser.find_element_by_id("id_sidebar")
+
+        # 依次检测几个标题
+        self.assertIn("一级标题", sidebar.text)
+        self.assertIn("二级标题", sidebar.text)
+        self.assertIn("三级标题 1", sidebar.text)
+        self.assertIn("三级标题 2", sidebar.text)
+
+        # 五级以下标题就不显示了
+        self.assertNotIn("五级标题", sidebar.text)
+
+        # 只显示了标题没有标题里面的内容
+        self.assertNotIn("这里是三级标题的内容", sidebar.text)
 
         # TODO: Y 发现直接点击目录树, 右边就会跳转到对应的地方进行显示
         pass

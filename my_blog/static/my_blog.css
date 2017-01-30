@@ -604,8 +604,8 @@ h3 {
 }
 
 .sidebar-search {
-    display: block;
     width: 100%;
+    display: block;
     padding: 0.809em;
     margin-bottom: 0.809em;
     z-index: 200;
@@ -653,3 +653,48 @@ h3 {
 .sidebar-search input:focus {
     outline-width: 0;
 }
+
+.sidebar-search-menu {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar{
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.sidebar-search-menu ul {
+    padding: 0;
+    margin: 0;
+    font-family: "Lato", "proxima-nova", "Helvetica Neue", Arial, sans-serif;
+    font-weight: normal;
+    color: #404040;
+    min-height: 100%;
+    overflow-x: hidden;
+}
+
+.sidebar-search-menu li {
+    line-height: 18px;
+    padding: 0.4045em 1.618em;
+    display: block;
+    position: relative;
+    font-size: 90%;
+}
+
+.sidebar-search-menu li > a {
+    color: #e6f9ff;
+    font-family: "Lato", "proxima-nova", "Helvetica Neue", Arial, sans-serif;
+    font-weight: normal;
+    text-decoration: none /* 鼠标移上去不会显示下划线 */
+}
+
+.sidebar-search-menu li span.toctree-expand {
+    float: left;
+    margin-left: -1.2em;
+    line-height: 1.6em;
+    display: block;
+    font-size: 0.8em;
+}
+

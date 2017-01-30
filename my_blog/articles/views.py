@@ -3,29 +3,31 @@
 """
 2016.10.28 重构了一下模板传参, 封装成一个函数来处理了, 要不然每个视图都得专门处理传给模板的参数
 """
-
 from django.shortcuts import render
-from django.http import Http404
+from django.http import Http404, HttpResponseNotAllowed
 from django.core.paginator import Paginator, PageNotAnInteger
 from django.conf import settings
 from ipware.ip import get_ip, get_real_ip, get_trusted_ip
 
 from .models import Article
 from .forms import ArticleForm
+from articles.templatetags.custom_markdown import custom_markdown
 from my_constant import const
 
+import md2py
 import os
 import chardet
 import datetime
 import logging
 import copy
+import traceback
 
 LAST_UPDATE_TIME = None
 
 logger = logging.getLogger("my_blog.articles.views")
 
 
-def get_right_content_from_file(file_path):
+def _get_right_content_from_file(file_path):
     """
     读取文件时涉及到编码问题, 于是就专门写个函数来解决吧
     :param file_path: 文件路径
@@ -47,7 +49,7 @@ def get_right_content_from_file(file_path):
     return data
 
 
-def get_ip_from_django_request(request):
+def _get_ip_from_django_request(request):
     """
     # 用来获取访问者 IP 的
     # 参考
@@ -61,7 +63,7 @@ def get_ip_from_django_request(request):
     return get_ip(request)
 
 
-def __get_context_data(update_data=None):
+def _get_context_data(update_data=None):
     """
     定制要发送给模板的相关数据
     :param update_data: 以需要发送给 base.html 的数据为基础, 需要额外发送给模板的数据
@@ -76,7 +78,7 @@ def __get_context_data(update_data=None):
 
 
 def home(request, invalid_click="True"):
-    logger.info("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
+    logger.info("ip: {} 访问主页了".format(_get_ip_from_django_request(request)))
     articles = Article.objects.all()  # 获取全部的Article对象
     paginator = Paginator(articles, const.HOME_PAGE_ARTICLES_NUMBERS)  # 每页显示 HOME_PAGE_ARTICLES_NUMBERS 篇
     page = request.GET.get('page')
@@ -85,47 +87,54 @@ def home(request, invalid_click="True"):
     except PageNotAnInteger:
         article_list = paginator.page(1)
 
-    return render(request, 'home.html', __get_context_data({"post_list": article_list, "invalid_click": invalid_click}))
+    return render(request, 'home.html', _get_context_data({"post_list": article_list, "invalid_click": invalid_click}))
 
 
-def detail(request, article_id):
+def article_display(request, article_id):
+    """
+    负责显示文章的视图函数
+    2017.01.30 添加 markdown 树的解析结果
+    :param request: django 传给视图函数的参数 request, 包含 HTTP 请求的各种信息
+    :param article_id: 文章 id 号
+    """
     try:
         db_data = Article.objects.get(id=str(article_id))
-        logger.info("ip: {} 查看文章: {}".format(get_ip_from_django_request(request), db_data.title))
+        logger.info("ip: {} 查看文章: {}".format(_get_ip_from_django_request(request), db_data.title))
         tags = db_data.tag.all()
+        toc_data = _parse_markdown_file(db_data.content)
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, "article.html", __get_context_data({"post": db_data, "tags": tags}))
+    return render(request, "article.html", _get_context_data({"post": db_data, "tags": tags, "toc": toc_data}))
 
 
 def archives(request):
-    logger.info("ip: {} 查看文章列表".format(get_ip_from_django_request(request)))
+    logger.info("ip: {} 查看文章列表".format(_get_ip_from_django_request(request)))
     try:
         post_list = Article.objects.all()
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, 'archives.html', __get_context_data({'post_list': post_list, 'error': False}))
+    return render(request, 'archives.html', _get_context_data({'post_list': post_list, 'error': False}))
 
 
 def about_me(request):
-    logger.info("ip: {} 查看 about me".format(get_ip_from_django_request(request)))
+    logger.info("ip: {} 查看 about me".format(_get_ip_from_django_request(request)))
 
-    return render(request, 'about_me.html', __get_context_data())
+    return render(request, 'about_me.html', _get_context_data())
 
 
 def search_tag(request, tag):
-    logger.info("ip: {} 搜索 tag: {}".format(get_ip_from_django_request(request), tag))
+    logger.info("ip: {} 搜索 tag: {}".format(_get_ip_from_django_request(request), tag))
     try:
         post_list = Article.objects.filter(category__iexact=tag)  # contains
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, 'tag.html', __get_context_data({'post_list': post_list}))
+    return render(request, 'tag.html', _get_context_data({'post_list': post_list}))
 
 
-def __create_search_result(article_list, keyword_set):
+def _create_search_result(article_list, keyword_set):
     """
     创建搜索结果以便返回给页面
     :param article_list: 存在关键词的文章列表
@@ -162,12 +171,59 @@ def __create_search_result(article_list, keyword_set):
     return result_list
 
 
+def _parse_markdown_file(markdown_content):
+    def __recursive_create(root, next_tag):
+        """
+        递归创建结果数组
+        :param root: 当前树的根节点
+        :param next_tag: str(), 比如 "h1", 表示从这一级开始往下递归
+        :return: list(), 结果数组
+        """
+        next_tag_dict = {"h1": "h2", "h2": "h3", "h3": "h4", "h4": "h5", "h5": "h6"}
+
+        if root:
+            result = list()
+
+            if root.__getattr__(next_tag) is not None:
+                for each_h in root.__getattr__("{}s".format(next_tag)):
+                    result.append(const.MARKDOWN_TREE_STRUCTURE(str(each_h),
+                                                                __recursive_create(each_h, next_tag_dict[next_tag])))
+
+            if len(result) <= 0:
+                result = None
+
+            return result
+
+    def __get_root_title(toc_tree):
+        """
+        获取顶级标题
+        :param toc_tree: toc 树
+        :return: str(), 比如 "h1", 表示顶级标题为一级标题
+        """
+        for each_level in ["h1", "h2", "h3", "h4", "h5", "h6"]:
+            # 找到顶级标题了
+            if toc_tree.__getattr__(each_level) is not None:
+                return each_level
+
+    try:
+        if len(markdown_content) > 0:
+            toc = md2py.TreeOfContents.fromHTML(custom_markdown(markdown_content))
+            root_level = __get_root_title(toc)
+            if root_level:
+                result_list = __recursive_create(toc, root_level)
+                return result_list
+    except TypeError:
+        logging.error("[!] 解析 Markdown 出错, 针对内容: {}".format(markdown_content))
+    except Exception as e:
+        traceback.print_exc()
+        logging.error("[!] 解析 Markdown 出错, 针对内容: {}".format(markdown_content))
+
+
 def blog_search(request):
     """
     2017.01.27 重构搜索视图函数, 现在要显示搜索结果等的
     2016.10.11 添加能够搜索文章内容的功能
     :param request: django 传给视图函数的参数 request, 包含 HTTP 请求的各种信息
-    :return:
     """
 
     def __search_keyword_in_articles(keyword_set):
@@ -214,10 +270,10 @@ def blog_search(request):
             # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
             article_list = __search_keyword_in_articles(keywords)
             logger.info("ip: {} 搜索: {}"
-                        .format(get_ip_from_django_request(request), form.data["title"]))
+                        .format(_get_ip_from_django_request(request), form.data["title"]))
 
-            context_data = __get_context_data({'post_list': __create_search_result(article_list, keywords),
-                                               'error': None, "form": form})
+            context_data = _get_context_data({'post_list': _create_search_result(article_list, keywords),
+                                              'error': None, "form": form})
             context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(article_list) == 0 else False
 
             return render(request, 'search_result.html', context_data)
@@ -249,7 +305,7 @@ def update_notes(request=None):
     def __sync_database(file_name, file_path):
         article = file_name.rstrip(".md")
         article_category, article_title = article.split("-")
-        article_content = get_right_content_from_file(file_path)
+        article_content = _get_right_content_from_file(file_path)
 
         try:
             article_from_db = Article.objects.get(title=article_title)
@@ -279,7 +335,7 @@ def update_notes(request=None):
     notes_git_path = const.NOTES_GIT_PATH
 
     if request:
-        logger.info("ip: {} 更新了笔记".format(get_ip_from_django_request(request)))
+        logger.info("ip: {} 更新了笔记".format(_get_ip_from_django_request(request)))
 
     # settings.UPDATE_TIME_LIMIT s 内不允许重新点击
     global LAST_UPDATE_TIME

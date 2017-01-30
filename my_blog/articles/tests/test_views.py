@@ -10,10 +10,11 @@ import unittest
 
 from articles.forms import ArticleForm
 from articles.models import Article
-from articles.views import get_right_content_from_file
 from my_constant import const
 from django.conf import settings
 from django.test import TestCase, override_settings
+from articles.views import _parse_markdown_file, _get_right_content_from_file
+from collections import namedtuple
 
 __author__ = '__L1n__w@tch'
 
@@ -51,7 +52,7 @@ class HomeViewTest(TestCase):
         self.assertContains(response, 'name="title"')
 
 
-class DetailViewTest(TestCase):
+class ArticleDisplayViewTest(TestCase):
     unique_url = "/articles/{}/"
 
     def test_use_article_template(self):
@@ -61,6 +62,36 @@ class DetailViewTest(TestCase):
 
         # 测试是否有将 form 传递给模板
         self.assertIsInstance(response.context["form"], ArticleForm)
+
+    def test_markdown_parse(self):
+        """
+        测试 markdown 解析成树效果
+        :return:
+        """
+        with open(os.path.join(settings.BASE_DIR, "markdown_file_for_test.md"), "r") as f:
+            data = f.read()
+
+        my_parse_result = _parse_markdown_file(data)
+
+        self.assertNotEqual(my_parse_result, None)
+        self.assertEqual(my_parse_result[0].title, "一级标题")
+        self.assertEqual(my_parse_result[0].child[0].title, "二级标题")
+        self.assertEqual(my_parse_result[0].child[0].child[0].title, "三级标题 1")
+        self.assertEqual(my_parse_result[0].child[0].child[1].title, "三级标题 2")
+
+    def test_markdown_tree_display(self):
+        """
+        测试解析后的 markdown 树是否显示在界面中
+        :return:
+        """
+        with open(os.path.join(settings.BASE_DIR, "markdown_file_for_test.md"), "r") as f:
+            data = f.read()
+        Article.objects.create(title="test_article_1", content=data)
+        response = self.client.get(self.unique_url.format(1))
+        self.assertTrue(response.content.decode("utf8").count("一级标题") >= 3)
+        self.assertTrue(response.content.decode("utf8").count("二级标题") >= 3)
+        self.assertTrue(response.content.decode("utf8").count("三级标题 1") >= 3)
+        self.assertTrue(response.content.decode("utf8").count("三级标题 2") >= 2)
 
 
 class AboutMeViewTest(TestCase):
@@ -188,14 +219,14 @@ class UpdateNotesViewTest(TestCase):
 
         # 再次执行该视图函数, 发现文件夹里的旧测试文件已经变成新的测试文件了
         self.client.get(self.unique_url)
-        data = get_right_content_from_file(self.test_md_file_path)
+        data = _get_right_content_from_file(self.test_md_file_path)
         self.assertEqual(data, test_content, "更新测试文件失败")
 
     def test_create_notes_from_md(self):
         # 每个 md 笔记的文件名类似于: "测试笔记-测试用的笔记.md"
         test_article = self.test_md_file_name.rstrip(".md")  # 去掉 .md
         test_article_title = test_article.split("-")[1]  # 去掉 "测试笔记-"
-        test_article_content = get_right_content_from_file(self.test_md_file_path)
+        test_article_content = _get_right_content_from_file(self.test_md_file_path)
         article = None
 
         # 一开始没有这篇文章

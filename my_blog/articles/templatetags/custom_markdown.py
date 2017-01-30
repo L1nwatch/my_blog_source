@@ -7,11 +7,12 @@
 """
 import markdown
 import bleach
+
 # import markdown2
+# from django.utils.encoding import force_text
 
 from django import template
 from django.template.defaultfilters import stringfilter
-from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 
 __author__ = '__L1n__w@tch'
@@ -25,7 +26,7 @@ def custom_markdown(value):
     value = bleach.clean(value)  # 清除不安全因素
 
     return mark_safe(markdown.markdown(value,
-                                       extensions=["codehilite", "fenced_code", "tables"],
+                                       extensions=["codehilite", "fenced_code", "tables", "toc"],
                                        enable_attributes=False))
 
 

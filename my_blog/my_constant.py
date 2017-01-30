@@ -35,9 +35,10 @@ const.KEYWORD_IN_TITLE = "关键词仅出现标题中"
 const.PLACE_HOLDER = "word to search"
 const.HOME_PAGE_ARTICLES_NUMBERS = 2
 # TODO: git 提交前需要改为 False, 要不然网站会跑失败的...
-const.SLOW_CONNECT_DEBUG = False  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
+const.SLOW_CONNECT_DEBUG = True  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
 const.NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
 const.ARTICLE_STRUCTURE = namedtuple("article_post", ["id", "title", "content"])
+const.MARKDOWN_TREE_STRUCTURE = namedtuple("toc_tree", ["title", "child"])
 
 # 用来形成博客的文章 git
 const.NOTES_PATH_NAME = "notes"
