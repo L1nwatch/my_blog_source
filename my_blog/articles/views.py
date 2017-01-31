@@ -11,7 +11,7 @@ from ipware.ip import get_ip, get_real_ip, get_trusted_ip
 
 from .models import Article
 from .forms import ArticleForm
-from articles.templatetags.custom_markdown import custom_markdown
+from articles.templatetags.custom_markdown import custom_markdown_for_tree_parse
 from my_constant import const
 
 import md2py
@@ -21,6 +21,7 @@ import datetime
 import logging
 import copy
 import traceback
+import re
 
 LAST_UPDATE_TIME = None
 
@@ -108,6 +109,19 @@ def article_display(request, article_id):
     return render(request, "article.html", _get_context_data({"post": db_data, "tags": tags, "toc": toc_data}))
 
 
+def _get_id_from_markdown_html(markdown_html, tag_content):
+    """
+    从 markdown html 中获取对应标题的 id 信息
+    :param markdown_html: str(), 比如 '<h1 id="_1">一级标题</h1>'
+    :param tag_content: str(), 比如 "一级标题"
+    :return: 查找成功则返回 str(), "_1", 即 id 信息
+    """
+    result = re.findall('<h\d id="(.*)">{}</h\d>'.format(re.escape(tag_content)), markdown_html)
+    if len(result) > 0:
+        result = result[0]
+        return result
+
+
 def archives(request):
     logger.info("ip: {} 查看文章列表".format(_get_ip_from_django_request(request)))
     try:
@@ -172,11 +186,11 @@ def _create_search_result(article_list, keyword_set):
 
 
 def _parse_markdown_file(markdown_content):
-    def __recursive_create(root, next_tag):
+    def __recursive_create(root, current_tag_level):
         """
         递归创建结果数组
         :param root: 当前树的根节点
-        :param next_tag: str(), 比如 "h1", 表示从这一级开始往下递归
+        :param current_tag_level: str(), 比如 "h1", 表示从这一级开始往下递归
         :return: list(), 结果数组
         """
         next_tag_dict = {"h1": "h2", "h2": "h3", "h3": "h4", "h4": "h5", "h5": "h6"}
@@ -184,10 +198,13 @@ def _parse_markdown_file(markdown_content):
         if root:
             result = list()
 
-            if root.__getattr__(next_tag) is not None:
-                for each_h in root.__getattr__("{}s".format(next_tag)):
-                    result.append(const.MARKDOWN_TREE_STRUCTURE(str(each_h),
-                                                                __recursive_create(each_h, next_tag_dict[next_tag])))
+            if root.__getattr__(current_tag_level) is not None:
+                for each_h in root.__getattr__("{}s".format(current_tag_level)):
+                    result.append(
+                        const.MARKDOWN_TREE_STRUCTURE(str(each_h),
+                                                      _get_id_from_markdown_html(str(each_h.source), str(each_h)),
+                                                      __recursive_create(each_h, next_tag_dict[current_tag_level]))
+                    )
 
             if len(result) <= 0:
                 result = None
@@ -207,7 +224,7 @@ def _parse_markdown_file(markdown_content):
 
     try:
         if len(markdown_content) > 0:
-            toc = md2py.TreeOfContents.fromHTML(custom_markdown(markdown_content))
+            toc = md2py.TreeOfContents.fromHTML(custom_markdown_for_tree_parse(markdown_content))
             root_level = __get_root_title(toc)
             if root_level:
                 result_list = __recursive_create(toc, root_level)

@@ -7,6 +7,7 @@
 """
 import markdown
 import bleach
+import re
 
 # import markdown2
 # from django.utils.encoding import force_text
@@ -28,6 +29,30 @@ def custom_markdown(value):
     return mark_safe(markdown.markdown(value,
                                        extensions=["codehilite", "fenced_code", "tables", "toc"],
                                        enable_attributes=False))
+
+
+def custom_markdown_for_tree_parse(value):
+    value = bleach.clean(value)  # 清除不安全因素
+    result = markdown.markdown(value,
+                               extensions=["codehilite", "fenced_code", "tables", "toc"],
+                               enable_attributes=False)
+    result = remove_code_tag_in_h_tags(result)
+
+    return mark_safe(result)
+
+
+def remove_code_tag_in_h_tags(html_content):
+    """
+    把所有 <h>..</h> 标签中的 <code>..</code> 全部删除掉
+    :param html_content: str(), 比如 "<h1>aaa<code>bbb</code></h1>"
+    :return: str(), 删除后的结果, 比如 "<h1>aaa</h1>"
+    """
+    remove_code_tag = re.compile("<code>(?P<content>.*?)</code>")
+
+    result, n = remove_code_tag.subn("\g<content>", html_content)
+    while n > 0:
+        result, n = remove_code_tag.subn("\g<content>", result)
+    return result
 
 
 # def custom_markdown(value):

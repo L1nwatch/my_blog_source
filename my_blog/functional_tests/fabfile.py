@@ -12,7 +12,7 @@ __author__ = '__L1n__w@tch'
 
 
 # def _get_manage_dot_py(host):
-#     raise RuntimeError("存在尚未修改的地方")  # TODO: 这里只是复制原来的代码, 需要改动
+#     raise RuntimeError("存在尚未修改的地方")
 #     return "{path}/virtualenv/bin/python {path}/source/todo_app/manage.py".format(path=_get_base_folder(host))
 
 

@@ -188,7 +188,6 @@ while True:
                                                  category="Test_Category", content="Same category {}".format(i + 1))
             new_article.tag = (tag_others,)
 
-        # TODO:创建文章, 带 2 个标签
         pass
 
 

@@ -187,8 +187,12 @@ class ArticleDisplayTest(FunctionalTest):
         # 只显示了标题没有标题里面的内容
         self.assertNotIn("这里是三级标题的内容", sidebar.text)
 
-        # TODO: Y 发现直接点击目录树, 右边就会跳转到对应的地方进行显示
-        pass
+        # Y 发现直接点击目录树, 右边就会跳转到对应的地方进行显示
+        h1 = self.browser.find_element_by_id("_1")
+        self.assertIn("#_1", self.browser.page_source)
+        self.assertIn("#_2", self.browser.page_source)
+        self.assertIn("#1", self.browser.page_source)
+        self.assertIn("#2", self.browser.page_source)
 
 
 if __name__ == "__main__":

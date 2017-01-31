@@ -13,7 +13,8 @@ from articles.models import Article
 from my_constant import const
 from django.conf import settings
 from django.test import TestCase, override_settings
-from articles.views import _parse_markdown_file, _get_right_content_from_file
+from articles.views import _parse_markdown_file, _get_right_content_from_file, _get_id_from_markdown_html
+from articles.templatetags.custom_markdown import custom_markdown
 from collections import namedtuple
 
 __author__ = '__L1n__w@tch'
@@ -55,8 +56,16 @@ class HomeViewTest(TestCase):
 class ArticleDisplayViewTest(TestCase):
     unique_url = "/articles/{}/"
 
+    def setUp(self):
+        self._create_markdown_article()
+
+    @staticmethod
+    def _create_markdown_article():
+        with open(os.path.join(settings.BASE_DIR, "markdown_file_for_test.md"), "r") as f:
+            data = f.read()
+        Article.objects.create(title="test_article_1", content=data)
+
     def test_use_article_template(self):
-        Article.objects.create(title="test_article_1")
         response = self.client.get(self.unique_url.format(1))
         self.assertTemplateUsed(response, "article.html")
 
@@ -82,16 +91,38 @@ class ArticleDisplayViewTest(TestCase):
     def test_markdown_tree_display(self):
         """
         测试解析后的 markdown 树是否显示在界面中
-        :return:
         """
-        with open(os.path.join(settings.BASE_DIR, "markdown_file_for_test.md"), "r") as f:
-            data = f.read()
-        Article.objects.create(title="test_article_1", content=data)
         response = self.client.get(self.unique_url.format(1))
         self.assertTrue(response.content.decode("utf8").count("一级标题") >= 3)
         self.assertTrue(response.content.decode("utf8").count("二级标题") >= 3)
         self.assertTrue(response.content.decode("utf8").count("三级标题 1") >= 3)
         self.assertTrue(response.content.decode("utf8").count("三级标题 2") >= 2)
+
+    def test_markdown_tree_href(self):
+        """
+        解析后的 markdown 树应该有对应的 href 属性才对
+        """
+        response = self.client.get(self.unique_url.format(1))
+
+        self.assertIn('href="#_1"', response.content.decode("utf8"))  # 一级标题
+        self.assertIn('href="#_2"', response.content.decode("utf8"))  # 二级标题
+        self.assertIn('href="#1"', response.content.decode("utf8"))  # 三级标题 1
+        self.assertIn('href="#2"', response.content.decode("utf8"))  # 三级标题 2
+
+    def test_get_id_right(self):
+        """
+        测试获取 id 的正则是否写对了
+        """
+        with open(os.path.join(settings.BASE_DIR, "markdown_file_for_test.md"), "r") as f:
+            data = f.read()
+
+        markdown_html = custom_markdown(data)
+
+        self.assertEqual(_get_id_from_markdown_html(markdown_html, "一级标题"), "_1")
+        self.assertEqual(_get_id_from_markdown_html(markdown_html, "二级标题"), "_2")
+        self.assertEqual(_get_id_from_markdown_html(markdown_html, "三级标题 1"), "1")
+        self.assertEqual(_get_id_from_markdown_html(markdown_html, "三级标题 2"), "2")
+        self.assertEqual(_get_id_from_markdown_html(markdown_html, "四级标题"), "_3")
 
 
 class AboutMeViewTest(TestCase):
@@ -154,7 +185,7 @@ class SearchTagViewTest(TestCase):
 
 
 @override_settings(UPDATE_TIME_LIMIT=0.1)
-@unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "值为 True 表示要进行 git 测试")
+@unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "const.SLOW_CONNECT_DEBUG 值为 True 才表示要进行 git 测试")
 class UpdateNotesViewTest(TestCase):
     unique_url = "/articles/update_notes/"
     test_md_file_name = "测试笔记-测试用的笔记.md"
