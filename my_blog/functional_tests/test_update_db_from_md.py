@@ -12,6 +12,7 @@ from django.test.utils import override_settings
 from my_constant import const
 
 import time
+import shutil
 import unittest
 
 __author__ = '__L1n__w@tch'
@@ -90,6 +91,10 @@ class AutoUpdateDatabaseTest(FunctionalTest):
         update_note_button.click()
         with self.assertRaises(NoAlertPresentException):
             self.browser.switch_to_alert()
+
+    def tearDown(self):
+        super().tearDown()
+        shutil.rmtree(const.NOTES_GIT_PATH)
 
 
 if __name__ == "__main__":

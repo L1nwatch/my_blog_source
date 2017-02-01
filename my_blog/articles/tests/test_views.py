@@ -7,6 +7,7 @@
 """
 import os
 import unittest
+import shutil
 
 from articles.forms import ArticleForm
 from articles.models import Article
@@ -15,7 +16,6 @@ from django.conf import settings
 from django.test import TestCase, override_settings
 from articles.views import _parse_markdown_file, _get_right_content_from_file, _get_id_from_markdown_html
 from articles.templatetags.custom_markdown import custom_markdown
-from collections import namedtuple
 
 __author__ = '__L1n__w@tch'
 
@@ -228,6 +228,9 @@ class UpdateNotesViewTest(TestCase):
                   " && git commit -m '测试完毕'" \
                   " && git push".format(self.notes_git_path, self.test_md_file_name)
         os.system(command)
+
+        # 删除整个 notes 测试文件夹
+        shutil.rmtree(const.NOTES_GIT_PATH)
 
     def test_can_get_md_from_git(self):
         self.client.get(self.unique_url)
