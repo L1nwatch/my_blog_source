@@ -18,7 +18,7 @@ from django.contrib import admin
 import articles.views
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
+    url(r'^everything_is_happening_in_the_best_way/', admin.site.urls),
     url(r"^$", articles.views.home, name="home"),
     url(r"^articles/", include("articles.urls")),
     url(r"^gitbook_notes/", include("gitbook_notes.urls"))
