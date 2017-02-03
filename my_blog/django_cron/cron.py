@@ -1,4 +1,5 @@
 from django_cron import CronJobBase, Schedule
+import threading
 
 from articles.views import update_notes
 from work_journal.views import update_journals
@@ -15,5 +16,9 @@ class AutoUpdateNotes(CronJobBase):
     @staticmethod
     def do():
         now = datetime.datetime.today()
-        update_notes()
+        notes_update_thread = threading.Thread(target=update_notes, args=())
+        journals_update_thread = threading.Thread(target=update_journals, args=())
+
+        notes_update_thread.start()
+        journals_update_thread.start()
         print("[*] [{}] {separator} 定时更新结束 {separator}".format(now, separator="*" * 30))
