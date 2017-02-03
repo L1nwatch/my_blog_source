@@ -10,7 +10,6 @@
 import random
 import string
 import os
-import configparser  # TODO: 需要 vps 的 fab 自行安装这个库: sudo pip2 install configparser
 import sys
 import re
 
@@ -74,28 +73,24 @@ def _user_pass_file_config():
     """
     global USER_PASS_CONF
 
-    cp = configparser.ConfigParser()
-    cp.read(USER_PASS_CONF)
+    username, password = str(), str()
 
-    username = cp.get("journals_git", "username")
-    password = cp.get("journals_git", "password")
+    # 看一下配置文件是否已经存在
+    if os.path.exists(USER_PASS_CONF):
+        with open(USER_PASS_CONF, "r") as f:
+            data = f.readline().strip()
+        username, password = data.split(":")
 
     while username == "" or password == "":
         # 兼容 Python2.7
-        # if hasattr(__builtins__, "raw_input"):
         print("[+] 请输入 journals_git 的用户名: ")
         username = sys.stdin.readline()
         print("[+] 请输入 journals_git 的密码: ")
         password = sys.stdin.readline()
-        # else:
-        #     username = input("[+] 请输入 journals_git 的用户名: ")
-        #     password = input("[+] 请输入 journals_git 的密码: ")
 
         # 保存到配置文件中
-        cp.set("journals_git", "username", username)
-        cp.set("journals_git", "password", password)
         with open(USER_PASS_CONF, "w") as f:
-            cp.write(f)
+            f.write("{}:{}".format(username, password))
 
     print("[*] 成功读取文件 {} 的用户名和密码信息".format(USER_PASS_CONF))
 
@@ -113,9 +108,9 @@ def _update_const_file(source_folder, site_name):
                                                                           site_name=site_name)
 
     # 获取 username 和 password
-    cp = configparser.ConfigParser()
-    cp.read(USER_PASS_CONF)
-    username, password = cp.get("journals_git", "username"), cp.get("journals_git", "password")
+    with open(USER_PASS_CONF, "r") as f:
+        data = f.readline().strip()
+    username, password = data.split(":")
 
     # 通过 re 修改 const 文件
     with open(const_file_path, "r") as f:
