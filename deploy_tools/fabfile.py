@@ -11,6 +11,7 @@ import random
 import string
 import os
 import configparser  # TODO: 需要 vps 的 fab 自行安装这个库: sudo pip2 install configparser
+import sys
 import re
 
 from fabric.contrib.files import append, exists, sed
@@ -82,8 +83,10 @@ def _user_pass_file_config():
     while username == "" or password == "":
         # 兼容 Python2.7
         # if hasattr(__builtins__, "raw_input"):
-        username = raw_input("[+] 请输入 journals_git 的用户名: ")
-        password = raw_input("[+] 请输入 journals_git 的密码: ")
+        print("[+] 请输入 journals_git 的用户名: ")
+        username = sys.stdin.readline()
+        print("[+] 请输入 journals_git 的密码: ")
+        password = sys.stdin.readline()
         # else:
         #     username = input("[+] 请输入 journals_git 的用户名: ")
         #     password = input("[+] 请输入 journals_git 的密码: ")
