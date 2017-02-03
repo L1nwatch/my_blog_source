@@ -81,12 +81,12 @@ def _user_pass_file_config():
 
     while username == "" or password == "":
         # 兼容 Python2.7
-        if hasattr(__builtins__, 'raw_input'):
-            username = raw_input("[+] 请输入 journals_git 的用户名: ")
-            password = raw_input("[+] 请输入 journals_git 的密码: ")
-        else:
-            username = input("[+] 请输入 journals_git 的用户名: ")
-            password = input("[+] 请输入 journals_git 的密码: ")
+        # if hasattr(__builtins__, "raw_input"):
+        username = raw_input("[+] 请输入 journals_git 的用户名: ")
+        password = raw_input("[+] 请输入 journals_git 的密码: ")
+        # else:
+        #     username = input("[+] 请输入 journals_git 的用户名: ")
+        #     password = input("[+] 请输入 journals_git 的密码: ")
 
         # 保存到配置文件中
         cp.set("journals_git", "username", username)
