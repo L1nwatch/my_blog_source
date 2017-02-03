@@ -47,7 +47,7 @@ def deploy():
     _user_pass_file_config()
 
     # 更新 const 文件
-    _update_const_file()
+    _update_const_file(source_folder, site_name)
 
     # 更新 setting 文件
     _update_settings(source_folder, site_name, host_name)
@@ -100,7 +100,7 @@ def _user_pass_file_config():
     print("[*] 成功读取文件 {} 的用户名和密码信息".format(USER_PASS_CONF))
 
 
-def _update_const_file(source_folder, site_name, host_name):
+def _update_const_file(source_folder, site_name):
     def __sub_callback(raw_string, user, pw):
         url = raw_string.group(1)
         new_url = "{0}//{username}:{password}{1}".format(url.split("//")[0], url.split("//")[1],
