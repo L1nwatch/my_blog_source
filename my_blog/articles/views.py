@@ -28,7 +28,7 @@ LAST_UPDATE_TIME = None
 logger = logging.getLogger("my_blog.articles.views")
 
 
-def _get_right_content_from_file(file_path):
+def get_right_content_from_file(file_path):
     """
     读取文件时涉及到编码问题, 于是就专门写个函数来解决吧
     :param file_path: 文件路径
@@ -50,7 +50,7 @@ def _get_right_content_from_file(file_path):
     return data
 
 
-def _get_ip_from_django_request(request):
+def get_ip_from_django_request(request):
     """
     # 用来获取访问者 IP 的
     # 参考
@@ -79,7 +79,7 @@ def _get_context_data(update_data=None):
 
 
 def home(request, invalid_click="True"):
-    logger.info("ip: {} 访问主页了".format(_get_ip_from_django_request(request)))
+    logger.info("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
     articles = Article.objects.all()  # 获取全部的Article对象
     paginator = Paginator(articles, const.HOME_PAGE_ARTICLES_NUMBERS)  # 每页显示 HOME_PAGE_ARTICLES_NUMBERS 篇
     page = request.GET.get('page')
@@ -100,7 +100,7 @@ def article_display(request, article_id):
     """
     try:
         db_data = Article.objects.get(id=str(article_id))
-        logger.info("ip: {} 查看文章: {}".format(_get_ip_from_django_request(request), db_data.title))
+        logger.info("ip: {} 查看文章: {}".format(get_ip_from_django_request(request), db_data.title))
         tags = db_data.tag.all()
         toc_data = _parse_markdown_file(db_data.content)
     except Article.DoesNotExist:
@@ -123,7 +123,7 @@ def _get_id_from_markdown_html(markdown_html, tag_content):
 
 
 def archives(request):
-    logger.info("ip: {} 查看文章列表".format(_get_ip_from_django_request(request)))
+    logger.info("ip: {} 查看文章列表".format(get_ip_from_django_request(request)))
     try:
         post_list = Article.objects.all()
     except Article.DoesNotExist:
@@ -133,13 +133,13 @@ def archives(request):
 
 
 def about_me(request):
-    logger.info("ip: {} 查看 about me".format(_get_ip_from_django_request(request)))
+    logger.info("ip: {} 查看 about me".format(get_ip_from_django_request(request)))
 
     return render(request, 'about_me.html', _get_context_data())
 
 
 def search_tag(request, tag):
-    logger.info("ip: {} 搜索 tag: {}".format(_get_ip_from_django_request(request), tag))
+    logger.info("ip: {} 搜索 tag: {}".format(get_ip_from_django_request(request), tag))
     try:
         post_list = Article.objects.filter(category__iexact=tag)  # contains
     except Article.DoesNotExist:
@@ -287,7 +287,7 @@ def blog_search(request):
             # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
             article_list = __search_keyword_in_articles(keywords)
             logger.info("ip: {} 搜索: {}"
-                        .format(_get_ip_from_django_request(request), form.data["title"]))
+                        .format(get_ip_from_django_request(request), form.data["title"]))
 
             context_data = _get_context_data({'post_list': _create_search_result(article_list, keywords),
                                               'error': None, "form": form})
@@ -322,7 +322,7 @@ def update_notes(request=None):
     def __sync_database(file_name, file_path):
         article = file_name.rstrip(".md")
         article_category, article_title = article.split("-")
-        article_content = _get_right_content_from_file(file_path)
+        article_content = get_right_content_from_file(file_path)
 
         try:
             article_from_db = Article.objects.get(title=article_title)
@@ -352,7 +352,7 @@ def update_notes(request=None):
     notes_git_path = const.NOTES_GIT_PATH
 
     if request:
-        logger.info("ip: {} 更新了笔记".format(_get_ip_from_django_request(request)))
+        logger.info("ip: {} 更新了笔记".format(get_ip_from_django_request(request)))
 
     # settings.UPDATE_TIME_LIMIT s 内不允许重新点击
     global LAST_UPDATE_TIME

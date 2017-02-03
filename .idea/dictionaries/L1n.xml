@@ -6,6 +6,7 @@
       <w>gunicorn</w>
       <w>nginx</w>
       <w>runcrons</w>
+      <w>sangfor</w>
       <w>sudo</w>
       <w>supervisord</w>
     </words>

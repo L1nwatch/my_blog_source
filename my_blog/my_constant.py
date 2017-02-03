@@ -35,7 +35,7 @@ const.KEYWORD_IN_TITLE = "关键词仅出现标题中"
 const.PLACE_HOLDER = "word to search"
 const.HOME_PAGE_ARTICLES_NUMBERS = 2
 # TODO: git 提交前需要改为 False or True, 要不然网站会跑失败的...
-const.SLOW_CONNECT_DEBUG = False  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
+const.SLOW_CONNECT_DEBUG = True  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
 const.NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
 const.ARTICLE_STRUCTURE = namedtuple("article_post", ["id", "title", "content"])
 const.MARKDOWN_TREE_STRUCTURE = namedtuple("toc_tree", ["title", "id", "child"])
@@ -44,6 +44,11 @@ const.MARKDOWN_TREE_STRUCTURE = namedtuple("toc_tree", ["title", "id", "child"])
 const.NOTES_PATH_NAME = "notes"
 const.ARTICLES_GIT_REPOSITORY = "https://github.com/L1nwatch/notes_set.git"
 const.NOTES_GIT_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.NOTES_PATH_NAME)
+
+# 用来形成日记的文章 git
+const.JOURNALS_PATH_NAME = "journals"
+const.JOURNALS_GIT_REPOSITORY = "https://git.oschina.net/w4tch/sxf_notes_set.git"
+const.JOURNALS_GIT_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.JOURNALS_PATH_NAME)
 
 # 用来形成 GitBook 的各个仓库
 const.GITBOOK_PATH_NAME = "gitbook_notes"

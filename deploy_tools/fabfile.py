@@ -10,6 +10,9 @@
 import random
 import string
 import os
+import configparser
+import re
+
 from fabric.contrib.files import append, exists, sed
 from fabric.api import env, local, run, sudo
 
@@ -17,13 +20,13 @@ __author__ = '__L1n__w@tch'
 
 # 要把常量 REPO_URL 的值改成代码分享网站中你仓库的 URL
 REPO_URL = "https://github.com/L1nwatch/my_blog_source.git"
+USER_PASS_CONF = "user_pass.conf"
 
 
 def deploy():
     """
     2016.10.04 根据之前的自动化部署代码进行更改, 这里要进行的几个操作包括:
         创建文件夹目录,获取最新版本代码,更新 settings 文件, 更新 Python 虚拟环境, 更新静态文件, 更新数据库, 设置 nginx 和 gunicorn
-    :return:
     """
     # env.host 的值是在命令行中指定的服务器地址，例如 watch0.top, env.user 的值是登录服务器时使用的用户名
     site_folder = "/home/{}/sites/{}".format(env.user, env.host)
@@ -38,6 +41,12 @@ def deploy():
 
     # 更新代码
     _get_latest_source(source_folder)
+
+    # 更新用户名密码的配置文件
+    _user_pass_file_config()
+
+    # 更新 const 文件
+    _update_const_file()
 
     # 更新 setting 文件
     _update_settings(source_folder, site_name, host_name)
@@ -56,6 +65,59 @@ def deploy():
 
     # 定时任务
     _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder)
+
+
+def _user_pass_file_config():
+    """
+    判断一下 conf 文件是否存在指定内容, 如果是第一次运行的话得把 git 帐号密码保存进来
+    """
+    global USER_PASS_CONF
+
+    cp = configparser.ConfigParser()
+    cp.read(USER_PASS_CONF)
+
+    username = cp.get("journals_git", "username")
+    password = cp.get("journals_git", "password")
+
+    while username == "" or password == "":
+        username = input("[+] 请输入 journals_git 的用户名: ")
+        password = input("[+] 请输入 journals_git 的密码: ")
+
+        # 保存到配置文件中
+        cp.set("journals_git", "username", username)
+        cp.set("journals_git", "password", password)
+        with open(USER_PASS_CONF, "w") as f:
+            cp.write(f)
+
+    print("[*] 成功读取文件 {} 的用户名和密码信息".format(USER_PASS_CONF))
+
+
+def _update_const_file(source_folder, site_name, host_name):
+    def __sub_callback(raw_string):
+        nonlocal username, password
+
+        url = raw_string.group(1)
+        new_url = "{0}//{username}:{password}{1}".format(url.split("//")[0], url.split("//")[1],
+                                                         username=username, password=password)
+
+        return 'const.JOURNALS_GIT_REPOSITORY = "{}"'.format(new_url)
+
+    global USER_PASS_CONF
+    const_file_path = "{source_folder}/{site_name}/my_constant.py".format(source_folder=source_folder,
+                                                                          site_name=site_name)
+
+    # 获取 username 和 password
+    cp = configparser.ConfigParser()
+    cp.read(USER_PASS_CONF)
+    username, password = cp.get("journals_git", "username"), cp.get("journals_git", "password")
+
+    # 通过 re 修改 const 文件
+    with open(const_file_path, "r") as f:
+        data = f.read()
+    data = re.sub('const.JOURNALS_GIT_REPOSITORY = "(?P<git_url>.*)"', __sub_callback, data)
+
+    with open(const_file_path, "w") as f:
+        f.write(data)
 
 
 def _update_setting_to_conf_file(old_content, log_file_path, cron_job):

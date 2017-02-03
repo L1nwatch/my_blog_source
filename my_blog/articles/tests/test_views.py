@@ -14,7 +14,7 @@ from articles.models import Article
 from my_constant import const
 from django.conf import settings
 from django.test import TestCase, override_settings
-from articles.views import _parse_markdown_file, _get_right_content_from_file, _get_id_from_markdown_html
+from articles.views import _parse_markdown_file, get_right_content_from_file, _get_id_from_markdown_html
 from articles.templatetags.custom_markdown import custom_markdown
 
 __author__ = '__L1n__w@tch'
@@ -253,14 +253,14 @@ class UpdateNotesViewTest(TestCase):
 
         # 再次执行该视图函数, 发现文件夹里的旧测试文件已经变成新的测试文件了
         self.client.get(self.unique_url)
-        data = _get_right_content_from_file(self.test_md_file_path)
+        data = get_right_content_from_file(self.test_md_file_path)
         self.assertEqual(data, test_content, "更新测试文件失败")
 
     def test_create_notes_from_md(self):
         # 每个 md 笔记的文件名类似于: "测试笔记-测试用的笔记.md"
         test_article = self.test_md_file_name.rstrip(".md")  # 去掉 .md
         test_article_title = test_article.split("-")[1]  # 去掉 "测试笔记-"
-        test_article_content = _get_right_content_from_file(self.test_md_file_path)
+        test_article_content = get_right_content_from_file(self.test_md_file_path)
         article = None
 
         # 一开始没有这篇文章

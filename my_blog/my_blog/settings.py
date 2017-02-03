@@ -192,6 +192,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True
         },
+        'my_blog.work_journal.views': {
+            'handlers': ['default', 'error', "info"],
+            'level': 'DEBUG',
+            'propagate': True
+        },
     }
 }
 UPDATE_TIME_LIMIT = 30
