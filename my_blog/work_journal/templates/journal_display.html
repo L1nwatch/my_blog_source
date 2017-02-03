@@ -1,0 +1,22 @@
+{% extends "journal_base.html" %}
+{% load custom_markdown %}
+
+{% block sidebar_content %}
+    {% include "journal_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+    <div class="posts">
+        <section class="post">
+            <header class="post-header">
+                <h2 class="post-title">{{ post.title }}</h2>
+            </header>
+
+            <div class="post-description">
+                <article class="markdown-body" id="id_journal_content">
+                    {{ post.content|custom_markdown }}
+                </article>
+            </div>
+        </section>
+    </div>
+{% endblock %}

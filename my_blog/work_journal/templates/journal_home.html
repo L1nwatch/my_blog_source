@@ -1,0 +1,20 @@
+{% extends "journal_base.html" %}
+{% load custom_markdown %}
+
+{% block sidebar_content %}
+    {% include "journal_sidebar.html" %}
+{% endblock %}
+
+{% block content %}
+    <div class="posts">
+        {% for post in post_list %}
+            <section class="post">
+                <header class="post-header">
+                    <h2 class="post-title">
+                        <a id="id_journal" href="{% url 'journal_display' journal_id=post.id %}">{{ post.title }}</a>
+                    </h2>
+                </header>
+            </section>
+        {% endfor %}
+    </div>
+{% endblock %}

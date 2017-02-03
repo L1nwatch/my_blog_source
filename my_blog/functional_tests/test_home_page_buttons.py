@@ -132,7 +132,7 @@ class TestHomePageButtons(FunctionalTest):
         self.browser.find_element_by_id("id_journal_content")
 
         # Y 想回到首页了, 点击首页按钮又回到了首页
-        self.browser.find_element_by_id("id_home").click()
+        self.browser.find_element_by_id("id_home_page").click()
         self.assertEqual(self.browser.current_url, home_page_url)
 
 

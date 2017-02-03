@@ -10,7 +10,8 @@ import work_journal.views
 __author__ = '__L1n__w@tch'
 
 urlpatterns = [
-    url(r"^$", work_journal.views.journal_display, name="work_journal"),
+    url(r"^$", work_journal.views.work_journal_home_view, name="work_journal"),
+    url(r"^(?P<journal_id>\d+)/$", work_journal.views.journal_display, name="journal_display"),
 ]
 
 if __name__ == "__main__":

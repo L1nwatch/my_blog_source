@@ -13,15 +13,9 @@ from selenium.common.exceptions import WebDriverException
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from articles.models import Article, Tag
+from work_journal.models import Journal
 
 from datetime import datetime
-
-# from .server_tools import reset_database
-# from .server_tools import create_session_on_server
-
-# from .management.commands.create_session import create_pre_authenticated_session
-
-
 
 DEFAULT_WAIT = 5
 SCREEN_DUMP_LOCATION = os.path.abspath(
@@ -119,23 +113,8 @@ class FunctionalTest(StaticLiveServerTestCase):
             lambda b: b.find_element_by_id(element_id), "Could not find element with id {}. Page text was {}"
                 .format(element_id, self.browser.find_element_by_tag_name("body").text))
 
-    # def create_pre_authenticated_session(self, email):
-    #     if self.against_staging:
-    #         print("[*] 远程服务器")
-    #         session_key = create_session_on_server(self.server_host, email)
-    #     else:
-    #         print("[*] 本地服务器")
-    #         session_key = create_pre_authenticated_session(email)
-    #     ## 为了设定 cookie，我们要先访问网站
-    #     ## 而 404 页面是加载最快的
-    #     self.browser.get(self.server_url + "/404_no_such_url/")
-    #     self.browser.add_cookie(dict(
-    #         name=settings.SESSION_COOKIE_NAME,
-    #         value=session_key,
-    #         path="/",
-    #     ))
-
-    def wait_for(self, function_with_assertion, timeout=DEFAULT_WAIT):
+    @staticmethod
+    def wait_for(function_with_assertion, timeout=DEFAULT_WAIT):
         start_time = time.time()
         while time.time() - start_time < timeout:
             try:
@@ -190,10 +169,10 @@ while True:
 
         pass
 
-
     @staticmethod
     def _create_work_journal_test_db_data():
-        pass
+        Journal.objects.create(title="2017-02-03 任务情况总结", content="测试笔记, 应该记录 2017/02/03 的工作内容")
+
 
 if __name__ == "__main__":
     pass

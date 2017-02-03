@@ -2,19 +2,18 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
-
-2016.10.07 给搜索按钮添加 form
+2017.02.03 为这个 APP 新建 FORM 类
 """
 from django import forms
-from .models import Article
+from .models import Journal
 from my_constant import const
 
 __author__ = '__L1n__w@tch'
 
 
-class ArticleForm(forms.models.ModelForm):
+class JournalForm(forms.models.ModelForm):
     class Meta:
-        model = Article
+        model = Journal
         fields = ("title",)  # 注意逗号不可省略, 因为要表示成元组
         widgets = {
             "title": forms.fields.TextInput(attrs={
