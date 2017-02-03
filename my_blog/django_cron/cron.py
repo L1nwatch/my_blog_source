@@ -21,4 +21,5 @@ class AutoUpdateNotes(CronJobBase):
 
         notes_update_thread.start()
         journals_update_thread.start()
-        print("[*] [{}] {separator} 定时更新结束 {separator}".format(now, separator="*" * 30))
+
+        print("[*] [{}] {separator} 进行定时更新 {separator}".format(now, separator="*" * 30))

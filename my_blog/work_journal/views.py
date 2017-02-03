@@ -94,22 +94,22 @@ def update_journals(request=None):
     if request:
         logger.info("ip: {} 于时间 {} 更新了笔记".format(get_ip_from_django_request(request), datetime.datetime.today()))
 
-        # 将 git 仓库中的所有笔记更新到本地
-        __get_latest_notes()
+    # 将 git 仓库中的所有笔记更新到本地
+    __get_latest_notes()
 
-        # 将从 git 中获取到本地的笔记更新到数据库中
-        notes_in_git = set()
-        for root, dirs, file_list in os.walk(notes_git_path):
-            for each_file_name in file_list:
-                if __is_valid_md_file(each_file_name):
-                    path = os.path.join(root, each_file_name)
-                    __sync_database(each_file_name, path)
-                    notes_in_git.add(each_file_name)
+    # 将从 git 中获取到本地的笔记更新到数据库中
+    notes_in_git = set()
+    for root, dirs, file_list in os.walk(notes_git_path):
+        for each_file_name in file_list:
+            if __is_valid_md_file(each_file_name):
+                path = os.path.join(root, each_file_name)
+                __sync_database(each_file_name, path)
+                notes_in_git.add(each_file_name)
 
-        # 删除数据库中多余的笔记
-        for each_note_in_db in Journal.objects.all():
-            note_in_db_full_name = "{}.md".format(each_note_in_db.title)
-            if note_in_db_full_name not in notes_in_git:
-                each_note_in_db.delete()
+    # 删除数据库中多余的笔记
+    for each_note_in_db in Journal.objects.all():
+        note_in_db_full_name = "{}.md".format(each_note_in_db.title)
+        if note_in_db_full_name not in notes_in_git:
+            each_note_in_db.delete()
 
     return work_journal_home_view(request) if request is not None else None
