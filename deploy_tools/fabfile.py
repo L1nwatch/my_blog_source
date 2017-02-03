@@ -84,9 +84,9 @@ def _user_pass_file_config():
     while username == "" or password == "":
         # 兼容 Python2.7
         print("[+] 请输入 journals_git 的用户名: ")
-        username = sys.stdin.readline()
+        username = sys.stdin.readline().strip()
         print("[+] 请输入 journals_git 的密码: ")
-        password = sys.stdin.readline()
+        password = sys.stdin.readline().strip()
 
         # 保存到配置文件中
         with open(USER_PASS_CONF, "w") as f:
