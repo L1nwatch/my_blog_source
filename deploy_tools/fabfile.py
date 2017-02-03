@@ -93,12 +93,10 @@ def _user_pass_file_config():
 
 
 def _update_const_file(source_folder, site_name, host_name):
-    def __sub_callback(raw_string):
-        nonlocal username, password
-
+    def __sub_callback(raw_string, user, pw):
         url = raw_string.group(1)
         new_url = "{0}//{username}:{password}{1}".format(url.split("//")[0], url.split("//")[1],
-                                                         username=username, password=password)
+                                                         username=user, password=pw)
 
         return 'const.JOURNALS_GIT_REPOSITORY = "{}"'.format(new_url)
 
@@ -114,7 +112,8 @@ def _update_const_file(source_folder, site_name, host_name):
     # 通过 re 修改 const 文件
     with open(const_file_path, "r") as f:
         data = f.read()
-    data = re.sub('const.JOURNALS_GIT_REPOSITORY = "(?P<git_url>.*)"', __sub_callback, data)
+    data = re.sub('const.JOURNALS_GIT_REPOSITORY = "(?P<git_url>.*)"',
+                  lambda x: __sub_callback(x, username, password), data)
 
     with open(const_file_path, "w") as f:
         f.write(data)
