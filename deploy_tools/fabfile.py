@@ -81,6 +81,7 @@ def _user_pass_file_config():
 
     while username == "" or password == "":
         # 兼容 Python2.7
+        global input
         if hasattr(__builtins__, 'raw_input'):
             input = raw_input
 
