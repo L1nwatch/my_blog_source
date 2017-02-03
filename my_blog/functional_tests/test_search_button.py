@@ -17,7 +17,7 @@ class TestSearchButton(FunctionalTest):
         super().setUp()
 
         # 创建测试数据
-        self._create_test_db_data()
+        self._create_articles_test_db_data()
 
     def test_can_search_title(self):
         """

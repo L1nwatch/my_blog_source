@@ -146,7 +146,7 @@ class FunctionalTest(StaticLiveServerTestCase):
         return function_with_assertion()
 
     @staticmethod
-    def _create_test_db_data():
+    def _create_articles_test_db_data():
         """
         创建测试用的相关数据
         :return:
@@ -190,6 +190,10 @@ while True:
 
         pass
 
+
+    @staticmethod
+    def _create_work_journal_test_db_data():
+        pass
 
 if __name__ == "__main__":
     pass

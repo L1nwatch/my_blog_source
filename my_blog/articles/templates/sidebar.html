@@ -11,6 +11,9 @@
                     <a class="button-success pure-button" id="id_archives" href="{% url 'archives' %}">归档</a>
                 </li>
                 <li class="nav-item">
+                    <a class="button-success pure-button" id="id_work_journal" href="{% url 'work_journal' %}">日常汇总</a>
+                </li>
+                <li class="nav-item">
                     <a class="pure-button" id="id_github" href="https://github.com/L1nwatch">Github</a>
                 </li>
                 <li class="nav-item">
@@ -25,23 +28,23 @@
                         {% csrf_token %}
                     </form>
                 </li>
-                <li class="nav-item">
-                    <a class="button-success pure-button" id="id_update_notes" href="{% url 'update_notes' %}"
-                       onclick="check_is_valid_click()">手动更新笔记</a>
-                </li>
+                {#                <li class="nav-item">#}
+                {#                    <a class="button-success pure-button" id="id_update_notes" href="{% url 'update_notes' %}"#}
+                {#                       onclick="check_is_valid_click()">手动更新笔记</a>#}
+                {#                </li>#}
             </ul>
         </nav>
     </div>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
     <div class="footer">
         <nav class="nav">
             <ul class="nav-list">
-                <label>
-                    <li>文章数: {{ articles_numbers }}</li>
-                </label>
+                <li><label>文章数: {{ articles_numbers }}</label></li>
                 &nbsp
-                <label>
-                    <li>创建博客日期: 2016.10.04</li>
-                </label>
+                <li><label>创建博客日期: 2016.10.04</label></li>
             </ul>
         </nav>
     </div>

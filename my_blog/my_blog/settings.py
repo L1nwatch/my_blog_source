@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "articles",
     "django_cron",
-    "gitbook_notes"
+    "gitbook_notes",
+    "work_journal"
 ]
 
 BOOTSTRAP_ADMIN_SIDEBAR_MENU = True

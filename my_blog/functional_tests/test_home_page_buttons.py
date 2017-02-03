@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.03 添加日常工作记录 app 链接的按钮
 2016.10.26 添加 gitbook 链接的按钮
 2016.10.03 编写功能测试, 第一个编写的功能测试测试首页各个按钮, 包括主页,about 按钮,github 按钮,archive 按钮,email 按钮
 """
@@ -66,7 +67,7 @@ class TestHomePageButtons(FunctionalTest):
 
     def test_archive_button(self):
         # 创建测试数据
-        self._create_test_db_data()
+        self._create_articles_test_db_data()
 
         # 刷新首页
         self.browser.refresh()
@@ -98,6 +99,41 @@ class TestHomePageButtons(FunctionalTest):
         # 点击后发现页面跳转了, 而且可以看到 url 中有个 mail to 字母, 后面跟着作者的邮箱: "watch1602@gmail.com"
         # 发现如果使用 click 会使用默认浏览器打开然后就无法测试了, 所以就改用下面这种方法
         self.assertEqual("mailto:watch1602@gmail.com", email_button.get_attribute("href"))
+
+    def test_work_journal_button(self):
+        """
+        2017.02.03 测试新按钮, 日常任务情况总结
+        """
+        # 创建测试数据
+        self._create_work_journal_test_db_data()
+
+        # Y 在首页发现了一个按钮, 日常工作笔记
+        work_journal_button = self.browser.find_element_by_id("id_work_journal")
+
+        # 点击后发现页面跳转了, URL 变化了
+        home_page_url = self.browser.current_url
+        work_journal_button.click()
+        self.assertNotEqual(self.browser.current_url, home_page_url)
+
+        # 而且页面显示了一堆标题, 形如: 2017-02-03 任务情况总结
+        self.assertIn("2017-02-03 任务情况总结", self.browser.page_source)
+
+        # 但是没有显示日记内容
+        with self.assertRaises(NoSuchElementException):
+            # 如果找不到会抛出 NoSuchElementException 异常
+            self.browser.find_element_by_id("id_journal_content")
+
+        # 不过点击标题可以链接到对应的日记, 可以看到 URL 变了
+        work_journal_url = self.browser.current_url
+        self.browser.find_element_by_id("id_journal").click()
+        self.assertNotEqual(work_journal_url, self.browser.current_url)
+
+        # 日记的内容也显示出来了
+        self.browser.find_element_by_id("id_journal_content")
+
+        # Y 想回到首页了, 点击首页按钮又回到了首页
+        self.browser.find_element_by_id("id_home").click()
+        self.assertEqual(self.browser.current_url, home_page_url)
 
 
 if __name__ == "__main__":

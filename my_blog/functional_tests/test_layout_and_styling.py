@@ -37,14 +37,14 @@ class LayoutStylingTest(FunctionalTest):
 
         # 看到首页按钮变成了上面中间的第一个位置
         home_page_button = self.browser.find_element_by_id("id_home_page")
-        self.assertAlmostEqual(home_page_button.location["x"], 133, delta=5)
+        self.assertAlmostEqual(home_page_button.location["x"], 90, delta=5)
         self.assertAlmostEqual(home_page_button.location["y"], 111, delta=5)
 
 
 class ArticleTimeInfoTest(FunctionalTest):
     def setUp(self):
         super().setUp()
-        self._create_test_db_data()
+        self._create_articles_test_db_data()
         self.test_time = datetime.datetime.now()
 
     def test_has_article_create_time(self):
