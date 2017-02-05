@@ -1,13 +1,17 @@
 {% extends "base.html" %}
 
+{% block sidebar_content %}
+    {% include "sidebar.html" %}
+{% endblock %}
+
+{% block head_title %}
+    {% include "title.html" %}
+{% endblock %}
+
 {% block pagetitle %}
     {% for post in post_list %}
         <title>{{ post.category }}</title>
     {% endfor %}
-{% endblock %}
-
-{% block sidebar_content %}
-    {% include "sidebar.html" %}
 {% endblock %}
 
 {% block content %}

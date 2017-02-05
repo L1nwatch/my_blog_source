@@ -1,5 +1,6 @@
 <!--
 更新日志:
+    2017.02.05 title 也要重构了
     2017.01.27 重构一下, 把 sidebar 分离出来
     2016.10.28 添加一个滑动到顶部的图标, 参考: http://www.ccvita.com/427.html 实现
 -->
@@ -11,7 +12,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="w@tch web site">
 
-    <title>w@tch site</title>
+    {% block head_title %}
+    {% endblock %}
+
     {% load static %}
     <link rel="stylesheet" href="{% static "my_pure-min.css" %}">
     <link rel="stylesheet" href="{% static "my_grids-responsive-min.css" %}">

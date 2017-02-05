@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block sidebar_content %}
+    {% include "sidebar.html" %}
+{% endblock %}
+
+{% block head_title %}
+    <title>吃啥</title>
+{% endblock %}
+
+{% block content %}
+    <div class="markdown-body">
+        <table class="eating_plan_table">
+            <thead>Home</thead>
+            <tbody>
+            <tr>
+                <th></th>
+                <th>周一</th>
+                <th>周二</th>
+                <th>周三</th>
+                <th>周四</th>
+                <th>周五</th>
+                <th>周六</th>
+                <th>周日</th>
+            </tr>
+            <tr>
+                <th>早餐</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr>
+                <th>午餐</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr>
+                <th>晚餐</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th><label>
+                    <a href="http://www.xinshipu.com/zuofa/227911">可乐鸡翅</a>
+                    <br/>
+                    <a href="http://www.xinshipu.com/zuofa/116954">豆芽炒油豆腐</a>
+                </label></th>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

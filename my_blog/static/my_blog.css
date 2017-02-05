@@ -660,7 +660,7 @@ h3 {
     list-style: none;
 }
 
-.sidebar{
+.sidebar {
     overflow-y: scroll;
     overflow-x: hidden;
 }
@@ -698,3 +698,7 @@ h3 {
     font-size: 0.8em;
 }
 
+.eating_plan_table a, .eating_plan_table a:focus {
+    text-decoration: none;
+    float: left;
+}

@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load custom_markdown %}
 
+{% block head_title %}
+    {% include "title.html" %}
+{% endblock %}
+
 {% block sidebar_content %}
     {% include "sidebar.html" %}
 {% endblock %}
@@ -19,7 +23,6 @@
 
                 <div class="post-description" id="id_article_content">
                     <article class="markdown-body">
-{#                        <!--{{ post.content|custom_markdown|truncatewords_html:15 }}-->#}
                         {{ post.content|custom_markdown|truncatewords:15 }}
                     </article>
                 </div>
@@ -28,7 +31,6 @@
         {% endfor %}
 
         {% if post_list.object_list and post_list.paginator.num_pages > 1 %}
-
 
             <ul class="pure-paginator">
                 <li><a class="pure-button prev" href="?page=1">&#171;</a></li>

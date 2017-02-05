@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.05 添加吃饭计划表链接的按钮
 2017.02.03 添加日常工作记录 app 链接的按钮
 2016.10.26 添加 gitbook 链接的按钮
 2016.10.03 编写功能测试, 第一个编写的功能测试测试首页各个按钮, 包括主页,about 按钮,github 按钮,archive 按钮,email 按钮
@@ -132,6 +133,28 @@ class TestHomePageButtons(FunctionalTest):
         self.browser.find_element_by_id("id_journal_content")
 
         # Y 想回到首页了, 点击首页按钮又回到了首页
+        self.browser.find_element_by_id("id_home_page").click()
+        self.assertEqual(self.browser.current_url, home_page_url)
+
+    def test_eating_plan_button(self):
+        """
+        吃饭计划表的按钮
+        """
+        # Y 正在纠结吃饭的事情, 突然看到了一个吃饭计划表
+        eating_plan_button = self.browser.find_element_by_id("id_just_eating")
+        home_page_url = self.browser.current_url
+
+        # Y 点击按钮, 发现页面跳转了
+        eating_plan_button.click()
+        self.assertNotEqual(home_page_url, self.browser.current_url)
+
+        # 页面显示有吃货这个标题, 还有 "Home" 字样, 上面还区分了周一/周二..., 而且还区分了早/午/晚饭
+        self.assertEqual("吃啥", self.browser.title)
+
+        for each_keyword in ["Home", "周一", "周二", "周三", "周四", "周五", "周六", "周日", "早餐", "午餐", "晚餐"]:
+            self.assertIn(each_keyword, self.browser.page_source)
+
+        # Y 已经知道今晚要吃什么了, 于是点击按钮回到了首页
         self.browser.find_element_by_id("id_home_page").click()
         self.assertEqual(self.browser.current_url, home_page_url)
 

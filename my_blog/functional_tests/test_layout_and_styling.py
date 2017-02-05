@@ -37,7 +37,7 @@ class LayoutStylingTest(FunctionalTest):
 
         # 看到首页按钮变成了上面中间的第一个位置
         home_page_button = self.browser.find_element_by_id("id_home_page")
-        self.assertAlmostEqual(home_page_button.location["x"], 90, delta=5)
+        self.assertAlmostEqual(home_page_button.location["x"], 59, delta=5)
         self.assertAlmostEqual(home_page_button.location["y"], 111, delta=5)
 
 

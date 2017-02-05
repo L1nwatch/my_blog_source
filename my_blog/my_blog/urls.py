@@ -22,5 +22,6 @@ urlpatterns = [
     url(r"^$", articles.views.home, name="home"),
     url(r"^articles/", include("articles.urls")),
     url(r"^gitbook_notes/", include("gitbook_notes.urls")),
-    url(r"^work_journal/", include("work_journal.urls"))
+    url(r"^work_journal/", include("work_journal.urls")),
+    url(r"^just_eating/", include("just_eating.urls")),
 ]

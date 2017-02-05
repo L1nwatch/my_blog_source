@@ -4,6 +4,10 @@
     {% include "sidebar.html" %}
 {% endblock %}
 
+{% block head_title %}
+    {% include "title.html" %}
+{% endblock %}
+
 {% block content %}
     <div class="posts">
         {% if error %}

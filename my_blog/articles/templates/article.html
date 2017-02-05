@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load custom_markdown %}
 
+{% block head_title %}
+    {% include "title.html" %}
+{% endblock %}
+
 {% block sidebar_content %}
     <div id="id_sidebar" class="sidebar pure-u-1 pure-u-md-1-4">
         <div class="sidebar-search">
