@@ -27,18 +27,18 @@ class LayoutStylingTest(FunctionalTest):
         # Y 访问首页
         self.browser.get(self.server_url)
 
-        # 看到首页按钮被放置在左边中间的第一个位置
+        # 看到首页按钮被放置在右上角第一个位置
         home_page_button = self.browser.find_element_by_id("id_home_page")
-        self.assertAlmostEqual(home_page_button.location["x"], 87, delta=5)
-        self.assertAlmostEqual(home_page_button.location["y"], 321, delta=5)
+        self.assertAlmostEqual(home_page_button.location["x"], 663, delta=25)
+        self.assertAlmostEqual(home_page_button.location["y"], 13, delta=5)
 
         # Y 调整了一下窗口大小
         self.browser.set_window_size(640, 800)
 
-        # 看到首页按钮变成了上面中间的第一个位置
+        # 看到首页按钮被隐藏了
         home_page_button = self.browser.find_element_by_id("id_home_page")
-        self.assertAlmostEqual(home_page_button.location["x"], 59, delta=5)
-        self.assertAlmostEqual(home_page_button.location["y"], 111, delta=5)
+        self.assertAlmostEqual(home_page_button.location["x"], 0, delta=5)
+        self.assertAlmostEqual(home_page_button.location["y"], 0, delta=5)
 
 
 class ArticleTimeInfoTest(FunctionalTest):
@@ -46,11 +46,12 @@ class ArticleTimeInfoTest(FunctionalTest):
         super().setUp()
         self._create_articles_test_db_data()
         self.test_time = datetime.datetime.now()
+        self.test_url = "{host}/{path}".format(host=self.server_url, path="articles/archives/")
+
+        # Y 访问归档页
+        self.browser.get(self.test_url)
 
     def test_has_article_create_time(self):
-        # 访问首页
-        self.browser.get(self.server_url)
-
         # 发现存在创建时间的字样, 而且能看到格式是: "Y 年 m 月 d 号 H 时"
         self.browser.find_element_by_id("id_create_time")
         create_time_label_content = ("Create: {} 年 {} 月 {} 号 {} 时"
@@ -59,9 +60,6 @@ class ArticleTimeInfoTest(FunctionalTest):
         self.assertIn(create_time_label_content, self.browser.page_source)
 
     def test_has_article_update_time(self):
-        # 访问首页
-        self.browser.get(self.server_url)
-
         # 发现存在更新时间的字样, 而且能看到格式是: "Y 年 m 月 d 号 H 时"
         self.browser.find_element_by_id("id_update_time")
         update_time_label_content = ("Update: {} 年 {} 月 {} 号 {} 时"
@@ -74,9 +72,6 @@ class ArticleTimeInfoTest(FunctionalTest):
         测试 tag.html 显示的时间是正确的
         :return:
         """
-        # 访问首页
-        self.browser.get(self.server_url)
-
         # 发现分类包含个超链接, 点击进去看看
         self.browser.find_element_by_id("id_category").click()
 
@@ -91,6 +86,10 @@ class ArticleDisplayTest(FunctionalTest):
     def setUp(self):
         super().setUp()
         self._create_markdown_test_article()
+        self.test_url = "{host}/{path}".format(host=self.server_url, path="articles/archives/")
+
+        # Y 访问归档页
+        self.browser.get(self.test_url)
 
     @staticmethod
     def _create_markdown_test_article():
@@ -116,9 +115,6 @@ class ArticleDisplayTest(FunctionalTest):
         会不会被 sql lite 中间的这个空格影响到接下来的排版?
         最后发现是这种写法本身就不标准(以 GitHub 为标准), 所以就不理了
         """
-        # Y 访问首页
-        self.browser.get(self.server_url)
-
         # Y 记得某篇文章使用了 ```sql lite, 想看看是否能显示正确, 于是找到待测试的那篇文章
         articles_after_search = self.browser.find_element_by_id("id_article_title")
         articles_after_search.click()
@@ -131,9 +127,6 @@ class ArticleDisplayTest(FunctionalTest):
         测试解析器能否正确解析 table 文章
         :return:
         """
-        # Y 访问首页
-        self.browser.get(self.server_url)
-
         # Y 记得某篇文章使用了表格, 想看看是否能显示正确, 于是找到待测试的那篇文章
         articles_after_search = self.browser.find_element_by_id("id_article_title")
         articles_after_search.click()
@@ -148,9 +141,6 @@ class ArticleDisplayTest(FunctionalTest):
         """
         测试打开一篇文章的时候左边的菜单显示
         """
-        # Y 访问首页
-        self.browser.get(self.server_url)
-
         # Y 随便打开了一篇文章
         articles_after_search = self.browser.find_element_by_id("id_article_title")
         articles_after_search.click()
@@ -167,8 +157,6 @@ class ArticleDisplayTest(FunctionalTest):
         测试打开一篇文章, 可以看到左边显示了目录树, 跟文章内容一一对应
         :return:
         """
-        # Y 访问首页, 并且随机打开了一篇文章
-        self.browser.get(self.server_url)
         articles_after_search = self.browser.find_element_by_id("id_article_title")
         articles_after_search.click()
 

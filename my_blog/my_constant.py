@@ -32,7 +32,7 @@ class _Const:
 const = _Const()
 const.EMPTY_ARTICLE_ERROR = "没有相关文章题目"
 const.KEYWORD_IN_TITLE = "关键词仅出现标题中"
-const.PLACE_HOLDER = "word to search"
+const.PLACE_HOLDER = "What are you looking for?"
 const.HOME_PAGE_ARTICLES_NUMBERS = 2
 # TODO: git 提交前需要改为 False or True, 要不然网站会跑失败的...
 const.SLOW_CONNECT_DEBUG = False  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
@@ -54,11 +54,11 @@ const.JOURNALS_GIT_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.JOURNA
 const.GITBOOK_PATH_NAME = "gitbook_notes"
 const.GITBOOK_CODES_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.GITBOOK_PATH_NAME)
 const.GITBOOK_CODES_REPOSITORY = {
-    "interview_collect": "https://github.com/L1nwatch/interview_collect.git",
+    # "interview_collect": "https://github.com/L1nwatch/interview_collect.git",
     "PythonWeb": "https://github.com/L1nwatch/PythonWeb.git",
     # "it_people_healthy": "https://github.com/L1nwatch/it_people_healthy.git",
-    "writing_solid_python_code_gitbook": "https://github.com/L1nwatch/writing_solid_python_code_gitbook.git",
-    "CTF": "https://github.com/L1nwatch/CTF.git",
+    # "writing_solid_python_code_gitbook": "https://github.com/L1nwatch/writing_solid_python_code_gitbook.git",
+    # "CTF": "https://github.com/L1nwatch/CTF.git",
 }
 
 if __name__ == "__main__":

@@ -19,9 +19,9 @@ import articles.views
 
 urlpatterns = [
     url(r'^everything_is_happening_in_the_best_way/', admin.site.urls),
-    url(r"^$", articles.views.home, name="home"),
     url(r"^articles/", include("articles.urls")),
     url(r"^gitbook_notes/", include("gitbook_notes.urls")),
     url(r"^work_journal/", include("work_journal.urls")),
     url(r"^just_eating/", include("just_eating.urls")),
+    url(r'^$', articles.views.home, name='home'),
 ]

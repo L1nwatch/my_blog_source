@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic Page Needs
+    ================================================== -->
+    <meta charset="utf-8">
+    <!--[if IE]><meta http-equiv="x-ua-compatible" content="IE=9" /><![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% include "title.html" %}
+    <meta name="description" content="Your Description Here">
+    <meta name="keywords" content="bootstrap themes, portfolio, responsive theme">
+    <meta name="author" content="ThemeForces.Com">
+
+    <!-- Favicons
+    ================================================== -->
+    {% load static %}
+    <link rel="shortcut icon" href="{% static "favicon.ico" %}" type="image/x-icon">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="{% static "new_style/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "new_style/fonts/font-awesome/css/font-awesome.css" %}">
+
+    <!-- Stylesheet
+    ================================================== -->
+    <link rel="stylesheet" type="text/css" href="{% static "new_style/css/style.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "new_style/css/responsive.css" %}">
+
+    <script type="text/javascript" src="{% static "new_style/js/modernizr.custom.js" %}"></script>
+
+    <link href="{% static "new_style/css/rale_way.css" %}" rel="stylesheet" type="text/css">
+    <link href='{% static "new_style/css/play_ball.css" %}' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="{% static "new_style/js/html5shiv.min.js" %}"></script>
+      <script src="{% static "new_style/js/respond.min.js" %}"></script>
+    <![endif]-->
+
+    <!-- 搜索框的 css -->
+    <link rel="stylesheet" href="{% static "search_page_style2.css" %}">
+    <link rel="stylesheet" href="{% static "search_page_style.css" %}">
+</head>
+<body>
+<div id="tf-home">
+    <div class="overlay">
+        <div id="sticky-anchor"></div>
+        <nav id="tf-menu" class="navbar navbar-default">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                            data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand logo" href="{% url "home" %}">w@tch</a>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a id="id_home_page" href="#tf-home">Home</a></li>
+                        <li><a href="#tf-service">Services</a></li>
+                        <li><a id="id_just_eating" href="{% url "just_eating" %}">Eating</a></li>
+                        <li><a id="id_work_journal" href="{% url "work_journal" %}">Journal</a></li>
+                        <li><a id="id_archives" href="{% url "archives" %}">Archives</a></li>
+                        <li><a id="id_about_me" href="{% url "about_me" %}">About</a></li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+
+        <div class="container">
+            <div class="content">
+                <br/><br/>
+                <section class="webdesigntuts-workshop">
+                    <form action="{% url 'search_title' %}" method="post">
+                        {{ form.title }}
+                        {% csrf_token %}
+                        {#                        <input type="search" placeholder="">#}
+                        <button>Search</button>
+                    </form>
+
+                </section>
+                <br/><br/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="tf-service">
+    <div class="container">
+
+        <div class="col-md-4">
+
+            <div class="media">
+                <div class="media-left media-middle">
+                    <i class="fa fa-motorcycle"></i>
+                </div>
+                <div class="media-body">
+                    <h4 class="media-heading">Brand & Graphics Design</h4>
+                    <p>Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate
+                        at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia
+                        congue felis in faucibus.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="media">
+                <div class="media-left media-middle">
+                    <i class="fa fa-gears"></i>
+                </div>
+                <div class="media-body">
+                    <h4 class="media-heading">Web Designer & Developer</h4>
+                    <p>Cras sit amet nibh libero, in gravida nulla. Cras purus odio, vestibulum in vulputate at, tempus
+                        viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis
+                        in faucibus.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="media">
+                <div class="media-left media-middle">
+                    <i class="fa fa-heartbeat"></i>
+                </div>
+                <div class="media-body">
+                    <h4 class="media-heading">Business Consultant</h4>
+                    <p>Metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus
+                        viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis
+                        in faucibus.</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<nav id="tf-footer">
+    <div class="container">
+        <div class="pull-left">
+            <p>2015 © Awesomess. All Rights Reserved. Designed and Coded by <a href="https://dribbble.com/jennpereira">Jenn</a>
+                for <a href="https://themeforces.com">ThemeForces.Com</a></p>
+        </div>
+        <div class="pull-right">
+            <ul class="social-media list-inline">
+                <li><a id="id_github" href="https://github.com/L1nwatch"><span class="fa fa-github"></span></a></li>
+                <li><a id="id_gitbook" href="https://www.gitbook.com/@l1nwatch"><span class="fa fa-book"></span></a></li>
+                <li><a id="id_email" href="mailto:watch1602@gmail.com"><span class="fa fa-envelope"></span></a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="{% static "jquery.min.js" %}"></script>
+<script type="text/javascript" src="{% static "new_style/js/jquery-1.11.2.min.js" %}"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script type="text/javascript" src="{% static "new_style/js/bootstrap.js" %}"></script>
+
+<!-- Javascripts
+================================================== -->
+<script type="text/javascript" src="{% static "new_style/js/main.js" %}"></script>
+
+</body>
+</html>

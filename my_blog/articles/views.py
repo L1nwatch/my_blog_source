@@ -78,7 +78,14 @@ def _get_context_data(update_data=None):
     return data_return_to_base_template
 
 
-def home(request, invalid_click="True"):
+def home(request):
+    logger.info("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
+    articles = Article.objects.all()  # 获取全部的Article对象
+
+    return render(request, 'new_home.html', _get_context_data())
+
+
+def old_home(request, invalid_click="True"):
     logger.info("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
     articles = Article.objects.all()  # 获取全部的Article对象
     paginator = Paginator(articles, const.HOME_PAGE_ARTICLES_NUMBERS)  # 每页显示 HOME_PAGE_ARTICLES_NUMBERS 篇
@@ -358,7 +365,8 @@ def update_notes(request=None):
     global LAST_UPDATE_TIME
     now = datetime.datetime.today()
     if LAST_UPDATE_TIME is not None and (now - LAST_UPDATE_TIME).total_seconds() < settings.UPDATE_TIME_LIMIT:
-        return home(request, "invalid_click") if request is not None else None
+        # TODO: 这里的判断功能被我取消了
+        return home(request) if request is not None else None
     else:
         LAST_UPDATE_TIME = now
 
@@ -380,4 +388,4 @@ def update_notes(request=None):
         if note_in_db_full_name not in notes_in_git:
             each_note_in_db.delete()
 
-    return home(request) if request is not None else None
+    return archives(request) if request is not None else None

@@ -27,8 +27,10 @@ class AutoUpdateDatabaseTest(FunctionalTest):
         # 休息 UPDATE_TIME_LIMIT 时间
         time.sleep(settings.UPDATE_TIME_LIMIT)
 
-        # Y 访问首页
-        self.browser.get(self.server_url)
+        self.test_url = "{host}/{path}"
+
+        # Y 访问归档页
+        self.browser.get(self.test_url.format(host=self.server_url, path="articles/archives/"))
 
     def test_update_notes_button(self):
         """
@@ -36,18 +38,15 @@ class AutoUpdateDatabaseTest(FunctionalTest):
         :return:
         """
         try:
-            # Y 发现首页上一篇文章都没有
+            # Y 发现归档页上一篇文章都没有
             self.browser.find_element_by_id("id_article_title")
         except NoSuchElementException:
             # Y 发现博主的仓库中存在笔记
             if self.__git_repo_has_notes():
-                # 同时 Y 发现了一个更新数据库的按钮, 点击
-                self.browser.find_element_by_id("id_update_notes").click()
+                # 同时 Y 发现了一个更新数据库 url, 访问它
+                self.browser.get(self.test_url.format(host=self.server_url, path="articles/update_notes/"))
 
-                # Y 发现首页刷新了(下面这一条多余了)
-                self.browser.refresh()
-
-                # 首页上终于能看到文章了
+                # 归档页上终于能看到文章了
                 try:
                     self.browser.find_element_by_id("id_article_title")
                 except NoSuchElementException:
@@ -92,8 +91,9 @@ class AutoUpdateDatabaseTest(FunctionalTest):
         with self.assertRaises(NoAlertPresentException):
             self.browser.switch_to_alert()
 
-    def tearDown(self):
-        super().tearDown()
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
         shutil.rmtree(const.NOTES_GIT_PATH)
 
 

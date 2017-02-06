@@ -27,7 +27,7 @@ class HomeViewTest(TestCase):
         :return:
         """
         response = self.client.get("/")
-        self.assertTemplateUsed(response, "home.html")
+        self.assertTemplateUsed(response, "new_home.html")
 
     def test_only_display_part_articles(self):
         """
@@ -229,6 +229,9 @@ class UpdateNotesViewTest(TestCase):
                   " && git push".format(self.notes_git_path, self.test_md_file_name)
         os.system(command)
 
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
         # 删除整个 notes 测试文件夹
         shutil.rmtree(const.NOTES_GIT_PATH)
 

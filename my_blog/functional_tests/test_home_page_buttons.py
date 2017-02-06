@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.06 更换首页了, 所以对应测试也得改, 比如说现在首页不显示文章内容了
 2017.02.05 添加吃饭计划表链接的按钮
 2017.02.03 添加日常工作记录 app 链接的按钮
 2016.10.26 添加 gitbook 链接的按钮
@@ -88,10 +89,6 @@ class TestHomePageButtons(FunctionalTest):
         with self.assertRaises(NoSuchElementException):
             # 如果找不到会抛出 NoSuchElementException 异常
             self.browser.find_element_by_id("id_article_content")
-
-        # 重新点击首页按钮, 发现首页是会显示文章部分内容的
-        self.browser.find_element_by_id("id_home_page").click()
-        self.browser.find_element_by_id("id_article_content")
 
     def test_email_button(self):
         # Y 想联系网站拥有者, 发现了个 email 按钮

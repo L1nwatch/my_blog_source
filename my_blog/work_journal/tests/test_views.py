@@ -177,6 +177,8 @@ class UpdateNotesViewTest(TestCase):
                   " && git push".format(self.journals_git_path, self.test_md_file_name)
         os.system(command)
 
+    @classmethod
+    def tearDownClass(cls):
         # 删除整个 notes 测试文件夹
         shutil.rmtree(const.JOURNALS_GIT_PATH)
 
