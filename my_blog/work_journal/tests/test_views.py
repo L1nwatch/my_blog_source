@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.07 添加更新的时候判断文件名的合法性的单元测试
 2017.02.03 开始写这个 APP, 需要新建单元测试
 """
 import unittest
@@ -9,6 +10,7 @@ import shutil
 
 from work_journal.forms import JournalForm
 from work_journal.models import Journal
+from work_journal.views import is_valid_update_md_file
 from articles.views import get_right_content_from_file
 from my_constant import const
 from django.test import TestCase, override_settings
@@ -130,6 +132,31 @@ class JournalDisplayViewTest(TestCase):
         self.assertNotContains(response, "## 二级标题")
 
 
+class HelpFunctionTest(TestCase):
+    def test_is_valid_update_md_file(self):
+        test_file_name = "readme.md"
+        self.assertFalse(is_valid_update_md_file(test_file_name))
+
+        test_file_name = "添加路由的命令.md"
+        self.assertFalse(is_valid_update_md_file(test_file_name))
+
+        test_file_name = "【路由部署】关键字编写实战.md"
+        self.assertFalse(is_valid_update_md_file(test_file_name))
+
+        test_file_name = "notes_id导入问题.md"
+        self.assertFalse(is_valid_update_md_file(test_file_name))
+
+        test_file_name = "ftp爆破.png"
+        self.assertFalse(is_valid_update_md_file(test_file_name))
+
+        # 以下为符合要求的情况
+        test_file_name = "20161130任务情况总结.md"
+        self.assertTrue(is_valid_update_md_file(test_file_name))
+
+        test_file_name = "2016-12-12-周一.md"
+        self.assertTrue(is_valid_update_md_file(test_file_name))
+
+
 @override_settings(UPDATE_TIME_LIMIT=0.1)
 @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "const.SLOW_CONNECT_DEBUG 值为 True 才表示要进行 git 测试")
 class UpdateNotesViewTest(TestCase):
@@ -205,6 +232,26 @@ class UpdateNotesViewTest(TestCase):
         self.client.get(self.unique_url)
         data = get_right_content_from_file(self.test_md_file_path)
         self.assertEqual(data, test_content, "更新测试文件失败")
+
+    def test_update_empty_md(self):
+        """
+        测试如果下载到的是空的 md 文件, 则不会写入到数据库中
+        """
+        journal_title = self.test_md_file_name.split(".md")[0]
+
+        # 原来存在这份笔记
+        Journal.objects.create(title=journal_title, content="测试笔记")
+
+        # 将测试文件的内容更改为空并且 git 上去
+        test_content = ""
+        self.__update_test_md_file_and_git_push(test_content)
+
+        # 执行更新操作
+        self.client.get(self.unique_url)
+
+        # 发现数据库中不存在这份笔记
+        with self.assertRaises(Journal.DoesNotExist):
+            Journal.objects.get(title=journal_title)
 
     def test_create_notes_from_md(self):
         # 每个 md 笔记的文件名类似于: "2017-02-03 任务情况总结.md"

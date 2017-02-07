@@ -1,10 +1,10 @@
 from django.shortcuts import render
-from django.http import Http404
 from .models import Journal
 from .forms import JournalForm
 from my_constant import const
 from articles.views import get_ip_from_django_request, get_right_content_from_file
 
+import re
 import logging
 import datetime
 import os
@@ -40,6 +40,19 @@ def journal_display(request, journal_id):
     return render(request, 'journal_display.html', _get_context_data({"post": journal}))
 
 
+def is_valid_update_md_file(file_name):
+    """
+    判断文件名是否满足 2017-02-03-任务情况总结.md 这种格式
+    :param file_name: str(), 比如 "2017-02-03-任务情况总结.md"
+    :return: True
+    """
+    if not file_name.endswith(".md"):
+        return False
+    elif not re.match("\d+-?\d+-?\d+-?.*\.md", file_name):
+        return False
+    return True
+
+
 def update_journals(request=None):
     def __get_latest_notes():
         nonlocal notes_git_path
@@ -69,25 +82,19 @@ def update_journals(request=None):
             journal_from_db = Journal.objects.get(title=journal_title)
             # 已经存在
             if __content_change(journal_from_db.content, journal_content):
-                # 内容有所改变
-                journal_from_db.content = journal_content
-                journal_from_db.update_time = datetime.datetime.now()
-            journal_from_db.save()
+                # 内容被清空了
+                if journal_content == "":
+                    # 删除原来那篇文章
+                    journal_from_db.delete()
+                else:
+                    # 内容有所改变
+                    journal_from_db.content = journal_content
+                    journal_from_db.update_time = datetime.datetime.now()
+                    journal_from_db.save()
         except Journal.DoesNotExist:
-            # 不存在
-            Journal.objects.create(title=journal_title, content=journal_content)
-
-    def __is_valid_md_file(file_name):
-        """
-        判断文件名是否满足 测试笔记-测试标题.md 这种格式
-        :param file_name: "测试笔记-测试标题.md"
-        :return: True
-        """
-        if not file_name.endswith(".md"):
-            return False
-        elif "-" not in file_name:
-            return False
-        return True
+            # 不存在并且不为空
+            if journal_content != "":
+                Journal.objects.create(title=journal_title, content=journal_content)
 
     notes_git_path = const.JOURNALS_GIT_PATH
 
@@ -101,7 +108,7 @@ def update_journals(request=None):
     notes_in_git = set()
     for root, dirs, file_list in os.walk(notes_git_path):
         for each_file_name in file_list:
-            if __is_valid_md_file(each_file_name):
+            if is_valid_update_md_file(each_file_name):
                 path = os.path.join(root, each_file_name)
                 __sync_database(each_file_name, path)
                 notes_in_git.add(each_file_name)
