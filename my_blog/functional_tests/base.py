@@ -171,7 +171,8 @@ while True:
 
     @staticmethod
     def _create_work_journal_test_db_data():
-        Journal.objects.create(title="2017-02-03 任务情况总结", content="测试笔记, 应该记录 2017/02/03 的工作内容")
+        Journal.objects.create(title="2017-02-03 任务情况总结"
+                               , content="测试笔记, 应该记录 2017/02/03 的工作内容", date=datetime.today())
 
 
 if __name__ == "__main__":

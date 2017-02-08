@@ -26,8 +26,8 @@ class TestWorkJournalHomePage(FunctionalTest):
         self.browser.get("{host}{path}".format(host=self.server_url, path=self.unique_url))
 
         # Y 发现左下角有个日记数, 且日记数不为 0, 说明站长是有记日记的
-        self.assertIn("文章数", self.browser.page_source)
-        self.assertRegex(self.browser.page_source, "文章数: \d+")
+        self.assertIn("日记数", self.browser.page_source)
+        self.assertRegex(self.browser.page_source, "日记数: \d+")
 
 
 if __name__ == "__main__":

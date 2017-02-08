@@ -7,6 +7,8 @@
 """
 import unittest
 import shutil
+import os
+import datetime
 
 from work_journal.forms import JournalForm
 from work_journal.models import Journal
@@ -16,13 +18,18 @@ from my_constant import const
 from django.test import TestCase, override_settings
 from django.conf import settings
 
-import os
-
 __author__ = '__L1n__w@tch'
 
 
 class JournalHomeViewTest(TestCase):
     unique_url = "/work_journal/"
+
+    @staticmethod
+    def _create_test_db_date():
+        journal = Journal.objects.create(title="test_journal_1", content="test_journal_content_1"
+                                         , date=datetime.datetime.today())
+
+        return journal
 
     def test_use_right_template(self):
         """
@@ -45,10 +52,12 @@ class JournalHomeViewTest(TestCase):
         测试显示了所有 journal 而不只是某几篇
         """
         test_journals_number = 10
+        test_date = datetime.datetime.today()
 
         # 测试 10 篇文章
         for i in range(test_journals_number):
-            Journal.objects.create(title="test_journal_{}".format(i + 1))
+            Journal.objects.create(title="test_journal_{}".format(i + 1), date=test_date)
+            test_date += datetime.timedelta(days=1)
 
         response = self.client.get(self.unique_url)
         counts = 0
@@ -62,7 +71,8 @@ class JournalHomeViewTest(TestCase):
         """
         测试日常汇总首页不显示日记的内容
         """
-        journal = Journal.objects.create(title="test_journal_1", content="test_journal_content_1")
+        journal = self._create_test_db_date()
+
         response = self.client.get(self.unique_url)
         self.assertNotContains(response, journal.content)
 
@@ -70,7 +80,7 @@ class JournalHomeViewTest(TestCase):
         """
         测试显示的日记, 每一篇都带有超链接, 链接到对应的日记 url
         """
-        journal = Journal.objects.create(title="test_journal_1", content="test_journal_content_1")
+        journal = self._create_test_db_date()
         response = self.client.get(self.unique_url)
 
         # 标题存在
@@ -90,14 +100,18 @@ class JournalDisplayViewTest(TestCase):
 
     @staticmethod
     def _create_journal_test_db():
+        today = datetime.datetime.today()
+        tomorrow = today + datetime.timedelta(days=1)
+
         # 创建一篇普通的日记
-        Journal.objects.create(title="test_journal_1", content="test_journal_content_1")
+        Journal.objects.create(title="test_journal_1", content="test_journal_content_1",
+                               date=today)
 
         # 创建一篇 Markdown 格式的日记
         with open(os.path.join(settings.BASE_DIR, "markdown_file_for_test.md"), "r") as f:
             content = f.read()
 
-        Journal.objects.create(title="test_journal_with_markdown", content=content)
+        Journal.objects.create(title="test_journal_with_markdown", content=content, date=tomorrow)
 
     def test_use_right_template(self):
         """
