@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.08 测试提取日期对象的方法
 2017.02.07 添加更新的时候判断文件名的合法性的单元测试
 2017.02.03 开始写这个 APP, 需要新建单元测试
 """
@@ -12,7 +13,7 @@ import datetime
 
 from work_journal.forms import JournalForm
 from work_journal.models import Journal
-from work_journal.views import is_valid_update_md_file
+from work_journal.views import is_valid_update_md_file, extract_date_from_md_file
 from articles.views import get_right_content_from_file
 from my_constant import const
 from django.test import TestCase, override_settings
@@ -170,6 +171,22 @@ class HelpFunctionTest(TestCase):
         test_file_name = "2016-12-12-周一.md"
         self.assertTrue(is_valid_update_md_file(test_file_name))
 
+    def test_extract_date_from_md_file(self):
+        test_file_name = "20161130任务情况总结.md"
+        right_answer = datetime.date(2016, 11, 30)
+        my_answer = extract_date_from_md_file(test_file_name)
+        self.assertEqual(my_answer, right_answer)
+
+        test_file_name = "2016-12-12-周一.md"
+        right_answer = datetime.date(2016, 12, 12)
+        my_answer = extract_date_from_md_file(test_file_name)
+        self.assertEqual(my_answer, right_answer)
+
+        test_file_name = "2016-12-1-周一.md"
+        right_answer = datetime.date(2016, 12, 1)
+        my_answer = extract_date_from_md_file(test_file_name)
+        self.assertEqual(my_answer, right_answer)
+
 
 @override_settings(UPDATE_TIME_LIMIT=0.1)
 @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "const.SLOW_CONNECT_DEBUG 值为 True 才表示要进行 git 测试")
@@ -254,7 +271,7 @@ class UpdateNotesViewTest(TestCase):
         journal_title = self.test_md_file_name.split(".md")[0]
 
         # 原来存在这份笔记
-        Journal.objects.create(title=journal_title, content="测试笔记")
+        Journal.objects.create(title=journal_title, content="测试笔记", date=datetime.date.today())
 
         # 将测试文件的内容更改为空并且 git 上去
         test_content = ""
@@ -290,7 +307,8 @@ class UpdateNotesViewTest(TestCase):
     def test_update_notes_from_md(self):
         # 每个 md 笔记的文件名类似于: "2017-02-03 任务情况总结.md"
         test_journal_title = self.test_md_file_name.rstrip(".md")  # 去掉 .md
-        Journal.objects.create(title=test_journal_title, category="old_category", content="old content")
+        Journal.objects.create(title=test_journal_title, category="old_category",
+                               content="old content", date=datetime.date.today())
 
         # 文章进行了更新
         test_content = "# test_hello"
@@ -312,7 +330,8 @@ class UpdateNotesViewTest(TestCase):
         """
         原先在数据库中已经存在某个笔记, 但是最新版本的 git 仓库中并没有这个笔记, 那么从数据库中删除掉
         """
-        should_not_exist_note = Journal.objects.create(title="不应该存在的笔记", category="测试笔记")
+        should_not_exist_note = Journal.objects.create(title="不应该存在的笔记",
+                                                       category="测试笔记", date=datetime.date.today())
 
         # 确认仓库中没有这个笔记
         not_exist_note_full_name = "{}.md".format(should_not_exist_note.category)

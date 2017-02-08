@@ -53,6 +53,17 @@ def is_valid_update_md_file(file_name):
     return True
 
 
+def extract_date_from_md_file(file_name):
+    """
+    从文件名提取出 date 对象, 用于创建日记用的
+    :param file_name: str(), 比如 "2017-02-03-任务情况总结.md"
+    :return: date(), 比如利用 2017-02-03 生成的 date 对象
+    """
+    result = re.findall("(\d{4})-?(\d{1,2})-?(\d{1,2})-?.*", file_name)[0]
+    year, month, day = int(result[0]), int(result[1]), int(result[2])
+    return datetime.date(year, month, day)
+
+
 def update_journals(request=None):
     def __get_latest_notes():
         nonlocal notes_git_path
@@ -89,12 +100,12 @@ def update_journals(request=None):
                 else:
                     # 内容有所改变
                     journal_from_db.content = journal_content
-                    journal_from_db.update_time = datetime.datetime.now()
                     journal_from_db.save()
         except Journal.DoesNotExist:
             # 不存在并且不为空
             if journal_content != "":
-                Journal.objects.create(title=journal_title, content=journal_content)
+                date = extract_date_from_md_file(journal_title)
+                Journal.objects.create(title=journal_title, content=journal_content, date=date)
 
     notes_git_path = const.JOURNALS_GIT_PATH
 
