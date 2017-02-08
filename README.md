@@ -13,11 +13,11 @@
 
 （2017-02-08 版本）的首页界面如图所示：
 
-![2017-02-08首页截图]()
+![2017-02-08首页截图](https://github.com/L1nwatch/my_blog_source/blob/master/2017-02-08%E9%A6%96%E9%A1%B5%E6%88%AA%E5%9B%BE.jpg?raw=true)
 
 （2017-02-08 版本）的文章界面如图所示：
 
-![2017-02-08文章截图]()
+![2017-02-08文章截图](https://github.com/L1nwatch/my_blog_source/blob/master/2017-02-08%E6%96%87%E7%AB%A0%E7%95%8C%E9%9D%A2.jpg?raw=true)
 
 ## 自动化部署方法
 
