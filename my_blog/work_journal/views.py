@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import Journal
 from .forms import JournalForm
 from my_constant import const
-from articles.views import get_ip_from_django_request, get_right_content_from_file
+from articles.views import get_ip_from_django_request, get_right_content_from_file, create_search_result
 
 import re
 import logging
@@ -131,3 +131,62 @@ def update_journals(request=None):
             each_note_in_db.delete()
 
     return work_journal_home_view(request) if request is not None else None
+
+
+def search_journals(request):
+    """
+    2017.02.08 参考搜索文章的代码, 写了这个搜索日记的代码
+    :param request: django 传给视图函数的参数 request, 包含 HTTP 请求的各种信息
+    """
+
+    def __search_keyword_in_articles(keyword_set):
+        result_set = set()
+        first_time = True
+
+        # 对每个关键词进行处理
+        for each_key_word in keyword_set:
+            # 获取上一次过滤剩下的文章列表, 如果是第一次则为全部文章
+            if first_time:
+                first_time = False
+                articles_from_content_filter = Journal.objects.filter(content__icontains=each_key_word)
+
+                result_set.update(articles_from_content_filter)
+            else:
+                temp_result_set = set()
+                # 对每篇文章进行查找, 先查找标题, 然后查找内容
+                for each_article in result_set:
+                    if each_key_word in each_article.title or each_key_word in each_article.content:
+                        temp_result_set.add(each_article)
+
+                result_set = temp_result_set
+
+        return result_set
+
+    def __form_is_valid_and_ignore_exist_article_error(my_form):
+        """
+        2016.10.11 重定义验证函数, 不再使用简单的 form.is_valid, 原因是执行搜索的时候发现不能搜索跟已存在的文章一模一样的标题关键词
+        :param my_form: form = JournalForm(data=request.POST)
+        :return: boolean, True or False
+        """
+        if my_form.is_valid() is True:
+            return True
+        elif len(my_form.errors) == 1 and "具有 Title 的 Article 已存在。" in str(my_form.errors):
+            return True
+        return False
+
+    if request.method == "POST":
+        form = JournalForm(data=request.POST)
+        if __form_is_valid_and_ignore_exist_article_error(form):
+            keywords = set(form.data["title"].split(" "))
+            # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
+            article_list = __search_keyword_in_articles(keywords)
+            logger.info("ip: {} 搜索: {}"
+                        .format(get_ip_from_django_request(request), form.data["title"]))
+
+            context_data = _get_context_data({'post_list': create_search_result(article_list, keywords),
+                                              'error': None, "form": form})
+            context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(article_list) == 0 else False
+
+            return render(request, 'search_result.html', context_data)
+
+    return work_journal_home_view(request)

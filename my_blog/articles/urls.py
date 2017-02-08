@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^archives/$', articles.views.archives, name='archives'),
     url(r'^about_me/$', articles.views.about_me, name='about_me'),
     url(r'^tag(?P<tag>\w+)/$', articles.views.search_tag, name='search_tag'),
-    url(r'^search/$', articles.views.blog_search, name='search_title'),
+    url(r'^search/$', articles.views.blog_search, name='search_article'),
     url(r'^update_notes/$', articles.views.update_notes, name='update_notes'),
 ]
 

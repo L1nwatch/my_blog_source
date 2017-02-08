@@ -155,7 +155,7 @@ def search_tag(request, tag):
     return render(request, 'tag.html', _get_context_data({'post_list': post_list}))
 
 
-def _create_search_result(article_list, keyword_set):
+def create_search_result(article_list, keyword_set):
     """
     创建搜索结果以便返回给页面
     :param article_list: 存在关键词的文章列表
@@ -296,7 +296,7 @@ def blog_search(request):
             logger.info("ip: {} 搜索: {}"
                         .format(get_ip_from_django_request(request), form.data["title"]))
 
-            context_data = _get_context_data({'post_list': _create_search_result(article_list, keywords),
+            context_data = _get_context_data({'post_list': create_search_result(article_list, keywords),
                                               'error': None, "form": form})
             context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(article_list) == 0 else False
 

@@ -9,7 +9,7 @@
     <div id="id_sidebar" class="sidebar pure-u-1 pure-u-md-1-4">
         <div class="sidebar-search">
             <a href="{% url 'home' %}" class="fa fa-home">w@tch</a>
-            <form action="{% url 'search_title' %}" method="post">
+            <form action="{% url 'search_article' %}" method="post">
                 {{ form.title }}
                 {% csrf_token %}
             </form>
