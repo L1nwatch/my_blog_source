@@ -28,13 +28,13 @@
                 <tr>
                     {% for post in post_list %}
                         <th>
-                            <a id="id_article_title" href="{% url 'detail' article_id=post.id %}">{{ post.title }}</a>
+                            <a id="id_search_result_title" href="/{{ post.type }}/{{ post.id }}/">{{ post.title }}</a>
                         </th>
                         <th align="left">
                             {{ post.content|custom_markdown }}
                         </th>
                         <th>
-                            <a class="pure-button" href="{% url 'detail' article_id=post.id %}">Read More >>> </a>
+                            <a class="pure-button" href="/{{ post.type }}/{{ post.id }}/">Read More >>> </a>
                         </th>
                         </tr>
                     {% endfor %}

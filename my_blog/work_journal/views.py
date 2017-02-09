@@ -1,13 +1,10 @@
 from django.shortcuts import render
 from .models import Journal
 from .forms import JournalForm
-from my_constant import const
-from articles.views import get_ip_from_django_request, get_right_content_from_file, create_search_result
+from articles.common_help_function import *
 
 import re
-import logging
 import datetime
-import os
 
 logger = logging.getLogger("my_blog.work_journal.views")
 
@@ -133,13 +130,25 @@ def update_journals(request=None):
     return work_journal_home_view(request) if request is not None else None
 
 
-def search_journals(request):
+def search_journal_by_date(date):
+    """
+    通过 date 来获取 journal
+    :param date: str(), 比如 "2017-01-02"
+    :return: Journal(), 搜索到的那篇文章
+    """
+    year, month, day = re.findall("(\d{4})-(\d{1,2})-(\d{1,2})", date)[0]
+    year, month, day = int(year), int(month), int(day)
+    result = Journal.objects.get(date=datetime.datetime(year, month, day))
+    return result
+
+
+def do_journals_search(request):
     """
     2017.02.08 参考搜索文章的代码, 写了这个搜索日记的代码
     :param request: django 传给视图函数的参数 request, 包含 HTTP 请求的各种信息
     """
 
-    def __search_keyword_in_articles(keyword_set):
+    def __search_keyword_in_journals(keyword_set):
         result_set = set()
         first_time = True
 
@@ -154,8 +163,9 @@ def search_journals(request):
             else:
                 temp_result_set = set()
                 # 对每篇文章进行查找, 先查找标题, 然后查找内容
+                each_key_word = each_key_word.lower()
                 for each_article in result_set:
-                    if each_key_word in each_article.title or each_key_word in each_article.content:
+                    if each_key_word in each_article.content.lower():
                         temp_result_set.add(each_article)
 
                 result_set = temp_result_set
@@ -177,16 +187,23 @@ def search_journals(request):
     if request.method == "POST":
         form = JournalForm(data=request.POST)
         if __form_is_valid_and_ignore_exist_article_error(form):
-            keywords = set(form.data["title"].split(" "))
-            # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
-            article_list = __search_keyword_in_articles(keywords)
+            search_text = form.data["title"]
+            keywords = set()
+
+            if re.match("\d{4}-\d{1,2}-\d{1,2}", search_text):
+                # 按日期来搜索
+                article_list = [search_journal_by_date(search_text)]
+            else:
+                # 按关键词来搜索
+                keywords = set(search_text.split(" "))
+                # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
+                article_list = __search_keyword_in_journals(keywords)
             logger.info("ip: {} 搜索: {}"
                         .format(get_ip_from_django_request(request), form.data["title"]))
 
-            context_data = _get_context_data({'post_list': create_search_result(article_list, keywords),
-                                              'error': None, "form": form})
+            context_data = _get_context_data(
+                {'post_list': create_search_result(article_list, keywords, "work_journal"),
+                 'error': None, "form": form})
             context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(article_list) == 0 else False
 
-            return render(request, 'search_result.html', context_data)
-
-    return work_journal_home_view(request)
+            return context_data

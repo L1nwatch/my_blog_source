@@ -167,12 +167,14 @@ while True:
                                                  category="Test_Category", content="Same category {}".format(i + 1))
             new_article.tag = (tag_others,)
 
-        pass
-
     @staticmethod
     def _create_work_journal_test_db_data():
-        Journal.objects.create(title="2017-02-03 任务情况总结"
-                               , content="测试笔记, 应该记录 2017/02/03 的工作内容", date=datetime.today())
+        Journal.objects.create(title="2017-02-07 任务情况总结"
+                               , content="测试笔记, 应该记录 2017/02/07 的工作内容", date=datetime(2017, 2, 7))
+        Journal.objects.create(title="2017-02-08 任务情况总结"
+                               , content="# Test pyThon", date=datetime(2017, 2, 8))
+        Journal.objects.create(title="2017-02-09 任务情况总结"
+                               , content="测试笔记, 应该记录 2017/02/09 的工作内容", date=datetime(2017, 2, 9))
 
 
 if __name__ == "__main__":

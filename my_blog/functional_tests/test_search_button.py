@@ -8,6 +8,7 @@
 """
 from .base import FunctionalTest
 from articles.models import Article
+from my_constant import const
 
 __author__ = '__L1n__w@tch'
 
@@ -55,7 +56,7 @@ class TestSearchButton(FunctionalTest):
         search_button.send_keys("time.sleep\n")
 
         # Y 发现搜出来了文章, 随便打开一篇文章, 可以看到确实是有 time.sleep 的存在
-        articles_after_search = self.browser.find_element_by_id("id_article_title")
+        articles_after_search = self.browser.find_element_by_id(const.ID_SEARCH_RESULT_TITLE)
         articles_after_search.click()
         self.assertIn("time.sleep", self.browser.find_element_by_tag_name('body').text)
 
@@ -64,7 +65,7 @@ class TestSearchButton(FunctionalTest):
 
         # Y 搜索了这么一个关键词: and I, 发现确实搜出来结果了, 而且随便打开一片文章里面可以找到 and 和 I, 而且不是连在一起的
         search_button.send_keys("and I\n")
-        articles_after_search = self.browser.find_element_by_id("id_article_title")
+        articles_after_search = self.browser.find_element_by_id(const.ID_SEARCH_RESULT_TITLE)
         articles_after_search.click()
         body_text = self.browser.find_element_by_tag_name('body').text
         self.assertIn("and", body_text)
@@ -76,7 +77,7 @@ class TestSearchButton(FunctionalTest):
         search_button.send_keys("随便输入了一些什么啊肯定是搜索不到的\n")
 
         # 果然关键词打得太随意了, 啥都没有啊
-        articles_after_search = self.browser.find_elements_by_id("id_article_title")
+        articles_after_search = self.browser.find_elements_by_id(const.ID_SEARCH_RESULT_TITLE)
         self.assertTrue(len(articles_after_search) == 0, "居然找到文章了?!")
 
     def test_search_result_display(self):

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.08 重构, 将原先所有 ArticleForm 改为 BaseSearchForm
 2017.01.28 加强了搜索结果显示
 2016.10.03 测试视图函数是否正常
 """
@@ -9,7 +10,7 @@ import os
 import unittest
 import shutil
 
-from articles.forms import ArticleForm
+from articles.forms import BaseSearchForm
 from articles.models import Article
 from my_constant import const
 from django.conf import settings
@@ -49,7 +50,7 @@ class HomeViewTest(TestCase):
     def test_home_page_uses_article_form(self):
         response = self.client.get("/")
         # 使用 assertIsInstance 确认视图使用的是正确的表单类
-        self.assertIsInstance(response.context["form"], ArticleForm)
+        self.assertIsInstance(response.context["form"], BaseSearchForm)
         self.assertContains(response, 'name="title"')
 
 
@@ -70,7 +71,7 @@ class ArticleDisplayViewTest(TestCase):
         self.assertTemplateUsed(response, "article.html")
 
         # 测试是否有将 form 传递给模板
-        self.assertIsInstance(response.context["form"], ArticleForm)
+        self.assertIsInstance(response.context["form"], BaseSearchForm)
 
     def test_markdown_parse(self):
         """
@@ -135,10 +136,9 @@ class AboutMeViewTest(TestCase):
     def test_view_passes_form_to_template(self):
         """
         测试是否有将 form 传递给模板
-        :return:
         """
         response = self.client.get(self.unique_url)
-        self.assertIsInstance(response.context["form"], ArticleForm)
+        self.assertIsInstance(response.context["form"], BaseSearchForm)
 
 
 class ArchivesViewTest(TestCase):
@@ -151,10 +151,9 @@ class ArchivesViewTest(TestCase):
     def test_view_passes_form_to_template(self):
         """
         测试是否有将 form 传递给模板
-        :return:
         """
         response = self.client.get(self.unique_url)
-        self.assertIsInstance(response.context["form"], ArticleForm)
+        self.assertIsInstance(response.context["form"], BaseSearchForm)
 
 
 class SearchTagViewTest(TestCase):
@@ -178,10 +177,9 @@ class SearchTagViewTest(TestCase):
     def test_view_passes_form_to_template(self):
         """
         测试是否有将 form 传递给模板
-        :return:
         """
         response = self.client.get(self.unique_url.format("just_a_test"))
-        self.assertIsInstance(response.context["form"], ArticleForm)
+        self.assertIsInstance(response.context["form"], BaseSearchForm)
 
 
 @override_settings(UPDATE_TIME_LIMIT=0.1)
@@ -314,10 +312,9 @@ class UpdateNotesViewTest(TestCase):
     def test_view_passes_form_to_template(self):
         """
         测试是否有将 form 传递给模板
-        :return:
         """
         response = self.client.get(self.unique_url)
-        self.assertIsInstance(response.context["form"], ArticleForm)
+        self.assertIsInstance(response.context["form"], BaseSearchForm)
 
     def test_delete_notes_from_md(self):
         """
@@ -338,28 +335,27 @@ class UpdateNotesViewTest(TestCase):
             Article.objects.get(title=should_not_exist_note.title)
 
 
-class BlogSearchViewTest(TestCase):
-    unique_url = "/articles/search/"
+class ArticlesSearchViewTest(TestCase):
+    unique_url = "/search/search_type=articles"
 
     def test_for_invalid_input_passes_form_to_template(self):
         response = self.client.post(self.unique_url, data={"title": ""})
-        self.assertIsInstance(response.context["form"], ArticleForm)
+        self.assertIsInstance(response.context["form"], BaseSearchForm)
 
     def test_for_valid_input_passes_form_to_template(self):
         response = self.client.post(self.unique_url, data={"title": "不应该有这篇文章的"})
-        self.assertIsInstance(response.context["form"], ArticleForm)
+        self.assertIsInstance(response.context["form"], BaseSearchForm)
 
     def test_form_input_not_exist_title(self):
-        form = ArticleForm(data={"title": ""})
+        form = BaseSearchForm(data={"title": ""})
         self.assertEqual(form.errors["title"], [const.EMPTY_ARTICLE_ERROR])
 
     def test_view_passes_form_to_template(self):
         """
         测试是否有将 form 传递给模板
-        :return:
         """
         response = self.client.get(self.unique_url)
-        self.assertIsInstance(response.context["form"], ArticleForm)
+        self.assertIsInstance(response.context["form"], BaseSearchForm)
 
     def test_valid_input_will_get_response_using_right_template(self):
         test_article = Article.objects.create(title="test_article")
@@ -368,14 +364,14 @@ class BlogSearchViewTest(TestCase):
 
     def test_id_article_exist(self):
         """
-        搜索存在的文章, 显示出来的界面中每篇文章应该有 id_article_title 这个属性
+        搜索存在的文章, 显示出来的界面中每篇文章标题应该有 const.ID_SEARCH_RESULT_TITLE 这个属性
         :return:
         """
         test_article_title = "test_for_search_button"
         Article.objects.create(title=test_article_title)
 
         response = self.client.post(self.unique_url, data={"title": test_article_title})
-        self.assertContains(response, 'id="id_article_title"')
+        self.assertContains(response, const.ID_SEARCH_RESULT_TITLE)
 
     def test_can_search_content(self):
         """
@@ -496,6 +492,33 @@ class BlogSearchViewTest(TestCase):
 
         # bbb 至少出现了 2 次, 比如搜索框里还有一次
         self.assertTrue(response.content.decode("utf8").count("bbb") >= 2)
+
+    def test_search_result_with_right_href(self):
+        """
+        测试搜索结果显示了正确的 href
+        """
+        test_article = Article.objects.create(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
+
+        # 关键词在内容中, 搜索 bbb
+        response = self.client.post(self.unique_url, data={"title": "bbb"})
+
+        # 能搜索到文章
+        self.assertContains(response, test_article.title)
+
+        # 标题 href 正确
+        self.assertContains(response, "/articles/{}/".format(test_article.id))
+
+    def test_search_multiple_words_without_case(self):
+        """
+        功能测试发现的, 搜索多个关键词的时候, 存在大小写问题
+        """
+        test_article = Article.objects.create(title="test_title_article", content="aaa\nbBb\ncCc\nddd\n")
+
+        # 关键词在内容中, 搜索 bbb
+        response = self.client.post(self.unique_url, data={"title": "ddd Bbb"})
+
+        # 能搜索到文章
+        self.assertContains(response, test_article.title)
 
 
 if __name__ == "__main__":

@@ -26,7 +26,7 @@
                     <a class="button-error pure-button" id="id_email" href="mailto:watch1602@gmail.com">Email</a>
                 </li>
                 <li>
-                    <form class="pure-form" action="{% url 'search_article' %}" method="post">
+                    <form class="pure-form" action="{% url 'search' search_type='articles' %}" method="post">
                         {{ form.title }}
                         {% csrf_token %}
                     </form>

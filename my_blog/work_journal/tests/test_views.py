@@ -11,7 +11,7 @@ import shutil
 import os
 import datetime
 
-from work_journal.forms import JournalForm
+from work_journal.forms import JournalForm, BaseSearchForm
 from work_journal.models import Journal
 from work_journal.views import is_valid_update_md_file, extract_date_from_md_file
 from articles.views import get_right_content_from_file
@@ -20,6 +20,26 @@ from django.test import TestCase, override_settings
 from django.conf import settings
 
 __author__ = '__L1n__w@tch'
+
+
+class BaseCommonTest(TestCase):
+    @staticmethod
+    def create_journal_test_db():
+        """
+        创建测试用的日记数据
+        """
+        today = datetime.datetime.today()
+        tomorrow = today + datetime.timedelta(days=1)
+
+        # 创建一篇普通的日记
+        Journal.objects.create(title="test_journal_1", content="test_journal_content_1",
+                               date=today)
+
+        # 创建一篇 Markdown 格式的日记
+        with open(os.path.join(settings.BASE_DIR, "markdown_file_for_test.md"), "r") as f:
+            content = f.read()
+
+        Journal.objects.create(title="test_journal_with_markdown", content=content, date=tomorrow)
 
 
 class JournalHomeViewTest(TestCase):
@@ -31,6 +51,13 @@ class JournalHomeViewTest(TestCase):
                                          , date=datetime.datetime.today())
 
         return journal
+
+    def test_view_passes_form_to_template(self):
+        """
+        测试是否有将 form 传递给模板
+        """
+        response = self.client.get(self.unique_url)
+        self.assertIsInstance(response.context["form"], JournalForm)
 
     def test_use_right_template(self):
         """
@@ -91,28 +118,13 @@ class JournalHomeViewTest(TestCase):
         self.assertContains(response, "{}{}/".format(self.unique_url, journal.id))
 
 
-class JournalDisplayViewTest(TestCase):
+class JournalDisplayViewTest(BaseCommonTest):
     unique_url = "/work_journal/{}/"
 
     def setUp(self):
         super().__init__()
 
-        self._create_journal_test_db()
-
-    @staticmethod
-    def _create_journal_test_db():
-        today = datetime.datetime.today()
-        tomorrow = today + datetime.timedelta(days=1)
-
-        # 创建一篇普通的日记
-        Journal.objects.create(title="test_journal_1", content="test_journal_content_1",
-                               date=today)
-
-        # 创建一篇 Markdown 格式的日记
-        with open(os.path.join(settings.BASE_DIR, "markdown_file_for_test.md"), "r") as f:
-            content = f.read()
-
-        Journal.objects.create(title="test_journal_with_markdown", content=content, date=tomorrow)
+        self.create_journal_test_db()
 
     def test_use_right_template(self):
         """
@@ -186,6 +198,75 @@ class HelpFunctionTest(TestCase):
         right_answer = datetime.date(2016, 12, 1)
         my_answer = extract_date_from_md_file(test_file_name)
         self.assertEqual(my_answer, right_answer)
+
+
+class JournalSearchViewTest(BaseCommonTest):
+    unique_url = "/search/search_type=journals"
+
+    def test_use_right_template_to_show_search_result(self):
+        """
+        日记搜索用的模板应该和 articles APP 用的一样
+        """
+        response = self.client.post(self.unique_url, data={"title": "随便输入了一些什么"})
+        self.assertTemplateUsed(response, "search_result.html")
+
+    def test_search_result_display(self):
+        """
+        测试搜索出来能够显示日记的标题和结果
+        """
+        self.create_journal_test_db()
+
+        journal = Journal.objects.get(title="test_journal_1")
+        response = self.client.post(self.unique_url, data={"title": journal.content})
+        self.assertContains(response, journal.title)
+        self.assertContains(response, journal.content)
+
+    def test_journal_href_right(self):
+        """
+        测试搜索出来的日记链接正确
+        """
+        self.create_journal_test_db()
+
+        journal = Journal.objects.get(title="test_journal_1")
+        response = self.client.post(self.unique_url, data={"title": journal.content})
+
+        self.assertContains(response, "/work_journal/{}/".format(journal.id))
+
+    def test_search_multiple_keywords(self):
+        """
+        测试同时搜索多个关键词, 能搜索出来结果
+        """
+        self.create_journal_test_db()
+
+        # 日记 <test_journal_1> 里面有单词 <journal> <content>, 所在行为 <test_journal_content_1>
+        journal = Journal.objects.get(title="test_journal_1")
+        response = self.client.post(self.unique_url, data={"title": "conTent journal"})
+
+        self.assertContains(response, journal.title)
+
+    def test_search_date_right(self):
+        """
+        测试能够通过搜索日期来得到对应的日记
+        """
+        self.create_journal_test_db()
+
+        journal = Journal.objects.get(title="test_journal_1")
+
+        # 测试只搜年, 搜不到
+        response = self.client.post(self.unique_url, data={"title": "{}".format(journal.date.year)})
+        self.assertNotContains(response, journal.title)
+
+        # 测试只搜年和月, 搜不到
+        response = self.client.post(self.unique_url,
+                                    data={"title": "{}-{}".format(journal.date.year, journal.date.month)})
+        self.assertNotContains(response, journal.title)
+
+        # 测试搜年-月-日, 可以搜到
+        response = self.client.post(self.unique_url,
+                                    data={"title": "{}-{}-{}".format(journal.date.year,
+                                                                     journal.date.month,
+                                                                     journal.date.day)})
+        self.assertContains(response, journal.title)
 
 
 @override_settings(UPDATE_TIME_LIMIT=0.1)

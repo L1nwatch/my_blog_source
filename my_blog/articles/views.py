@@ -1,67 +1,28 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.09 重构一下搜索函数, 跟日记搜索的功能合并一下
 2016.10.28 重构了一下模板传参, 封装成一个函数来处理了, 要不然每个视图都得专门处理传给模板的参数
 """
 from django.shortcuts import render
 from django.http import Http404, HttpResponseNotAllowed
 from django.core.paginator import Paginator, PageNotAnInteger
 from django.conf import settings
-from ipware.ip import get_ip, get_real_ip, get_trusted_ip
 
 from .models import Article
 from .forms import ArticleForm
 from articles.templatetags.custom_markdown import custom_markdown_for_tree_parse
-from my_constant import const
+from work_journal.views import do_journals_search
+from articles.common_help_function import *
 
 import md2py
-import os
-import chardet
 import datetime
-import logging
-import copy
 import traceback
 import re
 
 LAST_UPDATE_TIME = None
 
 logger = logging.getLogger("my_blog.articles.views")
-
-
-def get_right_content_from_file(file_path):
-    """
-    读取文件时涉及到编码问题, 于是就专门写个函数来解决吧
-    :param file_path: 文件路径
-    :return: 文件内容, str() 形式
-    """
-    logging.debug("读取文件内容: {}".format(file_path))
-    with open(file_path, "rb") as f:
-        data = f.read()
-        encoding = chardet.detect(data)["encoding"]
-
-    try:
-        data = data.decode("utf8")
-    except UnicodeDecodeError:
-        try:
-            data = data.decode("gbk")
-        except UnicodeDecodeError:
-            data = data.decode(encoding)
-
-    return data
-
-
-def get_ip_from_django_request(request):
-    """
-    # 用来获取访问者 IP 的
-    # 参考
-    ## https://my.oschina.net/u/167994/blog/156184
-    ## http://stackoverflow.com/questions/4581789/how-do-i-get-user-ip-address-in-django
-    :param request: 传给视图函数的 request
-    :return: ip 地址, 比如 116.26.110.36
-    """
-    logger.debug("获取 ip 情况, get_ip:{}, get_real_ip:{}, get_trusted_ip:{}"
-                 .format(get_ip(request), get_real_ip(request), get_trusted_ip(request)))
-    return get_ip(request)
 
 
 def _get_context_data(update_data=None):
@@ -80,11 +41,13 @@ def _get_context_data(update_data=None):
 
 def home(request):
     logger.info("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
+    # TODO: 这一步是不是多余了
     articles = Article.objects.all()  # 获取全部的Article对象
 
     return render(request, 'new_home.html', _get_context_data())
 
 
+# TODO: 可以删除了
 def old_home(request, invalid_click="True"):
     logger.info("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
     articles = Article.objects.all()  # 获取全部的Article对象
@@ -155,43 +118,6 @@ def search_tag(request, tag):
     return render(request, 'tag.html', _get_context_data({'post_list': post_list}))
 
 
-def create_search_result(article_list, keyword_set):
-    """
-    创建搜索结果以便返回给页面
-    :param article_list: 存在关键词的文章列表
-    :param keyword_set: set(), 每一个是一个用户搜索的关键词
-    :return: list(), 每一个元素都是一个命名元组, 每一个元素的格式类似于: (id, title, content)
-    """
-    result_list = list()
-    raw_keyword_set = copy.copy(keyword_set)
-
-    for each_article in article_list:
-        keyword_set = copy.copy(raw_keyword_set)
-
-        result_content = str()
-        # 遍历每一行, 提取出关键词所在行
-        for each_line in each_article.content.splitlines():
-            temp_keyword_set = set(copy.copy(keyword_set))
-
-            # 已经搜索完所有关键词了, 就不浪费时间了
-            if len(temp_keyword_set) <= 0:
-                break
-
-            for each_keyword in temp_keyword_set:
-                if each_keyword.lower() in each_line.lower():
-                    result_content += each_line + os.linesep
-                    keyword_set.remove(each_keyword)
-                    continue
-
-        if len(result_content) <= 0:
-            # 设置默认值
-            result_content = const.KEYWORD_IN_TITLE
-
-        result_list.append(const.ARTICLE_STRUCTURE(each_article.id, each_article.title, result_content))
-
-    return result_list
-
-
 def _parse_markdown_file(markdown_content):
     def __recursive_create(root, current_tag_level):
         """
@@ -243,11 +169,11 @@ def _parse_markdown_file(markdown_content):
         logging.error("[!] 解析 Markdown 出错, 针对内容: {}".format(markdown_content))
 
 
-def blog_search(request):
+def do_articles_search(request):
     """
-    2017.01.27 重构搜索视图函数, 现在要显示搜索结果等的
-    2016.10.11 添加能够搜索文章内容的功能
+    2017.02.09 分离搜索视图, 将搜索文章的单独拿出来
     :param request: django 传给视图函数的参数 request, 包含 HTTP 请求的各种信息
+    :return: dict() or None, 要传给模板的各个数据, None 表示出现异常了
     """
 
     def __search_keyword_in_articles(keyword_set):
@@ -266,9 +192,10 @@ def blog_search(request):
                 result_set.update(articles_from_content_filter)
             else:
                 temp_result_set = set()
+                each_key_word = each_key_word.lower()
                 # 对每篇文章进行查找, 先查找标题, 然后查找内容
                 for each_article in result_set:
-                    if each_key_word in each_article.title or each_key_word in each_article.content:
+                    if each_key_word in each_article.title.lower() or each_key_word in each_article.content.lower():
                         temp_result_set.add(each_article)
 
                 result_set = temp_result_set
@@ -287,20 +214,40 @@ def blog_search(request):
             return True
         return False
 
+    form = ArticleForm(data=request.POST)
+    if __form_is_valid_and_ignore_exist_article_error(form):
+        keywords = set(form.data["title"].split(" "))
+        # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
+        article_list = __search_keyword_in_articles(keywords)
+        logger.info("ip: {} 搜索: {}"
+                    .format(get_ip_from_django_request(request), form.data["title"]))
+
+        context_data = _get_context_data({'post_list': create_search_result(article_list, keywords, "articles"),
+                                          'error': None, "form": form})
+        context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(article_list) == 0 else False
+
+        return context_data
+
+
+def blog_search(request, search_type="all"):
+    """
+    2017.02.08 要重构视图搜索函数, 支持搜索指定类型的数据, 比如说只搜索文章, 只搜索日记等
+    2017.01.27 重构搜索视图函数, 现在要显示搜索结果等的
+    2016.10.11 添加能够搜索文章内容的功能
+    :param search_type: str(), 指定要搜索哪部分内容, 比如 "all" 表示全部, "articles" 表示只搜文章, "journals" 表示只搜日记
+    :param request: django 传给视图函数的参数 request, 包含 HTTP 请求的各种信息
+    """
+    # TODO: 同时搜索文章和日记的还没实现
+
     if request.method == "POST":
-        form = ArticleForm(data=request.POST)
-        if __form_is_valid_and_ignore_exist_article_error(form):
-            keywords = set(form.data["title"].split(" "))
-            # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
-            article_list = __search_keyword_in_articles(keywords)
-            logger.info("ip: {} 搜索: {}"
-                        .format(get_ip_from_django_request(request), form.data["title"]))
-
-            context_data = _get_context_data({'post_list': create_search_result(article_list, keywords),
-                                              'error': None, "form": form})
-            context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(article_list) == 0 else False
-
-            return render(request, 'search_result.html', context_data)
+        if search_type == "articles" or search_type == "all":
+            context_data = do_articles_search(request)
+            if context_data is not None:
+                return render(request, 'search_result.html', context_data)
+        if search_type == "journals" or search_type == "all":
+            context_data = do_journals_search(request)
+            if context_data is not None:
+                return render(request, 'search_result.html', context_data)
 
     return home(request)
 

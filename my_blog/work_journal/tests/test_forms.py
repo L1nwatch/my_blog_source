@@ -21,7 +21,7 @@ class JournalFormTest(TestCase):
         journal_form = JournalForm()
         self.assertIn('placeholder="{}"'.format(const.PLACE_HOLDER), journal_form.as_p())
         self.assertIn('class="pure-input-2-3"', journal_form.as_p(), "class 属性没有设置?还是说设置错了?")
-        self.assertIn('id="id_search"', journal_form.as_p(), "id 属性没有设置?还是说设置错了?")
+        self.assertIn('id="id_search_work_journal"', journal_form.as_p(), "id 属性没有设置?还是说设置错了?")
 
     def test_form_validation_for_blank_input(self):
         form = JournalForm(data={"title": ""})

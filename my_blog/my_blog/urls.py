@@ -24,4 +24,5 @@ urlpatterns = [
     url(r"^work_journal/", include("work_journal.urls")),
     url(r"^just_eating/", include("just_eating.urls")),
     url(r'^$', articles.views.home, name='home'),
+    url(r"^search/search_type=(?P<search_type>\S+)$", articles.views.blog_search, name="search"),
 ]

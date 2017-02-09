@@ -113,8 +113,8 @@ class TestHomePageButtons(FunctionalTest):
         work_journal_button.click()
         self.assertNotEqual(self.browser.current_url, home_page_url)
 
-        # 而且页面显示了一堆标题, 形如: 2017-02-03 任务情况总结
-        self.assertIn("2017-02-03 任务情况总结", self.browser.page_source)
+        # 而且页面显示了一堆标题, 形如: 2017-02-08 任务情况总结
+        self.assertIn("2017-02-08 任务情况总结", self.browser.page_source)
 
         # 但是没有显示日记内容
         with self.assertRaises(NoSuchElementException):
