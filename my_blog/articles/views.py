@@ -41,24 +41,8 @@ def _get_context_data(update_data=None):
 
 def home(request):
     logger.info("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
-    # TODO: 这一步是不是多余了
-    articles = Article.objects.all()  # 获取全部的Article对象
 
     return render(request, 'new_home.html', _get_context_data())
-
-
-# TODO: 可以删除了
-def old_home(request, invalid_click="True"):
-    logger.info("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
-    articles = Article.objects.all()  # 获取全部的Article对象
-    paginator = Paginator(articles, const.HOME_PAGE_ARTICLES_NUMBERS)  # 每页显示 HOME_PAGE_ARTICLES_NUMBERS 篇
-    page = request.GET.get('page')
-    try:
-        article_list = paginator.page(page)
-    except PageNotAnInteger:
-        article_list = paginator.page(1)
-
-    return render(request, 'home.html', _get_context_data({"post_list": article_list, "invalid_click": invalid_click}))
 
 
 def article_display(request, article_id):
@@ -312,7 +296,7 @@ def update_notes(request=None):
     global LAST_UPDATE_TIME
     now = datetime.datetime.today()
     if LAST_UPDATE_TIME is not None and (now - LAST_UPDATE_TIME).total_seconds() < settings.UPDATE_TIME_LIMIT:
-        # TODO: 这里的判断功能被我取消了
+        # TODO: 这里只是前台的判断无效了, 后台还是有判断的
         return home(request) if request is not None else None
     else:
         LAST_UPDATE_TIME = now
