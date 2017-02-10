@@ -13,6 +13,12 @@ import os
 import sys
 import re
 
+# 兼容 Python 3 和 2 的导入
+try:
+    import configparser
+except ImportError:
+    import Configparser as configparser
+
 from fabric.contrib.files import append, exists, sed
 from fabric.api import env, local, run, sudo
 
@@ -73,24 +79,35 @@ def _user_pass_file_config():
     """
     global USER_PASS_CONF
 
-    username, password = str(), str()
+    # 看一下配置是否已经存在
+    cp = configparser.ConfigParser()
+    cp.read(USER_PASS_CONF)
 
-    # 看一下配置文件是否已经存在
-    if os.path.exists(USER_PASS_CONF):
-        with open(USER_PASS_CONF, "r") as f:
-            data = f.readline().strip()
-        username, password = data.split(":")
+    username, password = cp.get("journals_git", "username"), cp.get("journals_git", "password")
+    articles_address = cp.get("articles_git", "address")
 
-    while username == "" or password == "":
+    while username == "" or password == "" or articles_address == "":
+        print("[+] 需要输入相关信息, 如不需要则随便打些字符即可")
+
         # 兼容 Python2.7
-        print("[+] 请输入 journals_git 的用户名: ")
-        username = sys.stdin.readline().strip()
-        print("[+] 请输入 journals_git 的密码: ")
-        password = sys.stdin.readline().strip()
+        if username == "":
+            print("[+] 请输入 journals_git 的用户名: ")
+            username = sys.stdin.readline().strip()
+        if password == "":
+            print("[+] 请输入 journals_git 的密码: ")
+            password = sys.stdin.readline().strip()
+        if articles_address == "":
+            print("[+] 请输入 articles_git 的地址: ")
+            articles_address = sys.stdin.readline().strip()
 
         # 保存到配置文件中
-        with open(USER_PASS_CONF, "w") as f:
-            f.write("{}:{}".format(username, password))
+        if username != "" and password != "" and articles_address != "":
+            cp.set("journals_git", "username", username)
+            cp.set("journals_git", "password", password)
+            cp.set("articles_git", "address", articles_address)
+
+            with open(USER_PASS_CONF, "w") as f:
+                cp.write(f)
 
     print("[*] 成功读取文件 {} 的用户名和密码信息".format(USER_PASS_CONF))
 
@@ -108,15 +125,18 @@ def _update_const_file(source_folder, site_name):
                                                                           site_name=site_name)
 
     # 获取 username 和 password
-    with open(USER_PASS_CONF, "r") as f:
-        data = f.readline().strip()
-    username, password = data.split(":")
+    cp = configparser.ConfigParser()
+    cp.read(USER_PASS_CONF)
+
+    username, password = cp.get("journals_git", "username"), cp.get("journals_git", "password")
+    articles_address = cp.get("articles_git", "address")
 
     # 通过 re 修改 const 文件
     with open(const_file_path, "r") as f:
         data = f.read()
     data = re.sub('const.JOURNALS_GIT_REPOSITORY = "(?P<git_url>.*)"',
                   lambda x: __sub_callback(x, username, password), data)
+    data = re.sub('const.ARTICLES_GIT_REPOSITORY = ".*"', articles_address, data)
 
     with open(const_file_path, "w") as f:
         f.write(data)

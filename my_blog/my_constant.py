@@ -45,7 +45,7 @@ const.ID_SEARCH_RESULT_TITLE = "id_search_result_title"
 
 # 用来形成博客的文章 git
 const.NOTES_PATH_NAME = "notes"
-const.ARTICLES_GIT_REPOSITORY = "https://github.com/L1nwatch/notes_set.git"
+const.ARTICLES_GIT_REPOSITORY = ""
 const.NOTES_GIT_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.NOTES_PATH_NAME)
 
 # 用来形成日记的文章 git
