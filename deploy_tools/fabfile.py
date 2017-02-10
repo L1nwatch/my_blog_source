@@ -17,7 +17,7 @@ import re
 try:
     import configparser
 except ImportError:
-    import Configparser as configparser
+    import ConfigParser as configparser
 
 from fabric.contrib.files import append, exists, sed
 from fabric.api import env, local, run, sudo
