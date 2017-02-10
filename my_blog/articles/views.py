@@ -5,8 +5,8 @@
 2016.10.28 重构了一下模板传参, 封装成一个函数来处理了, 要不然每个视图都得专门处理传给模板的参数
 """
 from django.shortcuts import render
-from django.http import Http404, HttpResponseNotAllowed
-from django.core.paginator import Paginator, PageNotAnInteger
+from django.http import Http404
+from django.core.paginator import Paginator
 from django.conf import settings
 
 from .models import Article

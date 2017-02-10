@@ -32,6 +32,7 @@ class _Const:
 const = _Const()
 const.EMPTY_ARTICLE_ERROR = "没有相关文章题目"
 const.KEYWORD_IN_TITLE = "关键词仅出现标题中"
+const.KEYWORD_IN_HREF = "关键词出现在 url 链接中"
 const.PLACE_HOLDER = "What are you looking for?"
 const.HOME_PAGE_ARTICLES_NUMBERS = 2
 # TODO: git 提交前需要改为 False or True, 要不然网站会跑失败的...

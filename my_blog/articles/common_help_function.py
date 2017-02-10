@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.10 添加搜索时不搜索图片的设定
 2017.02.09 把视图分离在两个 APP 的时候出现嵌套导入了, 所以只好弄一个 common 文件来存放了
 """
 from ipware.ip import get_ip, get_real_ip, get_trusted_ip
@@ -11,6 +12,7 @@ import chardet
 import copy
 import logging
 import os
+import re
 
 __author__ = '__L1n__w@tch'
 
@@ -27,6 +29,7 @@ def create_search_result(article_list, keyword_set, search_type):
     """
     result_list = list()
     raw_keyword_set = copy.copy(keyword_set)
+    picture_re = re.compile("!\[.*\]\(.*\)")
 
     for each_article in article_list:
         keyword_set = copy.copy(raw_keyword_set)
@@ -42,7 +45,12 @@ def create_search_result(article_list, keyword_set, search_type):
 
             for each_keyword in temp_keyword_set:
                 if each_keyword.lower() in each_line.lower():
-                    result_content += each_line + os.linesep
+                    # 如果是图片的话:
+                    if picture_re.match(each_line):
+                        result_content += const.KEYWORD_IN_HREF + os.linesep
+                    # 存在于正文:
+                    else:
+                        result_content += each_line + os.linesep
                     keyword_set.remove(each_keyword)
                     continue
 
