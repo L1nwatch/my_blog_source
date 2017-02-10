@@ -45,7 +45,7 @@ const.ID_SEARCH_RESULT_TITLE = "id_search_result_title"
 
 # 用来形成博客的文章 git
 const.NOTES_PATH_NAME = "notes"
-const.ARTICLES_GIT_REPOSITORY = ""
+const.ARTICLES_GIT_REPOSITORY = "https://git.oschina.net/w4tch/notes_set.git"
 const.NOTES_GIT_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.NOTES_PATH_NAME)
 
 # 用来形成日记的文章 git
@@ -58,7 +58,7 @@ const.GITBOOK_PATH_NAME = "gitbook_notes"
 const.GITBOOK_CODES_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.GITBOOK_PATH_NAME)
 const.GITBOOK_CODES_REPOSITORY = {
     # "interview_collect": "https://github.com/L1nwatch/interview_collect.git",
-    "PythonWeb": "https://github.com/L1nwatch/PythonWeb.git",
+    "PythonWeb": "https://git.oschina.net/w4tch/PythonWeb.git",
     # "it_people_healthy": "https://github.com/L1nwatch/it_people_healthy.git",
     # "writing_solid_python_code_gitbook": "https://github.com/L1nwatch/writing_solid_python_code_gitbook.git",
     # "CTF": "https://github.com/L1nwatch/CTF.git",
