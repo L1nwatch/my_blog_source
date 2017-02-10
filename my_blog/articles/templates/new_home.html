@@ -63,7 +63,7 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
                         <li><a id="id_home_page" href="#tf-home">Home</a></li>
-                        <li><a href="#tf-service">Services</a></li>
+                        <li><a href="#tf-service">Introduce</a></li>
                         <li><a id="id_just_eating" href="{% url "just_eating" %}">Eating</a></li>
                         <li><a id="id_work_journal" href="{% url "work_journal" %}">Journal</a></li>
                         <li><a id="id_archives" href="{% url "archives" %}">Archives</a></li>
@@ -80,7 +80,6 @@
                     <form action="{% url 'search' search_type='all'%}" method="post">
                         {{ form.title }}
                         {% csrf_token %}
-                        {#                        <input type="search" placeholder="">#}
                         <button>Search</button>
                     </form>
 
@@ -98,13 +97,11 @@
 
             <div class="media">
                 <div class="media-left media-middle">
-                    <i class="fa fa-motorcycle"></i>
+                    <i class="fa fa-line-chart"></i>
                 </div>
                 <div class="media-body">
-                    <h4 class="media-heading">Brand & Graphics Design</h4>
-                    <p>Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate
-                        at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia
-                        congue felis in faucibus.</p>
+                    <h4 class="media-heading">Good Good Study<br/>Day Day Up</h4>
+                    <p>Everything is happening in the best way.</p>
                 </div>
             </div>
 
@@ -117,10 +114,13 @@
                     <i class="fa fa-gears"></i>
                 </div>
                 <div class="media-body">
-                    <h4 class="media-heading">Web Designer & Developer</h4>
-                    <p>Cras sit amet nibh libero, in gravida nulla. Cras purus odio, vestibulum in vulputate at, tempus
-                        viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis
-                        in faucibus.</p>
+                    <h4 class="media-heading">Test Developer</h4>
+                    <p>Enjoy auto test.<br/>
+                        Python and Ruby are both pretty.<br/>
+                        Truly recommend macOS + iOS<br/>
+                        Know Web: html/css/javascirpt<br/>
+                        Programming: php/c/c++/java<br/>
+                    </p>
                 </div>
             </div>
 
@@ -133,10 +133,8 @@
                     <i class="fa fa-heartbeat"></i>
                 </div>
                 <div class="media-body">
-                    <h4 class="media-heading">Business Consultant</h4>
-                    <p>Metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus
-                        viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis
-                        in faucibus.</p>
+                    <h4 class="media-heading">Life is short</h4>
+                    <p>You need Python</p>
                 </div>
             </div>
 
@@ -148,8 +146,7 @@
 <nav id="tf-footer">
     <div class="container">
         <div class="pull-left">
-            <p>2015 © Awesomess. All Rights Reserved. Designed and Coded by <a href="https://dribbble.com/jennpereira">Jenn</a>
-                for <a href="https://themeforces.com">ThemeForces.Com</a></p>
+            <p>2017 © watch. All Rights Reserved. Designed and Coded since from 2016.</p>
         </div>
         <div class="pull-right">
             <ul class="social-media list-inline">

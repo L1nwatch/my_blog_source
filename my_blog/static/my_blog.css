@@ -700,5 +700,5 @@ h3 {
 
 .eating_plan_table a, .eating_plan_table a:focus {
     text-decoration: none;
-    float: left;
+    /*float: left;*/
 }
