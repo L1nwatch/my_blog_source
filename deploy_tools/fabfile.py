@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """ 使用 Fabric 进行自动化部署
+2017.02.10 添加配置文件读取, 将 git/username 等需要临时输入的信息用配置文件实现
 2017.01.27 突然发现自己的 fab 不会去修改 DEBUG 选项, 现在改正了, 原来是那一句话被注释掉了
 2016.10.19 修正一下 cron job 的问题, 现在可以实现每隔 5 分钟自动更新数据库了, 但是代码存在冗余, 可能以后要重构一下了
 2016.10.17 增加一个定时任务, 每隔两个小时自动更新数据库
@@ -136,7 +137,8 @@ def _update_const_file(source_folder, site_name):
         data = f.read()
     data = re.sub('const.JOURNALS_GIT_REPOSITORY = "(?P<git_url>.*)"',
                   lambda x: __sub_callback(x, username, password), data)
-    data = re.sub('const.ARTICLES_GIT_REPOSITORY = ".*"', articles_address, data)
+    data = re.sub('const.ARTICLES_GIT_REPOSITORY = ".*"',
+                  'const.ARTICLES_GIT_REPOSITORY = "{}"'.format(articles_address), data)
 
     with open(const_file_path, "w") as f:
         f.write(data)
