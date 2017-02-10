@@ -74,16 +74,36 @@ def deploy():
     _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder)
 
 
+def _create_config_file():
+    """
+    创建配置文件
+    """
+    global USER_PASS_CONF
+    if not os.path.exists(USER_PASS_CONF):
+        cp = configparser.ConfigParser()
+        cp.add_section("journals_git")
+        cp.add_section("articles_git")
+
+        cp.set("journals_git", "username", "")
+        cp.set("journals_git", "password", "")
+        cp.set("articles_git", "address", "")
+
+        with open(USER_PASS_CONF, "w") as f:
+            cp.write(f)
+
+
 def _user_pass_file_config():
     """
     判断一下 conf 文件是否存在指定内容, 如果是第一次运行的话得把 git 帐号密码保存进来
     """
     global USER_PASS_CONF
 
-    # 看一下配置是否已经存在
+    # 确保配置文件存在
+    _create_config_file()
+
+    # 判断是否已经配置
     cp = configparser.ConfigParser()
     cp.read(USER_PASS_CONF)
-
     username, password = cp.get("journals_git", "username"), cp.get("journals_git", "password")
     articles_address = cp.get("articles_git", "address")
 
