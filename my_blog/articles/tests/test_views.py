@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.11 不断强化搜索功能
 2017.02.08 重构, 将原先所有 ArticleForm 改为 BaseSearchForm
 2017.01.28 加强了搜索结果显示
 2016.10.03 测试视图函数是否正常
@@ -16,7 +17,7 @@ from my_constant import const
 from django.conf import settings
 from django.test import TestCase, override_settings
 from articles.views import _parse_markdown_file, get_right_content_from_file, _get_id_from_markdown_html
-from articles.templatetags.custom_markdown import custom_markdown
+from articles.templatetags.custom_filter import custom_markdown
 
 __author__ = '__L1n__w@tch'
 
@@ -431,7 +432,7 @@ class ArticlesSearchViewTest(TestCase):
         # 对应文章的标题存在
         self.assertContains(response, test_article.title)
         # 对应行的内容存在
-        self.assertContains(response, "bbb")
+        self.assertContains(response, "bBb")
         # 没搜索的行不应该存在
         self.assertNotContains(response, "ccc")
         # 信息也不应该是提示信息

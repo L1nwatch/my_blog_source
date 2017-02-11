@@ -11,7 +11,7 @@ from django.conf import settings
 
 from .models import Article
 from .forms import ArticleForm
-from articles.templatetags.custom_markdown import custom_markdown_for_tree_parse
+from articles.templatetags.custom_filter import custom_markdown_for_tree_parse
 from work_journal.views import do_journals_search
 from articles.common_help_function import *
 

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load custom_markdown %}
+{% load custom_filter %}
 
 {% block sidebar_content %}
     {% include "sidebar.html" %}
@@ -14,34 +14,81 @@
         {% if error %}
             <h2 class="post-title">{{ error }}</h2>
         {% else %}
+            <div class="column three-fourths codesearch-results">
+                <div class="sort-bar">
+                    <h3>
+                        Showing 12,231,058 available results
+                    </h3>
+                </div>
 
-            <table border="1">
-                <thead>
-                <tr>
-                    <th>文章标题</th>
-                    <th>搜索结果</th>
-                    <th>跟踪阅读</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                <tr>
-                    {% for post in post_list %}
-                        <th>
+                {% for post in post_list %}
+                    <div>
+                        <p>
                             <a id="id_search_result_title" href="/{{ post.type }}/{{ post.id }}/">{{ post.title }}</a>
-                        </th>
-                        <th align="left">
-                            {{ post.content|custom_markdown }}
-                        </th>
-                        <th>
-                            <a class="pure-button" href="/{{ post.type }}/{{ post.id }}/">Read More >>> </a>
-                        </th>
-                        </tr>
-                    {% endfor %}
+                        </p>
+                        <div class="search-result-box">
+                            <table class="search-result-box-table">
+                                <tbody>
+                                {% for each_match in post.content %}
+                                    <tr>
+                                        <td class="search-result-box-table-td">{{ forloop.counter }}</td>
+                                        <td class="search-result-box-table-code">{{ each_match|add_em_tag }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                {% endfor %}
 
-
-                </tbody>
-            </table>
+                {#                <div id="code_search_results">#}
+                {#                    <div class="code-list">#}
+                {#                        <div class="code-list-item code-list-item-public ">#}
+                {#                            <a href="/jessiewillms"><img alt="@jessiewillms" class="avatar" height="28"#}
+                {#                                                         src="https://avatars2.githubusercontent.com/u/7053078?v=3&amp;s=56"#}
+                {#                                                         width="28"></a>#}
+                {#    <span class="language">#}
+                {#      Python#}
+                {##}
+                {#    </span>#}
+                {#                            <p class="title">#}
+                {#                                <a href="/jessiewillms/pythonOne">jessiewillms/pythonOne</a>#}
+                {#                                –#}
+                {#                                <a href="/jessiewillms/pythonOne/blob/0152120e91f576a7eb4fa3dfaad2f7ae2ae4d2b6/function.py"#}
+                {#                                   title="function.py">function.py</a> <br>#}
+                {#                                <span class="text-small text-gray match-count">Showing the top three matches.</span>#}
+                {#                                <span class="text-small text-gray updated-at">Last indexed <relative-time#}
+                {#                                        datetime="2016-09-17T13:16:18Z"#}
+                {#                                        title="2016年9月17日 GMT+8 下午9:16">on 17 Sep 2016</relative-time>.</span>#}
+                {#                            </p>#}
+                {#                            <div class="file-box blob-wrapper">#}
+                {#                                <table class="highlight">#}
+                {#                                    <tbody>#}
+                {#                                    <tr>#}
+                {#                                        <td class="blob-num">#}
+                {#                                            <a href="/jessiewillms/pythonOne/blob/0152120e91f576a7eb4fa3dfaad2f7ae2ae4d2b6/function.py#L1">1</a>#}
+                {#                                        </td>#}
+                {#                                        <td class="blob-code blob-code-inner"><em>split</em> <span class="pl-k">=</span>#}
+                {#                                            <span class="pl-s"><span class="pl-pds">"</span>hello, world<span#}
+                {#                                                    class="pl-pds">"</span></span>.<em>split</em>()#}
+                {#                                        </td>#}
+                {#                                    </tr>#}
+                {#                                    <tr>#}
+                {#                                        <td class="blob-num">#}
+                {#                                            <a href="/jessiewillms/pythonOne/blob/0152120e91f576a7eb4fa3dfaad2f7ae2ae4d2b6/function.py#L2">2</a>#}
+                {#                                        </td>#}
+                {#                                        <td class="blob-code blob-code-inner"><span class="pl-c1">print</span>#}
+                {#                                            <em>split</em></td>#}
+                {#                                    </tr>#}
+                {##}
+                {#                                    </tbody>#}
+                {#                                </table>#}
+                {#                            </div>#}
+                {#                        </div>#}
+                {##}
+                {#                    </div>#}
+                {#                </div>#}
+            </div>
 
         {% endif %}
     </div>

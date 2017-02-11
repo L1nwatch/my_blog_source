@@ -702,3 +702,53 @@ h3 {
     text-decoration: none;
     /*float: left;*/
 }
+
+.search-result-box {
+    border: 1px solid #dddddd;
+    border-radius: 3px;
+    padding-top: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.search-result-box-table {
+
+}
+
+.search-result-box-table-td {
+    padding: 0;
+    width: 1%;
+    min-width: 50px;
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 12px;
+    line-height: 22px;
+    color: rgba(0, 0, 0, 0.3);
+    text-align: right;
+    white-space: nowrap;
+    vertical-align: top;
+    cursor: pointer;
+}
+
+.search-result-box-table-code {
+    white-space: pre-wrap;
+    overflow: visible;
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 12px;
+    color: #333;
+    word-wrap: normal;
+    position: relative;
+    padding-right: 10px;
+    padding-left: 20px;
+    line-height: 20px;
+    vertical-align: top;
+}
+
+.search-result-box-table-code em {
+    padding: 2px;
+    margin: 0 -2px;
+    font-style: normal;
+    font-weight: 600;
+    color: #333;
+    background-color: rgba(255, 255, 140, 0.5);
+    border-radius: 3px;
+}
