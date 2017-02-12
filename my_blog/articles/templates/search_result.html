@@ -15,15 +15,15 @@
             <h2 class="post-title">{{ error }}</h2>
         {% else %}
             <div class="column three-fourths codesearch-results">
-                <div class="sort-bar">
-                    <h3>
-                        Showing 12,231,058 available results
-                    </h3>
-                </div>
+                {#                <div class="sort-bar">#}
+                {#                    <h3>#}
+                {#                        Showing 12,231,058 available results#}
+                {#                    </h3>#}
+                {#                </div>#}
 
                 {% for post in post_list %}
-                    <div>
-                        <p>
+                    <div class="search-result">
+                        <p class="search-result-box-title">
                             <a id="id_search_result_title" href="/{{ post.type }}/{{ post.id }}/">{{ post.title }}</a>
                         </p>
                         <div class="search-result-box">

@@ -6,8 +6,8 @@
 2017.01.27 添加表格解析的支持, 添加 bleach 库用于清除不安全的 html 代码
 """
 import markdown
-# import bleach
 import re
+import html
 
 # import markdown2
 # from django.utils.encoding import force_text
@@ -24,10 +24,30 @@ register = template.Library()  # 自定义filter时必须加上
 @register.filter(is_safe=True)  # 注册template filter
 @stringfilter  # 希望字符串作为参数
 def add_em_tag(raw_data):
+    def replace(match_data):
+        pre, raw_keyword = match_data.groups()
+        pre = html.escape(pre)
+        raw_keyword = "<em>{}</em>".format(raw_keyword)
+
+        return "{}{}".format(pre, raw_keyword)
+
+    def escape(match_data):
+        pre, raw_keyword, suffix = match_data.groups()
+        return "{}{}{}".format(pre, raw_keyword, html.escape(suffix))
+
     if "-" in raw_data:
         keyword, content = raw_data.split("-", 1)
-        return mark_safe(
-            re.sub("(?P<keyword>{})".format(keyword), "<em>\g<keyword></em>", content, flags=re.IGNORECASE))
+        # 处理每个关键词的转义
+        keyword_deal_re = re.compile("(?P<pre>[\s\S]*?)(?P<keyword>{})".format(keyword),
+                                     flags=re.IGNORECASE)
+        content = keyword_deal_re.sub(replace, content)
+
+        # 专门处理一下最后一次匹配关键词后面的字符的转义
+        suffix_escape_re = re.compile("(.*)(\<em\>{}\</em\>){{1}}(?P<suf>[\s\S]*)$".format(keyword),
+                                      flags=re.IGNORECASE)
+        content = suffix_escape_re.sub(escape, content)
+
+        return mark_safe(content)
     else:
         return raw_data
 
