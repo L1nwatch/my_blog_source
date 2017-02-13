@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.13 日记更换首页了, 对应的测试得修改下
 2017.02.06 更换首页了, 所以对应测试也得改, 比如说现在首页不显示文章内容了
 2017.02.05 添加吃饭计划表链接的按钮
 2017.02.03 添加日常工作记录 app 链接的按钮
@@ -10,9 +11,10 @@
 """
 from .base import FunctionalTest
 from my_constant import const
+from selenium.common.exceptions import NoSuchElementException
 
 import unittest
-from selenium.common.exceptions import NoSuchElementException
+import datetime
 
 __author__ = '__L1n__w@tch'
 
@@ -100,8 +102,10 @@ class TestHomePageButtons(FunctionalTest):
 
     def test_work_journal_button(self):
         """
+        2017.02.13 将首页换成万年历, 因此不会显示日记了
         2017.02.03 测试新按钮, 日常任务情况总结
         """
+        today = datetime.datetime.today()
         # 创建测试数据
         self._create_work_journal_test_db_data()
 
@@ -113,21 +117,13 @@ class TestHomePageButtons(FunctionalTest):
         work_journal_button.click()
         self.assertNotEqual(self.browser.current_url, home_page_url)
 
-        # 而且页面显示了一堆标题, 形如: 2017-02-08 任务情况总结
-        self.assertIn("2017-02-08 任务情况总结", self.browser.page_source)
+        # 而且页面显示了一堆标题, 而且还显示了今天的日期
+        self.assertIn("{}-{}-{}".format(today.year, today.month, today.day), self.browser.page_source)
 
         # 但是没有显示日记内容
         with self.assertRaises(NoSuchElementException):
             # 如果找不到会抛出 NoSuchElementException 异常
             self.browser.find_element_by_id("id_journal_content")
-
-        # 不过点击标题可以链接到对应的日记, 可以看到 URL 变了
-        work_journal_url = self.browser.current_url
-        self.browser.find_element_by_id("id_journal").click()
-        self.assertNotEqual(work_journal_url, self.browser.current_url)
-
-        # 日记的内容也显示出来了
-        self.browser.find_element_by_id("id_journal_content")
 
         # Y 想回到首页了, 点击首页按钮又回到了首页
         self.browser.find_element_by_id("id_home_page").click()

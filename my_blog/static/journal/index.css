@@ -1,0 +1,579 @@
+.mod-panel {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto 30px;
+    _width: 960px;
+}
+
+.mod-panel .hd {
+    padding-top: 25px;
+    margin-bottom: 20px;
+    line-height: 30px;
+    text-align: center;
+}
+
+.mod-panel .hd h1 {
+    font-weight: normal;
+    font-size: 24px;
+    color: #212121;
+}
+
+.inner {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    overflow: hidden;
+    _width: 960px;
+    position: relative;
+    *zoom: 1;
+}
+
+.col-left {
+    margin-right: 680px;
+    padding-top: 25px;
+    *float: left;
+    *margin-right: 10px;
+    _display: inline;
+}
+
+.col-right {
+    float: right;
+    *float: left;
+    *margin-left: 10px;
+    _display: inline;
+}
+
+.mod-time {
+    width: 340px;
+    margin: 0 auto 30px;
+    text-align: center;
+    _width: 340px;
+}
+
+.mod-time table {
+    width: 100%;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.mod-time td {
+    height: 26px;
+    padding: 10px 7px;
+    border: 1px solid #ccc;
+    line-height: 26px;
+    text-align: center;
+}
+
+.mod-time select {
+    min-width: 60px;
+    height: 26px;
+    padding-left: 4px;
+    border: none;
+    background: none;
+    line-height: 24px;
+    vertical-align: middle;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+}
+
+.mod-time .time {
+    font-size: 30px;
+    color: #57abff;
+}
+
+.mod-time .map {
+    position: relative;
+    width: 320px;
+    margin: 0 auto 15px;
+    overflow: hidden;
+}
+
+.mod-time .s1 {
+    position: absolute;
+    left: -1px;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: #999;
+    _height: 164px;
+}
+
+.mod-time .s2 {
+    position: absolute;
+    left: 0;
+    top: -1px;
+    width: 100%;
+    height: 1px;
+    background: #999;
+    _font-size: 0;
+}
+
+.mod-calendar {
+    position: relative;
+    width: 600px;
+    margin: 0 auto 30px;
+    background: #57abff;
+    overflow: hidden;
+    *zoom: 1;
+}
+
+.mod-calendar a:hover {
+    text-decoration: none;
+}
+
+.mod-calendar .info {
+    float: right;
+    position: relative;
+    width: 170px;
+    padding-top: 15px;
+    text-align: center;
+    color: #fff;
+    *zoom: 1;
+}
+
+.mod-calendar .info p {
+    line-height: 22px;
+}
+
+.mod-calendar .info .day {
+    width: 80px;
+    height: 80px;
+    margin: 15px auto 7px;
+    line-height: 80px;
+    font-size: 48px;
+    background: #fb0;
+    border-radius: 2px;
+}
+
+.mod-calendar .info .festival {
+    margin: 15px 10px;
+    padding-top: 15px;
+    border-top: 1px dotted #fefefe;
+}
+
+.mod-calendar .box {
+    margin-right: 170px;
+    padding: 10px;
+    border: 2px solid #57abff;
+    background: #fff;
+    _margin-right: 0;
+    _float: left;
+    _width: 404px;
+}
+
+.mod-calendar .selector {
+    vertical-align: middle;
+    margin-bottom: 10px;
+    overflow: hidden;
+}
+
+.mod-calendar .selector a {
+    float: left;
+    position: relative;
+    height: 24px;
+    padding: 0 5px;
+    border: 1px solid #ebebeb;
+    background: #fafafa;
+    line-height: 24px;
+    vertical-align: middle;
+    _display: inline;
+    _height: 20px;
+    _line-height: 20px;
+}
+
+.mod-calendar .selector a:hover {
+    border-color: #57abff;
+    color: #57abff;
+}
+
+.mod-calendar .goback {
+    margin-left: 7px;
+    _white-space: nowrap;
+}
+
+.mod-calendar .prev {
+    left: 1px;
+}
+
+.mod-calendar .next {
+    margin-right: 7px;
+    right: 1px;
+}
+
+.mod-calendar select {
+    float: left;
+    min-width: 60px;
+    height: 26px;
+    padding-left: 4px;
+    border: 1px solid #ebebeb;
+    background: none;
+    line-height: 24px;
+    vertical-align: middle;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+    _width: 80px;
+}
+
+.mod-calendar select.year, .mod-calendar select.month {
+    _width: 70px;
+}
+
+.mod-calendar button {
+    height: 26px;
+    border: 1px solid #ebebeb;
+    line-height: 24px;
+    background: #fafafa;
+}
+
+.mod-calendar table {
+    width: 100%;
+    table-layout: fixed;
+    color: #666;
+}
+
+.mod-calendar tr {
+    border-top: 1px solid #ebebeb;
+}
+
+.mod-calendar th, .mod-calendar td {
+    text-align: center;
+}
+
+.mod-calendar th {
+    line-height: 40px;
+    font-weight: normal;
+}
+
+.mod-calendar td {
+    position: relative;
+    line-height: 22px;
+}
+
+.mod-calendar tbody a {
+    display: block;
+    width: 55px;
+    padding: 6px 1px;
+    border-right: 1px solid #fff;
+    cursor: pointer;
+}
+
+.mod-calendar tbody a.active, .mod-calendar tbody a:hover {
+    padding: 5px 0;
+    border: 1px solid #fc0;
+}
+
+.mod-calendar tbody span {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.mod-calendar tbody i {
+    position: absolute;
+    left: 2px;
+    top: 0;
+    line-height: 20px;
+    font-style: normal;
+    color: #fff;
+}
+
+.mod-calendar .s1 {
+    color: #212121;
+}
+
+.mod-calendar .s2 {
+    color: #757575;
+}
+
+.mod-calendar .holiday a {
+    background: #f1f9f1;
+}
+
+.mod-calendar .holiday i {
+    color: #4bae4f;
+}
+
+.mod-calendar .work a {
+    background: #fef0ef;
+}
+
+.mod-calendar .work i {
+    color: #f44336;
+}
+
+.mod-calendar .today a {
+    background: #fc0;
+}
+
+.mod-calendar .today span {
+    color: #fff;
+}
+
+.mod-calendar .disabled a {
+    background: #fff;
+}
+
+.mod-calendar .disabled .s1, .mod-calendar .disabled .s2 {
+    color: #bdbdbd;
+}
+
+.mod-holiday {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto 30px;
+    _width: 960px;
+}
+
+.mod-holiday table {
+    width: 100%;
+    border: 1px solid #ccc;
+}
+
+.mod-holiday thead {
+    background: #f5f5f5;
+}
+
+.mod-holiday th, .mod-holiday td {
+    height: 42px;
+    text-align: center;
+}
+
+.mod-holiday th {
+    color: #212121;
+}
+
+.mod-holiday td {
+    border: 1px solid #ccc;
+}
+
+@media screen and (max-width: 1440px) {
+    .col-left {
+        padding-top: 0;
+        margin: 0;
+    }
+
+    .col-right {
+        float: none;
+    }
+}
+
+.dev-small .col-left, .dev-middle .col-left {
+    padding-top: 0;
+    margin: 0;
+}
+
+.dev-small .col-right, .dev-middle .col-right {
+    float: none;
+}
+
+.dev-middle .mod-holiday, .dev-middle .inner {
+    _width: 640px;
+}
+
+.dev-small .mod-holiday, .dev-small .inner {
+    _width: 600px;
+}
+
+/* 移动版响应 */
+@media screen and (max-width: 640px) {
+    .mod-panel {
+        border: none;
+        background: none;
+        margin-bottom: 10px;
+    }
+
+    .mod-panel .hd {
+        padding: 0;
+        margin-bottom: 0;
+        line-height: 22px;
+        text-align: left;
+    }
+
+    .mod-panel .hd h1 {
+        font-size: 16px;
+        color: #333;
+    }
+
+    .inner {
+        overflow: visible;
+    }
+
+    .mod-calendar {
+        width: 100%;
+        margin-bottom: 12px;
+        font-size: 12px;
+    }
+
+    .mod-calendar .info {
+        float: none;
+        width: auto;
+        padding-top: 10px;
+        padding-left: 10px;
+        overflow: hidden;
+    }
+
+    .mod-calendar .info p {
+        text-align: left;
+    }
+
+    .mod-calendar .info .day {
+        float: left;
+        width: 58px;
+        height: 58px;
+        margin: 7px 0 12px;
+        line-height: 58px;
+        font-size: 24px;
+    }
+
+    .mod-calendar .info .sub {
+        margin-left: 70px;
+        padding-top: 5px;
+    }
+
+    .mod-calendar .sub p {
+        line-height: 21px;
+    }
+
+    .mod-calendar .info .festival {
+        position: absolute;
+        top: 10px;
+        right: 9px;
+        margin: 0;
+        padding: 0;
+        border-top: none;
+    }
+
+    .mod-calendar .box {
+        margin-right: 0;
+        padding: 10px 0;
+        border: none;
+    }
+
+    .mod-calendar .selector span {
+        float: left;
+        position: relative;
+        width: 33.33%;
+        border: 1px solid #ccc;
+        margin-right: -1px;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .mod-calendar .selector select {
+        float: none;
+        border-color: transparent;
+        padding-left: 0;
+    }
+
+    .mod-calendar .selector a {
+        position: absolute;
+        top: 0;
+        background: none;
+        border-color: transparent;
+    }
+
+    .mod-calendar .selector .prev {
+        left: 0;
+        border-right-color: transparent;
+    }
+
+    .mod-calendar .selector .next {
+        right: 0;
+        margin-right: 0;
+        border-left-color: transparent;
+    }
+
+    .mod-calendar tbody a {
+        width: auto;
+    }
+
+    .mod-calendar tr {
+        border-top: none;
+    }
+
+    .mod-calendar th, .mod-calendar td {
+        position: relative;
+        height: 48px;
+        border: 1px solid #ccc;
+        line-height: 16px;
+    }
+
+    .mod-calendar .today {
+        background: #fc0;
+    }
+
+    .mod-calendar .today a {
+        border-right: none;
+    }
+
+    .mod-calendar .s2 {
+        color: #333;
+    }
+
+    .mod-calendar tbody a.active, .mod-calendar tbody a:hover {
+        padding: 7px 1px;
+        border: 1px solid #fc0;
+    }
+
+    .mod-calendar .disabled .s1, .mod-calendar .disabled .s2 {
+        color: #999;
+    }
+
+    .mod-calendar .selector .goback {
+        position: absolute;
+        top: 75px;
+        right: 10px;
+        height: 20px;
+        background: #ffbb00;
+        line-height: 20px;
+        font-size: 14px;
+        color: #fff;
+        border-radius: 3px;
+    }
+
+    .mod-calendar .selector .goback:hover {
+        border-color: #ffbb00;
+        color: #fff;
+    }
+
+    .mod-time {
+        width: 100%;
+    }
+
+    .mod-time table {
+        color: #000;
+    }
+
+    .mod-time select {
+        border: none;
+        padding-left: 0;
+        color: #000;
+    }
+
+    .mod-time td {
+        padding: 4px 0;
+    }
+
+    .mod-holiday {
+        font-size: 12px;
+        color: #333;
+    }
+
+    .mod-holiday th, .mod-holiday td {
+        height: 32px;
+    }
+}
+
+@media screen and (max-width: 359px) {
+    .mod-time {
+        width: 288px;
+    }
+
+    .mod-time .map {
+        width: 320px;
+        margin-left: -16px;
+    }
+}

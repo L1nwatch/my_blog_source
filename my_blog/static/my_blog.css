@@ -760,3 +760,22 @@ h3 {
     margin-bottom: 10px;
     border-top: 1px solid #f9f9f9;
 }
+
+.journal-calendar {
+    height: 100%;
+    font-size: 14px;
+    font-family: Arial, Helvetica, "Microsoft Yahei";
+    color: #555;
+    margin: 0;
+    padding: 0;
+}
+
+.journal-calendar > h1 h2 h3 h4 h5 h6 {
+    font-size: 100%;
+    font-weight: normal
+}
+
+.journal-calendar > header {
+    height: 56px;
+    border-top: none;
+}

@@ -43,10 +43,14 @@ class TestWorkJournalSearch(FunctionalTest):
         # Y 打开日记的首页
         self.browser.get(self.work_journal_home)
 
-        # Y 看到一堆乱七八糟的日期标题
-        self.assertRegex(self.browser.page_source, "2017-02-08.*")
-        self.assertRegex(self.browser.page_source, "2017-02-07.*")
-        self.assertRegex(self.browser.page_source, "2017-02-09.*")
+        # Y 没有看到一堆乱七八糟的日期标题
+        self.assertNotRegex(self.browser.page_source, "2017-02-08.*")
+        self.assertNotRegex(self.browser.page_source, "2017-02-07.*")
+        self.assertNotRegex(self.browser.page_source, "2017-02-09.*")
+
+        # Y 看到的是一份万年历, 其中可以找到今天的链接
+        # TODO: 还没写
+        pass
 
     def test_can_search_by_date(self):
         # Y 决定试试左边的搜索功能, 搜索指定的日期

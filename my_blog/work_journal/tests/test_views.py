@@ -75,8 +75,9 @@ class JournalHomeViewTest(TestCase):
         self.assertIsInstance(response.context["form"], JournalForm)
         self.assertContains(response, 'name="title"')
 
-    def test_display_all_journals(self):
+    def test_display_no_journals(self):
         """
+        2017.02.13 首页换了, 现在一篇日记都不显示
         测试显示了所有 journal 而不只是某几篇
         """
         test_journals_number = 10
@@ -93,7 +94,7 @@ class JournalHomeViewTest(TestCase):
             journal_url = "{}{}/".format(self.unique_url, journal.id)
             if journal_url.encode("utf8") in response.content:
                 counts += 1
-        self.assertEqual(counts, test_journals_number)
+        self.assertNotEqual(counts, test_journals_number)
 
     def test_no_display_journal_content(self):
         """
@@ -103,19 +104,6 @@ class JournalHomeViewTest(TestCase):
 
         response = self.client.get(self.unique_url)
         self.assertNotContains(response, journal.content)
-
-    def test_title_with_href(self):
-        """
-        测试显示的日记, 每一篇都带有超链接, 链接到对应的日记 url
-        """
-        journal = self._create_test_db_date()
-        response = self.client.get(self.unique_url)
-
-        # 标题存在
-        self.assertContains(response, journal.title)
-
-        # 对应的链接 url 也存在
-        self.assertContains(response, "{}{}/".format(self.unique_url, journal.id))
 
 
 class JournalDisplayViewTest(BaseCommonTest):

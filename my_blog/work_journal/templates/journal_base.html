@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="{% static "my_monokai.css" %}">
     <link rel="stylesheet" href="{% static "my_main.css" %}">
     <link rel="stylesheet" href="{% static "font-awesome/css/font-awesome.min.css" %}">
+    <link type="text/css" rel="stylesheet" href="{% static "journal/responsive.css" %}"/>
+    <link type="text/css" rel="stylesheet" href="{% static "journal/index.css" %}"/>
     <link rel="shortcut icon" href="{% static "favicon.ico" %}">
 </head>
 <body>
@@ -30,6 +32,7 @@
     <div class="content pure-u-1 pure-u-md-3-4">
         {% block content %}
         {% endblock %}
+
         <div class="footer">
             <div class="pure-menu pure-menu-horizontal pure-menu-open">
                 <ul>
@@ -63,4 +66,7 @@
         });
     })
 </script>
+
+{% block java_script %}
+{% endblock %}
 </html>

@@ -1,20 +1,153 @@
 {% extends "journal_base.html" %}
-{% load custom_filter %}
+{% load static %}
+
 
 {% block sidebar_content %}
     {% include "journal_sidebar.html" %}
 {% endblock %}
 
 {% block content %}
-    <div class="posts">
-        {% for post in post_list %}
-            <section class="post">
-                <header class="post-header">
-                    <h2 class="post-title">
-                        <a id="id_journal" href="{% url 'journal_display' journal_id=post.id %}">{{ post.title }}</a>
-                    </h2>
-                </header>
-            </section>
-        {% endfor %}
+    <div class="wrapper journal-calendar">
+        <div class="container">
+            <div class="">
+                <div class="mod-panel">
+                    <div class="hd">
+                        <span class="icon-date fa fa-calendar-minus-o">2017-2-13</span>
+                        <h1><a href="http://qq.ip138.com/day/">阴阳转换万年历</a></h1>
+                    </div>
+
+                </div>
+                <div class="inner">
+                    <div class="col-right">
+                        <div class="mod-calendar">
+                            <div class="info"></div>
+                            <div class="box">
+                                <div class="selector">
+                                        <span>
+                                            <a class="prev prev-year" href="javascript:;">&lt;</a>
+                                            <select class="year">
+                                                <script type="text/javascript">
+                                                    for (i = 1900; i < 2101; i++) {
+                                                        document.write('<option value="' + i + '">' + i + '年</option>');
+                                                    }
+                                                </script>
+                                            </select>
+                                            <a class="next next-year" href="javascript:;">&gt;</a>
+                                        </span>
+                                        <span>
+                                            <a class="prev prev-month" href="javascript:;">&lt;</a>
+                                            <select class="month">
+                                                <script type="text/javascript">
+                                                    <!--
+                                                    for (i = 1; i < 13; i++) {
+                                                        document.write('<option value="' + i + '">' + i + '月</option>');
+                                                    }
+                                                    -->
+                                                </script>
+                                            </select>
+                                            <a class="next next-month" href="javascript:;">&gt;</a>
+                                        </span>
+                                        <span>
+                                            <select class="holiday">
+                                                <option value="">假日安排</option>
+                                            </select>
+                                        </span>
+                                    <a class="goback" href="javascript:;">返回今天</a>
+                                </div>
+                                <div class="table"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-left">
+                        <div class="mod-time">
+                            <div class="bd">
+                                <table>
+                                    <tbody>
+                                    <tr>
+                                        <td class="th">本机时间</td>
+                                        <td>
+                                            <span id="date1">&nbsp;</span>
+                                            <span id="time1">&nbsp;</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="th">
+                                            <select id="zone">
+                                                <option value="+0000 格林威治标准时间">格林威治标准</option>
+                                                <option value="-1200 图瓦卢、埃尼威托克">国际日期变更线</option>
+                                                <option value="-1100 萨摩亚群岛、中途岛">萨摩亚</option>
+                                                <option value="-1000 夏威夷">美国夏威夷</option>
+                                                <option value="-0900*阿拉斯加">美国阿拉斯加</option>
+                                                <option value="-0800*旧金山、洛杉矶、西雅图、温哥华">北美州太平洋</option>
+                                                <option value="-0700*盐湖城、丹佛、凤凰城">美国山地</option>
+                                                <option value="-0600*萨克其万">加拿大中部</option>
+                                                <option value="-0600*墨西哥城">墨西哥</option>
+                                                <option value="-0600*芝加哥、圣路易斯、新奥尔良">美国中部</option>
+                                                <option value="-0500*波哥大、利马">南美洲太平洋</option>
+                                                <option value="-0500*纽约、华盛顿、波士顿">美国东部</option>
+                                                <option value="-0500*渥太华、多伦多、蒙特利尔">加拿大东部</option>
+                                                <option value="-0400*圣地亚哥、加拉加斯、拉巴斯">南美洲西部</option>
+                                                <option value="-0400*弗雷德里克顿、圣约翰">大西洋</option>
+                                                <option value="-0330 圣约翰斯">加拿大纽芬兰</option>
+                                                <option value="-0300 巴西利亚">东南美洲</option>
+                                                <option value="-0300 乔治城、布宜诺斯艾利斯">南美洲东部</option>
+                                                <option value="-0200*大西洋中部">大西洋中部</option>
+                                                <option value="-0100*亚速尔群岛、佛得角群岛">亚速尔</option>
+                                                <option value="+0100 伦敦、都柏林、爱丁堡">英国夏令</option>
+                                                <option value="+0000 蒙罗维亚、卡萨布兰卡(摩洛哥)">利比里亚</option>
+                                                <option value="+0100 罗马、巴黎、马德里">罗马</option>
+                                                <option value="+0100 布拉格、华沙、布达佩斯">中欧</option>
+                                                <option value="+0100 柏林、斯德哥尔摩、伯尔尼、布鲁赛尔、维也纳">西欧</option>
+                                                <option value="+0200 以色列">以色列</option>
+                                                <option value="+0200*东欧">东欧</option>
+                                                <option value="+0200*开罗">埃及</option>
+                                                <option value="+0200*雅典、赫尔辛基、伊斯坦堡">雅典</option>
+                                                <option value="+0200*开普敦、约翰内斯堡、哈拉雷(津巴布韦)">南非</option>
+                                                <option value="+0300*巴格达、科威特、内罗毕(肯尼亚)、利雅得(沙特)">沙特阿拉伯</option>
+                                                <option value="+0300 莫斯科、圣彼得堡">俄罗斯</option>
+                                                <option value="+0330*德黑兰">伊朗</option>
+                                                <option value="+0400*阿布扎比、第比利斯(格鲁吉亚)">阿联酋</option>
+                                                <option value="+0430*喀布尔">阿富汗</option>
+                                                <option value="+0500 伊斯兰堡、卡拉奇">西亚</option>
+                                                <option value="+0530 孟买、新德里、加尔各答、科伦坡(斯里兰卡)">印度</option>
+                                                <option value="+0600 达卡、叶卡捷琳堡(俄罗斯)">中亚</option>
+                                                <option value="+0630 仰光">缅甸</option>
+                                                <option value="+0700 曼谷、河内、雅加达、胡志明市">曼谷</option>
+                                                <option value="+0800 北京、上海、重庆、广州">中国大陆</option>
+                                                <option value="+0800 台北、香港、新加坡、吉隆坡、马尼拉">台北</option>
+                                                <option value="+0800 珀斯">澳大利亚西部</option>
+                                                <option value="+0900 东京、大阪、札幌、首尔">东京</option>
+                                                <option value="+0930 达尔文">澳大利亚中/南部</option>
+                                                <option value="+1000 悉尼、墨尔本、堪培拉、布里斯本">澳大利亚东部</option>
+                                                <option value="+1000 关岛、莫斯比港、符拉迪沃斯托克(海参崴)">西太平洋</option>
+                                                <option value="+1100*所罗门群岛、新喀里多尼亚">太平洋中部</option>
+                                                <option value="+1200 惠灵顿、奥克兰、基督城">新西兰</option>
+                                                <option value="+1200 斐济、马歇尔群岛">斐济</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <span id="date2">&nbsp;</span>
+                                            <span id="time2">&nbsp;</span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="map">
+                                    <img src="{% static "map.png" %}" width="320">
+                                    <span id="left" class="s1"></span>
+                                    <span id="top" class="s2"></span>
+                                </div>
+                                <p id="place">&nbsp;</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+{% endblock %}
+
+{% block java_script %}
+    <script type="text/javascript" src="{% static "journal/common.js" %}"></script>
+    <script type="text/javascript" src="{% static "journal/index.js" %}"></script>
 {% endblock %}
