@@ -2,9 +2,13 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.14 给 404 页面的搜索功能添加功能测试
+2017.02.14 首页修改为万年历, 需要添加对应的功能测试
 2017.02.08 新增搜索功能, 编写功能测试
 2017.02.05 为这个 APP 建立一个单独的功能测试文件
 """
+import datetime
+
 from .base import FunctionalTest
 from my_constant import const
 
@@ -31,6 +35,46 @@ class TestWorkJournalHomePage(FunctionalTest):
         self.assertIn("日记数", self.browser.page_source)
         self.assertRegex(self.browser.page_source, "日记数: \d+")
 
+    def test_calendar_display(self):
+        """
+        测试万年历相关的显示
+        """
+        # Y 打开了 work_journal 首页
+        self.browser.get("{host}{path}".format(host=self.server_url, path=self.unique_url))
+
+        # Y 打开首页后没有看到一堆乱七八糟的日期标题
+        self.assertNotRegex(self.browser.page_source, "2017-02-08.*")
+        self.assertNotRegex(self.browser.page_source, "2017-02-07.*")
+        self.assertNotRegex(self.browser.page_source, "2017-02-09.*")
+
+        # 而是看到的是一份万年历, 其中可以找到今天的链接
+        today = datetime.datetime.today()
+        self.assertRegex(self.browser.page_source, "{}-{}-{}".format(today.year,
+                                                                     str(today.month).zfill(2),
+                                                                     str(today.day).zfill(2)))
+
+    def test_journal_href(self):
+        """
+        测试日记的 href 链接存在
+        """
+        today = datetime.datetime.today()
+
+        # Y 打开了 work_journal 首页
+        self.browser.get("{host}{path}".format(host=self.server_url, path=self.unique_url))
+
+        # Y 知道站长今天已经写日记了
+        self._create_work_journal_test_db_data()
+
+        # 于是 Y 试着点击一下, 想看看今天的日记
+        self.browser.find_element_by_id("id_journal").click()
+
+        # 发现 url 已经变了
+        self.assertRegex(self.browser.current_url, self.unique_url + "\d{4}-\d{1,2}-\d{1,2}/")
+
+        # 可以看到类似于 2017-02-14 这样的标题, 看来这就是站长今天的日记
+        self.assertNotIn("Not Found", self.browser.page_source)
+        self.assertRegex(self.browser.page_source, "\d{4}-\d{1,2}-\d{1,2}")
+
 
 class TestWorkJournalSearch(FunctionalTest):
     unique_url = "/work_journal/"
@@ -42,15 +86,6 @@ class TestWorkJournalSearch(FunctionalTest):
 
         # Y 打开日记的首页
         self.browser.get(self.work_journal_home)
-
-        # Y 没有看到一堆乱七八糟的日期标题
-        self.assertNotRegex(self.browser.page_source, "2017-02-08.*")
-        self.assertNotRegex(self.browser.page_source, "2017-02-07.*")
-        self.assertNotRegex(self.browser.page_source, "2017-02-09.*")
-
-        # Y 看到的是一份万年历, 其中可以找到今天的链接
-        # TODO: 还没写
-        pass
 
     def test_can_search_by_date(self):
         # Y 决定试试左边的搜索功能, 搜索指定的日期
@@ -139,6 +174,36 @@ class TestWorkJournalSearch(FunctionalTest):
         search_result = self.browser.find_element_by_tag_name("body").text
         self.assertNotIn("I am Python", search_result)
         self.assertNotIn("article_with_python", search_result)
+
+
+class Test404Page(FunctionalTest):
+    unique_url = "/work_journal/1994-04-06/"
+
+    def test_can_search_content(self):
+        """
+        测试 404 页面的搜索功能可用
+        """
+        self._create_work_journal_test_db_data()
+
+        # Y 进入了 404 页面
+        self.browser.get("{host}{path}".format(host=self.server_url, path=self.unique_url))
+
+        # Y 看到了搜索框, 于是进行搜索
+        search_button = self.browser.find_element_by_id("id_search_work_journal")
+
+        # Y 知道站长今天肯定有写日记, 而且日记内容包含 "今天"
+        search_button.send_keys("今天\n")
+
+        # 可以看到 url 变化了
+        self.assertNotRegex(self.browser.current_url, self.unique_url)
+
+        # 而且页面上也显示出内容了, 内容果然含有 "今天"
+        self.assertIn("今天", self.browser.page_source)
+
+        # 可以看到搜索结果的标题日期果然是今天
+        today = datetime.datetime.today()
+        journal_title = self.browser.find_element_by_id("id_search_result_title")
+        self.assertRegex(journal_title.text, "{}-\d?{}-\d?{}".format(today.year, today.month, today.day))
 
 
 if __name__ == "__main__":

@@ -414,5 +414,69 @@ class UpdateNotesViewTest(TestCase):
             Journal.objects.get(title=should_not_exist_note.title)
 
 
+class RedirectViewTest(BaseCommonTest):
+    unique_url = "/work_journal/{}/"
+
+    def setUp(self):
+        super().setUp()
+
+        self.create_journal_test_db()
+
+    def test_use_right_template(self):
+        """
+        测试这个跳转页面, 最终应该跳转到显示日记的那个 html
+        """
+        # 正常情况下
+        today = datetime.datetime.today()
+        response = self.client.get(self.unique_url.format("{}-{}-{}".format(today.year, today.month, today.day)))
+        self.assertTemplateUsed(response, "journal_display.html")
+
+        # 非正常情况下, 应该是会去 404 页面
+        not_exist_day = datetime.datetime(1994, 4, 6)
+        response = self.client.get(self.unique_url.format("{}-{}-{}".format(not_exist_day.year,
+                                                                            not_exist_day.month,
+                                                                            not_exist_day.day)))
+        self.assertTemplateUsed(response, "journal_not_found.html")
+
+    def test_redirect_right(self):
+        """
+        测试几种 url 都能够正确解析
+        """
+        # 类似于 2017-02-13 的 url
+        test_journal = Journal.objects.create(title="2017-02-13 任务情况", date=datetime.datetime(2017, 2, 13))
+        response = self.client.get(self.unique_url.format("2017-02-13"))
+        self.assertContains(response, test_journal.title)
+
+        # 类似于 2017-2-13 的 url
+        response = self.client.get(self.unique_url.format("2017-2-13"))
+        self.assertContains(response, test_journal.title)
+
+        # 类似于 2016-12-03 的 url
+        test_journal = Journal.objects.create(title="test2", date=datetime.datetime(2016, 12, 3))
+        response = self.client.get(self.unique_url.format("2016-12-03"))
+        self.assertContains(response, test_journal.title)
+
+        # 类似于 2016-12-3 的 url
+        response = self.client.get(self.unique_url.format("2016-12-3"))
+        self.assertContains(response, test_journal.title)
+
+    def test_404_redirect(self):
+        """
+        测试查询一篇不存在的日记时是否会跳转到 404 页面
+        """
+        not_exist_day = datetime.datetime(1994, 4, 6)
+        response = self.client.get(self.unique_url.format("{}-{}-{}".format(not_exist_day.year,
+                                                                            not_exist_day.month,
+                                                                            not_exist_day.day)))
+        # 查看一下页面是否有站长预先留下的信息提示
+        self.assertContains(response, const.JOURNAL_NOT_FOUND)
+
+    def test_404_form(self):
+        """
+        404 页面也有搜索功能, 所以需要表单验证
+        """
+        response = self.client.get(self.unique_url.format("1994-04-06"))
+        self.assertIsInstance(response.context["form"], JournalForm)
+
 if __name__ == "__main__":
     pass

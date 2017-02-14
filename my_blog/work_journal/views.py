@@ -37,6 +37,23 @@ def journal_display(request, journal_id):
     return render(request, 'journal_display.html', _get_context_data({"post": journal}))
 
 
+def redirect_journal(request, journal_date):
+    """
+    重定向, 根据 date 定位到对应的日记中
+    :param request: 发送给视图函数的请求
+    :param journal_date: 日期, 形如 2017-02-14
+    """
+    year, month, day = journal_date.split("-")
+    year, month, day = int(year), int(month), int(day)
+    request_date = datetime.datetime(year, month, day)
+
+    try:
+        journal = Journal.objects.get(date=request_date)
+        return journal_display(request, journal.id)
+    except Journal.DoesNotExist:
+        return render(request, "journal_not_found.html", _get_context_data({"not_found_info": const.JOURNAL_NOT_FOUND}))
+
+
 def is_valid_update_md_file(file_name):
     """
     判断文件名是否满足 2017-02-03-任务情况总结.md 这种格式

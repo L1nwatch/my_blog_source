@@ -1259,7 +1259,7 @@ var getData = (function () {
         $month.value = date['cMonth'];
         // 2017.02.13 更改这里, 加上 href 链接
         var total_date = date['cYear'] + '-' + (date['cMonth'] > 9 ? date['cMonth'] : '0' + date['cMonth']) + '-' + (date['cDay'] > 9 ? date['cDay'] : '0' + date['cDay']);
-        $info.innerHTML = '<p>' + '<a href="/work_journal/' + total_date + '/">' + total_date + ' ' + date['ncWeek'] + '</a>' + '</p>\
+        $info.innerHTML = '<p>' + '<a id="id_journal" href="/work_journal/' + total_date + '/">' + total_date + ' ' + date['ncWeek'] + '</a>' + '</p>\
         <div class="day">' + date['cDay'] + '</div>\
         <div class="sub"><p>' + date['IMonthCn'] + date['IDayCn'] + '</p>\
         <p>' + date['gzYear'] + '年 【' + date['Animal'] + '年】</p>\

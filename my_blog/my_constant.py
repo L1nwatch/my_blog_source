@@ -39,9 +39,12 @@ const.NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
 const.ARTICLE_STRUCTURE = namedtuple("article_post", ["id", "title", "content", "type"])
 const.MARKDOWN_TREE_STRUCTURE = namedtuple("toc_tree", ["title", "id", "child"])
 
+# 日记页面
+const.JOURNAL_NOT_FOUND = "(●￣(ｴ)￣●)那天居然没写日记(O_o)??"
+
 # 调试选项
 # git 提交前需要改为 False or True, 要不然网站会跑失败的...
-const.SLOW_CONNECT_DEBUG = True  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
+const.SLOW_CONNECT_DEBUG = False  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
 
 # 搜索页面
 const.ID_SEARCH_RESULT_TITLE = "id_search_result_title"

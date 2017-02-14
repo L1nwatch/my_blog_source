@@ -176,6 +176,11 @@ while True:
         Journal.objects.create(title="2017-02-09 任务情况总结"
                                , content="测试笔记, 应该记录 2017/02/09 的工作内容", date=datetime(2017, 2, 9))
 
+        today = datetime.today()
+        Journal.objects.create(title="{}-{}-{} 任务情况总结".format(today.year, today.month, today.day),
+                               content="今天的任务情况总结",
+                               date=today)
+
 
 if __name__ == "__main__":
     pass

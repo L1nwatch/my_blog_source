@@ -21,7 +21,7 @@ class JournalForm(BaseSearchForm):
                 "id": "id_search_work_journal",
                 "placeholder": const.PLACE_HOLDER,
                 "class": "pure-input-2-3",
-            })
+            }),
         }
         error_messages = {
             "title": {"required": const.EMPTY_ARTICLE_ERROR}
