@@ -7,9 +7,11 @@
 * macOSX 10.10.5
 * Python 3.4
 * virtualenv
-* 部署服务器为 Ubuntu 系统
+* 部署服务器为 Ubuntu 系统，回头要搞个 docker (๑•̀ㅂ•́)و✧
 
 ## 界面如下
+
+具体实现的效果可以到 [watch0.top](http://watch0.top) 上看
 
 （2017-02-08 版本）的首页界面如图所示：
 
@@ -18,6 +20,11 @@
 （2017-02-08 版本）的文章界面如图所示：
 
 ![2017-02-08文章截图](https://github.com/L1nwatch/my_blog_source/blob/master/2017-02-08%E6%96%87%E7%AB%A0%E7%95%8C%E9%9D%A2.jpg?raw=true)
+
+（2017-02-15 版本）的日记界面如图所示：
+
+![2017-02-15日记截图]()
+
 
 ## 自动化部署方法
 
