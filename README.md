@@ -23,7 +23,7 @@
 
 （2017-02-15 版本）的日记界面如图所示：
 
-![2017-02-15日记截图]()
+![2017-02-15日记截图](https://github.com/L1nwatch/my_blog_source/blob/master/2017-02-15%E6%97%A5%E8%AE%B0%E9%A6%96%E9%A1%B5.jpg?raw=true)
 
 
 ## 自动化部署方法
