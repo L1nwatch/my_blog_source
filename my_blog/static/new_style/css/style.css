@@ -90,7 +90,6 @@ a:focus {
 .content {
     padding: 15% 0 30% 0; /* 上/右/下/左 */
     text-align: center;
-    overflow-y: scroll;
 }
 
 /* Navigation */
