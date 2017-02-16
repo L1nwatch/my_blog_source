@@ -45,7 +45,13 @@
     <div class="footer">
         <nav class="nav">
             <ul class="nav-list">
-                <li><label>文章数: {{ articles_numbers }}</label></li>
+                <li><label>
+                    {% if articles_numbers %}
+                        文章数: {{ articles_numbers }}
+                    {% elif journals_numbers %}
+                        日记数: {{ journals_numbers }}
+                    {% endif %}
+                </label></li>
                 &nbsp
                 <li><label>创建博客日期: 2016.10.04</label></li>
             </ul>

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.16 手测发现搜索页面左下角居然显示的是文章数?什么情况...
 2017.02.14 给 404 页面的搜索功能添加功能测试
 2017.02.14 首页修改为万年历, 需要添加对应的功能测试
 2017.02.08 新增搜索功能, 编写功能测试
@@ -174,6 +175,17 @@ class TestWorkJournalSearch(FunctionalTest):
         search_result = self.browser.find_element_by_tag_name("body").text
         self.assertNotIn("I am Python", search_result)
         self.assertNotIn("article_with_python", search_result)
+
+    def test_search_view_sidebar_display(self):
+        self._create_articles_test_db_data()
+
+        # Y 知道某篇文章及某篇日记都有 python 这个关键词, 于是 Y 打算试试搜索结果是否都能搜索出来
+        search_button = self.browser.find_element_by_id("id_search_work_journal")
+        search_button.send_keys("python\n")
+
+        # Y 发现显示的页面中左下角显示的不是文章数了, 而是显示日记数
+        self.assertNotRegex(self.browser.page_source, "文章数")
+        self.assertRegex(self.browser.page_source, "日记数")
 
 
 class Test404Page(FunctionalTest):
