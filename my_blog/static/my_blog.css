@@ -698,10 +698,6 @@ h3 {
     font-size: 0.8em;
 }
 
-.eating_plan_table a, .eating_plan_table a:focus {
-    text-decoration: none;
-    /*float: left;*/
-}
 
 .search-result-box {
     border: 1px solid #dddddd;

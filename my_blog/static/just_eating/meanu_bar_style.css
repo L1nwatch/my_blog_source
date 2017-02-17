@@ -1,0 +1,110 @@
+@import url(http://weloveiconfonts.com/api/?family=fontawesome);
+html, body {
+  height: 100%;
+  position: relative;
+}
+
+body {
+  margin: 0;
+  /*background: radial-gradient(circle at 40% 0%, #eeeeee 10%, #999999);*/
+}
+
+.mm-menu {
+  font-size: 1rem;
+  /*position: relative;*/
+  /*width: 22.5em;*/
+  /*height: 4.5em;*/
+  border-radius: 0.15em;
+  /*background: #c4cac8;*/
+  box-shadow: 0 -1px 0.3em rgba(0, 0, 34, 0.2) inset, 0 -1px 1px rgba(0, 0, 34, 0.03) inset, 2px 2px 3px rgba(0, 0, 34, 0.2);
+  margin: -2.25em auto 0;
+  top: 50%;
+}
+
+.mm-item > [class*="fontawesome-"]::before {
+  display: block;
+  font-family: 'FontAwesome';
+  font-size: 2em;
+  text-align: center;
+  line-height: 2.25em;
+  color: #c9c9c9;
+  text-shadow: 0 -0.03em rgba(0, 0, 0, 0.21), 0 0.03em 0.06em rgba(255, 255, 255, 0.5);
+}
+
+.mm-item {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  display: block;
+  position: relative;
+  top: -0.25em;
+  float: left;
+  width: 4.5em;
+  height: 4.5em;
+  text-decoration: none;
+  border-radius: 0.15em;
+  transition: 250ms;
+  /*background: linear-gradient(#f6f7f9, #d6d8dc) 0 50%;*/
+  background-size: 100% 200%;
+}
+
+.mm-item:hover {
+  top: -0.35em;
+  /*background-position: 0 0%;*/
+}
+
+.mm-item:focus,
+.mm-item:active {
+  outline: none;
+  top: -0.15em;
+  /*background-position: 0 100%;*/
+}
+
+/*.mm-item,*/
+/*.mm-item:first-of-type:focus,*/
+/*.mm-item:first-of-type:active,*/
+/*.mm-item:hover:focus + .mm-item,*/
+/*.mm-item:hover:active + .mm-item {*/
+  /*box-shadow: 1px 1px 0 0 rgba(255, 255, 255, 0.15) inset, 0 0 0 0 transparent inset, 0.2em 0.2em 0.3em -0.07em rgba(255, 255, 255, 0.6) inset, -0.2em -0.3em 0.3em -0.07em rgba(0, 0, 0, 0.08) inset;*/
+/*}*/
+
+.mm-item:hover + .mm-item,
+.mm-item:focus,
+.mm-item:active {
+  box-shadow: 0 0.3em 0.3em -0.2em rgba(255, 255, 255, 0.6) inset, 1px 0 0 0 rgba(0, 0, 0, 0.02) inset, 0.35em 0 0.3em -0.2em rgba(0, 0, 34, 0.07) inset, -0.2em -0.3em 0.3em -0.07em rgba(0, 0, 0, 0.08) inset;
+}
+
+.mm-item:hover + .mm-item:focus {
+  box-shadow: 0 0.3em 0.3em -0.2em rgba(255, 255, 255, 0.6) inset, 1px 0 0 0 rgba(0, 0, 0, 0.01) inset, 0.45em 0 0.3em -0.2em rgba(0, 0, 34, 0.09) inset, -0.2em -0.3em 0.3em -0.07em rgba(0, 0, 0, 0.08) inset;
+}
+
+@media only screen and (height: 300px) {
+  .mm-menu {
+    font-size: 1.5rem;
+  }
+
+  .mm-item:nth-of-type(1) {
+    top: -0.35em;
+    /*background-position: 0 0%;*/
+  }
+  .mm-item:nth-of-type(1)::after {
+    top: 4.8em;
+  }
+
+  .mm-item:nth-of-type(2) {
+    box-shadow: 0 0.2em 0.3em -2px rgba(255, 255, 255, 0.6) inset, -1px -1px 0 0 rgba(0, 0, 0, 0.03) inset, 0.3em 0 0.2em -2px rgba(0, 0, 0, 0.05) inset, -0.2em -0.2em 0.3em -2px rgba(0, 0, 0, 0.08) inset;
+  }
+
+  .mm-item:nth-of-type(3) {
+    top: -0.15em;
+    /*background-position: 0 100%;*/
+    box-shadow: 0 0.2em 0.3em -2px rgba(255, 255, 255, 0.6) inset, -1px -1px 0 0 rgba(0, 0, 0, 0.03) inset, 0.3em 0 0.2em -2px rgba(0, 0, 0, 0.05) inset, -0.2em -0.2em 0.3em -2px rgba(0, 0, 0, 0.08) inset;
+  }
+  .mm-item:nth-of-type(3)::after {
+    top: 4.6em;
+  }
+
+  .mm-item:last-of-type::before {
+    width: 43.4%;
+  }
+}

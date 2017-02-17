@@ -17,7 +17,7 @@ class TestHomeView(TestCase):
 
     def test_use_right_template(self):
         response = self.client.get(self.unique_url)
-        self.assertTemplateUsed(response, "just_eating_home.html")
+        self.assertTemplateUsed(response, "just_eating_index.html")
 
     def test_display_weekday(self):
         """
