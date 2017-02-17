@@ -11,7 +11,7 @@ import os
 import unittest
 import shutil
 
-from articles.forms import BaseSearchForm
+from articles.forms import BaseSearchForm,ArticleForm
 from articles.models import Article
 from my_constant import const
 from django.conf import settings
@@ -348,7 +348,7 @@ class ArticlesSearchViewTest(TestCase):
         self.assertIsInstance(response.context["form"], BaseSearchForm)
 
     def test_form_input_not_exist_title(self):
-        form = BaseSearchForm(data={"title": ""})
+        form = ArticleForm(data={"title": ""})
         self.assertEqual(form.errors["title"], [const.EMPTY_ARTICLE_ERROR])
 
     def test_view_passes_form_to_template(self):

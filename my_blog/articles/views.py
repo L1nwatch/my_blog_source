@@ -194,7 +194,7 @@ def do_articles_search(request):
         """
         if my_form.is_valid() is True:
             return True
-        elif len(my_form.errors) == 1 and "具有 Title 的 Article 已存在。" in str(my_form.errors):
+        elif len(my_form.errors) == 1 and re.search("具有.*的.*已存在", str(my_form.errors)):
             return True
         return False
 

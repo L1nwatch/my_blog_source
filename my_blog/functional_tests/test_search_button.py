@@ -41,7 +41,7 @@ class TestSearchButton(FunctionalTest):
         search_button.send_keys("不应该有这篇文章的存在\n")
 
         # 发现搜索结果为: 没有相关文章题目
-        self.assertIn("没有相关文章题目", self.browser.page_source)
+        self.assertIn(const.EMPTY_ARTICLE_ERROR, self.browser.page_source)
 
     def test_can_search_content(self):
         """
