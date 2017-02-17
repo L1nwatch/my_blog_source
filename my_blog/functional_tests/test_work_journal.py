@@ -187,6 +187,18 @@ class TestWorkJournalSearch(FunctionalTest):
         self.assertNotRegex(self.browser.page_source, "文章数")
         self.assertRegex(self.browser.page_source, "日记数")
 
+    def test_search_no_exist_journal(self):
+        # 按日期搜索测试
+        today = datetime.datetime.today()
+        tomorrow = today + datetime.timedelta(days=1)
+
+        # Y 知道站长明天的日记肯定还没写, 于是搜索这个
+        search_button = self.browser.find_element_by_id("id_search_work_journal")
+        search_button.send_keys("{}-{}-{}\n".format(tomorrow.year, tomorrow.month, tomorrow.day))
+
+        # 显示找不到
+        self.assertIn(const.EMPTY_ARTICLE_ERROR, self.browser.page_source)
+
 
 class Test404Page(FunctionalTest):
     unique_url = "/work_journal/1994-04-06/"

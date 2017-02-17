@@ -256,6 +256,17 @@ class JournalSearchViewTest(BaseCommonTest):
                                                                      journal.date.day)})
         self.assertContains(response, journal.title)
 
+    def test_search_no_exist_date_journal(self):
+        """
+        搜索不存在日记的日期时, 应该跑去 404 页面
+        """
+        today = datetime.datetime.today()
+
+        response = self.client.post(self.unique_url, data={"title": "{}-{}-{}".format(today.year,
+                                                                                      today.month,
+                                                                                      today.day)})
+        self.assertContains(response, const.EMPTY_ARTICLE_ERROR)
+
 
 @override_settings(UPDATE_TIME_LIMIT=0.1)
 @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "const.SLOW_CONNECT_DEBUG 值为 True 才表示要进行 git 测试")
@@ -477,6 +488,7 @@ class RedirectViewTest(BaseCommonTest):
         """
         response = self.client.get(self.unique_url.format("1994-04-06"))
         self.assertIsInstance(response.context["form"], JournalForm)
+
 
 if __name__ == "__main__":
     pass

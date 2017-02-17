@@ -155,7 +155,12 @@ def search_journal_by_date(date):
     """
     year, month, day = re.findall("(\d{4})-(\d{1,2})-(\d{1,2})", date)[0]
     year, month, day = int(year), int(month), int(day)
-    result = Journal.objects.get(date=datetime.datetime(year, month, day))
+    result = set()
+
+    try:
+        result.add(Journal.objects.get(date=datetime.datetime(year, month, day)))
+    except Journal.DoesNotExist:
+        pass
     return result
 
 
@@ -209,18 +214,18 @@ def do_journals_search(request):
 
             if re.match("\d{4}-\d{1,2}-\d{1,2}", search_text):
                 # 按日期来搜索
-                article_list = [search_journal_by_date(search_text)]
+                journal_list = search_journal_by_date(search_text)
             else:
                 # 按关键词来搜索
                 keywords = set(search_text.split(" "))
                 # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
-                article_list = __search_keyword_in_journals(keywords)
+                journal_list = __search_keyword_in_journals(keywords)
             logger.info("ip: {} 搜索: {}"
                         .format(get_ip_from_django_request(request), form.data["title"]))
 
             context_data = _get_context_data(
-                {'post_list': create_search_result(article_list, keywords, "work_journal"),
+                {'post_list': create_search_result(journal_list, keywords, "work_journal"),
                  'error': None, "form": form})
-            context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(article_list) == 0 else False
+            context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(journal_list) == 0 else False
 
             return context_data
