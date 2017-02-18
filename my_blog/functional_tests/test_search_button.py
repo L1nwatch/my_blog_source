@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.18 添加测试, 要求首页既能搜索文章又能搜索日记
 2017.01.27 添加搜索时显示对应内容的测试相关代码
 2016.10.29 将搜索按钮的测试分离出来, 成为一个单独的测试文件
 2016.10.04 更新一下关于首页搜索按钮的测试, 现在要求能够搜索各个文章的标题
@@ -19,6 +20,7 @@ class TestSearchButton(FunctionalTest):
 
         # 创建测试数据
         self._create_articles_test_db_data()
+        self._create_work_journal_test_db_data()
 
     def test_can_search_title(self):
         """
@@ -29,7 +31,7 @@ class TestSearchButton(FunctionalTest):
         self.browser.get(self.server_url)
         search_button = self.browser.find_element_by_id("id_search")
 
-        # 看着首页右边已经存在的文章, 随便打了一个进去, 然后按下回车键
+        # Y 知道某篇已经存在的文章, 随便打了一个进去, 然后按下回车键
         newest_article = Article.objects.first()
         search_button.send_keys(newest_article.title + "\n")
 
@@ -82,6 +84,7 @@ class TestSearchButton(FunctionalTest):
 
     def test_search_result_display(self):
         """
+        2017.02.18 左下角显示的不只是文章数, 还有日记数
         测试搜索的结果, 应该显示对应的文章及对应到的搜索内容
         """
         # Y 打开首页, 看到了搜索按钮
@@ -102,6 +105,25 @@ class TestSearchButton(FunctionalTest):
 
         # 显示对应搜索结果
         self.assertIn("test markdown1", search_result)
+
+        # 左下角显示的标题是文章数 + 日记数
+        sidebar = self.browser.find_element_by_id("id_sidebar").text
+        self.assertIn("文章+日记数", sidebar)
+
+    def test_can_search_article_and_journal(self):
+        """
+        测试主页的搜索既能搜索文章又能搜索日记
+        """
+        # Y 打开首页, 看到了搜索按钮
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+
+        # Y 知道 test 这个关键词在文章和日记中都用到了, 于是搜索这个关键词
+        search_button.send_keys("test\n")
+
+        # Y 看见文章和日记都被搜索了出来
+        self.assertIn("article_with_markdown", self.browser.page_source)
+        self.assertIn("2017-02-08 任务情况总结", self.browser.page_source)
 
 
 if __name__ == "__main__":

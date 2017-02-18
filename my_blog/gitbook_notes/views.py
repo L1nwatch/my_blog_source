@@ -27,4 +27,4 @@ def update_gitbook_codes(request):
             # 如果有 git 过则执行更新操作
             command = "cd {} && git reset --hard && git pull".format(os.path.join(notes_git_path, gitbook_name))
         os.system(command)
-    return articles.views.home(request)
+    return articles.views.home_view(request)

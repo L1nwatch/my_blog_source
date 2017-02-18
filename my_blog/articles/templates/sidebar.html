@@ -44,7 +44,9 @@
         <nav class="nav">
             <ul class="nav-list">
                 <li><label>
-                    {% if articles_numbers %}
+                    {% if total_numbers %}
+                        文章+日记数: {{ total_numbers }}
+                    {% elif articles_numbers %}
                         文章数: {{ articles_numbers }}
                     {% elif journals_numbers %}
                         日记数: {{ journals_numbers }}

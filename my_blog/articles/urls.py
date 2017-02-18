@@ -10,9 +10,9 @@ __author__ = '__L1n__w@tch'
 
 urlpatterns = [
     url(r"^(?P<article_id>\d+)/$", articles.views.article_display, name="detail"),
-    url(r'^archives/$', articles.views.archives, name='archives'),
-    url(r'^about_me/$', articles.views.about_me, name='about_me'),
-    url(r'^tag(?P<tag>\w+)/$', articles.views.search_tag, name='search_tag'),
+    url(r'^archives/$', articles.views.archives_view, name='archives'),
+    url(r'^about_me/$', articles.views.about_me_view, name='about_me'),
+    url(r'^tag(?P<tag>\w+)/$', articles.views.search_tag_view, name='search_tag'),
     url(r'^update_notes/$', articles.views.update_notes, name='update_notes'),
 ]
 

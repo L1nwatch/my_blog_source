@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.18 增加首页搜索的测试
 2017.02.11 不断强化搜索功能
 2017.02.08 重构, 将原先所有 ArticleForm 改为 BaseSearchForm
 2017.01.28 加强了搜索结果显示
@@ -10,14 +11,18 @@
 import os
 import unittest
 import shutil
+import datetime
 
-from articles.forms import BaseSearchForm,ArticleForm
+from articles.forms import BaseSearchForm, ArticleForm
 from articles.models import Article
-from my_constant import const
-from django.conf import settings
-from django.test import TestCase, override_settings
 from articles.views import _parse_markdown_file, get_right_content_from_file, _get_id_from_markdown_html
 from articles.templatetags.custom_filter import custom_markdown
+
+from work_journal.models import Journal
+from my_constant import const
+
+from django.conf import settings
+from django.test import TestCase, override_settings
 
 __author__ = '__L1n__w@tch'
 
@@ -72,7 +77,7 @@ class ArticleDisplayViewTest(TestCase):
         self.assertTemplateUsed(response, "article.html")
 
         # 测试是否有将 form 传递给模板
-        self.assertIsInstance(response.context["form"], BaseSearchForm)
+        self.assertIsInstance(response.context["form"], ArticleForm)
 
     def test_markdown_parse(self):
         """
@@ -154,7 +159,7 @@ class ArchivesViewTest(TestCase):
         测试是否有将 form 传递给模板
         """
         response = self.client.get(self.unique_url)
-        self.assertIsInstance(response.context["form"], BaseSearchForm)
+        self.assertIsInstance(response.context["form"], ArticleForm)
 
 
 class SearchTagViewTest(TestCase):
@@ -180,7 +185,7 @@ class SearchTagViewTest(TestCase):
         测试是否有将 form 传递给模板
         """
         response = self.client.get(self.unique_url.format("just_a_test"))
-        self.assertIsInstance(response.context["form"], BaseSearchForm)
+        self.assertIsInstance(response.context["form"], ArticleForm)
 
 
 @override_settings(UPDATE_TIME_LIMIT=0.1)
@@ -341,11 +346,12 @@ class ArticlesSearchViewTest(TestCase):
 
     def test_for_invalid_input_passes_form_to_template(self):
         response = self.client.post(self.unique_url, data={"title": ""})
+        # 此时应该是返回到首页了
         self.assertIsInstance(response.context["form"], BaseSearchForm)
 
     def test_for_valid_input_passes_form_to_template(self):
         response = self.client.post(self.unique_url, data={"title": "不应该有这篇文章的"})
-        self.assertIsInstance(response.context["form"], BaseSearchForm)
+        self.assertIsInstance(response.context["form"], ArticleForm)
 
     def test_form_input_not_exist_title(self):
         form = ArticleForm(data={"title": ""})
@@ -356,6 +362,7 @@ class ArticlesSearchViewTest(TestCase):
         测试是否有将 form 传递给模板
         """
         response = self.client.get(self.unique_url)
+        # GET 请求, 到首页, 应该是 BaseForm
         self.assertIsInstance(response.context["form"], BaseSearchForm)
 
     def test_valid_input_will_get_response_using_right_template(self):
@@ -520,6 +527,31 @@ class ArticlesSearchViewTest(TestCase):
 
         # 能搜索到文章
         self.assertContains(response, test_article.title)
+
+
+class BaseSearchViewTest(TestCase):
+    unique_url = "/search/search_type=all"
+
+    def test_for_valid_input_passes_form_to_template(self):
+        """
+        测试 form 使用正确
+        """
+        response = self.client.post(self.unique_url, data={"title": "不应该有这篇文章的"})
+        self.assertIsInstance(response.context["form"], BaseSearchForm)
+
+    def test_can_search_articles_and_journals(self):
+        # 创建测试数据
+        journal = Journal.objects.create(title="test_journal", date=datetime.datetime.today(), content="test journal")
+        article = Article.objects.create(title="test_article", content="test_article")
+
+        # 测试搜索
+        response = self.client.post(self.unique_url, data={"title": "test"})
+
+        # 能搜索到文章
+        self.assertContains(response, article.title)
+
+        # 能搜索到日记
+        self.assertContains(response, journal.title)
 
 
 if __name__ == "__main__":

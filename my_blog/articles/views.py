@@ -10,7 +10,7 @@ from django.core.paginator import Paginator
 from django.conf import settings
 
 from .models import Article
-from .forms import ArticleForm
+from .forms import ArticleForm, BaseSearchForm
 from articles.templatetags.custom_filter import custom_markdown_for_tree_parse
 from work_journal.views import do_journals_search
 from articles.common_help_function import *
@@ -25,9 +25,9 @@ LAST_UPDATE_TIME = None
 logger = logging.getLogger("my_blog.articles.views")
 
 
-def _get_context_data(update_data=None):
+def get_article_context_data(update_data=None):
     """
-    定制要发送给模板的相关数据
+    定制要发送给 article 相关模板的数据
     :param update_data: 以需要发送给 base.html 的数据为基础, 需要额外发送给模板的数据
     :return: dict(), 发送给模板的全部数据
     """
@@ -39,10 +39,23 @@ def _get_context_data(update_data=None):
     return data_return_to_base_template
 
 
-def home(request):
+def get_base_context_data(request):
+    """
+    定制基础的模版数据
+    :return: dict(), 发送给模板的全部数据
+    """
+    data_return_to_base_template = {"form": BaseSearchForm()}
+    if request.method == "POST":
+        data_return_to_base_template["form"] = BaseSearchForm(request.POST)
+    elif request.method == "GET":
+        data_return_to_base_template["form"] = BaseSearchForm(request.GET)
+    return data_return_to_base_template
+
+
+def home_view(request):
     logger.info("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
 
-    return render(request, 'new_home.html', _get_context_data())
+    return render(request, 'new_home.html', get_base_context_data(request))
 
 
 def article_display(request, article_id):
@@ -60,7 +73,7 @@ def article_display(request, article_id):
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, "article.html", _get_context_data({"post": db_data, "tags": tags, "toc": toc_data}))
+    return render(request, "article.html", get_article_context_data({"post": db_data, "tags": tags, "toc": toc_data}))
 
 
 def _get_id_from_markdown_html(markdown_html, tag_content):
@@ -76,30 +89,30 @@ def _get_id_from_markdown_html(markdown_html, tag_content):
         return result
 
 
-def archives(request):
+def archives_view(request):
     logger.info("ip: {} 查看文章列表".format(get_ip_from_django_request(request)))
     try:
         post_list = Article.objects.all()
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, 'archives.html', _get_context_data({'post_list': post_list, 'error': False}))
+    return render(request, 'archives.html', get_article_context_data({'post_list': post_list, 'error': False}))
 
 
-def about_me(request):
+def about_me_view(request):
     logger.info("ip: {} 查看 about me".format(get_ip_from_django_request(request)))
 
-    return render(request, 'about_me.html', _get_context_data())
+    return render(request, 'about_me.html', get_base_context_data(request))
 
 
-def search_tag(request, tag):
+def search_tag_view(request, tag):
     logger.info("ip: {} 搜索 tag: {}".format(get_ip_from_django_request(request), tag))
     try:
         post_list = Article.objects.filter(category__iexact=tag)  # contains
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, 'tag.html', _get_context_data({'post_list': post_list}))
+    return render(request, 'tag.html', get_article_context_data({'post_list': post_list}))
 
 
 def _parse_markdown_file(markdown_content):
@@ -203,11 +216,11 @@ def do_articles_search(request):
         keywords = set(form.data["title"].split(" "))
         # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
         article_list = __search_keyword_in_articles(keywords)
-        logger.info("ip: {} 搜索: {}"
+        logger.info("ip: {} 搜索文章: {}"
                     .format(get_ip_from_django_request(request), form.data["title"]))
 
-        context_data = _get_context_data({'post_list': create_search_result(article_list, keywords, "articles"),
-                                          'error': None, "form": form})
+        context_data = get_article_context_data({'post_list': create_search_result(article_list, keywords, "articles"),
+                                                 'error': None, "form": form})
         context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(article_list) == 0 else False
 
         return context_data
@@ -215,25 +228,39 @@ def do_articles_search(request):
 
 def blog_search(request, search_type="all"):
     """
+    2017.02.18 实现日记和文章同时搜索的功能
     2017.02.08 要重构视图搜索函数, 支持搜索指定类型的数据, 比如说只搜索文章, 只搜索日记等
     2017.01.27 重构搜索视图函数, 现在要显示搜索结果等的
     2016.10.11 添加能够搜索文章内容的功能
     :param search_type: str(), 指定要搜索哪部分内容, 比如 "all" 表示全部, "articles" 表示只搜文章, "journals" 表示只搜日记
     :param request: django 传给视图函数的参数 request, 包含 HTTP 请求的各种信息
     """
-    # TODO: 同时搜索文章和日记的还没实现
-
     if request.method == "POST":
-        if search_type == "articles" or search_type == "all":
-            context_data = do_articles_search(request)
-            if context_data is not None:
-                return render(request, 'search_result.html', context_data)
-        if search_type == "journals" or search_type == "all":
-            context_data = do_journals_search(request)
-            if context_data is not None:
-                return render(request, 'search_result.html', context_data)
+        context_data = None
+        if search_type == "all":
+            context_data = {"form": BaseSearchForm(data=request.POST), "total_numbers": 0}
 
-    return home(request)
+            article_search_result = do_articles_search(request)
+            if article_search_result is not None:
+                context_data["total_numbers"] += article_search_result["articles_numbers"]
+                context_data["post_list"] = article_search_result["post_list"]
+
+            journal_search_result = do_journals_search(request)
+            if journal_search_result is not None:
+                context_data["total_numbers"] += journal_search_result["journals_numbers"]
+                context_data["post_list"] += journal_search_result["post_list"]
+
+            if context_data["total_numbers"] == 0:
+                context_data["error"] = True
+
+        elif search_type == "articles":
+            context_data = do_articles_search(request)
+        elif search_type == "journals":
+            context_data = do_journals_search(request)
+        if context_data is not None and len(context_data) > 0:
+            return render(request, 'search_result.html', context_data)
+
+    return home_view(request)
 
 
 def update_notes(request=None):
@@ -297,7 +324,7 @@ def update_notes(request=None):
     now = datetime.datetime.today()
     if LAST_UPDATE_TIME is not None and (now - LAST_UPDATE_TIME).total_seconds() < settings.UPDATE_TIME_LIMIT:
         # TODO: 这里只是前台的判断无效了, 后台还是有判断的
-        return home(request) if request is not None else None
+        return home_view(request) if request is not None else None
     else:
         LAST_UPDATE_TIME = now
 
@@ -319,4 +346,4 @@ def update_notes(request=None):
         if note_in_db_full_name not in notes_in_git:
             each_note_in_db.delete()
 
-    return archives(request) if request is not None else None
+    return archives_view(request) if request is not None else None
