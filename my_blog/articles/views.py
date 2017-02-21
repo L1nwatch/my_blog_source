@@ -32,23 +32,26 @@ def get_article_context_data(update_data=None):
     :return: dict(), 发送给模板的全部数据
     """
     data_return_to_base_template = {"form": ArticleForm(), "is_valid_click": "True",
-                                    "articles_numbers": len(Article.objects.all())}
+                                    "articles_numbers": len(Article.objects.all()), "current_type": "articles"}
     if update_data is not None:
         data_return_to_base_template.update(update_data)
 
     return data_return_to_base_template
 
 
-def get_base_context_data(request):
+def get_base_context_data(request, update_data=None):
     """
     定制基础的模版数据
     :return: dict(), 发送给模板的全部数据
     """
-    data_return_to_base_template = {"form": BaseSearchForm()}
+    data_return_to_base_template = {"form": BaseSearchForm(), "current_type": "all"}
     if request.method == "POST":
         data_return_to_base_template["form"] = BaseSearchForm(request.POST)
     elif request.method == "GET":
         data_return_to_base_template["form"] = BaseSearchForm(request.GET)
+
+    if update_data is not None:
+        data_return_to_base_template.update(update_data)
     return data_return_to_base_template
 
 
@@ -238,7 +241,7 @@ def blog_search(request, search_type="all"):
     if request.method == "POST":
         context_data = None
         if search_type == "all":
-            context_data = {"form": BaseSearchForm(data=request.POST), "total_numbers": 0}
+            context_data = get_base_context_data(request, {"total_numbers": 0})
 
             article_search_result = do_articles_search(request)
             if article_search_result is not None:
@@ -250,8 +253,8 @@ def blog_search(request, search_type="all"):
                 context_data["total_numbers"] += journal_search_result["journals_numbers"]
                 context_data["post_list"] += journal_search_result["post_list"]
 
-            if context_data["total_numbers"] == 0:
-                context_data["error"] = True
+            if len(context_data["post_list"]) <= 0:
+                context_data["error"] = const.EMPTY_ARTICLE_ERROR
 
         elif search_type == "articles":
             context_data = do_articles_search(request)

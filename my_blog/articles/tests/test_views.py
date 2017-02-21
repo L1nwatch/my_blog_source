@@ -553,6 +553,20 @@ class BaseSearchViewTest(TestCase):
         # 能搜索到日记
         self.assertContains(response, journal.title)
 
+    def test_search_not_exist_keyword(self):
+        response = self.client.post(self.unique_url, data={"title": "随便输入的一点什么东西"})
+
+        self.assertContains(response, const.EMPTY_ARTICLE_ERROR)
+
+    def test_second_search_still_same_url(self):
+        """
+        测试搜索界面再次搜索的时候依旧是 all 搜索
+        """
+        response = self.client.post(self.unique_url, data={"title": "随便输入的一点什么东西"})
+
+        self.assertNotContains(response, ArticlesSearchViewTest.unique_url)
+        self.assertContains(response, self.unique_url)
+
 
 if __name__ == "__main__":
     pass

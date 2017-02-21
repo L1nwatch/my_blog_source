@@ -16,7 +16,7 @@ def _get_context_data(update_data=None):
     :return: dict(), 发送给模板的全部数据
     """
     data_return_to_base_template = {"form": JournalForm(), "is_valid_click": "True",
-                                    "journals_numbers": len(Journal.objects.all())}
+                                    "journals_numbers": len(Journal.objects.all()), "current_type": "journals"}
     if update_data is not None:
         data_return_to_base_template.update(update_data)
 

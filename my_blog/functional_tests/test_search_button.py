@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.21 手动使用过程中发现两个毛病, 补充一下测试代码
 2017.02.18 添加测试, 要求首页既能搜索文章又能搜索日记
 2017.01.27 添加搜索时显示对应内容的测试相关代码
 2016.10.29 将搜索按钮的测试分离出来, 成为一个单独的测试文件
@@ -10,6 +11,8 @@
 from .base import FunctionalTest
 from articles.models import Article
 from my_constant import const
+
+from selenium.common.exceptions import NoSuchElementException
 
 __author__ = '__L1n__w@tch'
 
@@ -122,6 +125,48 @@ class TestSearchButton(FunctionalTest):
         search_button.send_keys("test\n")
 
         # Y 看见文章和日记都被搜索了出来
+        self.assertIn("article_with_markdown", self.browser.page_source)
+        self.assertIn("2017-02-08 任务情况总结", self.browser.page_source)
+
+    def test_search_nothing_display(self):
+        """
+        测试搜索不到的时候显示的内容
+        """
+        # Y 打开首页, 看到了搜索按钮
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+
+        # Y 随便打了个关键词, 看能搜索出什么
+        search_button.send_keys("随便打了什么肯定式不会搜索到的才对的啊\n")
+
+        # Y 看见了提示信息, 提示什么都搜不到
+        self.assertIn(const.EMPTY_ARTICLE_ERROR, self.browser.page_source)
+
+        # 同时也确实找不到文章标题信息等
+        with self.assertRaises(NoSuchElementException):
+            self.browser.find_element_by_id("id_search_result_title")
+
+    def test_search_again(self):
+        """
+        发现第一次搜索的时候确实是链接到 all, 但是再次搜索的时候又变成 articles 了
+        正确的情况应该两次都是 all 才对
+        """
+        # Y 打开首页, 看到了搜索按钮
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+
+        # Y 随便打了个关键词, 发现页面跳转了
+        search_button.send_keys("随便打了什么肯定式不会搜索到的才对的啊\n")
+        search_url = self.browser.current_url
+        self.assertNotEqual(search_url, self.server_url)
+
+        # Y 再次进行搜索, 这回输入了一个文章和日记里面都有的关键词
+        search_button = self.browser.find_element_by_id("id_search")
+        search_button.clear()
+        search_button.send_keys("test\n")
+
+        # 发现对应的日记和文章都被搜索出来了, 而且 url 保持不变
+        self.assertEqual(search_url, self.browser.current_url)
         self.assertIn("article_with_markdown", self.browser.page_source)
         self.assertIn("2017-02-08 任务情况总结", self.browser.page_source)
 
