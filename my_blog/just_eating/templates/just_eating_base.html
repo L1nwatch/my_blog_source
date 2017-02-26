@@ -1,0 +1,61 @@
+{% load custom_filter %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>吃啥</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static "just_eating/style.css" %}">
+    <link rel="stylesheet" href="{% static "" %}">
+    <link rel="stylesheet" href="{% static "just_eating/meanu_bar_style.css" %}">
+</head>
+
+<body>
+
+<div class="mm-menu">
+    <a id="id_home_page" href="{% url "home" %}" class="mm-item">
+        <span class="fontawesome-home"></span>
+    </a>
+    <a id="id_home_eating" href="{% url "just_eating" eating_place="home" %}" class="mm-item">
+        <span class="fontawesome-signin"></span>
+    </a>
+    <a id="id_school_eating" href="{% url "just_eating" eating_place="school" %}" class="mm-item">
+        <span class="fontawesome-flag"></span>
+    </a>
+    <!-- building 图标也不错-->
+</div><!--/mm-menu-->
+
+<div>
+    <h1>
+        <span id="id_eating_place_name" class="blue">&lt;</span>{{ eating_place }}<span class="blue">&gt;</span> <span
+            class="yellow">Eating</span></h1>
+
+    <table class="container">
+        <thead>
+        <tr>
+            {% for each_eating_time in eating_times %}
+                <th><h1>{{ each_eating_time }}</h1></th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        {% for each_eating_day in eating_days %}
+            <tr>
+                <td>{{ each_eating_day.day_time }}</td>
+                <td><label>{{ each_eating_day.morning|menu_format }}</label></td>
+                <td><label>{{ each_eating_day.noon|menu_format }}</label></td>
+                <td><label>{{ each_eating_day.night|menu_format }}</label></td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+<script src='{% static "jquery.min.js" %}'></script>
+<script src="{% static "just_eating/menu_bar.js" %}"></script>
+</html>

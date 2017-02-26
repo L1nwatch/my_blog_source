@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.02.26 添加一下吃饭界面的 CSS 测试
 2017.01.27 处理一下表格解析错误的问题
 2017.01.27 处理一下 ``` 后带空格会影响格式的问题, 最后发现是原来的 markdown 文件不标准导致的, 算了, 就当添加一个 markdown 显示测试吧
 2016.10.28 添加关于两个时间的测试, 包括文章的创建时间以及文章的更新时间
@@ -18,7 +19,7 @@ import unittest
 __author__ = '__L1n__w@tch'
 
 
-class LayoutStylingTest(FunctionalTest):
+class HomePageLayoutStylingTest(FunctionalTest):
     def test_home_page_button_at_right_position(self):
         """
         不管后期如何调动, 首页按钮肯定要么是在左边中间的第一个位置, 要么是在上面中间的第一个位置
@@ -39,6 +40,20 @@ class LayoutStylingTest(FunctionalTest):
         home_page_button = self.browser.find_element_by_id("id_home_page")
         self.assertAlmostEqual(home_page_button.location["x"], 0, delta=5)
         self.assertAlmostEqual(home_page_button.location["y"], 0, delta=5)
+
+
+class JustEatingLayoutStylingTest(FunctionalTest):
+    def test_title_at_right_position(self):
+        """
+        吃饭的标题, 比如说 "Home", "School" 应该在正中间
+        """
+        # Y 访问吃饭首页
+        self.browser.get("{}/{}".format(self.server_url, "just_eating"))
+
+        # Y 看到吃饭的标题被放置在页面偏上正中间的位置
+        title = self.browser.find_element_by_id("id_eating_place_name")
+        self.assertAlmostEqual(title.location["x"], 483, delta=5)
+        self.assertAlmostEqual(title.location["y"], 22, delta=5)
 
 
 class ArticleTimeInfoTest(FunctionalTest):

@@ -42,6 +42,9 @@ const.MARKDOWN_TREE_STRUCTURE = namedtuple("toc_tree", ["title", "id", "child"])
 # 日记页面
 const.JOURNAL_NOT_FOUND = "(●￣(ｴ)￣●)那天居然没写日记(O_o)??"
 
+# 吃货页面
+const.EATING_MENU_STRUCTURE = namedtuple("eating_menu", ["day_time", "morning", "noon", "night"])
+
 # 调试选项
 # git 提交前需要改为 False or True, 要不然网站会跑失败的...
 const.SLOW_CONNECT_DEBUG = False  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False

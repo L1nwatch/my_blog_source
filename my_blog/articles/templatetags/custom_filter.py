@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """ 配置 markdown 等给模板使用的 filter
+2017.02.26 添加一个菜单格式化器
 2017.02.11 需要给前端使用, 给特定关键字添加标签
 2017.01.27 添加表格解析的支持, 添加 bleach 库用于清除不安全的 html 代码
 """
@@ -84,6 +85,23 @@ def remove_code_tag_in_h_tags(html_content):
     while n > 0:
         result, n = remove_code_tag.subn("\g<content>", result)
     return result
+
+
+@register.filter(is_safe=True)
+@stringfilter
+def menu_format(raw_data):
+    food_lists = raw_data.split("\n")
+    href_re = re.compile("(.*)\?href=(.*)")
+    result_list = list()
+
+    for each_food in food_lists:
+        if "?href=" in each_food:
+            result = href_re.findall(each_food)[0]
+            result_list.append('<a href="{}">{}</a>'.format(result[1], result[0]))
+        elif each_food != "":
+            result_list.append('<a href="#">{}</a>'.format(each_food))
+
+    return mark_safe("<br/>".join(result_list))
 
 
 # def custom_markdown(value):
