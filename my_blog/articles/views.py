@@ -55,6 +55,12 @@ def get_base_context_data(request, update_data=None):
     return data_return_to_base_template
 
 
+def temp(request):
+    a = int(request.GET.get("a"))
+    b = int(request.GET.get("b"))
+    return render(request, "temp.html", {"result": a * b})
+
+
 def home_view(request):
     logger.info("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
 

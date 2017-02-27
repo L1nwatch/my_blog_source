@@ -40,8 +40,6 @@ def create_school_menu():
 
 def just_eating_home_view(request, eating_place):
     eating_times = ["", "早餐", "午餐", "晚餐"]
-    eating_place_name = None
-    menu = list()
 
     if eating_place == "" or eating_place == "home":
         menu = create_home_menu()
