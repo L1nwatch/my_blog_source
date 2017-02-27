@@ -25,13 +25,13 @@ def create_home_menu():
 def create_school_menu():
     school_menu = list()
 
-    monday = const.EATING_MENU_STRUCTURE("周一", "-", "-", "-")
+    monday = const.EATING_MENU_STRUCTURE("周一", "丁香山东杂粮煎饼\n豆浆", "-", "-")
     tuesday = const.EATING_MENU_STRUCTURE("周二", "-", "-", "-")
     wednesday = const.EATING_MENU_STRUCTURE("周三", "-", "-", "-")
     thursday = const.EATING_MENU_STRUCTURE("周四", "-", "-", "-")
     friday = const.EATING_MENU_STRUCTURE("周五", "-", "-", "-")
     saturday = const.EATING_MENU_STRUCTURE("周六", "-", "-", "包菜肉片")
-    sunday = const.EATING_MENU_STRUCTURE("周日", "海棠卤肉卷", "微辣香锅", "-")
+    sunday = const.EATING_MENU_STRUCTURE("周日", "海棠卤肉卷", "微辣香锅", "海棠川味盐煎肉")
     for each_day in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]:
         school_menu.append(each_day)
 
