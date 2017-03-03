@@ -28,8 +28,8 @@ def create_school_menu():
     monday = const.EATING_MENU_STRUCTURE("周一", "丁香山东杂粮煎饼\n豆浆", "香干炒肉", "蒙古烤肉")
     tuesday = const.EATING_MENU_STRUCTURE("周二", "竹园手抓饼\n牛奶", "川渝私房菜腐竹炒肉", "美食坊快餐")
     wednesday = const.EATING_MENU_STRUCTURE("周三", "海棠山东杂粮煎饼\n豆浆", "海棠川味椒盐里脊", "小米鸡排饭")
-    thursday = const.EATING_MENU_STRUCTURE("周四", "照烧鸡腿饼\n豆浆", "-", "-")
-    friday = const.EATING_MENU_STRUCTURE("周五", "-", "-", "-")
+    thursday = const.EATING_MENU_STRUCTURE("周四", "照烧鸡腿饼\n豆浆", "丁香农家小炒肉", "新综快餐")
+    friday = const.EATING_MENU_STRUCTURE("周五", "安仔包鸡肉\n鲜汁肉\n豆浆", "-", "-")
     saturday = const.EATING_MENU_STRUCTURE("周六", "-", "-", "包菜肉片")
     sunday = const.EATING_MENU_STRUCTURE("周日", "海棠卤肉卷", "微辣香锅", "海棠川味盐煎肉")
     for each_day in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]:
