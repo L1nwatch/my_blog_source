@@ -179,7 +179,7 @@ def update_gitbook_codes(request=None):
             if each_note_in_db.title not in notes_in_git:
                 each_note_in_db.delete()
 
-    raise Http404
+    return redirect("/")
 
 
 def do_gitbooks_search(request):

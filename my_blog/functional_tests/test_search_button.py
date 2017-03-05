@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.05 添加 gitbook 的测试代码
 2017.02.21 手动使用过程中发现两个毛病, 补充一下测试代码
 2017.02.18 添加测试, 要求首页既能搜索文章又能搜索日记
 2017.01.27 添加搜索时显示对应内容的测试相关代码
@@ -24,6 +25,7 @@ class TestSearchButton(FunctionalTest):
         # 创建测试数据
         self._create_articles_test_db_data()
         self._create_work_journal_test_db_data()
+        self.create_gitbook_test_db_data()
 
     def test_can_search_title(self):
         """
@@ -113,9 +115,9 @@ class TestSearchButton(FunctionalTest):
         sidebar = self.browser.find_element_by_id("id_sidebar").text
         self.assertIn("文章+日记数", sidebar)
 
-    def test_can_search_article_and_journal(self):
+    def test_can_search_among_article_journals_gitbooks(self):
         """
-        测试主页的搜索既能搜索文章又能搜索日记
+        测试主页的搜索既能搜索文章又能搜索日记还能搜索 gitbooks
         """
         # Y 打开首页, 看到了搜索按钮
         self.browser.get(self.server_url)
@@ -124,9 +126,10 @@ class TestSearchButton(FunctionalTest):
         # Y 知道 test 这个关键词在文章和日记中都用到了, 于是搜索这个关键词
         search_button.send_keys("test\n")
 
-        # Y 看见文章和日记都被搜索了出来
+        # Y 看见文章、日记、gitbook 都被搜索了出来
         self.assertIn("article_with_markdown", self.browser.page_source)
         self.assertIn("2017-02-08 任务情况总结", self.browser.page_source)
+        self.assertIn("test_book_name/test", self.browser.page_source)
 
     def test_search_nothing_display(self):
         """

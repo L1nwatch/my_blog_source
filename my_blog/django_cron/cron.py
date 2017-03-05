@@ -1,8 +1,16 @@
+#!/bin/env python3
+# -*- coding: utf-8 -*-
+# version: Python3.X
+"""
+2017.03.05 改多线程更新变为多进程更新
+"""
+
 from django_cron import CronJobBase, Schedule
-import threading
+import multiprocessing
 
 from articles.views import update_notes
 from work_journal.views import update_journals
+from gitbook_notes.views import update_gitbook_codes
 
 import datetime
 
@@ -16,10 +24,15 @@ class AutoUpdateNotes(CronJobBase):
     @staticmethod
     def do():
         now = datetime.datetime.today()
-        notes_update_thread = threading.Thread(target=update_notes, args=())
-        journals_update_thread = threading.Thread(target=update_journals, args=())
+        jobs = list()
 
-        notes_update_thread.start()
-        journals_update_thread.start()
+        # 多进程更新
+        for func in [update_notes, update_journals, update_gitbook_codes]:
+            p = multiprocessing.Process(target=func, args=())
+            jobs.append(p)
+            p.start()
+
+        for process in jobs:
+            process.join()
 
         print("[*] [{}] {separator} 进行定时更新 {separator}".format(now, separator="*" * 30))

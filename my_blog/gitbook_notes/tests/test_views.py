@@ -41,13 +41,8 @@ class UpdateGitBookCodesViewTest(TestCase):
         """
         super().setUp()
 
-        # TODO: 通过测试后删除并取消 tearDown 的注释
+        # 点击更新按钮
         self.client.get(self.unique_url)
-
-        # 通过判断文件夹是否存在, 如果不存在则点击更新按钮
-        for each_gitbook_name in self.gitbook_category_dict:
-            if not os.path.exists(os.path.join(self.notes_git_path, each_gitbook_name)):
-                self.client.get(self.unique_url)
 
         # 检查是否更新成功, 更新成功的标志: 每个文件夹都存在, 而且其文件夹下还有 .git
         for each_gitbook_name in self.gitbook_category_dict:
@@ -55,6 +50,12 @@ class UpdateGitBookCodesViewTest(TestCase):
                 os.path.exists(
                     os.path.join(self.notes_git_path, each_gitbook_name, ".git")
                 ), "找不到 .git")
+
+    @classmethod
+    def tearDownClass(cls):
+        # 清除 git clone 到的文件
+        if os.path.exists(cls.notes_git_path):
+            shutil.rmtree(cls.notes_git_path)
 
     def test_can_save_right_book_name(self):
         """
@@ -122,15 +123,6 @@ class UpdateGitBookCodesViewTest(TestCase):
         # 根目录下的 readme.md 应该是会保存到数据库中的, 而且搜 readme.md 应该出来不止一个
         readme_md = GitBook.objects.filter(md_file_name="readme.md")
         self.assertTrue(len(readme_md) > 1)
-
-
-
-
-        # @classmethod
-        # def tearDownClass(cls):
-        # 清除 git clone 到的文件
-        # if os.path.exists(cls.notes_git_path):
-        #     shutil.rmtree(cls.notes_git_path)
 
     def test_get_title_list_from_summary(self):
         """

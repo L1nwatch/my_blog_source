@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """ 使用 Fabric 进行自动化部署
+2017.03.05
 2017.02.10 添加配置文件读取, 将 git/username 等需要临时输入的信息用配置文件实现
 2017.01.27 突然发现自己的 fab 不会去修改 DEBUG 选项, 现在改正了, 原来是那一句话被注释掉了
 2016.10.19 修正一下 cron job 的问题, 现在可以实现每隔 5 分钟自动更新数据库了, 但是代码存在冗余, 可能以后要重构一下了
@@ -28,6 +29,7 @@ __author__ = '__L1n__w@tch'
 # 要把常量 REPO_URL 的值改成代码分享网站中你仓库的 URL
 REPO_URL = "https://github.com/L1nwatch/my_blog_source.git"
 USER_PASS_CONF = "user_pass.conf"
+GITBOOKS_CONF = "gitbooks_git.json"
 
 
 def deploy():
@@ -52,6 +54,9 @@ def deploy():
     # 更新用户名密码的配置文件
     _user_pass_file_config()
 
+    # 更新 gitbooks 链接
+    _gitbooks_config(source_folder, site_name)
+
     # 更新 const 文件
     _update_const_file(source_folder, site_name)
 
@@ -72,6 +77,29 @@ def deploy():
 
     # 定时任务
     _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder)
+
+
+def _gitbooks_config(source_folder, site_name):
+    print("[*] 即将读取 {} 下的 gitbooks 路径".format(GITBOOKS_CONF))
+
+    # 读取文件内容
+    with open(GITBOOKS_CONF, "r") as f:
+        data = f.read()
+
+    # 替换掉 constant.py 中的内容
+    const_file_path = "{source_folder}/{site_name}/my_constant.py".format(source_folder=source_folder,
+                                                                          site_name=site_name)
+
+    # 通过 re 修改 const 文件
+    with open(const_file_path, "r") as f:
+        raw_git_data = f.read()
+    raw_git_data = re.sub('const\.GITBOOK_CODES_REPOSITORY = \{[^}]*\}',
+                          'const.GITBOOK_CODES_REPOSITORY = {}'.format(data), raw_git_data)
+
+    with open(const_file_path, "w") as f:
+        f.write(raw_git_data)
+
+    print("[*] 成功将 {} 中的 gitbooks 路径更新到配置文件中")
 
 
 def _create_config_file():
