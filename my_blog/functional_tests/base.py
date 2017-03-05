@@ -6,16 +6,18 @@
 import sys
 import os
 import time
+from datetime import datetime
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import WebDriverException
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.conf import settings
+
 from articles.models import Article, Tag
 from work_journal.models import Journal
-
-from datetime import datetime
+from gitbook_notes.models import GitBook
 
 DEFAULT_WAIT = 5
 SCREEN_DUMP_LOCATION = os.path.abspath(
@@ -77,7 +79,7 @@ class FunctionalTest(StaticLiveServerTestCase):
             for ix, handle in enumerate(self.browser.window_handles):
                 self._windowid = ix
                 self.browser.switch_to.window(handle)
-                self.take_screenshot()
+                self.take_screen_shot()
                 self.dump_html()
         self.browser.quit()
         super().tearDown()
@@ -89,9 +91,9 @@ class FunctionalTest(StaticLiveServerTestCase):
                 return True
         return False
 
-    def take_screenshot(self):
+    def take_screen_shot(self):
         filename = self._get_filename() + ".png"
-        print("screenshotting to", filename)
+        print("screen_shot to", filename)
         self.browser.get_screenshot_as_file(filename)
 
     def dump_html(self):
@@ -102,11 +104,11 @@ class FunctionalTest(StaticLiveServerTestCase):
 
     def _get_filename(self):
         timestamp = datetime.now().isoformat().replace(":", ".")[:19]
-        return "{folder}/{classname}.{method}-window{windowid}-{timestamp}".format(folder=SCREEN_DUMP_LOCATION,
-                                                                                   classname=self.__class__.__name__,
-                                                                                   method=self._testMethodName,
-                                                                                   windowid=self._windowid,
-                                                                                   timestamp=timestamp)
+        return "{folder}/{class_name}.{method}-window{window_id}-{timestamp}".format(folder=SCREEN_DUMP_LOCATION,
+                                                                                     class_name=self.__class__.__name__,
+                                                                                     method=self._testMethodName,
+                                                                                     window_id=self._windowid,
+                                                                                     timestamp=timestamp)
 
     def wait_for_element_with_id(self, element_id):
         WebDriverWait(self.browser, timeout=50).until(
@@ -180,6 +182,28 @@ while True:
         Journal.objects.create(title="{}-{}-{} 任务情况总结".format(today.year, today.month, today.day),
                                content="今天的任务情况总结",
                                date=today)
+
+    @staticmethod
+    def create_gitbook_test_db_data():
+        GitBook.objects.create(
+            book_name="test_book_name",
+            href="http://{}/{}.html".format("test_book_name", "test"),
+            md_file_name="test.md",
+            title="test_book_name/test",
+            content="test content",
+        )
+
+        # 下面这份为真实存在的数据
+        with open(os.path.join(settings.BASE_DIR, "gitbook_notes", "tests", "super与init方法.md"), "r") as f:
+            content = f.read()
+        GitBook.objects.create(
+            book_name="interview_exercise",
+            href=("https://l1nwatch.gitbooks.io/interview_exercise/content/"
+                  "stackoverflow-about-Python/super%E4%B8%8Einit%E6%96%B9%E6%B3%95.html"),
+            md_file_name="super与init方法.md",
+            title="stackoverflow-about-Python/super与init方法",
+            content=content,
+        )
 
 
 if __name__ == "__main__":

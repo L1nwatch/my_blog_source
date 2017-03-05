@@ -198,6 +198,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True
         },
+        'my_blog.gitbooks.views': {
+            'handlers': ['default', 'error', "info"],
+            'level': 'DEBUG',
+            'propagate': True
+        },
     }
 }
 UPDATE_TIME_LIMIT = 30

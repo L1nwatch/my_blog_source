@@ -10,7 +10,7 @@ import just_eating.views
 __author__ = '__L1n__w@tch'
 
 urlpatterns = [
-    url(r"^/?(?P<eating_place>.*)$", just_eating.views.just_eating_home_view, name="just_eating"),
+    url(r"^(?P<eating_place>.*)$", just_eating.views.just_eating_home_view, name="just_eating"),
 ]
 
 if __name__ == "__main__":

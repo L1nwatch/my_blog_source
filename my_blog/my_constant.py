@@ -47,7 +47,7 @@ const.EATING_MENU_STRUCTURE = namedtuple("eating_menu", ["day_time", "morning", 
 
 # 调试选项
 # git 提交前需要改为 False or True, 要不然网站会跑失败的...
-const.SLOW_CONNECT_DEBUG = False  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
+const.SLOW_CONNECT_DEBUG = True  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
 
 # 搜索页面
 const.ID_SEARCH_RESULT_TITLE = "id_search_result_title"
@@ -63,14 +63,11 @@ const.JOURNALS_GIT_REPOSITORY = "https://git.oschina.net/w4tch/sxf_notes_set.git
 const.JOURNALS_GIT_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.JOURNALS_PATH_NAME)
 
 # 用来形成 GitBook 的各个仓库
-const.GITBOOK_PATH_NAME = "gitbook_notes"
+const.GITBOOK_PATH_NAME = "gitbooks"
 const.GITBOOK_CODES_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.GITBOOK_PATH_NAME)
+const.GITBOOK_USER_NAME = "l1nwatch"
 const.GITBOOK_CODES_REPOSITORY = {
-    # "interview_collect": "https://github.com/L1nwatch/interview_collect.git",
     "PythonWeb": "https://git.oschina.net/w4tch/PythonWeb.git",
-    # "it_people_healthy": "https://github.com/L1nwatch/it_people_healthy.git",
-    # "writing_solid_python_code_gitbook": "https://github.com/L1nwatch/writing_solid_python_code_gitbook.git",
-    # "CTF": "https://github.com/L1nwatch/CTF.git",
 }
 
 if __name__ == "__main__":

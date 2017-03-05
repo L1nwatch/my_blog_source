@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.05 添加 GitBook 的搜索
 2017.02.09 重构一下搜索函数, 跟日记搜索的功能合并一下
 2016.10.28 重构了一下模板传参, 封装成一个函数来处理了, 要不然每个视图都得专门处理传给模板的参数
 """
@@ -11,9 +12,11 @@ from django.conf import settings
 
 from .models import Article
 from .forms import ArticleForm, BaseSearchForm
+
 from articles.templatetags.custom_filter import custom_markdown_for_tree_parse
-from work_journal.views import do_journals_search
 from articles.common_help_function import *
+from work_journal.views import do_journals_search
+from gitbook_notes.views import do_gitbooks_search
 
 import md2py
 import datetime
@@ -246,20 +249,28 @@ def blog_search(request, search_type="all"):
             article_search_result = do_articles_search(request)
             if article_search_result is not None:
                 context_data["total_numbers"] += article_search_result["articles_numbers"]
-                context_data["post_list"] = article_search_result["post_list"]
+                context_data["post_list"] = context_data.get("post_list", list()) + article_search_result["post_list"]
 
             journal_search_result = do_journals_search(request)
             if journal_search_result is not None:
                 context_data["total_numbers"] += journal_search_result["journals_numbers"]
-                context_data["post_list"] += journal_search_result["post_list"]
+                context_data["post_list"] = context_data.get("post_list", list()) + journal_search_result["post_list"]
 
-            if len(context_data["post_list"]) <= 0:
+            gitbooks_search_result = do_gitbooks_search(request)
+            if gitbooks_search_result is not None:
+                context_data["total_numbers"] += gitbooks_search_result["gitbooks_numbers"]
+                context_data["post_list"] = context_data.get("post_list", list()) + gitbooks_search_result["post_list"]
+
+            if not context_data.get("post_list", list()):
                 context_data["error"] = const.EMPTY_ARTICLE_ERROR
 
         elif search_type == "articles":
             context_data = do_articles_search(request)
         elif search_type == "journals":
             context_data = do_journals_search(request)
+        elif search_type == "gitbooks":
+            context_data = do_gitbooks_search(request)
+
         if context_data is not None and len(context_data) > 0:
             return render(request, 'search_result.html', context_data)
 
