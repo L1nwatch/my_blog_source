@@ -37,11 +37,13 @@
             <ul class="nav-list">
                 <li><label>
                     {% if total_numbers is not None %}
-                        文章+日记数: {{ total_numbers }}
+                        笔记总数: {{ total_numbers }}
                     {% elif articles_numbers is not None %}
                         文章数: {{ articles_numbers }}
                     {% elif journals_numbers is not None %}
                         日记数: {{ journals_numbers }}
+                    {% elif gitbooks_numbers is not None %}
+                        GitBook 数: {{ gitbooks_numbers }}
                     {% endif %}
                 </label></li>
                 &nbsp
