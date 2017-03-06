@@ -91,12 +91,17 @@ def get_right_href(gitbook_name, title, md_file_name):
 def sync_database(title, gitbook_name):
     """
     进行同步数据库的操作, 即会保存最新内容, 如果是不存在的则会进行创建操作
-    :param title: str(), 要放进数据库的每一章的路径
+    :param title: str(), 要放进数据库的每一章的路径, 比如 ""
     :param gitbook_name: str(), gitbook 的名字
     :return: str(), 所操作的 title
     """
     root_path = "{}/{}".format(const.GITBOOK_CODES_PATH, gitbook_name)
-    title_save_to_db, md_file_name = str(title).rsplit("/", maxsplit=1)
+
+    if "/" in title:
+        title_save_to_db, md_file_name = str(title).rsplit("/", maxsplit=1)
+    else:
+        title_save_to_db, md_file_name = title, title
+
     right_href = get_right_href(gitbook_name, title_save_to_db, md_file_name)
     with open("{}/{}".format(root_path, title), "r") as f:
         gitbook_content = f.read()
@@ -182,15 +187,18 @@ def update_gitbook_codes(request=None):
     gitbook_category_dict = const.GITBOOK_CODES_REPOSITORY
 
     for gitbook_name, address in gitbook_category_dict.items():
-        # 获取最新的 gitbook 代码
-        get_latest_gitbooks(gitbook_name, address)
+        try:
+            # 获取最新的 gitbook 代码
+            get_latest_gitbooks(gitbook_name, address)
 
-        # 更新到数据库中
-        notes_in_git = update_gitbook_db(gitbook_name)
+            # 更新到数据库中
+            notes_in_git = update_gitbook_db(gitbook_name)
 
-        for each_note_in_db in GitBook.objects.filter(book_name=gitbook_name):
-            if each_note_in_db.title not in notes_in_git:
-                each_note_in_db.delete()
+            for each_note_in_db in GitBook.objects.filter(book_name=gitbook_name):
+                if each_note_in_db.title not in notes_in_git:
+                    each_note_in_db.delete()
+        except Exception as e:
+            logger.error("[-] 更新 GitBook 代码出现错误: {}".format(str(e)))
 
     return redirect("/")
 
