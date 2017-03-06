@@ -141,6 +141,19 @@ def get_title_list_from_summary(summary_path):
     return result_list
 
 
+def get_summary_path(gitbook_name):
+    """
+    获取对应的 summary.md 的路径, 主要是担心名字大小写问题导致文件读取不到
+    :param gitbook_name: str(), gitbook 的名字
+    :return: str(), summary.md 的绝对路径, 比如 "'/Users/.../my_blog_source/gitbooks/PythonWeb/SUMMARY.md'"
+    """
+    root_path = os.path.join(const.GITBOOK_CODES_PATH, gitbook_name)
+    for each_file in os.listdir(root_path):
+        if each_file.lower() == "summary.md":
+            return os.path.join(root_path, each_file)
+    raise RuntimeError
+
+
 def update_gitbook_db(gitbook_name):
     """
     更新 gitbook 数据到数据库中
@@ -149,7 +162,7 @@ def update_gitbook_db(gitbook_name):
     """
     notes_in_git = set()
 
-    summary_path = os.path.join(const.GITBOOK_CODES_PATH, gitbook_name, "summary.md")
+    summary_path = get_summary_path(gitbook_name)
 
     # 读取 root 目录下的 SUMMARY.md, 提取出每一篇标题的路径
     title_list = get_title_list_from_summary(summary_path)

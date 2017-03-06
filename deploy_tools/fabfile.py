@@ -99,7 +99,7 @@ def _gitbooks_config(source_folder, site_name):
     with open(const_file_path, "w") as f:
         f.write(raw_git_data)
 
-    print("[*] 成功将 {} 中的 gitbooks 路径更新到配置文件中")
+    print("[*] 成功将 {} 中的 gitbooks 路径更新到配置文件中".format(GITBOOKS_CONF))
 
 
 def _create_config_file():
