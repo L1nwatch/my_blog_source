@@ -111,9 +111,9 @@ class TestSearchButton(FunctionalTest):
         # 显示对应搜索结果
         self.assertIn("test markdown1", search_result)
 
-        # 左下角显示的标题是文章数 + 日记数
+        # 左下角显示的标题是笔记总数
         sidebar = self.browser.find_element_by_id("id_sidebar").text
-        self.assertIn("文章+日记数", sidebar)
+        self.assertIn("笔记总数", sidebar)
 
     def test_can_search_among_article_journals_gitbooks(self):
         """

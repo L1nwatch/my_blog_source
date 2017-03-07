@@ -5,6 +5,7 @@ from articles.common_help_function import *
 
 import re
 import datetime
+import os
 
 logger = logging.getLogger("my_blog.work_journal.views")
 
@@ -209,7 +210,7 @@ def do_journals_search(request):
     if request.method == "POST":
         form = JournalForm(data=request.POST)
         if __form_is_valid_and_ignore_exist_article_error(form):
-            search_text = form.data["title"]
+            search_text = clean_form_data(form.data["title"])
             keywords = set()
 
             if re.match("\d{4}-\d{1,2}-\d{1,2}", search_text):

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.07 新增 form data 的清理工作
 2017.03.05 添加 GitBook 的搜索
 2017.02.09 重构一下搜索函数, 跟日记搜索的功能合并一下
 2016.10.28 重构了一下模板传参, 封装成一个函数来处理了, 要不然每个视图都得专门处理传给模板的参数
@@ -14,7 +15,9 @@ from .models import Article
 from .forms import ArticleForm, BaseSearchForm
 
 from articles.templatetags.custom_filter import custom_markdown_for_tree_parse
-from articles.common_help_function import *
+from articles.common_help_function import (clean_form_data, get_ip_from_django_request,
+                                           create_search_result, get_right_content_from_file)
+from my_constant import const
 from work_journal.views import do_journals_search
 from gitbook_notes.views import do_gitbooks_search
 
@@ -22,6 +25,8 @@ import md2py
 import datetime
 import traceback
 import re
+import os
+import logging
 
 LAST_UPDATE_TIME = None
 
@@ -219,7 +224,7 @@ def do_articles_search(request):
 
     form = ArticleForm(data=request.POST)
     if __form_is_valid_and_ignore_exist_article_error(form):
-        keywords = set(form.data["title"].split(" "))
+        keywords = set(clean_form_data(form.data["title"]).split(" "))
         # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
         article_list = __search_keyword_in_articles(keywords)
         logger.info("ip: {} 搜索文章: {}"

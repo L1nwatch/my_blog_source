@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """ 各个功能测试的基类
+2017.03.07 给 FIREFOX 添加代理配置
 """
 import sys
 import os
@@ -10,6 +11,7 @@ from datetime import datetime
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.proxy import Proxy,ProxyType
 from selenium.common.exceptions import WebDriverException
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -47,6 +49,16 @@ class FunctionalTest(StaticLiveServerTestCase):
         super().setUpClass()
         cls.against_staging = False
         cls.server_url = cls.live_server_url
+
+        # my_proxy = "127.0.0.1:1080"
+        #
+        # cls.proxy = Proxy({
+        #     'proxyType': ProxyType.MANUAL,
+        #     'httpProxy': my_proxy,
+        #     'ftpProxy': my_proxy,
+        #     'sslProxy': my_proxy,
+        #     'noProxy': 'localhost*'  # set this value as desired
+        # })
 
     @classmethod
     def tearDownClass(cls):

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.07 新增 form data 的清理工作
 2017.03.05 开始编写 GitBook 这个 APP
 """
 import os
@@ -11,7 +12,7 @@ import urllib.parse
 
 # 以下为 django 相关的库
 
-from articles.common_help_function import get_ip_from_django_request, create_search_result
+from articles.common_help_function import get_ip_from_django_request, create_search_result, clean_form_data
 from articles.forms import BaseSearchForm
 from my_constant import const
 from gitbook_notes.models import GitBook
@@ -249,7 +250,7 @@ def do_gitbooks_search(request):
         form = BaseSearchForm(data=request.POST)
         # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见下面这个验证函数
         if __form_is_valid_and_ignore_exist_article_error(form):
-            search_text = form.data["title"]
+            search_text = clean_form_data(form.data["title"])
             # 按关键词来搜索
             keywords = set(search_text.split(" "))
 

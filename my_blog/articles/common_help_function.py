@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.07 添加一个 clean form data 的方法, 因为不知道怎么嵌入 form。。。
 2017.02.10 添加搜索时不搜索图片的设定
 2017.02.09 把视图分离在两个 APP 的时候出现嵌套导入了, 所以只好弄一个 common 文件来存放了
 """
@@ -11,12 +12,20 @@ from my_constant import const
 import chardet
 import copy
 import logging
-import os
 import re
 
 __author__ = '__L1n__w@tch'
 
 logger = logging.getLogger("my_blog.articles.views")
+
+
+def clean_form_data(data):
+    """
+    手动清理 form data
+    :param data: str(), 比如 " aa"
+    :return: str(), 清理后的结果, 比如 "aa"
+    """
+    return data.strip()
 
 
 def create_search_result(article_list, keyword_set, search_type):
