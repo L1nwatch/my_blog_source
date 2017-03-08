@@ -172,6 +172,7 @@ def do_journals_search(request):
 
     if request.method == "POST":
         form = JournalForm(data=request.POST)
+        # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
         if form_is_valid_and_ignore_exist_error(form):
             search_text = clean_form_data(form.data["title"])
             keywords = set()
@@ -182,14 +183,15 @@ def do_journals_search(request):
             else:
                 # 按关键词来搜索
                 keywords = set(search_text.split(" "))
-                # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
                 journal_list = search_keyword_in_model(keywords, Journal, ["content"])
+
             logger.info("ip: {} 搜索日记: {}"
                         .format(get_ip_from_django_request(request), form.data["title"]))
 
             context_data = get_context_data(request, "journals",
                                             {'post_list': create_search_result(journal_list, keywords, "work_journal"),
                                              'error': None, "form": form})
+
             context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(journal_list) == 0 else False
 
             return context_data
