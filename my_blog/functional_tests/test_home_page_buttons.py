@@ -55,14 +55,14 @@ class TestHomePageButtons(FunctionalTest):
         rows = table.find_elements_by_tag_name("tr")
         self.assertIn(r"座右铭: Valar Morghulis", [row.text for row in rows])
 
-    @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "const.SLOW_CONNECT_DEBUG 值为 True 才表示要测试被墙的 GitHub")
+    @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
     def test_github_button(self):
         # 看到 github 按钮, 点击, 发现确实跳转到了一个 github 页面上, 而且 github 页面的用户是 "L1nwatch"
         self.browser.find_element_by_id("id_github").click()
         self.assertIn("github", self.browser.current_url)
         self.assertIn("L1nwatch", self.browser.current_url)
 
-    @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "const.SLOW_CONNECT_DEBUG 值为 True 才表示要测试被墙的 GitBook")
+    @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
     def test_gitbook_button(self):
         # 看到 gitbook 按钮, 点击, 发现确实跳转到了一个 gitbook 页面上, 而且 gitbook 页面的用户是 "L1nwatch"
         self.browser.find_element_by_id("id_gitbook").click()

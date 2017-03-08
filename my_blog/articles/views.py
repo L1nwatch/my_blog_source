@@ -16,7 +16,8 @@ from .forms import ArticleForm, BaseSearchForm
 
 from articles.templatetags.custom_filter import custom_markdown_for_tree_parse
 from articles.common_help_function import (clean_form_data, get_ip_from_django_request,
-                                           create_search_result, get_right_content_from_file)
+                                           create_search_result, get_right_content_from_file,
+                                           form_is_valid_and_ignore_exist_error)
 from my_constant import const
 from work_journal.views import do_journals_search
 from gitbook_notes.views import do_gitbooks_search
@@ -210,20 +211,8 @@ def do_articles_search(request):
 
         return result_set
 
-    def __form_is_valid_and_ignore_exist_article_error(my_form):
-        """
-        2016.10.11 重定义验证函数, 不再使用简单的 form.is_valid, 原因是执行搜索的时候发现不能搜索跟已存在的文章一模一样的标题关键词
-        :param my_form: form = ArticleForm(data=request.POST)
-        :return:
-        """
-        if my_form.is_valid() is True:
-            return True
-        elif len(my_form.errors) == 1 and re.search("具有.*的.*已存在", str(my_form.errors)):
-            return True
-        return False
-
     form = ArticleForm(data=request.POST)
-    if __form_is_valid_and_ignore_exist_article_error(form):
+    if form_is_valid_and_ignore_exist_error(form):
         keywords = set(clean_form_data(form.data["title"]).split(" "))
         # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
         article_list = __search_keyword_in_articles(keywords)

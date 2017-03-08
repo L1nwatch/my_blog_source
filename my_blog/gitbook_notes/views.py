@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.08 开始进行部分重构工作
 2017.03.07 新增 form data 的清理工作
 2017.03.05 开始编写 GitBook 这个 APP
 """
@@ -12,7 +13,8 @@ import urllib.parse
 
 # 以下为 django 相关的库
 
-from articles.common_help_function import get_ip_from_django_request, create_search_result, clean_form_data
+from articles.common_help_function import (get_ip_from_django_request, create_search_result,
+                                           clean_form_data, form_is_valid_and_ignore_exist_error)
 from articles.forms import BaseSearchForm
 from my_constant import const
 from gitbook_notes.models import GitBook
@@ -234,22 +236,10 @@ def do_gitbooks_search(request):
 
         return result_set
 
-    def __form_is_valid_and_ignore_exist_article_error(my_form):
-        """
-        2016.10.11 重定义验证函数, 不再使用简单的 form.is_valid, 原因是执行搜索的时候发现不能搜索跟已存在的文章一模一样的标题关键词
-        :param my_form: form = JournalForm(data=request.POST)
-        :return: boolean, True or False
-        """
-        if my_form.is_valid() is True:
-            return True
-        elif len(my_form.errors) == 1 and "具有 Title 的 Article 已存在。" in str(my_form.errors):
-            return True
-        return False
-
     if request.method == "POST":
         form = BaseSearchForm(data=request.POST)
         # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见下面这个验证函数
-        if __form_is_valid_and_ignore_exist_article_error(form):
+        if form_is_valid_and_ignore_exist_error(form):
             search_text = clean_form_data(form.data["title"])
             # 按关键词来搜索
             keywords = set(search_text.split(" "))

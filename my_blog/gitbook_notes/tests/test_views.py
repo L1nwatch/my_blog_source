@@ -28,7 +28,7 @@ class BaseCommonTest(TestCase):
 
 
 @override_settings(UPDATE_TIME_LIMIT=0.1)
-@unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "const.SLOW_CONNECT_DEBUG 值为 True 才表示要进行 git 测试")
+@unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
 class UpdateGitBookCodesViewTest(TestCase):
     unique_url = "/gitbook_notes/update_gitbook_codes/"
     gitbook_category_dict = const.GITBOOK_CODES_REPOSITORY

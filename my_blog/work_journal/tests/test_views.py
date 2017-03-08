@@ -269,7 +269,7 @@ class JournalSearchViewTest(BaseCommonTest):
 
 
 @override_settings(UPDATE_TIME_LIMIT=0.1)
-@unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "const.SLOW_CONNECT_DEBUG 值为 True 才表示要进行 git 测试")
+@unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
 class UpdateNotesViewTest(TestCase):
     unique_url = "/work_journal/update_journals/"
     test_md_file_name = "2017-02-03-任务情况总结测试笔记.md"  # 注意这里不能有空格, 要不然 git 命令就失败了...

@@ -19,7 +19,7 @@ __author__ = '__L1n__w@tch'
 
 
 @override_settings(UPDATE_TIME_LIMIT=5)
-@unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "const.SLOW_CONNECT_DEBUG 值为 True 才表示要进行 git 测试")
+@unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
 class AutoUpdateDatabaseTest(FunctionalTest):
     def setUp(self):
         super().setUp()

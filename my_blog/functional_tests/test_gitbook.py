@@ -20,7 +20,7 @@ class GitBookSearchTest(FunctionalTest):
 
         cls.create_gitbook_test_db_data()
 
-    @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "const.SLOW_CONNECT_DEBUG 值为 True 才表示要进行 git 测试")
+    @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
     def test_all_search_can_search_exist_gitbook(self):
         """
         测试进行 All 搜索时能搜索到 GitBook

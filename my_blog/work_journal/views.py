@@ -195,21 +195,9 @@ def do_journals_search(request):
 
         return result_set
 
-    def __form_is_valid_and_ignore_exist_article_error(my_form):
-        """
-        2016.10.11 重定义验证函数, 不再使用简单的 form.is_valid, 原因是执行搜索的时候发现不能搜索跟已存在的文章一模一样的标题关键词
-        :param my_form: form = JournalForm(data=request.POST)
-        :return: boolean, True or False
-        """
-        if my_form.is_valid() is True:
-            return True
-        elif len(my_form.errors) == 1 and "具有 Title 的 Article 已存在。" in str(my_form.errors):
-            return True
-        return False
-
     if request.method == "POST":
         form = JournalForm(data=request.POST)
-        if __form_is_valid_and_ignore_exist_article_error(form):
+        if form_is_valid_and_ignore_exist_error(form):
             search_text = clean_form_data(form.data["title"])
             keywords = set()
 

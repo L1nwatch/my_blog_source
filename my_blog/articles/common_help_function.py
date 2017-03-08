@@ -19,6 +19,21 @@ __author__ = '__L1n__w@tch'
 logger = logging.getLogger("my_blog.articles.views")
 
 
+def form_is_valid_and_ignore_exist_error(my_form):
+    """
+    判断 form 表单是否合法, 其中判断过程中不认为 "已存在" 是个错误
+    2017.03.08 重构, 使得几个搜索函数都用这个来判断表单合法性
+    2016.10.11 重定义验证函数, 不再使用简单的 form.is_valid, 原因是执行搜索的时候发现不能搜索跟已存在的文章一模一样的标题关键词
+    :param my_form: form 实例, 比如 form = ArticleForm(data=request.POST)
+    :return: boolean(), True 表示 form 合法
+    """
+    if my_form.is_valid() is True:
+        return True
+    elif len(my_form.errors) == 1 and re.search("具有.*的.*已存在", str(my_form.errors)):
+        return True
+    return False
+
+
 def clean_form_data(data):
     """
     手动清理 form data
