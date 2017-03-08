@@ -15,7 +15,7 @@ from .models import Article
 from .forms import ArticleForm, BaseSearchForm
 
 from articles.templatetags.custom_filter import custom_markdown_for_tree_parse
-from articles.common_help_function import (clean_form_data, get_ip_from_django_request,
+from articles.common_help_function import (clean_form_data, get_ip_from_django_request, search_keyword_in_model,
                                            create_search_result, get_right_content_from_file,
                                            form_is_valid_and_ignore_exist_error)
 from my_constant import const
@@ -185,37 +185,11 @@ def do_articles_search(request):
     :return: dict() or None, 要传给模板的各个数据, None 表示出现异常了
     """
 
-    def __search_keyword_in_articles(keyword_set):
-        result_set = set()
-        first_time = True
-
-        # 对每个关键词进行处理
-        for each_key_word in keyword_set:
-            # 获取上一次过滤剩下的文章列表, 如果是第一次则为全部文章
-            if first_time:
-                first_time = False
-                articles_from_title_filter = Article.objects.filter(title__icontains=each_key_word)
-                articles_from_content_filter = Article.objects.filter(content__icontains=each_key_word)
-
-                result_set.update(articles_from_title_filter)
-                result_set.update(articles_from_content_filter)
-            else:
-                temp_result_set = set()
-                each_key_word = each_key_word.lower()
-                # 对每篇文章进行查找, 先查找标题, 然后查找内容
-                for each_article in result_set:
-                    if each_key_word in each_article.title.lower() or each_key_word in each_article.content.lower():
-                        temp_result_set.add(each_article)
-
-                result_set = temp_result_set
-
-        return result_set
-
     form = ArticleForm(data=request.POST)
     if form_is_valid_and_ignore_exist_error(form):
         keywords = set(clean_form_data(form.data["title"]).split(" "))
         # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
-        article_list = __search_keyword_in_articles(keywords)
+        article_list = search_keyword_in_model(keywords, Article, ["content", "title"])
         logger.info("ip: {} 搜索文章: {}"
                     .format(get_ip_from_django_request(request), form.data["title"]))
 

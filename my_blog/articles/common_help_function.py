@@ -46,7 +46,7 @@ def search_keyword_in_model(keyword_set, model, search_fields):
     keyword = next(keyword_iterator, None)
     while keyword:
         temp_result_set = set()
-        # 对每篇文章进行查找, 先查找标题, 然后查找内容
+        # 对每篇笔记进行查找, 依次对每个字段进行查找
         each_key_word = keyword.lower()
         for each_article in result_set:
             for each_field in search_fields:
