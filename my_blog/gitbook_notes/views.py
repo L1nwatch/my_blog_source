@@ -220,7 +220,7 @@ def do_gitbooks_search(request):
             # 按关键词来搜索
             keywords = set(search_text.split(" "))
 
-            gitbook_list = search_keyword_in_model(keywords, GitBook)
+            gitbook_list = search_keyword_in_model(keywords, GitBook, ["content"])
             logger.info("ip: {} 搜索 GitBook: {}"
                         .format(get_ip_from_django_request(request), form.data["title"]))
 

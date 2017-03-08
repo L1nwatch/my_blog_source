@@ -184,7 +184,7 @@ def do_journals_search(request):
                 # 按关键词来搜索
                 keywords = set(search_text.split(" "))
                 # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
-                journal_list = search_keyword_in_model(keywords, Journal)
+                journal_list = search_keyword_in_model(keywords, Journal, ["content"])
             logger.info("ip: {} 搜索日记: {}"
                         .format(get_ip_from_django_request(request), form.data["title"]))
 

@@ -20,39 +20,42 @@ __author__ = '__L1n__w@tch'
 logger = logging.getLogger("my_blog.articles.views")
 
 
-def search_keyword_in_model(keyword_set, model, search_fields=["content"]):
+def search_keyword_in_model(keyword_set, model, search_fields):
     """
     分离出搜索函数中的 model 搜索
     :param keyword_set:  set(), 待查找的关键词列表
     :param model: model(), Django 的 model 对象, 比如 GitBook, Journals 等
+    :param search_fields: list(), 每个元素表示要搜索的字段, 比如 ["content", "title"]
     :return: set(), 搜索结果的集合
     """
     result_set = set()
+    keyword_iterator = iter(keyword_set)
 
-    # 对每个关键词进行处理
-    for i, each_key_word in enumerate(keyword_set):
-        # 获取上一次过滤剩下的文章列表, 如果是第一次则为全部文章
-        if i == 0:
-            for each_field in search_fields:
-                if each_field == "content":
-                    filter_result = model.objects.filter(content__icontains=each_key_word)
-                elif each_field == "title":
-                    filter_result = model.objects.filter(title__icontains=each_key_word)
-                else:
-                    raise RuntimeError("[-] 不支持的查询字段")
-                result_set.update(filter_result)
-
+    # 对全部数据进行过滤
+    first_keyword = next(keyword_iterator, None)
+    for each_field in search_fields:
+        if each_field == "content":
+            filter_result = model.objects.filter(content__icontains=first_keyword)
+        elif each_field == "title":
+            filter_result = model.objects.filter(title__icontains=first_keyword)
         else:
-            temp_result_set = set()
-            # 对每篇文章进行查找, 先查找标题, 然后查找内容
-            each_key_word = each_key_word.lower()
-            for each_article in result_set:
-                for each_field in search_fields:
-                    field = getattr(each_article, each_field)
-                    if each_key_word in field.lower():
-                        temp_result_set.add(each_article)
+            raise RuntimeError("[-] 不支持的查询字段")
+        result_set.update(filter_result)
 
-            result_set = temp_result_set
+    # 对剩下的每个关键词进行处理, 处理的是由上面过滤剩下的数据
+    keyword = next(keyword_iterator, None)
+    while keyword:
+        temp_result_set = set()
+        # 对每篇文章进行查找, 先查找标题, 然后查找内容
+        each_key_word = keyword.lower()
+        for each_article in result_set:
+            for each_field in search_fields:
+                field = getattr(each_article, each_field)
+                if each_key_word in field.lower():
+                    temp_result_set.add(each_article)
+
+        result_set = temp_result_set
+        keyword = next(keyword_iterator, None)
 
     return result_set
 
