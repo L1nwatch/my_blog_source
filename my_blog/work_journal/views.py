@@ -171,30 +171,6 @@ def do_journals_search(request):
     :param request: django 传给视图函数的参数 request, 包含 HTTP 请求的各种信息
     """
 
-    def __search_keyword_in_journals(keyword_set):
-        result_set = set()
-        first_time = True
-
-        # 对每个关键词进行处理
-        for each_key_word in keyword_set:
-            # 获取上一次过滤剩下的文章列表, 如果是第一次则为全部文章
-            if first_time:
-                first_time = False
-                articles_from_content_filter = Journal.objects.filter(content__icontains=each_key_word)
-
-                result_set.update(articles_from_content_filter)
-            else:
-                temp_result_set = set()
-                # 对每篇文章进行查找, 先查找标题, 然后查找内容
-                each_key_word = each_key_word.lower()
-                for each_article in result_set:
-                    if each_key_word in each_article.content.lower():
-                        temp_result_set.add(each_article)
-
-                result_set = temp_result_set
-
-        return result_set
-
     if request.method == "POST":
         form = JournalForm(data=request.POST)
         if form_is_valid_and_ignore_exist_error(form):
@@ -208,7 +184,7 @@ def do_journals_search(request):
                 # 按关键词来搜索
                 keywords = set(search_text.split(" "))
                 # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
-                journal_list = __search_keyword_in_journals(keywords)
+                journal_list = search_keyword_in_model(keywords, Journal)
             logger.info("ip: {} 搜索日记: {}"
                         .format(get_ip_from_django_request(request), form.data["title"]))
 

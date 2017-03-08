@@ -13,7 +13,7 @@ import urllib.parse
 
 # 以下为 django 相关的库
 
-from articles.common_help_function import (get_ip_from_django_request, create_search_result,
+from articles.common_help_function import (get_ip_from_django_request, create_search_result, search_keyword_in_model,
                                            clean_form_data, form_is_valid_and_ignore_exist_error)
 from articles.forms import BaseSearchForm
 from my_constant import const
@@ -212,30 +212,6 @@ def do_gitbooks_search(request):
     :param request: django 传给视图函数的参数 request, 包含 HTTP 请求的各种信息
     """
 
-    def __search_keyword_in_gitbooks(keyword_set):
-        result_set = set()
-        first_time = True
-
-        # 对每个关键词进行处理
-        for each_key_word in keyword_set:
-            # 获取上一次过滤剩下的文章列表, 如果是第一次则为全部文章
-            if first_time:
-                first_time = False
-                articles_from_content_filter = GitBook.objects.filter(content__icontains=each_key_word)
-
-                result_set.update(articles_from_content_filter)
-            else:
-                temp_result_set = set()
-                # 对每篇文章进行查找, 先查找标题, 然后查找内容
-                each_key_word = each_key_word.lower()
-                for each_article in result_set:
-                    if each_key_word in each_article.content.lower():
-                        temp_result_set.add(each_article)
-
-                result_set = temp_result_set
-
-        return result_set
-
     if request.method == "POST":
         form = BaseSearchForm(data=request.POST)
         # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见下面这个验证函数
@@ -244,14 +220,14 @@ def do_gitbooks_search(request):
             # 按关键词来搜索
             keywords = set(search_text.split(" "))
 
-            journal_list = __search_keyword_in_gitbooks(keywords)
+            gitbook_list = search_keyword_in_model(keywords, GitBook)
             logger.info("ip: {} 搜索 GitBook: {}"
                         .format(get_ip_from_django_request(request), form.data["title"]))
 
             context_data = _get_context_data(
-                {'post_list': create_search_result(journal_list, keywords, "gitbook_notes"),
+                {'post_list': create_search_result(gitbook_list, keywords, "gitbook_notes"),
                  'error': None, "form": form})
-            context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(journal_list) == 0 else False
+            context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(gitbook_list) == 0 else False
 
             return context_data
 

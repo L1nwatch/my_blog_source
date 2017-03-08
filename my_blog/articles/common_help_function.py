@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.08 进行部分重构
 2017.03.07 添加一个 clean form data 的方法, 因为不知道怎么嵌入 form。。。
 2017.02.10 添加搜索时不搜索图片的设定
 2017.02.09 把视图分离在两个 APP 的时候出现嵌套导入了, 所以只好弄一个 common 文件来存放了
@@ -17,6 +18,43 @@ import re
 __author__ = '__L1n__w@tch'
 
 logger = logging.getLogger("my_blog.articles.views")
+
+
+def search_keyword_in_model(keyword_set, model, search_fields=["content"]):
+    """
+    分离出搜索函数中的 model 搜索
+    :param keyword_set:  set(), 待查找的关键词列表
+    :param model: model(), Django 的 model 对象, 比如 GitBook, Journals 等
+    :return: set(), 搜索结果的集合
+    """
+    result_set = set()
+
+    # 对每个关键词进行处理
+    for i, each_key_word in enumerate(keyword_set):
+        # 获取上一次过滤剩下的文章列表, 如果是第一次则为全部文章
+        if i == 0:
+            for each_field in search_fields:
+                if each_field == "content":
+                    filter_result = model.objects.filter(content__icontains=each_key_word)
+                elif each_field == "title":
+                    filter_result = model.objects.filter(title__icontains=each_key_word)
+                else:
+                    raise RuntimeError("[-] 不支持的查询字段")
+                result_set.update(filter_result)
+
+        else:
+            temp_result_set = set()
+            # 对每篇文章进行查找, 先查找标题, 然后查找内容
+            each_key_word = each_key_word.lower()
+            for each_article in result_set:
+                for each_field in search_fields:
+                    field = getattr(each_article, each_field)
+                    if each_key_word in field.lower():
+                        temp_result_set.add(each_article)
+
+            result_set = temp_result_set
+
+    return result_set
 
 
 def form_is_valid_and_ignore_exist_error(my_form):
