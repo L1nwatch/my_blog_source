@@ -1,32 +1,30 @@
+#!/bin/env python3
+# -*- coding: utf-8 -*-
+# version: Python3.X
+"""
+2017.03.08 开始进行部分重构工作
+"""
+
 from django.shortcuts import render
 from .models import Journal
 from .forms import JournalForm
-from articles.common_help_function import *
+
+from articles.common_help_function import (get_context_data, get_right_content_from_file, get_ip_from_django_request,
+                                           form_is_valid_and_ignore_exist_error, search_keyword_in_model,
+                                           create_search_result, clean_form_data)
+from my_constant import const
 
 import re
 import datetime
 import os
+import logging
 
 logger = logging.getLogger("my_blog.work_journal.views")
 
 
-def _get_context_data(update_data=None):
-    """
-    定制要发送给模板的相关数据
-    :param update_data: 以需要发送给 base.html 的数据为基础, 需要额外发送给模板的数据
-    :return: dict(), 发送给模板的全部数据
-    """
-    data_return_to_base_template = {"form": JournalForm(), "is_valid_click": "True",
-                                    "journals_numbers": len(Journal.objects.all()), "current_type": "journals"}
-    if update_data is not None:
-        data_return_to_base_template.update(update_data)
-
-    return data_return_to_base_template
-
-
 def work_journal_home_view(request):
     journal_list = Journal.objects.all()  # 获取全部的 Journal 对象
-    return render(request, 'journal_home.html', _get_context_data({"post_list": journal_list}))
+    return render(request, 'journal_home.html', get_context_data(request, "journals", {"post_list": journal_list}))
 
 
 def journal_display(request, journal_id):
@@ -35,7 +33,7 @@ def journal_display(request, journal_id):
     :param journal_id: 请求的日记 id
     """
     journal = Journal.objects.get(id=journal_id)
-    return render(request, 'journal_display.html', _get_context_data({"post": journal}))
+    return render(request, 'journal_display.html', get_context_data(request, "journals", {"post": journal}))
 
 
 def redirect_journal(request, journal_date):
@@ -52,7 +50,8 @@ def redirect_journal(request, journal_date):
         journal = Journal.objects.get(date=request_date)
         return journal_display(request, journal.id)
     except Journal.DoesNotExist:
-        return render(request, "journal_not_found.html", _get_context_data({"not_found_info": const.JOURNAL_NOT_FOUND}))
+        return render(request, "journal_not_found.html", get_context_data(request, "journals",
+                                                                          {"not_found_info": const.JOURNAL_NOT_FOUND}))
 
 
 def is_valid_update_md_file(file_name):
@@ -188,9 +187,9 @@ def do_journals_search(request):
             logger.info("ip: {} 搜索日记: {}"
                         .format(get_ip_from_django_request(request), form.data["title"]))
 
-            context_data = _get_context_data(
-                {'post_list': create_search_result(journal_list, keywords, "work_journal"),
-                 'error': None, "form": form})
+            context_data = get_context_data(request, "journals",
+                                            {'post_list': create_search_result(journal_list, keywords, "work_journal"),
+                                             'error': None, "form": form})
             context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(journal_list) == 0 else False
 
             return context_data

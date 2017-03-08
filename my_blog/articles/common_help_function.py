@@ -9,6 +9,11 @@
 """
 from ipware.ip import get_ip, get_real_ip, get_trusted_ip
 from my_constant import const
+from articles.forms import ArticleForm, BaseSearchForm
+from articles.models import Article, BaseModel
+from work_journal.models import Journal
+from work_journal.forms import JournalForm
+from gitbook_notes.models import GitBook
 
 import chardet
 import copy
@@ -18,6 +23,31 @@ import re
 __author__ = '__L1n__w@tch'
 
 logger = logging.getLogger("my_blog.articles.views")
+
+
+def get_context_data(request, context_type, update_data=None):
+    """
+    定制基础的模版数据
+    :param request: django 请求
+    :param context_type: str(), 表示上下文的类型, 比如 "articles"
+    :param update_data: dict(), 除了基础数据外, 需要额外发送给模板的数据
+    :return: dict(), 发送给模板的全部数据
+    """
+    form_dict = {"articles": ArticleForm, "all": BaseSearchForm, "journals": JournalForm, "gitbooks": GitBook}
+    model_dict = {"articles": Article, "journals": Journal, "all": BaseModel, "gitbooks": BaseModel}
+
+    data_return_to_base_template = {"form": form_dict[context_type](), "current_type": context_type,
+                                    "is_valid_click": "True",
+                                    "{}_numbers".format(context_type): len(model_dict[context_type].objects.all())}
+    if request.method == "POST":
+        data_return_to_base_template["form"] = form_dict[context_type](request.POST)
+    elif request.method == "GET":
+        data_return_to_base_template["form"] = form_dict[context_type](request.GET)
+
+    if isinstance(update_data, dict):
+        data_return_to_base_template.update(update_data)
+
+    return data_return_to_base_template
 
 
 def search_keyword_in_model(keyword_set, model, search_fields):

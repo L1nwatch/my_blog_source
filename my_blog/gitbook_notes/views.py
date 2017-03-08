@@ -14,29 +14,14 @@ import urllib.parse
 # 以下为 django 相关的库
 
 from articles.common_help_function import (get_ip_from_django_request, create_search_result, search_keyword_in_model,
-                                           clean_form_data, form_is_valid_and_ignore_exist_error)
+                                           clean_form_data, form_is_valid_and_ignore_exist_error, get_context_data)
 from articles.forms import BaseSearchForm
 from my_constant import const
 from gitbook_notes.models import GitBook
 
 from django.shortcuts import redirect
-from django.http import Http404
 
 logger = logging.getLogger("my_blog.gitbooks.views")
-
-
-def _get_context_data(update_data=None):
-    """
-    定制要发送给模板的相关数据
-    :param update_data: 以需要发送给 base.html 的数据为基础, 需要额外发送给模板的数据
-    :return: dict(), 发送给模板的全部数据
-    """
-    data_return_to_base_template = {"form": BaseSearchForm(), "is_valid_click": "True",
-                                    "gitbooks_numbers": len(GitBook.objects.all()), "current_type": "gitbook_notes"}
-    if update_data is not None:
-        data_return_to_base_template.update(update_data)
-
-    return data_return_to_base_template
 
 
 def get_latest_gitbooks(gitbook_name, address):
@@ -224,9 +209,9 @@ def do_gitbooks_search(request):
             logger.info("ip: {} 搜索 GitBook: {}"
                         .format(get_ip_from_django_request(request), form.data["title"]))
 
-            context_data = _get_context_data(
-                {'post_list': create_search_result(gitbook_list, keywords, "gitbook_notes"),
-                 'error': None, "form": form})
+            context_data = get_context_data(request, "gitbooks",
+                                            {'post_list': create_search_result(gitbook_list, keywords, "gitbook_notes"),
+                                             'error': None, "form": form})
             context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(gitbook_list) == 0 else False
 
             return context_data

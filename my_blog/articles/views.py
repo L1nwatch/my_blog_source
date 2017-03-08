@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.08 进行重构
 2017.03.07 新增 form data 的清理工作
 2017.03.05 添加 GitBook 的搜索
 2017.02.09 重构一下搜索函数, 跟日记搜索的功能合并一下
@@ -8,15 +9,13 @@
 """
 from django.shortcuts import render
 from django.http import Http404
-from django.core.paginator import Paginator
 from django.conf import settings
 
-from .models import Article
-from .forms import ArticleForm, BaseSearchForm
-
+from articles.models import Article
+from articles.forms import ArticleForm
 from articles.templatetags.custom_filter import custom_markdown_for_tree_parse
 from articles.common_help_function import (clean_form_data, get_ip_from_django_request, search_keyword_in_model,
-                                           create_search_result, get_right_content_from_file,
+                                           create_search_result, get_right_content_from_file, get_context_data,
                                            form_is_valid_and_ignore_exist_error)
 from my_constant import const
 from work_journal.views import do_journals_search
@@ -34,40 +33,10 @@ LAST_UPDATE_TIME = None
 logger = logging.getLogger("my_blog.articles.views")
 
 
-def get_article_context_data(update_data=None):
-    """
-    定制要发送给 article 相关模板的数据
-    :param update_data: 以需要发送给 base.html 的数据为基础, 需要额外发送给模板的数据
-    :return: dict(), 发送给模板的全部数据
-    """
-    data_return_to_base_template = {"form": ArticleForm(), "is_valid_click": "True",
-                                    "articles_numbers": len(Article.objects.all()), "current_type": "articles"}
-    if update_data is not None:
-        data_return_to_base_template.update(update_data)
-
-    return data_return_to_base_template
-
-
-def get_base_context_data(request, update_data=None):
-    """
-    定制基础的模版数据
-    :return: dict(), 发送给模板的全部数据
-    """
-    data_return_to_base_template = {"form": BaseSearchForm(), "current_type": "all"}
-    if request.method == "POST":
-        data_return_to_base_template["form"] = BaseSearchForm(request.POST)
-    elif request.method == "GET":
-        data_return_to_base_template["form"] = BaseSearchForm(request.GET)
-
-    if update_data is not None:
-        data_return_to_base_template.update(update_data)
-    return data_return_to_base_template
-
-
 def home_view(request):
     logger.info("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
 
-    return render(request, 'new_home.html', get_base_context_data(request))
+    return render(request, 'new_home.html', get_context_data(request, "all"))
 
 
 def article_display(request, article_id):
@@ -85,7 +54,11 @@ def article_display(request, article_id):
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, "article.html", get_article_context_data({"post": db_data, "tags": tags, "toc": toc_data}))
+    return render(request, "article.html",
+                  get_context_data(request, "articles",
+                                   update_data={"post": db_data, "tags": tags, "toc": toc_data}
+                                   )
+                  )
 
 
 def _get_id_from_markdown_html(markdown_html, tag_content):
@@ -108,13 +81,15 @@ def archives_view(request):
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, 'archives.html', get_article_context_data({'post_list': post_list, 'error': False}))
+    return render(request, 'archives.html',
+                  get_context_data(request, "articles", update_data={'post_list': post_list, 'error': False})
+                  )
 
 
 def about_me_view(request):
     logger.info("ip: {} 查看 about me".format(get_ip_from_django_request(request)))
 
-    return render(request, 'about_me.html', get_base_context_data(request))
+    return render(request, 'about_me.html', get_context_data(request, "all"))
 
 
 def search_tag_view(request, tag):
@@ -124,7 +99,7 @@ def search_tag_view(request, tag):
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, 'tag.html', get_article_context_data({'post_list': post_list}))
+    return render(request, 'tag.html', get_context_data(request, "articles", {'post_list': post_list}))
 
 
 def _parse_markdown_file(markdown_content):
@@ -193,8 +168,9 @@ def do_articles_search(request):
         logger.info("ip: {} 搜索文章: {}"
                     .format(get_ip_from_django_request(request), form.data["title"]))
 
-        context_data = get_article_context_data({'post_list': create_search_result(article_list, keywords, "articles"),
-                                                 'error': None, "form": form})
+        context_data = get_context_data(request, "articles",
+                                        {'post_list': create_search_result(article_list, keywords, "articles"),
+                                         'error': None, "form": form})
         context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(article_list) == 0 else False
 
         return context_data
@@ -212,7 +188,7 @@ def blog_search(request, search_type="all"):
     if request.method == "POST":
         context_data = None
         if search_type == "all":
-            context_data = get_base_context_data(request, {"total_numbers": 0})
+            context_data = get_context_data(request, "all", {"total_numbers": 0})
 
             article_search_result = do_articles_search(request)
             if article_search_result is not None:
