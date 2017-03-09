@@ -16,6 +16,7 @@ def create_home_menu():
     sunday = const.EATING_MENU_STRUCTURE("周日", "-", "-",
                                          ("可乐鸡翅?href=http://www.xinshipu.com/zuofa/227911\n"
                                           "豆芽炒油豆腐?href=http://www.xinshipu.com/zuofa/116954"))
+
     for each_day in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]:
         home_menu.append(each_day)
 
@@ -32,6 +33,7 @@ def create_school_menu():
     friday = const.EATING_MENU_STRUCTURE("周五", "海棠\n照烧鸡腿饼\n豆浆", " 新综\n香干炒肉(conflict)", "丁香\n三楼自选快餐")
     saturday = const.EATING_MENU_STRUCTURE("周六", "老综\n卤肉卷\n豆浆", " 海棠\n川渝-辣子鸡", " 新综\n包菜肉片")
     sunday = const.EATING_MENU_STRUCTURE("周日", "新综\n安仔包\n鸡肉|鲜汁肉\n豆浆", "海棠\n微辣香锅", "海棠\n川味盐煎肉")
+
     for each_day in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]:
         school_menu.append(each_day)
 

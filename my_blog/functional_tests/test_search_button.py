@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.09 添加搜索结果显示行数的功能测试
 2017.03.05 添加 gitbook 的测试代码
 2017.02.21 手动使用过程中发现两个毛病, 补充一下测试代码
 2017.02.18 添加测试, 要求首页既能搜索文章又能搜索日记
@@ -172,6 +173,23 @@ class TestSearchButton(FunctionalTest):
         self.assertEqual(search_url, self.browser.current_url)
         self.assertIn("article_with_markdown", self.browser.page_source)
         self.assertIn("2017-02-08 任务情况总结", self.browser.page_source)
+
+    def test_search_result_can_show_line_number(self):
+        # Y 打开首页, 看到了搜索按钮, 便尝试了搜索功能
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+
+        # Y 搜索 test, 发现搜索结果里面每个对应结果的前面都有数字, Y 怀疑是不是行号?
+        search_button.send_keys("{}\n".format("test"))
+        result_table = self.browser.find_element_by_class_name("search-result-box-table-td")
+        self.assertIn("1", result_table.text)
+
+        # Y 再次搜索 created, 它知道笔记 <super与init方法> 中 created 应该在第 12 行
+        search_button = self.browser.find_element_by_id("id_search")
+        search_button.clear()
+        search_button.send_keys("{}\n".format("created"))
+        result_table = self.browser.find_element_by_class_name("search-result-box-table-td")
+        self.assertIn("12", result_table.text)
 
 
 if __name__ == "__main__":
