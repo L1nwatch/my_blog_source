@@ -16,7 +16,7 @@ from articles.forms import ArticleForm
 from articles.templatetags.custom_filter import custom_markdown_for_tree_parse
 from articles.common_help_function import (clean_form_data, get_ip_from_django_request, search_keyword_in_model,
                                            create_search_result, get_right_content_from_file, get_context_data,
-                                           form_is_valid_and_ignore_exist_error)
+                                           form_is_valid_and_ignore_exist_error, log_wrapper)
 from my_constant import const
 from work_journal.views import do_journals_search
 from gitbook_notes.views import do_gitbooks_search
@@ -33,12 +33,12 @@ LAST_UPDATE_TIME = None
 logger = logging.getLogger("my_blog.articles.views")
 
 
+@log_wrapper(str_format="访问主页", logger=logger)
 def home_view(request):
-    logger.info("ip: {} 访问主页了".format(get_ip_from_django_request(request)))
-
     return render(request, 'new_home.html', get_context_data(request, "all"))
 
 
+@log_wrapper(str_format="查看文章", logger=logger)
 def article_display(request, article_id):
     """
     负责显示文章的视图函数
@@ -48,7 +48,6 @@ def article_display(request, article_id):
     """
     try:
         db_data = Article.objects.get(id=str(article_id))
-        logger.info("ip: {} 查看文章: {}".format(get_ip_from_django_request(request), db_data.title))
         tags = db_data.tag.all()
         toc_data = _parse_markdown_file(db_data.content)
     except Article.DoesNotExist:
@@ -74,8 +73,8 @@ def _get_id_from_markdown_html(markdown_html, tag_content):
         return result
 
 
+@log_wrapper(str_format="查看文章列表", logger=logger)
 def archives_view(request):
-    logger.info("ip: {} 查看文章列表".format(get_ip_from_django_request(request)))
     try:
         post_list = Article.objects.all()
     except Article.DoesNotExist:
@@ -86,14 +85,13 @@ def archives_view(request):
                   )
 
 
+@log_wrapper(str_format="查看 About Me", logger=logger)
 def about_me_view(request):
-    logger.info("ip: {} 查看 about me".format(get_ip_from_django_request(request)))
-
     return render(request, 'about_me.html', get_context_data(request, "all"))
 
 
+@log_wrapper(str_format="进行了搜索", logger=logger)
 def search_tag_view(request, tag):
-    logger.info("ip: {} 搜索 tag: {}".format(get_ip_from_django_request(request), tag))
     try:
         post_list = Article.objects.filter(category__iexact=tag)  # contains
     except Article.DoesNotExist:
@@ -153,6 +151,7 @@ def _parse_markdown_file(markdown_content):
         logging.error("[!] 解析 Markdown 出错, 针对内容: {}".format(markdown_content))
 
 
+@log_wrapper(str_format="进行了搜索", logger=logger)
 def do_articles_search(request):
     """
     2017.02.09 分离搜索视图, 将搜索文章的单独拿出来
@@ -165,8 +164,6 @@ def do_articles_search(request):
         keywords = set(clean_form_data(form.data["title"]).split(" "))
         # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
         article_list = search_keyword_in_model(keywords, Article, ["content", "title"])
-        logger.info("ip: {} 搜索文章: {}"
-                    .format(get_ip_from_django_request(request), form.data["title"]))
 
         context_data = get_context_data(request, "articles",
                                         {'post_list': create_search_result(article_list, keywords, "articles"),
@@ -176,6 +173,7 @@ def do_articles_search(request):
         return context_data
 
 
+@log_wrapper(str_format="进行了搜索", logger=logger)
 def blog_search(request, search_type="all"):
     """
     2017.02.18 实现日记和文章同时搜索的功能

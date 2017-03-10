@@ -19,10 +19,9 @@ import chardet
 import copy
 import logging
 import re
+import datetime
 
 __author__ = '__L1n__w@tch'
-
-logger = logging.getLogger("my_blog.articles.views")
 
 
 def get_context_data(request, context_type, update_data=None):
@@ -172,8 +171,6 @@ def get_ip_from_django_request(request):
     :param request: 传给视图函数的 request
     :return: ip 地址, 比如 116.26.110.36
     """
-    logger.debug("获取 ip 情况, get_ip:{}, get_real_ip:{}, get_trusted_ip:{}"
-                 .format(get_ip(request), get_real_ip(request), get_trusted_ip(request)))
     return get_ip(request)
 
 
@@ -197,6 +194,36 @@ def get_right_content_from_file(file_path):
             data = data.decode(encoding)
 
     return data
+
+
+def decorator_with_args(decorator_to_enhance):
+    """
+    这个函数将被用来作为装饰器. 使得被它装饰的装饰器可以接收多个参数
+    """
+
+    def decorator_maker(*args, **kwargs):
+        def decorator_wrapper(func):
+            return decorator_to_enhance(func, *args, **kwargs)
+
+        return decorator_wrapper
+
+    return decorator_maker
+
+
+@decorator_with_args
+def log_wrapper(func, str_format="", level="info", logger=None):
+    now = datetime.datetime.today()
+
+    def wrapper(request, *func_args, **func_kwargs):
+        logger_func = getattr(logger, level)
+        if len(func_kwargs) > 0:
+            logger_func(("[*] IP {} 于 {} " + str_format + ", 相关参数为: {}")
+                        .format(get_ip_from_django_request(request), now, func_kwargs))
+        else:
+            logger_func(("[*] IP {} 于 {} " + str_format).format(get_ip_from_django_request(request), now))
+        return func(request, *func_args, **func_kwargs)
+
+    return wrapper
 
 
 if __name__ == "__main__":

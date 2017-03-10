@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.10 将记录日记的装饰器装饰到对应视图上
 2017.03.10 发现 title 字段的 BUG
 2017.03.08 开始进行部分重构工作
 2017.03.07 新增 form data 的清理工作
@@ -15,7 +16,8 @@ import urllib.parse
 # 以下为 django 相关的库
 
 from articles.common_help_function import (get_ip_from_django_request, create_search_result, search_keyword_in_model,
-                                           clean_form_data, form_is_valid_and_ignore_exist_error, get_context_data)
+                                           clean_form_data, form_is_valid_and_ignore_exist_error, get_context_data,
+                                           log_wrapper)
 from articles.forms import BaseSearchForm
 from my_constant import const
 from gitbook_notes.models import GitBook
@@ -218,6 +220,7 @@ def update_gitbook_codes(request=None):
     return redirect("/")
 
 
+@log_wrapper(str_format="进行了 GitBooks 搜索", logger=logger)
 def do_gitbooks_search(request):
     """
     2017.02.08 参考搜索文章的代码, 写了这个搜索日记的代码
@@ -244,6 +247,7 @@ def do_gitbooks_search(request):
             return context_data
 
 
+@log_wrapper(str_format="查看了 GitBook", logger=logger)
 def gitbook_display(request, gitbook_id):
     """
     接收 gitbook_id 然后跳转到对应的 href 进行 GitBook 显示

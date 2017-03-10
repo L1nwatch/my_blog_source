@@ -203,6 +203,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True
         },
+        'my_blog.just_eating.views': {
+            'handlers': ['default', 'error', "info"],
+            'level': 'DEBUG',
+            'propagate': True
+        },
     }
 }
 UPDATE_TIME_LIMIT = 30

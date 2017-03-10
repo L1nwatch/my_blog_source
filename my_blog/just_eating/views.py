@@ -1,7 +1,18 @@
+#!/bin/env python3
+# -*- coding: utf-8 -*-
+# version: Python3.X
+"""
+2017.03.10 将记录日记的装饰器装饰到对应视图上
+"""
 from django.http import Http404
 from django.shortcuts import render
 
+from articles.common_help_function import log_wrapper
 from my_constant import const
+
+import logging
+
+logger = logging.getLogger("my_blog.just_eating.views")
 
 
 def create_home_menu():
@@ -40,6 +51,7 @@ def create_school_menu():
     return school_menu
 
 
+@log_wrapper(str_format="查看了菜单", logger=logger)
 def just_eating_home_view(request, eating_place):
     eating_times = ["", "早餐", "午餐", "晚餐"]
 

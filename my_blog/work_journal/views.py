@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.10 将记录日记的装饰器装饰到对应视图上
 2017.03.08 开始进行部分重构工作
 """
 
@@ -11,7 +12,7 @@ from .forms import JournalForm
 
 from articles.common_help_function import (get_context_data, get_right_content_from_file, get_ip_from_django_request,
                                            form_is_valid_and_ignore_exist_error, search_keyword_in_model,
-                                           create_search_result, clean_form_data)
+                                           create_search_result, clean_form_data, log_wrapper)
 from my_constant import const
 
 import re
@@ -22,11 +23,13 @@ import logging
 logger = logging.getLogger("my_blog.work_journal.views")
 
 
+@log_wrapper(str_format="访问日记主页", logger=logger)
 def work_journal_home_view(request):
     journal_list = Journal.objects.all()  # 获取全部的 Journal 对象
     return render(request, 'journal_home.html', get_context_data(request, "journals", {"post_list": journal_list}))
 
 
+@log_wrapper(str_format="查看了日记", logger=logger)
 def journal_display(request, journal_id):
     """
     :param request: 发送给视图函数的请求
@@ -36,6 +39,7 @@ def journal_display(request, journal_id):
     return render(request, 'journal_display.html', get_context_data(request, "journals", {"post": journal}))
 
 
+@log_wrapper(str_format="查看了一篇不存在的日记", logger=logger)
 def redirect_journal(request, journal_date):
     """
     重定向, 根据 date 定位到对应的日记中
@@ -164,6 +168,7 @@ def search_journal_by_date(date):
     return result
 
 
+@log_wrapper(str_format="进行了日记搜索", logger=logger)
 def do_journals_search(request):
     """
     2017.02.08 参考搜索文章的代码, 写了这个搜索日记的代码
@@ -184,9 +189,6 @@ def do_journals_search(request):
                 # 按关键词来搜索
                 keywords = set(search_text.split(" "))
                 journal_list = search_keyword_in_model(keywords, Journal, ["content"])
-
-            logger.info("ip: {} 搜索日记: {}"
-                        .format(get_ip_from_django_request(request), form.data["title"]))
 
             context_data = get_context_data(request, "journals",
                                             {'post_list': create_search_result(journal_list, keywords, "work_journal"),
