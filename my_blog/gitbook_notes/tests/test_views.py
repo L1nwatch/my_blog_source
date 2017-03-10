@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 测试 gitbook_notes 这个 app 下的视图函数
 
+2017.03.10 发现 title 字段的 BUG, 补充相关测试代码
 2017.03.05 发现依旧需要写显示页面的代码, 不过是跳转到 GitBook 罢了
 2017.03.05 开始编写搜索测试代码
 2017.01.28 增加了测试完毕之后删除测试文件夹的代码
@@ -12,7 +13,7 @@ from functional_tests.base import FunctionalTest
 from django.test import TestCase, override_settings
 from my_constant import const
 from gitbook_notes.models import GitBook
-from gitbook_notes.views import get_title_list_from_summary
+from gitbook_notes.views import get_title_list_from_summary, get_title_and_md_file_name
 
 import os
 import unittest
@@ -126,7 +127,7 @@ class UpdateGitBookCodesViewTest(TestCase):
 
     def test_get_title_list_from_summary(self):
         """
-        测试函数是否获取正确
+        测试函数是否获取 summary.md 信息正确
         """
         summary_path = os.path.join(self.notes_git_path, "PythonWeb", "SUMMARY.md")
         title_list = get_title_list_from_summary(summary_path)
@@ -136,6 +137,34 @@ class UpdateGitBookCodesViewTest(TestCase):
         self.assertIn("PythonWeb开发: 测试驱动方法/第一部分 TDD 和 Django 基础/第 1 章 使用功能测试协助安装 Django/readme.md", title_list)
         self.assertIn("PythonWeb开发: 测试驱动方法/附录/readme.md", title_list)
         self.assertIn("PythonWeb开发: 测试驱动方法/附录/附录 D 测试数据库迁移/readme.md", title_list)
+
+    def test_get_title_and_md_file_name(self):
+        """
+        测试几种情况下得到的 title 字段是否正确
+        """
+        # 情况 1, 直接就是 md 文件名
+        test_data = "第1章入门.md"
+        right_answer = "第1章入门", "第1章入门.md"
+        my_answer = get_title_and_md_file_name(test_data)
+        self.assertEqual(my_answer, right_answer)
+
+        # 情况 2, 一级下的 title
+        test_data = "腾讯 2017 暑期实习生编程题/腾讯 2017 暑期实习生编程题.md"
+        right_answer = "腾讯 2017 暑期实习生编程题/腾讯 2017 暑期实习生编程题", "腾讯 2017 暑期实习生编程题.md"
+        my_answer = get_title_and_md_file_name(test_data)
+        self.assertEqual(my_answer, right_answer)
+
+        # 情况 3, 多级下的 readme
+        test_data = "PythonWeb开发: 测试驱动方法/readme.md"
+        right_answer = "PythonWeb开发: 测试驱动方法", "readme.md"
+        my_answer = get_title_and_md_file_name(test_data)
+        self.assertEqual(my_answer, right_answer)
+
+        # 情况 4, 多级下的 md
+        test_data = "网易 2017 校招笔试编程题/二进制权重.md"
+        right_answer = "网易 2017 校招笔试编程题/二进制权重", "二进制权重.md"
+        my_answer = get_title_and_md_file_name(test_data)
+        self.assertEqual(my_answer, right_answer)
 
 
 class GitBookSearchViewTest(BaseCommonTest):

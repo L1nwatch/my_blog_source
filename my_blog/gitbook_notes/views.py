@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.10 发现 title 字段的 BUG
 2017.03.08 开始进行部分重构工作
 2017.03.07 新增 form data 的清理工作
 2017.03.05 开始编写 GitBook 这个 APP
@@ -76,6 +77,25 @@ def get_right_href(gitbook_name, title, md_file_name):
                               md_file_name=urllib.parse.quote(md_file_name))
 
 
+def get_title_and_md_file_name(title):
+    """
+    根据给定的从 summary.md 中获取的 title 来生成 title 和 md_file_name 字段
+    :param title: str(), 比如 "网易 2017 校招笔试编程题/二进制权重.md"
+    :return: tuple, (title, md_file_name), 比如 ("网易 2017 校招笔试编程题/二进制权重", "二进制权重.md")
+    """
+    if "/" in title:
+        title_save_to_db = str(title).rstrip(".md")
+        # 这一步主要是用来去除 readme 的, 比如 "PythonWeb开发: 测试驱动方法/readme"
+        # 得把 readme 去掉, 仅保留 / 前面的内容, 比如 "PythonWeb开发: 测试驱动方法"
+        pre_path, final_name = title_save_to_db.rsplit("/", maxsplit=1)
+        if final_name.lower() == "readme":
+            title_save_to_db = pre_path
+        md_file_name = str(title).rsplit("/", maxsplit=1)[1]
+    else:
+        title_save_to_db, md_file_name = title.rstrip(".md"), title
+    return title_save_to_db, md_file_name
+
+
 def sync_database(title, gitbook_name):
     """
     进行同步数据库的操作, 即会保存最新内容, 如果是不存在的则会进行创建操作
@@ -85,10 +105,7 @@ def sync_database(title, gitbook_name):
     """
     root_path = "{}/{}".format(const.GITBOOK_CODES_PATH, gitbook_name)
 
-    if "/" in title:
-        title_save_to_db, md_file_name = str(title).rsplit("/", maxsplit=1)
-    else:
-        title_save_to_db, md_file_name = title, title
+    title_save_to_db, md_file_name = get_title_and_md_file_name(title)
 
     right_href = get_right_href(gitbook_name, title_save_to_db, md_file_name)
     with open("{}/{}".format(root_path, title), "r") as f:
