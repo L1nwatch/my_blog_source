@@ -24,7 +24,7 @@ register = template.Library()  # 自定义filter时必须加上
 
 @register.filter(is_safe=True)  # 注册template filter
 @stringfilter  # 希望字符串作为参数
-def add_em_tag(raw_data):
+def add_em_tag(keyword, raw_content):
     def replace(match_data):
         pre, raw_keyword = match_data.groups()
         pre = html.escape(pre)
@@ -36,12 +36,11 @@ def add_em_tag(raw_data):
         pre, raw_keyword, suffix = match_data.groups()
         return "{}{}{}".format(pre, raw_keyword, html.escape(suffix))
 
-    if "-" in raw_data:
-        keyword, content = raw_data.split("-", 1)
+    if keyword != "":
         # 处理每个关键词的转义
         keyword_deal_re = re.compile("(?P<pre>[\s\S]*?)(?P<keyword>{})".format(keyword),
                                      flags=re.IGNORECASE)
-        content = keyword_deal_re.sub(replace, content)
+        content = keyword_deal_re.sub(replace, raw_content)
 
         # 专门处理一下最后一次匹配关键词后面的字符的转义
         suffix_escape_re = re.compile("(.*)(\<em\>{}\</em\>){{1}}(?P<suf>[\s\S]*)$".format(keyword),
@@ -50,7 +49,7 @@ def add_em_tag(raw_data):
 
         return mark_safe(content)
     else:
-        return raw_data
+        return raw_content
 
 
 @register.filter(is_safe=True)  # 注册template filter

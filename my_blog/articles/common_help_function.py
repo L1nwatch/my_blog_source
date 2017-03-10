@@ -131,7 +131,7 @@ def create_search_result(article_list, keyword_set, search_type):
 
         result_content_list = list()
         # 遍历每一行, 提取出关键词所在行
-        for each_line in each_article.content.splitlines():
+        for line_number, each_line in enumerate(each_article.content.splitlines()):
             temp_keyword_set = set(copy.copy(keyword_set))
 
             # 已经搜索完所有关键词了, 就不浪费时间了
@@ -142,16 +142,20 @@ def create_search_result(article_list, keyword_set, search_type):
                 if each_keyword.lower() in each_line.lower():
                     # 如果是图片的话:
                     if picture_re.match(each_line):
-                        result_content_list.append(const.KEYWORD_IN_HREF)
+                        result_content_list.append(
+                            const.SEARCH_RESULT_INFO("", const.KEYWORD_IN_HREF, 0)
+                        )
                     # 存在于正文:
                     else:
-                        result_content_list.append("{}-{}".format(each_keyword, each_line))
+                        result_content_list.append(
+                            const.SEARCH_RESULT_INFO(each_keyword, each_line, line_number + 1)
+                        )
                     keyword_set.remove(each_keyword)
                     continue
 
         if len(result_content_list) <= 0:
             # 设置默认值
-            result_content_list = [const.KEYWORD_IN_TITLE]
+            result_content_list = [const.SEARCH_RESULT_INFO("", const.KEYWORD_IN_TITLE, 0)]
 
         result_list.append(
             const.ARTICLE_STRUCTURE(each_article.id, each_article.title, result_content_list, search_type))

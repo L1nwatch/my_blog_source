@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.10 重构一下添加 em 标签的函数
 2017.02.26 添加关于菜单格式化的代码测试
 2017.01.31 发现对自定义 markdown 解析方法有要求, 所以还是写个单元测试吧
 """
@@ -38,34 +39,34 @@ class TestCustomFilter(TestCase):
         """
         给前端用的, 对每个关键词添加 em 标签, 方便前端显示
         """
-        test_data = "aaa-user = aaa"
+        test_data = "aaa", "user = aaa"
         right_answer = "user = <em>aaa</em>"
-        my_answer = add_em_tag(test_data)
+        my_answer = add_em_tag(*test_data)
         self.assertEqual(right_answer, my_answer)
 
-        test_data = "aaa-user = aAa"
+        test_data = "aaa", "user = aAa"
         right_answer = "user = <em>aAa</em>"
-        my_answer = add_em_tag(test_data)
+        my_answer = add_em_tag(*test_data)
         self.assertEqual(right_answer, my_answer)
 
-        test_data = "aaa-user = aAa....aaA"
+        test_data = "aaa", "user = aAa....aaA"
         right_answer = "user = <em>aAa</em>....<em>aaA</em>"
-        my_answer = add_em_tag(test_data)
+        my_answer = add_em_tag(*test_data)
         self.assertEqual(right_answer, my_answer)
 
-        test_data = const.KEYWORD_IN_HREF
+        test_data = "", const.KEYWORD_IN_HREF
         right_answer = const.KEYWORD_IN_HREF
-        my_answer = add_em_tag(test_data)
+        my_answer = add_em_tag(*test_data)
         self.assertEqual(right_answer, my_answer)
 
-        test_data = "as-*   参考资料:[HTML `<table>` 标签的 align 属性](.asp"
+        test_data = "as", "*   参考资料:[HTML `<table>` 标签的 align 属性](.asp"
         right_answer = "*   参考资料:[HTML `&lt;table&gt;` 标签的 align 属性](.<em>as</em>p"
-        my_answer = add_em_tag(test_data)
+        my_answer = add_em_tag(*test_data)
         self.assertEqual(right_answer, my_answer)
 
-        test_data = 'gh-right_answer = "<h1>aaabbb</h1>"'
+        test_data = 'gh', 'right_answer = "<h1>aaabbb</h1>"'
         right_answer = 'ri<em>gh</em>t_answer = &quot;&lt;h1&gt;aaabbb&lt;/h1&gt;&quot;'
-        my_answer = add_em_tag(test_data)
+        my_answer = add_em_tag(*test_data)
         self.assertEqual(right_answer, my_answer)
 
     def test_menu_format(self):

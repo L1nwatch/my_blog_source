@@ -182,7 +182,7 @@ class TestSearchButton(FunctionalTest):
         # Y 搜索 test, 发现搜索结果里面每个对应结果的前面都有数字, Y 怀疑是不是行号?
         search_button.send_keys("{}\n".format("test"))
         result_table = self.browser.find_element_by_class_name("search-result-box-table-td")
-        self.assertIn("1", result_table.text)
+        self.assertTrue(str(result_table.text).isdigit())
 
         # Y 再次搜索 created, 它知道笔记 <super与init方法> 中 created 应该在第 12 行
         search_button = self.browser.find_element_by_id("id_search")

@@ -24,10 +24,10 @@
                         <div class="search-result-box">
                             <table class="search-result-box-table">
                                 <tbody>
-                                {% for each_match in post.content %}
+                                {% for each_result_info in post.content %}
                                     <tr>
-                                        <td class="search-result-box-table-td">{{ forloop.counter }}</td>
-                                        <td class="search-result-box-table-code">{{ each_match|add_em_tag }}</td>
+                                        <td class="search-result-box-table-td">{{ each_result_info.linenumber }}</td>
+                                        <td class="search-result-box-table-code">{{ each_result_info.keyword|add_em_tag:each_result_info.content }}</td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>

@@ -52,6 +52,7 @@ const.SLOW_CONNECT_DEBUG = False  # True if input("是否要访问被墙网站?(
 
 # 搜索页面
 const.ID_SEARCH_RESULT_TITLE = "id_search_result_title"
+const.SEARCH_RESULT_INFO = namedtuple("search_result_info", ["keyword", "content", "linenumber"])
 
 # 用来形成博客的文章 git
 const.NOTES_PATH_NAME = "notes"
