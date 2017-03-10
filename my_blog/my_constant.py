@@ -71,6 +71,7 @@ const.GITBOOK_USER_NAME = "l1nwatch"
 const.GITBOOK_CODES_REPOSITORY = {
     "PythonWeb": "https://git.oschina.net/w4tch/PythonWeb.git",
     # "violent-python": "https://git.oschina.net/w4tch/violent-python.git",
+
 }
 
 if __name__ == "__main__":

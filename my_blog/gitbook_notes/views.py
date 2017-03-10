@@ -69,7 +69,17 @@ def get_right_href(gitbook_name, title, md_file_name):
     user_name = const.GITBOOK_USER_NAME
     md_file_name = md_file_name.rsplit(".md", maxsplit=1)[0]
 
-    href_format = "https://{username}.gitbooks.io/{gitbook_name}/content/{title}/{md_file_name}.html"
+    if title.lower() == "readme":
+        href_format = "https://{username}.gitbooks.io/{gitbook_name}/content/index.html"
+    elif title == md_file_name:
+        href_format = "https://{username}.gitbooks.io/{gitbook_name}/content/{title}.html"
+    elif "/" in title:
+        if md_file_name == title.rsplit("/", maxsplit=1)[1]:
+            href_format = "https://{username}.gitbooks.io/{gitbook_name}/content/{title}.html"
+        else:
+            href_format = "https://{username}.gitbooks.io/{gitbook_name}/content/{title}/{md_file_name}.html"
+    else:
+        href_format = "https://{username}.gitbooks.io/{gitbook_name}/content/{title}/{md_file_name}.html"
 
     return href_format.format(username=user_name,
                               gitbook_name=urllib.parse.quote(gitbook_name).lower(),
