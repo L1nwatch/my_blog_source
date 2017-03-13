@@ -26,6 +26,15 @@
 ![2017-02-15日记截图](https://github.com/L1nwatch/my_blog_source/blob/master/2017-02-15%E6%97%A5%E8%AE%B0%E9%A6%96%E9%A1%B5.jpg?raw=true)
 
 
+### 更新情况
+
+发现自己的 reamde 一点汇总的跟进信息都没有, 还是写一个吧
+
+#### 2017.03.13
+
+今天刚学了用 ngrok 进行内网穿透, 但是发现之前的 nginx 配置的 `proxy_pass` 跟这个有所冲突, 于是更新了一下 nginx conf 配置模板, 提供子域名 `temo.HOSTNAME` 作为内网穿透的入口, 端口号默认为 8080
+
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：
