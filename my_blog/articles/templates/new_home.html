@@ -67,7 +67,6 @@
                         <li><a id="id_just_eating" href="{% url "just_eating" eating_place="home" %}">Eating</a></li>
                         <li><a id="id_work_journal" href="{% url "work_journal" %}">Journal</a></li>
                         <li><a id="id_archives" href="{% url "archives" %}">Articles</a></li>
-                        <li><a id="id_about_me" href="{% url "about_me" %}">About</a></li>
                     </ul>
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
@@ -80,9 +79,17 @@
                     <form action="{% url 'search' search_type='all' %}" method="post">
                         {{ form.title }}
                         {% csrf_token %}
-                        <button>Search</button>
+                        <div class="search_dropdown">
+                            <span>All</span>
+                            <ul>
+                                <li class="selected">All</li>
+                                <li>Articles</li>
+                                <li>Journals</li>
+                                <li>GitBooks</li>
+                                <li>Code</li>
+                            </ul>
+                        </div>
                     </form>
-
                 </section>
                 <br/><br/>
             </div>
@@ -150,10 +157,12 @@
         </div>
         <div class="pull-right">
             <ul class="social-media list-inline">
-                <li><a id="id_github" href="https://github.com/L1nwatch"><span class="fa fa-github"></span></a></li>
+                <li><a id="id_github" href="https://github.com/L1nwatch"><span class="fa fa-github-square"></span></a>
+                </li>
                 <li><a id="id_gitbook" href="https://www.gitbook.com/@l1nwatch"><span class="fa fa-book"></span></a>
                 </li>
                 <li><a id="id_email" href="mailto:watch1602@gmail.com"><span class="fa fa-envelope"></span></a></li>
+                <li><a id="id_about_me" href="{% url "about_me" %}"><span class="fa fa-user"></span></a></li>
             </ul>
         </div>
     </div>
@@ -169,6 +178,6 @@
 <!-- Javascripts
 ================================================== -->
 <script type="text/javascript" src="{% static "new_style/js/main.js" %}"></script>
-
+<script src="{% static "new_style/js/search_bar.js" %}"></script>
 </body>
 </html>
