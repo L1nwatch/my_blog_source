@@ -80,13 +80,13 @@
                         {{ form.title }}
                         {% csrf_token %}
                         <div class="search_dropdown">
-                            <span>All</span>
+                            <span id="id_current_search_choice">All</span>
                             <ul>
-                                <li class="selected">All</li>
-                                <li>Articles</li>
-                                <li>Journals</li>
-                                <li>GitBooks</li>
-                                <li>Code</li>
+                                <li id="id_search_choices" class="selected">All</li>
+                                <li id="id_search_choices">Articles</li>
+                                <li id="id_search_choices">Journals</li>
+                                <li id="id_search_choices">GitBooks</li>
+                                <li id="id_search_choices">Code</li>
                             </ul>
                         </div>
                     </form>

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.15 要提供搜索选项的功能, 需要重构一下搜索的 Form, 于是修改测试
 2017.02.08 重定义一个基类, 作为 Journal 和 Article 的 Form
 2016.10.07 添加了 ArticleForm 后要进行测试
 """

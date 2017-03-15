@@ -12,6 +12,7 @@ from my_constant import const
 __author__ = '__L1n__w@tch'
 
 
+
 class BaseSearchForm(forms.models.ModelForm):
     class Meta:
         model = BaseModel

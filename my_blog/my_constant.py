@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 const 变量
 
+2017.03.15 更新有关搜索框的常量信息
 2017.03.06 更新一堆常量信息
 2017.01.28 把要传给模板的命名数组作为一个常量放进来了
 """
@@ -53,6 +54,8 @@ const.SLOW_CONNECT_DEBUG = False  # True if input("是否要访问被墙网站?(
 # 搜索页面
 const.ID_SEARCH_RESULT_TITLE = "id_search_result_title"
 const.SEARCH_RESULT_INFO = namedtuple("search_result_info", ["keyword", "content", "linenumber"])
+const.SEARCH_CONTENT_HELP_TEXT = "请输入要搜索的内容"
+const.SEARCH_CHOICE_HELP_TEXT = "请选择要查询的范围"
 
 # 用来形成博客的文章 git
 const.NOTES_PATH_NAME = "notes"

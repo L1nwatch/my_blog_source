@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.15 首页添加搜索选项, 于是编写对应的测试代码
 2017.03.09 添加搜索结果显示行数的功能测试
 2017.03.05 添加 gitbook 的测试代码
 2017.02.21 手动使用过程中发现两个毛病, 补充一下测试代码
@@ -190,6 +191,142 @@ class TestSearchButton(FunctionalTest):
         search_button.send_keys("{}\n".format("created"))
         result_table = self.browser.find_element_by_class_name("search-result-box-table-td")
         self.assertIn("12", result_table.text)
+
+    def test_search_choice_all(self):
+        """
+        测试搜索选项, 选择 All 的时候可以搜索包括 Articles、GitBooks、Journal 的内容
+        """
+        # Y 打开首页, 发现了搜索框的默认按钮, 是 All 选项
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+        search_choice = self.browser.find_element_by_id("id_current_search_choice")
+        self.assertEqual(search_choice.text, "All")
+
+        # Y 知道 Articles、GitBooks、Journals 中均有某篇笔记包含内容 <test>, 于是 Y 搜索 test
+        search_button.send_keys("{}\n".format("test"))
+
+        # 搜索结果出来了, 发现果然 Articles、GitBooks、Journals 中含有 test 的笔记都被搜索出来了
+        search_results = self.browser.find_elements_by_class_name("search-result")
+        self.assertTrue(any(
+            ["article_with_markdown" in each_result.text for each_result in search_results])
+        )
+        self.assertTrue(any(
+            ["2017-02-08 任务情况总结" in each_result.text for each_result in search_results])
+        )
+        self.assertTrue(any(
+            ["test_book_name" in each_result.text for each_result in search_results])
+        )
+
+    def test_search_choice_articles(self):
+        """
+        测试搜索选项, 选择 Articles 的时候只能搜索包括 Articles 的内容
+        """
+        # Y 打开首页, 发现了搜索框, 看到了默认搜索选项 All, 点击一看, 发现了 Articles 选项
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+        self.browser.find_element_by_id("id_current_search_choice").click()
+        search_choices = self.browser.find_elements_by_id("id_search_choices")
+        self.assertTrue(any(
+            ["Articles" in each_choice.text for each_choice in search_choices]
+        ))
+
+        # Y 点击 Articles 选项, 发现当前的搜索选项变成了 Articles
+        for each_choice in search_choices:
+            if "Articles" == each_choice.text:
+                article_choice = each_choice
+                article_choice.click()
+        current_search_choice = self.browser.find_element_by_id("id_current_search_choice")
+        self.assertEqual(current_search_choice.text, "Articles")
+
+        # Y 知道 Articles、GitBooks、Journals 中均有某篇笔记包含内容 <test>, 于是 Y 搜索 test
+        # Y 希望搜索出来的结果不包含 GitBooks 和 Journals 的内容
+        search_button.send_keys("{}\n".format("test"))
+
+        # 搜索结果出来了, 果然只包含了 Articles 的内容
+        search_results = self.browser.find_elements_by_class_name("search-result")
+        self.assertTrue(any(
+            ["article_with_markdown" in each_result.text for each_result in search_results])
+        )
+        self.assertFalse(any(
+            ["2017-02-08 任务情况总结" in each_result.text for each_result in search_results])
+        )
+        self.assertFalse(any(
+            ["test_book_name" in each_result.text for each_result in search_results])
+        )
+
+    def test_search_choice_gitbooks(self):
+        """
+        测试搜索选项, 选择 GitBooks 的时候只能搜索包括 GitBooks 的内容
+        """
+        # Y 打开首页, 发现了搜索框, 看到了默认搜索选项 All, 点击一看, 发现了 Articles 选项
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+        self.browser.find_element_by_id("id_current_search_choice").click()
+        search_choices = self.browser.find_elements_by_id("id_search_choices")
+        self.assertTrue(any(
+            ["GitBooks" in each_choice.text for each_choice in search_choices]
+        ))
+
+        # Y 点击 Articles 选项, 发现当前的搜索选项变成了 Articles
+        for each_choice in search_choices:
+            if "GitBooks" == each_choice.text:
+                gitbook_choice = each_choice
+                gitbook_choice.click()
+        current_search_choice = self.browser.find_element_by_id("id_current_search_choice")
+        self.assertEqual(current_search_choice.text, "GitBooks")
+
+        # Y 知道 Articles、GitBooks、Journals 中均有某篇笔记包含内容 <test>, 于是 Y 搜索 test
+        # Y 希望搜索出来的结果不包含 GitBooks 和 Journals 的内容
+        search_button.send_keys("{}\n".format("test"))
+
+        # 搜索结果出来了, 果然只包含了 Articles 的内容
+        search_results = self.browser.find_elements_by_class_name("search-result")
+        self.assertFalse(any(
+            ["article_with_markdown" in each_result.text for each_result in search_results])
+        )
+        self.assertFalse(any(
+            ["2017-02-08 任务情况总结" in each_result.text for each_result in search_results])
+        )
+        self.assertTrue(any(
+            ["test_book_name" in each_result.text for each_result in search_results])
+        )
+
+    def test_search_choice_journals(self):
+        """
+        测试搜索选项, 选择 Journals 的时候只能搜索包括 Journals 的内容
+        """
+        # Y 打开首页, 发现了搜索框, 看到了默认搜索选项 All, 点击一看, 发现了 Articles 选项
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+        self.browser.find_element_by_id("id_current_search_choice").click()
+        search_choices = self.browser.find_elements_by_id("id_search_choices")
+        self.assertTrue(any(
+            ["Journals" in each_choice.text for each_choice in search_choices]
+        ))
+
+        # Y 点击 Articles 选项, 发现当前的搜索选项变成了 Articles
+        for each_choice in search_choices:
+            if "Journals" == each_choice.text:
+                gitbook_choice = each_choice
+                gitbook_choice.click()
+        current_search_choice = self.browser.find_element_by_id("id_current_search_choice")
+        self.assertEqual(current_search_choice.text, "Journals")
+
+        # Y 知道 Articles、GitBooks、Journals 中均有某篇笔记包含内容 <test>, 于是 Y 搜索 test
+        # Y 希望搜索出来的结果不包含 GitBooks 和 Journals 的内容
+        search_button.send_keys("{}\n".format("test"))
+
+        # 搜索结果出来了, 果然只包含了 Articles 的内容
+        search_results = self.browser.find_elements_by_class_name("search-result")
+        self.assertFalse(any(
+            ["article_with_markdown" in each_result.text for each_result in search_results])
+        )
+        self.assertTrue(any(
+            ["2017-02-08 任务情况总结" in each_result.text for each_result in search_results])
+        )
+        self.assertFalse(any(
+            ["test_book_name" in each_result.text for each_result in search_results])
+        )
 
 
 if __name__ == "__main__":
