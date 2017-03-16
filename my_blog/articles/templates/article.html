@@ -11,6 +11,7 @@
             <a href="{% url 'home' %}" class="fa fa-home">w@tch</a>
             <form action="{% url 'search' search_type='articles'%}" method="post">
                 {{ form.search_content }}
+                {{ form.search_choice }}
                 {% csrf_token %}
             </form>
         </div>

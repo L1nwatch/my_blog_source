@@ -24,6 +24,7 @@
                 <li>
                     <form class="pure-form" action="{% url 'search' search_type=current_type %}" method="post">
                         {{ form.search_content }}
+                        {{ form.search_choice }}
                         {% csrf_token %}
                     </form>
                 </li>

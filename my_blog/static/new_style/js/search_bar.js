@@ -1,15 +1,15 @@
 /* Search bar */
 
-
 $(document).ready(function () {
 
     // Set up common variables
     // --------------------------------------------------
 
     var dropdown = ".search_dropdown";
-    var dropdownList = dropdown + " select";
-    var dropdownListItems = dropdownList + " option";
-
+    var dropdownLabel = dropdown + " > span";
+    var dropdownList = dropdown + " ul";
+    var dropdownListItems = dropdownList + " li";
+    var id_search_choice = document.getElementById('id_search_choice');
 
     // Set up common functions
     // --------------------------------------------------
@@ -46,13 +46,17 @@ $(document).ready(function () {
     // --------------------------------------------------
 
     $(dropdownListItems).click(function () {
-        $(this).siblings("option.selected").removeClass("selected");
+        $(this).siblings("li.selected").removeClass("selected");
         $(this).addClass("selected");
 
         // Focus the input
-        $(this).parents("form.search_bar:first").find("input").focus();
+        $(this).parents("form.search_bar:first").find("input[type=text]").focus();
 
+        var labelText = $(this).text();
+        $(dropdownLabel).text(labelText);
 
+        // 自动选择对应的选项
+        id_search_choice.value = $(this).text().toLowerCase();
     });
 
 

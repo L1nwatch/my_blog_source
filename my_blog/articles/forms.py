@@ -29,7 +29,6 @@ class SelectWithTitles(forms.Select):
         final_attrs = self.build_attrs(attrs, name=name)
 
         output = [format_html('<select{}>', flatatt(final_attrs))]
-                  # '<span id="id_current_search_choice">{}</span>'.format(self.choices[0][1])]
 
         options = self.render_options([value])
         if options:
@@ -39,7 +38,7 @@ class SelectWithTitles(forms.Select):
         return mark_safe('\n'.join(output))
 
     def render_option(self, selected_choices, option_value, option_label):
-        each_choice = '<option id="id_search_choices" value="{value}">{display}</option>'
+        each_choice = '<option id="id_search_choices_{value}" value="{value}">{display}</option>'
         return each_choice.format(value=option_value,
                                   display=option_value.capitalize())
 
@@ -73,7 +72,7 @@ class BaseSearchForm(forms.models.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['search_choice'].widget.attrs.update(
-            {"class": "search_dropdown"}
+            {"class": "id_search_choice_select"}
         )
 
 
@@ -84,6 +83,9 @@ class ArticleForm(BaseSearchForm):
         self.fields["search_content"].widget.attrs.update({
             "class": "pure-input-2-3"
         })
+
+        self.data = self.data.copy()
+        self.data["search_choice"] = "articles"
 
 
 if __name__ == "__main__":

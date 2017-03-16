@@ -161,7 +161,6 @@ def do_articles_search(request):
 
     form = ArticleForm(data=request.POST)
     if form_is_valid_and_ignore_exist_error(form):
-        print("[*] 选择进行 {} 搜索: ".format(form.data["search_choice"]))
         keywords = set(clean_form_data(form.data["search_content"]).split(" "))
         # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
         article_list = search_keyword_in_model(keywords, Article, ["content", "title"])

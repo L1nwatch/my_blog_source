@@ -44,6 +44,7 @@
                 <form class="searchInput" name="search_term" action="{% url 'search' search_type='journals' %}"
                       method="post">
                     {{ form.search_content }}
+                    {{ form.search_choice }}
                     {% csrf_token %}
                     <div class="searchButton">
                         <input type="submit" name="submit" value=""/>

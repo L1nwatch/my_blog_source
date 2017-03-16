@@ -100,10 +100,7 @@
     color: #efe;
 }
 
-.webdesigntuts-workshop select {
-    -moz-appearance: none; /*for firefox, 去除三角*/
-    -webkit-appearance: none; /*for chrome, 去除三角*/
-    text-align-last: center; /* 使得文字可以居中 */
+.webdesigntuts-workshop div {
     background: #222;
     background: -webkit-linear-gradient(#333, #222);
     background: linear-gradient(#333, #222);
@@ -127,13 +124,20 @@
     width: 80px;
 }
 
-.webdesigntuts-workshop .search_dropdown:active {
+.webdesigntuts-workshop .search_dropdown ul {
+    display: none;
+    position: absolute;
     top: 105%;
+    left: -1px;
+    font-size: 14px;
+    /*background: #fff;*/
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+    /*border: 1px solid #ccc;*/
     border-radius: 3px;
+    padding: 7px 0;
 }
 
-.webdesigntuts-workshop .search_dropdown option {
+.webdesigntuts-workshop .search_dropdown li {
     list-style-type: none;
     margin: 0;
     padding: 5px 18px;
@@ -142,17 +146,17 @@
     position: relative;
 }
 
-.webdesigntuts-workshop .search_dropdown option:hover {
+.webdesigntuts-workshop .search_dropdown li:hover {
     background: navy;
 }
 
-.webdesigntuts-workshop .search_dropdown option.selected {
+.webdesigntuts-workshop .search_dropdown li.selected {
     background: linear-gradient(#393939, #292929);
     color: #5f5;
 }
 
-.webdesigntuts-workshop div:hover, .webdesigntuts-workshop select:hover,
-.webdesigntuts-workshop div:focus, .webdesigntuts-workshop select:focus {
+.webdesigntuts-workshop div:hover,
+.webdesigntuts-workshop div:focus {
     background: #292929;
     background: -webkit-linear-gradient(#393939, #292929);
     background: linear-gradient(#393939, #292929);
@@ -160,12 +164,16 @@
     outline: none;
 }
 
-.webdesigntuts-workshop div:active, .webdesigntuts-workshop select:active {
+.webdesigntuts-workshop div:active {
     background: #292929;
     background: -webkit-linear-gradient(#393939, #292929);
     background: linear-gradient(#393939, #292929);
     box-shadow: 0 1px 0 #000, inset 1px 0 1px #222;
     top: 1px;
+}
+
+.webdesigntuts-workshop .id_search_choice_select {
+    display: none;
 }
 
 @-webkit-keyframes glow {
