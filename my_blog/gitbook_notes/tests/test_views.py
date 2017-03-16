@@ -226,7 +226,8 @@ class GitBookSearchViewTest(BaseCommonTest):
         """
         日记搜索用的模板应该和 articles APP 用的一样
         """
-        response = self.client.post(self.unique_url, data={"title": "随便输入了一些什么"})
+        response = self.client.post(self.unique_url, data={"search_content": "随便输入了一些什么",
+                                                           "search_choice": "gitbooks"})
         self.assertTemplateUsed(response, "search_result.html")
 
     def test_search_result_display(self):
@@ -236,7 +237,8 @@ class GitBookSearchViewTest(BaseCommonTest):
         self.create_gitbooks_test_db()
 
         gitbook = GitBook.objects.get(title="test_book_name/test")
-        response = self.client.post(self.unique_url, data={"title": gitbook.content})
+        response = self.client.post(self.unique_url, data={"search_content": gitbook.content,
+                                                           "search_choice": "gitbooks"})
         self.assertContains(response, gitbook.title)
         self.assertContains(response, gitbook.content)
 
@@ -247,7 +249,8 @@ class GitBookSearchViewTest(BaseCommonTest):
         self.create_gitbooks_test_db()
 
         gitbook = GitBook.objects.get(title="test_book_name/test")
-        response = self.client.post(self.unique_url, data={"title": gitbook.content})
+        response = self.client.post(self.unique_url, data={"search_content": gitbook.content,
+                                                           "search_choice": "gitbooks"})
 
         self.assertContains(response, "/gitbook_notes/{}/".format(gitbook.id))
 
@@ -259,7 +262,8 @@ class GitBookSearchViewTest(BaseCommonTest):
 
         #  GitBook <test_book_name> 里面有一章是 <test>, 内容为 <test content>
         gitbook = GitBook.objects.get(title="test_book_name/test")
-        response = self.client.post(self.unique_url, data={"title": "conTent teSt"})
+        response = self.client.post(self.unique_url, data={"search_content": "conTent teSt",
+                                                           "search_choice": "gitbooks"})
 
         self.assertContains(response, gitbook.title)
 

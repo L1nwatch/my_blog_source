@@ -77,7 +77,8 @@
                 <br/><br/>
                 <section class="webdesigntuts-workshop">
                     <form action="{% url 'search' search_type='all' %}" method="post">
-                        {{ form.title }}
+                        {{ form.search_content }}
+                        {{ form.search_choice }}
                         {% csrf_token %}
                         <div class="search_dropdown">
                             <span id="id_current_search_choice">All</span>
@@ -178,6 +179,6 @@
 <!-- Javascripts
 ================================================== -->
 <script type="text/javascript" src="{% static "new_style/js/main.js" %}"></script>
-<script src="{% static "new_style/js/search_bar.js" %}"></script>
+{#<script src="{% static "new_style/js/search_bar.js" %}"></script>#}
 </body>
 </html>

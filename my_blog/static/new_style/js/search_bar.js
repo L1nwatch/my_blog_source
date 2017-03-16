@@ -1,6 +1,5 @@
 /* Search bar */
 
-var resizeElements;
 
 $(document).ready(function () {
 
@@ -8,9 +7,8 @@ $(document).ready(function () {
     // --------------------------------------------------
 
     var dropdown = ".search_dropdown";
-    var dropdownLabel = dropdown + " > span";
-    var dropdownList = dropdown + " ul";
-    var dropdownListItems = dropdownList + " li";
+    var dropdownList = dropdown + " select";
+    var dropdownListItems = dropdownList + " option";
 
 
     // Set up common functions
@@ -48,24 +46,14 @@ $(document).ready(function () {
     // --------------------------------------------------
 
     $(dropdownListItems).click(function () {
-        $(this).siblings("li.selected").removeClass("selected");
+        $(this).siblings("option.selected").removeClass("selected");
         $(this).addClass("selected");
 
         // Focus the input
-        $(this).parents("form.search_bar:first").find("input[type=text]").focus();
+        $(this).parents("form.search_bar:first").find("input").focus();
 
-        var labelText = $(this).text();
-        $(dropdownLabel).text(labelText);
-
-        resizeElements();
 
     });
 
 
-    // Resize all elements when the window resizes
-    // --------------------------------------------------
-
-    $(window).resize(function () {
-        resizeElements();
-    });
 });

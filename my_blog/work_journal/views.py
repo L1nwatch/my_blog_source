@@ -179,7 +179,7 @@ def do_journals_search(request):
         form = JournalForm(data=request.POST)
         # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
         if form_is_valid_and_ignore_exist_error(form):
-            search_text = clean_form_data(form.data["title"])
+            search_text = clean_form_data(form.data["search_content"])
             keywords = set()
 
             if re.match("\d{4}-\d{1,2}-\d{1,2}", search_text):

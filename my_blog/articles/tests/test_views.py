@@ -57,7 +57,7 @@ class HomeViewTest(TestCase):
         response = self.client.get("/")
         # 使用 assertIsInstance 确认视图使用的是正确的表单类
         self.assertIsInstance(response.context["form"], BaseSearchForm)
-        self.assertContains(response, 'name="title"')
+        self.assertContains(response, 'name="search_content"')
 
 
 class ArticleDisplayViewTest(TestCase):
@@ -345,17 +345,19 @@ class ArticlesSearchViewTest(TestCase):
     unique_url = "/search/search_type=articles"
 
     def test_for_invalid_input_passes_form_to_template(self):
-        response = self.client.post(self.unique_url, data={"title": ""})
+        response = self.client.post(self.unique_url, data={"search_content": "",
+                                                           "search_choice": "articles"})
         # 此时应该是返回到首页了
         self.assertIsInstance(response.context["form"], BaseSearchForm)
 
     def test_for_valid_input_passes_form_to_template(self):
-        response = self.client.post(self.unique_url, data={"title": "不应该有这篇文章的"})
+        response = self.client.post(self.unique_url, data={"search_content": "不应该有这篇文章的",
+                                                           "search_choice": "articles"})
         self.assertIsInstance(response.context["form"], ArticleForm)
 
     def test_form_input_not_exist_title(self):
-        form = ArticleForm(data={"title": ""})
-        self.assertEqual(form.errors["title"], [const.EMPTY_ARTICLE_ERROR])
+        form = ArticleForm(data={"search_content": "", "search_choice": "articles"})
+        self.assertEqual(form.errors["search_content"], [const.EMPTY_ARTICLE_ERROR])
 
     def test_view_passes_form_to_template(self):
         """
@@ -367,7 +369,8 @@ class ArticlesSearchViewTest(TestCase):
 
     def test_valid_input_will_get_response_using_right_template(self):
         test_article = Article.objects.create(title="test_article")
-        response = self.client.post(self.unique_url, data={"title": test_article.title})
+        response = self.client.post(self.unique_url, data={"search_content": test_article.title,
+                                                           "search_choice": "articles"})
         self.assertTemplateUsed(response, "search_result.html")
 
     def test_id_article_exist(self):
@@ -378,7 +381,8 @@ class ArticlesSearchViewTest(TestCase):
         test_article_title = "test_for_search_button"
         Article.objects.create(title=test_article_title)
 
-        response = self.client.post(self.unique_url, data={"title": test_article_title})
+        response = self.client.post(self.unique_url, data={"search_content": test_article_title,
+                                                           "search_choice": "articles"})
         self.assertContains(response, const.ID_SEARCH_RESULT_TITLE)
 
     def test_can_search_content(self):
@@ -387,7 +391,8 @@ class ArticlesSearchViewTest(TestCase):
         :return:
         """
         test_article = Article.objects.create(title="test_title_文章", content="test_content")
-        response = self.client.post(self.unique_url, data={"title": test_article.content})
+        response = self.client.post(self.unique_url, data={"search_content": test_article.content,
+                                                           "search_choice": "articles"})
         self.assertContains(response, test_article.title)
 
     def test_search_content_without_case(self):
@@ -396,7 +401,8 @@ class ArticlesSearchViewTest(TestCase):
         :return:
         """
         test_article = Article.objects.create(title="test_title_文章", content="test_content")
-        response = self.client.post(self.unique_url, data={"title": "TeSt_ConTeNt"})
+        response = self.client.post(self.unique_url, data={"search_content": "TeSt_ConTeNt",
+                                                           "search_choice": "articles"})
         self.assertContains(response, test_article.title)
 
     def test_can_search_content_and_title(self):
@@ -406,11 +412,13 @@ class ArticlesSearchViewTest(TestCase):
         """
         test_article = Article.objects.create(title="test_title_文章", content="test_content")
         # 从标题中查找
-        response = self.client.post(self.unique_url, data={"title": "title"})
+        response = self.client.post(self.unique_url, data={"search_content": "title",
+                                                           "search_choice": "articles"})
         self.assertContains(response, test_article.title)
 
         # 从内容中查找
-        response = self.client.post(self.unique_url, data={"title": "content"})
+        response = self.client.post(self.unique_url, data={"search_content": "content",
+                                                           "search_choice": "articles"})
         self.assertContains(response, test_article.title)
 
     def test_search_multiple_words(self):
@@ -420,11 +428,13 @@ class ArticlesSearchViewTest(TestCase):
         """
         test_article = Article.objects.create(title="test_title_文章", content="test content content2")
         # 仅存在其中一个关键词
-        response = self.client.post(self.unique_url, data={"title": "content3 test"})
+        response = self.client.post(self.unique_url, data={"search_content": "content3 test",
+                                                           "search_choice": "articles"})
         self.assertNotContains(response, test_article.title)
 
         # 两个关键词都存在
-        response = self.client.post(self.unique_url, data={"title": "content2 test"})
+        response = self.client.post(self.unique_url, data={"search_content": "content2 test",
+                                                           "search_choice": "articles"})
         self.assertContains(response, test_article.title)
 
     def test_search_one_word_can_show_content_and_title(self):
@@ -434,7 +444,8 @@ class ArticlesSearchViewTest(TestCase):
         test_article = Article.objects.create(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
 
         # 关键词在内容中, 搜索 bbb
-        response = self.client.post(self.unique_url, data={"title": "bBb"})  # 搜索要支持大小写
+        response = self.client.post(self.unique_url, data={"search_content": "bBb",
+                                                           "search_choice": "articles"})  # 搜索要支持大小写
 
         # 对应文章的标题存在
         self.assertContains(response, test_article.title)
@@ -446,14 +457,14 @@ class ArticlesSearchViewTest(TestCase):
         self.assertNotContains(response, const.KEYWORD_IN_TITLE)
 
         # 关键词在标题中, 搜索 article
-        response = self.client.post(self.unique_url, data={"title": "arTicle"})
+        response = self.client.post(self.unique_url, data={"search_content": "arTicle", "search_choice": "articles"})
         # 对应文章的标题存在
         self.assertContains(response, test_article.title)
         # 对应行的内容存在, 行内容为常量, 类似于 "关键词仅出现标题中" 等的提示信息
         self.assertContains(response, const.KEYWORD_IN_TITLE)
 
         # 关键词不在标题也不在内容, 搜索 bbbb
-        response = self.client.post(self.unique_url, data={"title": "bbbb"})
+        response = self.client.post(self.unique_url, data={"search_content": "bbbb", "search_choice": "articles"})
         # 对应文章的标题不存在
         self.assertNotContains(response, test_article.title)
         # 显示文章找不到的提示信息
@@ -466,7 +477,7 @@ class ArticlesSearchViewTest(TestCase):
         test_article = Article.objects.create(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
 
         # 关键词在内容中, 搜索 ccc 和 aaa
-        response = self.client.post(self.unique_url, data={"title": "ccc aaa"})
+        response = self.client.post(self.unique_url, data={"search_content": "ccc aaa", "search_choice": "articles"})
 
         # 对应文章的标题存在
         self.assertContains(response, test_article.title)
@@ -477,7 +488,8 @@ class ArticlesSearchViewTest(TestCase):
         self.assertNotContains(response, "bbb")
 
         # 关键词在标题和内容中, 搜索 article 和 bbb
-        response = self.client.post(self.unique_url, data={"title": "article bbb"})
+        response = self.client.post(self.unique_url, data={"search_content": "article bbb",
+                                                           "search_choice": "articles"})
         # 对应文章的标题存在
         self.assertContains(response, test_article.title)
         # 对应行的内容存在, 行内容为常量, 类似于 "关键词仅出现标题中" 等的提示信息
@@ -492,7 +504,7 @@ class ArticlesSearchViewTest(TestCase):
         test_article2 = Article.objects.create(title="test_title_article2", content="eee\nbbb\nfff\nddd\n")
 
         # 关键词在内容中, 搜索 bbb
-        response = self.client.post(self.unique_url, data={"title": "bbb"})
+        response = self.client.post(self.unique_url, data={"search_content": "bbb", "search_choice": "articles"})
 
         # 两篇文章都存在
         self.assertContains(response, test_article.title)
@@ -508,7 +520,7 @@ class ArticlesSearchViewTest(TestCase):
         test_article = Article.objects.create(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
 
         # 关键词在内容中, 搜索 bbb
-        response = self.client.post(self.unique_url, data={"title": "bbb"})
+        response = self.client.post(self.unique_url, data={"search_content": "bbb", "search_choice": "articles"})
 
         # 能搜索到文章
         self.assertContains(response, test_article.title)
@@ -523,7 +535,7 @@ class ArticlesSearchViewTest(TestCase):
         test_article = Article.objects.create(title="test_title_article", content="aaa\nbBb\ncCc\nddd\n")
 
         # 关键词在内容中, 搜索 bbb
-        response = self.client.post(self.unique_url, data={"title": "ddd Bbb"})
+        response = self.client.post(self.unique_url, data={"search_content": "ddd Bbb", "search_choice": "articles"})
 
         # 能搜索到文章
         self.assertContains(response, test_article.title)
@@ -536,7 +548,8 @@ class BaseSearchViewTest(TestCase):
         """
         测试 form 使用正确
         """
-        response = self.client.post(self.unique_url, data={"title": "不应该有这篇文章的"})
+        response = self.client.post(self.unique_url, data={"search_content": "不应该有这篇文章的",
+                                                           "search_choice": "all"})
         self.assertIsInstance(response.context["form"], BaseSearchForm)
 
     def test_can_search_articles_and_journals(self):
@@ -545,7 +558,7 @@ class BaseSearchViewTest(TestCase):
         article = Article.objects.create(title="test_article", content="test_article")
 
         # 测试搜索
-        response = self.client.post(self.unique_url, data={"title": "test"})
+        response = self.client.post(self.unique_url, data={"search_content": "test", "search_choice": "all"})
 
         # 能搜索到文章
         self.assertContains(response, article.title)
@@ -554,7 +567,8 @@ class BaseSearchViewTest(TestCase):
         self.assertContains(response, journal.title)
 
     def test_search_not_exist_keyword(self):
-        response = self.client.post(self.unique_url, data={"title": "随便输入的一点什么东西"})
+        response = self.client.post(self.unique_url, data={"search_content": "随便输入的一点什么东西",
+                                                           "search_choice": "all"})
 
         self.assertContains(response, const.EMPTY_ARTICLE_ERROR)
 
@@ -562,7 +576,8 @@ class BaseSearchViewTest(TestCase):
         """
         测试搜索界面再次搜索的时候依旧是 all 搜索
         """
-        response = self.client.post(self.unique_url, data={"title": "随便输入的一点什么东西"})
+        response = self.client.post(self.unique_url, data={"search_content": "随便输入的一点什么东西",
+                                                           "search_choice": "all"})
 
         self.assertNotContains(response, ArticlesSearchViewTest.unique_url)
         self.assertContains(response, self.unique_url)

@@ -29,6 +29,7 @@ class SearchModel(models.Model):
             raise RuntimeError
         else:
             self.search_choice = self.search_choice.lower()
+        self.title = self.search_content
         super().save(*args, **kwargs)
 
 

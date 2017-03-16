@@ -25,9 +25,9 @@ class BaseSearchFormTest(TestCase):
         self.assertIn('id="id_search"', base_search_form.as_p(), "id 属性没有设置?还是说设置错了?")
 
     def test_form_validation_for_blank_input(self):
-        form = BaseSearchForm(data={"title": ""})
+        form = BaseSearchForm(data={"search_content": ""})
         self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors["title"], [const.EMPTY_ARTICLE_ERROR])
+        self.assertEqual(form.errors["search_content"], [const.EMPTY_ARTICLE_ERROR])
 
 
 class ArticleFormTest(TestCase):

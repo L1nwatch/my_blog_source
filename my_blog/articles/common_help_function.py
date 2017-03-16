@@ -101,6 +101,7 @@ def form_is_valid_and_ignore_exist_error(my_form):
         return True
     elif len(my_form.errors) == 1 and re.search("具有.*的.*已存在", str(my_form.errors)):
         return True
+    print("[*] 发现错误: {}".format(my_form.errors))
     return False
 
 

@@ -23,7 +23,7 @@
                 </li>
                 <li>
                     <form class="pure-form" action="{% url 'search' search_type=current_type %}" method="post">
-                        {{ form.title }}
+                        {{ form.search_content }}
                         {% csrf_token %}
                     </form>
                 </li>

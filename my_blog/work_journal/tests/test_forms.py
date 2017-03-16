@@ -24,9 +24,9 @@ class JournalFormTest(TestCase):
         self.assertIn('id="id_search_work_journal"', journal_form.as_p(), "id 属性没有设置?还是说设置错了?")
 
     def test_form_validation_for_blank_input(self):
-        form = JournalForm(data={"title": ""})
+        form = JournalForm(data={"search_content": "", "search_choice": "journals"})
         self.assertFalse(form.is_valid())
-        self.assertEqual(form.errors["title"], [const.EMPTY_ARTICLE_ERROR])
+        self.assertEqual(form.errors["search_content"], [const.EMPTY_ARTICLE_ERROR])
 
 
 if __name__ == "__main__":

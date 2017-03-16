@@ -100,7 +100,10 @@
     color: #efe;
 }
 
-.webdesigntuts-workshop div {
+.webdesigntuts-workshop select {
+    -moz-appearance: none; /*for firefox, 去除三角*/
+    -webkit-appearance: none; /*for chrome, 去除三角*/
+    text-align-last: center; /* 使得文字可以居中 */
     background: #222;
     background: -webkit-linear-gradient(#333, #222);
     background: linear-gradient(#333, #222);
@@ -124,36 +127,32 @@
     width: 80px;
 }
 
-.webdesigntuts-workshop .search_dropdown ul {
-  display: none;
-  position: absolute;
-  top: 105%;
-  left: -1px;
-  font-size: 14px;
-  /*background: #fff;*/
-  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
-  /*border: 1px solid #ccc;*/
-  border-radius: 3px;
-  padding: 7px 0;
-}
-.webdesigntuts-workshop .search_dropdown li {
-  list-style-type: none;
-  margin: 0;
-  padding: 5px 18px;
-  /*color: #1C62A8;*/
-  line-height: 1.2em;
-  position: relative;
-}
-.webdesigntuts-workshop .search_dropdown li:hover {
-  background: navy;
-}
-.webdesigntuts-workshop .search_dropdown li.selected {
-  background: linear-gradient(#393939, #292929);
-  color: #5f5;
+.webdesigntuts-workshop .search_dropdown:active {
+    top: 105%;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
 }
 
-.webdesigntuts-workshop div:hover,
-.webdesigntuts-workshop div:focus {
+.webdesigntuts-workshop .search_dropdown option {
+    list-style-type: none;
+    margin: 0;
+    padding: 5px 18px;
+    /*color: #1C62A8;*/
+    line-height: 1.2em;
+    position: relative;
+}
+
+.webdesigntuts-workshop .search_dropdown option:hover {
+    background: navy;
+}
+
+.webdesigntuts-workshop .search_dropdown option.selected {
+    background: linear-gradient(#393939, #292929);
+    color: #5f5;
+}
+
+.webdesigntuts-workshop div:hover, .webdesigntuts-workshop select:hover,
+.webdesigntuts-workshop div:focus, .webdesigntuts-workshop select:focus {
     background: #292929;
     background: -webkit-linear-gradient(#393939, #292929);
     background: linear-gradient(#393939, #292929);
@@ -161,7 +160,7 @@
     outline: none;
 }
 
-.webdesigntuts-workshop div:active {
+.webdesigntuts-workshop div:active, .webdesigntuts-workshop select:active {
     background: #292929;
     background: -webkit-linear-gradient(#393939, #292929);
     background: linear-gradient(#393939, #292929);

@@ -10,7 +10,7 @@
         <div class="sidebar-search">
             <a href="{% url 'home' %}" class="fa fa-home">w@tch</a>
             <form action="{% url 'search' search_type='articles'%}" method="post">
-                {{ form.title }}
+                {{ form.search_content }}
                 {% csrf_token %}
             </form>
         </div>

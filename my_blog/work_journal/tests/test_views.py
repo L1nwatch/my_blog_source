@@ -73,7 +73,7 @@ class JournalHomeViewTest(TestCase):
         response = self.client.get(self.unique_url)
         # 使用 assertIsInstance 确认视图使用的是正确的表单类
         self.assertIsInstance(response.context["form"], JournalForm)
-        self.assertContains(response, 'name="title"')
+        self.assertContains(response, 'name="search_content"')
 
     def test_display_no_journals(self):
         """
@@ -195,7 +195,8 @@ class JournalSearchViewTest(BaseCommonTest):
         """
         日记搜索用的模板应该和 articles APP 用的一样
         """
-        response = self.client.post(self.unique_url, data={"title": "随便输入了一些什么"})
+        response = self.client.post(self.unique_url, data={"search_content": "随便输入了一些什么",
+                                                           "search_choice": "journals"})
         self.assertTemplateUsed(response, "search_result.html")
 
     def test_search_result_display(self):
@@ -205,7 +206,8 @@ class JournalSearchViewTest(BaseCommonTest):
         self.create_journal_test_db()
 
         journal = Journal.objects.get(title="test_journal_1")
-        response = self.client.post(self.unique_url, data={"title": journal.content})
+        response = self.client.post(self.unique_url, data={"search_content": journal.content,
+                                                           "search_choice": "journals"})
         self.assertContains(response, journal.title)
         self.assertContains(response, journal.content)
 
@@ -216,7 +218,8 @@ class JournalSearchViewTest(BaseCommonTest):
         self.create_journal_test_db()
 
         journal = Journal.objects.get(title="test_journal_1")
-        response = self.client.post(self.unique_url, data={"title": journal.content})
+        response = self.client.post(self.unique_url, data={"search_content": journal.content,
+                                                           "search_choice": "journals"})
 
         self.assertContains(response, "/work_journal/{}/".format(journal.id))
 
@@ -228,7 +231,8 @@ class JournalSearchViewTest(BaseCommonTest):
 
         # 日记 <test_journal_1> 里面有单词 <journal> <content>, 所在行为 <test_journal_content_1>
         journal = Journal.objects.get(title="test_journal_1")
-        response = self.client.post(self.unique_url, data={"title": "conTent journal"})
+        response = self.client.post(self.unique_url, data={"search_content": "conTent journal",
+                                                           "search_choice": "journals"})
 
         self.assertContains(response, journal.title)
 
@@ -241,19 +245,22 @@ class JournalSearchViewTest(BaseCommonTest):
         journal = Journal.objects.get(title="test_journal_1")
 
         # 测试只搜年, 搜不到
-        response = self.client.post(self.unique_url, data={"title": "{}".format(journal.date.year)})
+        response = self.client.post(self.unique_url, data={"search_content": "{}".format(journal.date.year),
+                                                           "search_choice": "journals"})
         self.assertNotContains(response, journal.title)
 
         # 测试只搜年和月, 搜不到
         response = self.client.post(self.unique_url,
-                                    data={"title": "{}-{}".format(journal.date.year, journal.date.month)})
+                                    data={"sesarch_content": "{}-{}".format(journal.date.year, journal.date.month),
+                                          "search_choice": "journals"})
         self.assertNotContains(response, journal.title)
 
         # 测试搜年-月-日, 可以搜到
         response = self.client.post(self.unique_url,
-                                    data={"title": "{}-{}-{}".format(journal.date.year,
-                                                                     journal.date.month,
-                                                                     journal.date.day)})
+                                    data={"search_content": "{}-{}-{}".format(journal.date.year,
+                                                                              journal.date.month,
+                                                                              journal.date.day),
+                                          "search_choice": "journals"})
         self.assertContains(response, journal.title)
 
     def test_search_no_exist_date_journal(self):
@@ -262,9 +269,10 @@ class JournalSearchViewTest(BaseCommonTest):
         """
         today = datetime.datetime.today()
 
-        response = self.client.post(self.unique_url, data={"title": "{}-{}-{}".format(today.year,
-                                                                                      today.month,
-                                                                                      today.day)})
+        response = self.client.post(self.unique_url, data={"search_content": "{}-{}-{}".format(today.year,
+                                                                                               today.month,
+                                                                                               today.day),
+                                                           "search_choice": "journals"})
         self.assertContains(response, const.EMPTY_ARTICLE_ERROR)
 
 

@@ -231,13 +231,11 @@ def do_gitbooks_search(request):
         form = BaseSearchForm(data=request.POST)
         # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见下面这个验证函数
         if form_is_valid_and_ignore_exist_error(form):
-            search_text = clean_form_data(form.data["title"])
+            search_text = clean_form_data(form.data["search_content"])
             # 按关键词来搜索
             keywords = set(search_text.split(" "))
 
             gitbook_list = search_keyword_in_model(keywords, GitBook, ["content"])
-            logger.info("ip: {} 搜索 GitBook: {}"
-                        .format(get_ip_from_django_request(request), form.data["title"]))
 
             context_data = get_context_data(request, "gitbooks",
                                             {'post_list': create_search_result(gitbook_list, keywords, "gitbook_notes"),

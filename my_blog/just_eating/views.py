@@ -36,11 +36,11 @@ def create_home_menu():
 
 def create_school_menu():
     school_menu = list()
-    backup_list = ["(美食坊|丁香|海棠)\n快餐"]
+    backup_list = ["(美食坊|丁香|海棠)\n快餐", "新综\n小米鸡排饭(油+蒜!)"]
 
     monday = const.EATING_MENU_STRUCTURE("周一", "丁香\n杂粮煎饼\n豆浆", "新综\n香干炒肉(油!)", "竹园\n蒙古烤肉(油!)")
     tuesday = const.EATING_MENU_STRUCTURE("周二", "海棠\n照烧鸡腿饼", "海棠\n川渝-腐竹炒肉", "竹园\n快餐")
-    wednesday = const.EATING_MENU_STRUCTURE("周三", "竹园\n手抓饼\n牛奶", "海棠\n川味椒盐里脊", "新综\n小米鸡排饭(油!)")
+    wednesday = const.EATING_MENU_STRUCTURE("周三", "竹园\n手抓饼\n牛奶", "海棠\n川味椒盐里脊", "待定")
     thursday = const.EATING_MENU_STRUCTURE("周四", "海棠\n杂粮煎饼", "丁香\n农家小炒肉", "新综\n快餐")
     friday = const.EATING_MENU_STRUCTURE("周五", "海棠\n花干菜夹馍\n豆浆", "海棠\n鱼香肉丝(油!)", "丁香\n三楼自选快餐")
     saturday = const.EATING_MENU_STRUCTURE("周六", "老综\n卤肉卷\n", " 海棠\n川渝-辣子鸡", " 新综\n包菜肉片(油!)")
