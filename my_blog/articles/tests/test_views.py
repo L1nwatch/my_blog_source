@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.16 增加首页搜索选项的测试
 2017.02.18 增加首页搜索的测试
 2017.02.11 不断强化搜索功能
 2017.02.08 重构, 将原先所有 ArticleForm 改为 BaseSearchForm
@@ -19,6 +20,7 @@ from articles.views import _parse_markdown_file, get_right_content_from_file, _g
 from articles.templatetags.custom_filter import custom_markdown
 
 from work_journal.models import Journal
+from gitbook_notes.models import GitBook
 from my_constant import const
 
 from django.conf import settings
@@ -544,6 +546,22 @@ class ArticlesSearchViewTest(TestCase):
 class BaseSearchViewTest(TestCase):
     unique_url = "/search/search_type=all"
 
+    def create_test_db(self):
+        """
+        建立 articles、journal、gitbooks 的测试数据
+        """
+        journal = Journal.objects.create(title="test_journal", date=datetime.datetime.today(), content="test journal")
+        article = Article.objects.create(title="test_article", content="test_article")
+        gitbooks = GitBook.objects.create(
+            book_name="test_book_name",
+            href="http://{}/{}.html".format("test_book_name", "test"),
+            md_file_name="test.md",
+            title="test_book_name/test",
+            content="test content",
+        )
+
+        return article, journal, gitbooks
+
     def test_for_valid_input_passes_form_to_template(self):
         """
         测试 form 使用正确
@@ -554,8 +572,7 @@ class BaseSearchViewTest(TestCase):
 
     def test_can_search_articles_and_journals(self):
         # 创建测试数据
-        journal = Journal.objects.create(title="test_journal", date=datetime.datetime.today(), content="test journal")
-        article = Article.objects.create(title="test_article", content="test_article")
+        article, journal, gitbooks = self.create_test_db()
 
         # 测试搜索
         response = self.client.post(self.unique_url, data={"search_content": "test", "search_choice": "all"})
@@ -581,6 +598,62 @@ class BaseSearchViewTest(TestCase):
 
         self.assertNotContains(response, ArticlesSearchViewTest.unique_url)
         self.assertContains(response, self.unique_url)
+
+    def test_search_choice_all(self):
+        """
+        测试搜索选项, 选择 All 的时候可以搜索包括 Articles、GitBooks、Journal 的内容
+        """
+        article, journal, gitbooks = self.create_test_db()
+
+        response = self.client.post(self.unique_url, data={"search_content": "test",
+                                                           "search_choice": "all"})
+
+        # 搜索结果应该包含三份笔记
+        self.assertContains(response, article.title)
+        self.assertContains(response, journal.title)
+        self.assertContains(response, gitbooks.title)
+
+    def test_search_choice_articles(self):
+        """
+        测试搜索选项, 选择 Articles 的时候只能搜索包括 Articles 的内容
+        """
+        article, journal, gitbooks = self.create_test_db()
+
+        response = self.client.post(self.unique_url, data={"search_content": "test",
+                                                           "search_choice": "articles"})
+
+        # 搜索结果应该只包含 Article 的笔记
+        self.assertContains(response, article.title)
+        self.assertNotContains(response, journal.title)
+        self.assertNotContains(response, gitbooks.title)
+
+    def test_search_choice_gitbooks(self):
+        """
+        测试搜索选项, 选择 GitBooks 的时候只能搜索包括 GitBooks 的内容
+        """
+        article, journal, gitbooks = self.create_test_db()
+
+        response = self.client.post(self.unique_url, data={"search_content": "test",
+                                                           "search_choice": "gitbooks"})
+
+        # 搜索结果应该只包含 GitBooks 的笔记
+        self.assertNotContains(response, article.title)
+        self.assertNotContains(response, journal.title)
+        self.assertContains(response, gitbooks.title)
+
+    def test_search_choice_journals(self):
+        """
+        测试搜索选项, 选择 Journals 的时候只能搜索包括 Journals 的内容
+        """
+        article, journal, gitbooks = self.create_test_db()
+
+        response = self.client.post(self.unique_url, data={"search_content": "test",
+                                                           "search_choice": "journals"})
+
+        # 搜索结果应该只包含 GitBooks 的笔记
+        self.assertNotContains(response, article.title)
+        self.assertContains(response, journal.title)
+        self.assertNotContains(response, gitbooks.title)
 
 
 if __name__ == "__main__":

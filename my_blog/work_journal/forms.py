@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.16 重构了 form 需要覆盖 search_choice 选项
 2017.03.15 重构搜索的 form 和 model
 2017.02.03 为这个 APP 新建 FORM 类
 """
-from my_constant import const
-
 from articles.forms import BaseSearchForm
 
 __author__ = '__L1n__w@tch'
@@ -21,6 +20,7 @@ class JournalForm(BaseSearchForm):
             "id": "id_search_work_journal"
         })
 
+        self.initial['search_choice'] = 'journals'
 
 if __name__ == "__main__":
     pass

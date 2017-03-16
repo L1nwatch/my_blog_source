@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.16 发现 request.get 如果采用给定的 form 会导致默认的 choice 失效, 原因未知
 2017.03.08 进行部分重构
 2017.03.07 添加一个 clean form data 的方法, 因为不知道怎么嵌入 form。。。
 2017.02.10 添加搜索时不搜索图片的设定
@@ -32,16 +33,15 @@ def get_context_data(request, context_type, update_data=None):
     :param update_data: dict(), 除了基础数据外, 需要额外发送给模板的数据
     :return: dict(), 发送给模板的全部数据
     """
-    form_dict = {"articles": ArticleForm, "all": BaseSearchForm, "journals": JournalForm, "gitbooks": GitBook}
+    form_dict = {"articles": ArticleForm, "all": BaseSearchForm, "journals": JournalForm, "gitbooks": BaseSearchForm}
     model_dict = {"articles": Article, "journals": Journal, "all": BaseModel, "gitbooks": BaseModel}
 
-    data_return_to_base_template = {"form": form_dict[context_type](), "current_type": context_type,
+    data_return_to_base_template = {"form": form_dict[context_type](initial={"search_choice": context_type}),
+                                    "current_type": context_type,
                                     "is_valid_click": "True",
                                     "{}_numbers".format(context_type): len(model_dict[context_type].objects.all())}
     if request.method == "POST":
         data_return_to_base_template["form"] = form_dict[context_type](request.POST)
-    elif request.method == "GET":
-        data_return_to_base_template["form"] = form_dict[context_type](request.GET)
 
     if isinstance(update_data, dict):
         data_return_to_base_template.update(update_data)

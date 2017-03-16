@@ -10,9 +10,9 @@ from django import forms
 from .models import SearchModel
 from my_constant import const
 
-from django.forms.utils import flatatt
 from django.utils.safestring import mark_safe
 from django.utils.html import format_html
+from django.utils.encoding import force_text
 
 __author__ = '__L1n__w@tch'
 
@@ -23,24 +23,22 @@ class SelectWithTitles(forms.Select):
         # Ensure the titles dict exists
         self.search_choice = {}
 
-    def render(self, name, value, attrs=None):
-        if value is None:
-            value = ''
-        final_attrs = self.build_attrs(attrs, name=name)
-
-        output = [format_html('<select{}>', flatatt(final_attrs))]
-
-        options = self.render_options([value])
-        if options:
-            output.append(options)
-
-        output.append('</select>')
-        return mark_safe('\n'.join(output))
-
     def render_option(self, selected_choices, option_value, option_label):
-        each_choice = '<option id="id_search_choices_{value}" value="{value}">{display}</option>'
-        return each_choice.format(value=option_value,
-                                  display=option_value.capitalize())
+        if option_value is None:
+            option_value = ''
+        option_value = force_text(option_value)
+        if option_value in selected_choices:
+            selected_html = mark_safe(' selected="selected"')
+            if not self.allow_multiple_selected:
+                # Only allow for a single selection.
+                selected_choices.remove(option_value)
+        else:
+            selected_html = ''
+
+        each_choice = '<option id="id_search_choices_{value}" value="{value}"{selected_html}>{display}</option>'
+        return format_html(each_choice, value=option_value,
+                           selected_html=selected_html,
+                           display=option_value.capitalize())
 
 
 class CustomChoiceField(forms.ChoiceField):
@@ -53,7 +51,8 @@ class CustomChoiceField(forms.ChoiceField):
 
 
 class BaseSearchForm(forms.models.ModelForm):
-    search_choice = CustomChoiceField(required=True, choices=SearchModel.SEARCH_CHOICES, initial="all")
+    search_choice = CustomChoiceField(required=True, choices=SearchModel.SEARCH_CHOICES,
+                                      initial={"search_choice": "all"})
 
     class Meta:
         model = SearchModel
@@ -77,15 +76,17 @@ class BaseSearchForm(forms.models.ModelForm):
 
 
 class ArticleForm(BaseSearchForm):
+    search_choice = CustomChoiceField(required=True, choices=SearchModel.SEARCH_CHOICES,
+                                      initial={"search_choice": "articles"})
+
     def __init__(self, *args, **kwargs):
-        super(ArticleForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields["search_content"].widget.attrs.update({
             "class": "pure-input-2-3"
         })
 
-        self.data = self.data.copy()
-        self.data["search_choice"] = "articles"
+        self.initial['search_choice'] = 'articles'
 
 
 if __name__ == "__main__":

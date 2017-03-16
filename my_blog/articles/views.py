@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.16 重构了搜索框, 于是搜索类型不再是通过 url 传递的了
 2017.03.08 进行重构
 2017.03.07 新增 form data 的清理工作
 2017.03.05 添加 GitBook 的搜索
@@ -176,6 +177,7 @@ def do_articles_search(request):
 @log_wrapper(str_format="进行了搜索", logger=logger)
 def blog_search(request, search_type="all"):
     """
+    2017.03.16 重构了搜索框, 于是搜索类型不再是通过 url 传递的了
     2017.02.18 实现日记和文章同时搜索的功能
     2017.02.08 要重构视图搜索函数, 支持搜索指定类型的数据, 比如说只搜索文章, 只搜索日记等
     2017.01.27 重构搜索视图函数, 现在要显示搜索结果等的
@@ -185,7 +187,7 @@ def blog_search(request, search_type="all"):
     """
     if request.method == "POST":
         context_data = None
-        if search_type == "all":
+        if request.POST["search_choice"] == "all":
             context_data = get_context_data(request, "all", {"total_numbers": 0})
 
             article_search_result = do_articles_search(request)
@@ -206,11 +208,11 @@ def blog_search(request, search_type="all"):
             if not context_data.get("post_list", list()):
                 context_data["error"] = const.EMPTY_ARTICLE_ERROR
 
-        elif search_type == "articles":
+        elif request.POST["search_choice"] == "articles":
             context_data = do_articles_search(request)
-        elif search_type == "journals":
+        elif request.POST["search_choice"] == "journals":
             context_data = do_journals_search(request)
-        elif search_type == "gitbooks":
+        elif request.POST["search_choice"] == "gitbooks":
             context_data = do_gitbooks_search(request)
 
         if context_data is not None and len(context_data) > 0:
