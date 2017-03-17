@@ -1,4 +1,7 @@
-/* Search bar */
+/*
+ * Search bar 相关 js
+ * 2017.03.17 修正 focus 的 bug, 现在单击完下拉菜单就可以自动 focus 到 input 框了
+ */
 
 $(document).ready(function () {
 
@@ -50,7 +53,7 @@ $(document).ready(function () {
         $(this).addClass("selected");
 
         // Focus the input
-        $(this).parents("form.search_bar:first").find("input[type=text]").focus();
+        $(this).parents("form").find("input").focus();
 
         var labelText = $(this).text();
         $(dropdownLabel).text(labelText);

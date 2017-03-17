@@ -48,6 +48,8 @@
 
 去掉所有页面 search_choice 的显示样式
 
+修正 focus 的 bug, 现在单击完下拉菜单就可以自动 focus 到 input 框了
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：
