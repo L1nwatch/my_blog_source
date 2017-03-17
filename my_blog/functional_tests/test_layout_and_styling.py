@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.17 重构一下测试用的 md 的文件的路径
 2017.02.26 添加一下吃饭界面的 CSS 测试
 2017.01.27 处理一下表格解析错误的问题
 2017.01.27 处理一下 ``` 后带空格会影响格式的问题, 最后发现是原来的 markdown 文件不标准导致的, 算了, 就当添加一个 markdown 显示测试吧
@@ -100,21 +101,21 @@ class ArticleTimeInfoTest(FunctionalTest):
 class ArticleDisplayTest(FunctionalTest):
     def setUp(self):
         super().setUp()
-        self._create_markdown_test_article()
+        self.test_markdown_file_path = os.path.join(settings.BASE_DIR, "articles", "tests", "markdown_file_for_test.md")
+        self.create_markdown_test_article()
         self.test_url = "{host}/{path}".format(host=self.server_url, path="articles/archives/")
 
         # Y 访问归档页
         self.browser.get(self.test_url)
 
-    @staticmethod
-    def _create_markdown_test_article():
+    def create_markdown_test_article(self):
         """
         创建一篇测试用的 markdown 文章
         :return:
         """
         # 1. 测试点: ``` 行中带空格
 
-        with open(os.path.join(settings.BASE_DIR, "markdown_file_for_test.md"), "r") as f:
+        with open(self.test_markdown_file_path, "r") as f:
             content1 = f.read()
 
         # 创建一篇 Markdown 文章, 含有测试用的各个内容

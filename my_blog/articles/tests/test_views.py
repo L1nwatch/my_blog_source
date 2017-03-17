@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.17 发现 markdown 解析方法对于不规范的 md 文件无法做处理, 新编了个测试确保 md 解析功能
 2017.03.16 增加首页搜索选项的测试
 2017.02.18 增加首页搜索的测试
 2017.02.11 不断强化搜索功能
@@ -66,11 +67,14 @@ class ArticleDisplayViewTest(TestCase):
     unique_url = "/articles/{}/"
 
     def setUp(self):
-        self._create_markdown_article()
+        self.test_file_path = os.path.join(settings.BASE_DIR, "articles", "tests")
+        self.test_markdown_file_path = os.path.join(self.test_file_path, "markdown_file_for_test.md")
+        self.unfriendly_test_markdown_file_path = os.path.join(self.test_file_path,
+                                                               "unfriendly_markdown_file_for_test.md")
+        self.create_markdown_article()
 
-    @staticmethod
-    def _create_markdown_article():
-        with open(os.path.join(settings.BASE_DIR, "markdown_file_for_test.md"), "r") as f:
+    def create_markdown_article(self):
+        with open(self.test_markdown_file_path, "r") as f:
             data = f.read()
         Article.objects.create(title="test_article_1", content=data)
 
@@ -86,7 +90,7 @@ class ArticleDisplayViewTest(TestCase):
         测试 markdown 解析成树效果
         :return:
         """
-        with open(os.path.join(settings.BASE_DIR, "markdown_file_for_test.md"), "r") as f:
+        with open(self.test_markdown_file_path, "r") as f:
             data = f.read()
 
         my_parse_result = _parse_markdown_file(data)
@@ -96,6 +100,19 @@ class ArticleDisplayViewTest(TestCase):
         self.assertEqual(my_parse_result[0].child[0].title, "二级标题")
         self.assertEqual(my_parse_result[0].child[0].child[0].title, "三级标题 1")
         self.assertEqual(my_parse_result[0].child[0].child[1].title, "三级标题 2")
+
+    def test_markdown_parse_friendly(self):
+        """
+        针对不规范的 markdown 文件解析时也要友好
+        """
+        with open(self.unfriendly_test_markdown_file_path, "r") as f:
+            data = f.read()
+
+        my_parse_result = _parse_markdown_file(data)
+
+        self.assertNotEqual(my_parse_result, None)
+        self.assertEqual(my_parse_result[0].title, "乾颐堂 CCNAv3.0 路由与交换")
+        self.assertEqual(my_parse_result[0].child[0].title, "知识集 13")
 
     def test_markdown_tree_display(self):
         """
@@ -122,7 +139,7 @@ class ArticleDisplayViewTest(TestCase):
         """
         测试获取 id 的正则是否写对了
         """
-        with open(os.path.join(settings.BASE_DIR, "markdown_file_for_test.md"), "r") as f:
+        with open(self.test_markdown_file_path, "r") as f:
             data = f.read()
 
         markdown_html = custom_markdown(data)

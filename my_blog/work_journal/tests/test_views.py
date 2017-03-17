@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.17 重构一下测试用的 md 文件的路径
 2017.02.08 测试提取日期对象的方法
 2017.02.07 添加更新的时候判断文件名的合法性的单元测试
 2017.02.03 开始写这个 APP, 需要新建单元测试
@@ -36,7 +37,7 @@ class BaseCommonTest(TestCase):
                                date=today)
 
         # 创建一篇 Markdown 格式的日记
-        with open(os.path.join(settings.BASE_DIR, "markdown_file_for_test.md"), "r") as f:
+        with open(os.path.join(settings.BASE_DIR, "articles", "tests", "markdown_file_for_test.md"), "r") as f:
             content = f.read()
 
         Journal.objects.create(title="test_journal_with_markdown", content=content, date=tomorrow)

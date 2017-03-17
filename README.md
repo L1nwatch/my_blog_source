@@ -50,6 +50,8 @@
 
 修正 focus 的 bug, 现在单击完下拉菜单就可以自动 focus 到 input 框了
 
+针对某个不友好的 md 文件解析出错进行了一系列修正与完善
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：

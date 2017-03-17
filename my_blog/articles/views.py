@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.17 遇到了 markdown tree 解析的问题, 修正一下
 2017.03.16 重构了搜索框, 于是搜索类型不再是通过 url 传递的了
 2017.03.08 进行重构
 2017.03.07 新增 form data 的清理工作
@@ -138,18 +139,20 @@ def _parse_markdown_file(markdown_content):
             if toc_tree.__getattr__(each_level) is not None:
                 return each_level
 
+    markdown_content_length = len(markdown_content)
+    display_length = markdown_content_length if markdown_content_length < 200 else 200
     try:
-        if len(markdown_content) > 0:
+        if markdown_content_length > 0:
             toc = md2py.TreeOfContents.fromHTML(custom_markdown_for_tree_parse(markdown_content))
             root_level = __get_root_title(toc)
             if root_level:
                 result_list = __recursive_create(toc, root_level)
                 return result_list
     except TypeError:
-        logging.error("[!] 解析 Markdown 出错, 针对内容: {}".format(markdown_content))
+        logging.error("[- 解析 Markdown 出错, 针对内容: {}".format(markdown_content[:display_length]))
     except Exception as e:
         traceback.print_exc()
-        logging.error("[!] 解析 Markdown 出错, 针对内容: {}".format(markdown_content))
+        logging.error("[-] 解析 Markdown 出错, 针对内容: {}".format(markdown_content[:display_length]))
 
 
 @log_wrapper(str_format="进行了搜索", logger=logger)
