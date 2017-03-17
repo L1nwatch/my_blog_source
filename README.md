@@ -44,6 +44,10 @@
 
 首页的搜索样式已经改好了, 但是分页多出来的 select 框还没来得及去掉
 
+#### 2017.03.17
+
+去掉所有页面 search_choice 的显示样式
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：

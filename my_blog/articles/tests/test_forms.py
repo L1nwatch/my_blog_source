@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.17 设置所有页面都不显示 select_choice, 于是新编 form 测试
 2017.03.15 要提供搜索选项的功能, 需要重构一下搜索的 Form, 于是修改测试
 2017.02.08 重定义一个基类, 作为 Journal 和 Article 的 Form
 2016.10.07 添加了 ArticleForm 后要进行测试
@@ -28,6 +29,13 @@ class BaseSearchFormTest(TestCase):
         form = BaseSearchForm(data={"search_content": ""})
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors["search_content"], [const.EMPTY_ARTICLE_ERROR])
+
+    def test_not_show_select_choice(self):
+        """
+        要求所有页面都不显示 search_choice, 只要测试基类 basesearch 即可
+        """
+        base_search_form = BaseSearchForm()
+        self.assertIn('style="display:none"', base_search_form.as_p())
 
 
 class ArticleFormTest(TestCase):

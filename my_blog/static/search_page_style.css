@@ -172,10 +172,6 @@
     top: 1px;
 }
 
-.webdesigntuts-workshop .id_search_choice_select {
-    display: none;
-}
-
 @-webkit-keyframes glow {
     0% {
         border-color: #393;

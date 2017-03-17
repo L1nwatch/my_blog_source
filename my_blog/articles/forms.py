@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.17 设置所有页面都不显示 select_choice, 同时去掉多余的初始化显示
 2017.03.16 为搜索框重构 form
 2017.02.08 重定义一个基类, 作为 Journal 和 Article 的 Form
 2016.10.07 给搜索按钮添加 form
@@ -71,13 +72,14 @@ class BaseSearchForm(forms.models.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['search_choice'].widget.attrs.update(
-            {"class": "id_search_choice_select"}
+            {"class": "id_search_choice_select", "style": "display:none"}
+
         )
 
 
 class ArticleForm(BaseSearchForm):
-    search_choice = CustomChoiceField(required=True, choices=SearchModel.SEARCH_CHOICES,
-                                      initial={"search_choice": "articles"})
+    # search_choice = CustomChoiceField(required=True, choices=SearchModel.SEARCH_CHOICES,
+    #                                   initial={"search_choice": "articles"})
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -86,7 +88,7 @@ class ArticleForm(BaseSearchForm):
             "class": "pure-input-2-3"
         })
 
-        self.initial['search_choice'] = 'articles'
+        # self.initial['search_choice'] = 'articles'
 
 
 if __name__ == "__main__":
