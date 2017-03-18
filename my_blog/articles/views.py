@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.18 修正一下解析 markdown tree 的问题, 原本以为是 md 不友好, 结果是自己的代码有问题。。。
 2017.03.17 遇到了 markdown tree 解析的问题, 修正一下
 2017.03.16 重构了搜索框, 于是搜索类型不再是通过 url 传递的了
 2017.03.08 进行重构
@@ -106,13 +107,14 @@ def _parse_markdown_file(markdown_content):
     def __recursive_create(root, current_tag_level):
         """
         递归创建结果数组
+        2017.03.18 避免递归到最后一级 h6 时报错
         :param root: 当前树的根节点
         :param current_tag_level: str(), 比如 "h1", 表示从这一级开始往下递归
         :return: list(), 结果数组
         """
-        next_tag_dict = {"h1": "h2", "h2": "h3", "h3": "h4", "h4": "h5", "h5": "h6"}
+        next_tag_dict = {"h1": "h2", "h2": "h3", "h3": "h4", "h4": "h5", "h5": "h6", "h6": None}
 
-        if root:
+        if root and current_tag_level:
             result = list()
 
             if root.__getattr__(current_tag_level) is not None:
