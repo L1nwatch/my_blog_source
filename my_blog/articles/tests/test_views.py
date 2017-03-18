@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.18 昨天的问题没分析到位, 不是 md 不友好而是自己的代码不够健壮, 已修复, 删除昨天新增的测试
 2017.03.17 发现 markdown 解析方法对于不规范的 md 文件无法做处理, 新编了个测试确保 md 解析功能
 2017.03.16 增加首页搜索选项的测试
 2017.02.18 增加首页搜索的测试
@@ -100,19 +101,6 @@ class ArticleDisplayViewTest(TestCase):
         self.assertEqual(my_parse_result[0].child[0].title, "二级标题")
         self.assertEqual(my_parse_result[0].child[0].child[0].title, "三级标题 1")
         self.assertEqual(my_parse_result[0].child[0].child[1].title, "三级标题 2")
-
-    def test_markdown_parse_friendly(self):
-        """
-        针对不规范的 markdown 文件解析时也要友好
-        """
-        with open(self.unfriendly_test_markdown_file_path, "r") as f:
-            data = f.read()
-
-        my_parse_result = _parse_markdown_file(data)
-
-        self.assertNotEqual(my_parse_result, None)
-        self.assertEqual(my_parse_result[0].title, "乾颐堂 CCNAv3.0 路由与交换")
-        self.assertEqual(my_parse_result[0].child[0].title, "知识集 13")
 
     def test_markdown_tree_display(self):
         """
