@@ -56,6 +56,8 @@
 
 修正不友好 md 文件的解析问题, 发现不是 md 不友好, 而是自己的代码不够健壮, 尴尬了(〒︿〒)
 
+重构 form 之后判断 form valid 的小 bug 也被修复了, 删除了之前自定义的 form valid 判断
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：

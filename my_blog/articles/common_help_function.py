@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.17 重构 form 之后判断 form valid 的小 bug 也被修复了
 2017.03.16 发现 request.get 如果采用给定的 form 会导致默认的 choice 失效, 原因未知
 2017.03.08 进行部分重构
 2017.03.07 添加一个 clean form data 的方法, 因为不知道怎么嵌入 form。。。
@@ -99,8 +100,8 @@ def form_is_valid_and_ignore_exist_error(my_form):
     """
     if my_form.is_valid() is True:
         return True
-    elif len(my_form.errors) == 1 and re.search("具有.*的.*已存在", str(my_form.errors)):
-        return True
+    # elif len(my_form.errors) == 1 and re.search("具有.*的.*已存在", str(my_form.errors)):
+    #     return True
     print("[*] 发现错误: {}".format(my_form.errors))
     return False
 
