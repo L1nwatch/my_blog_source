@@ -92,6 +92,9 @@ class JustEatingHomeViewTest(FunctionalTest):
         spin_me.click()
         self.assertNotEqual("", pointer_span.get_attribute("style"))
 
+        # Y 知道要吃啥了, 于是想返回首页
+        self.browser.find_element_by_id("id_home_page").click()
+
 
 if __name__ == "__main__":
     pass

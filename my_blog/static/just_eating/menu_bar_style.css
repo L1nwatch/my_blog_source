@@ -12,13 +12,9 @@ body {
 .mm-menu {
   font-size: 1rem;
   position: absolute;
-  /*width: 22.5em;*/
-  /*height: 4.5em;*/
   border-radius: 0.15em;
-  /*background: #c4cac8;*/
   box-shadow: 0 -1px 0.3em rgba(0, 0, 34, 0.2) inset, 0 -1px 1px rgba(0, 0, 34, 0.03) inset, 2px 2px 3px rgba(0, 0, 34, 0.2);
-  margin: -2.25em auto 0;
-  /*top: 50%;*/
+  margin: auto;
 }
 
 .mm-item > [class*="fontawesome-"]::before {
