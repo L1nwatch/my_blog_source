@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.22 新增有关转盘的相关测试
 2017.02.05 测试视图函数
 """
+from just_eating.views import school_backup_list
 from django.test import TestCase
 
 __author__ = '__L1n__w@tch'
@@ -86,6 +88,22 @@ class TestSchoolEatingView(TestCase):
         """
         response = self.client.get(self.unique_url)
         self.assertContains(response, "School")
+
+
+class TestRandomEatingView(TestCase):
+    unique_url = "/just_eating/random_eating/{}"
+
+    def test_backup_list_display(self):
+        """
+        测试备选菜单中的每一项都显示在了界面中
+        """
+        response = self.client.get(self.unique_url.format("school"))
+        for each_backup_food in school_backup_list:
+            self.assertContains(response, each_backup_food)
+
+    def test_use_spinner_template(self):
+        response = self.client.get(self.unique_url.format("school"))
+        self.assertTemplateUsed(response, "just_eating_spinner.html")
 
 
 if __name__ == "__main__":

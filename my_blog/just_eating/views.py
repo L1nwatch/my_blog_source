@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.22 添加有关备选菜单的相关代码实线
 2017.03.10 将记录日记的装饰器装饰到对应视图上
 """
 from django.http import Http404
@@ -13,6 +14,14 @@ from my_constant import const
 import logging
 
 logger = logging.getLogger("my_blog.just_eating.views")
+
+school_backup_list = ["美食坊快餐",
+                      "丁香快餐",
+                      "海棠快餐",
+                      "小米鸡排饭",
+                      "微辣香锅",
+                      "川味-香干肉丝",
+                      "川渝-腐竹炒肉"]
 
 
 def create_home_menu():
@@ -36,7 +45,6 @@ def create_home_menu():
 
 def create_school_menu():
     school_menu = list()
-    backup_list = ["(美食坊|丁香|海棠)\n快餐", "新综\n小米鸡排饭(油+蒜!)", "海棠\n微辣香锅(油!)", "海棠\n川味香干肉丝", "海棠\n川渝-腐竹炒肉"]
 
     monday = const.EATING_MENU_STRUCTURE("周一", "丁香\n杂粮煎饼\n豆浆", "新综\n香干炒肉(油!)", "竹园\n蒙古烤肉(油!)")
     tuesday = const.EATING_MENU_STRUCTURE("周二", "海棠\n照烧鸡腿饼", "海棠\n川渝-杏鲍菇炒肉", "竹园\n快餐")
@@ -67,3 +75,8 @@ def just_eating_home_view(request, eating_place):
     return render(request, "just_eating_base.html", {"eating_days": menu,
                                                      "eating_times": eating_times,
                                                      "eating_place": eating_place_name})
+
+
+@log_wrapper(str_format="使用了随机选择食物的功能", logger=logger)
+def random_eating(request, eating_place):
+    return render(request, "just_eating_spinner.html", {"food_list": school_backup_list})

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>随便吃吃</title>
+
+    <style>
+        /* NOTE: The styles were added inline because Prefixfree needs access to your styles and they must be inlined if they are on local disk! */
+        @import url(http://fonts.googleapis.com/css?family=Balthazar);
+
+        * {
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Balthazar', serif;
+            border: 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        h1 {
+            padding: 30px 0px 20px;
+            font-size: 40px;
+            text-align: center;
+        }
+
+        .spinner {
+            margin: 0px auto;
+            position: relative;
+            border-radius: 100%;
+            width: 450px;
+            height: 450px;
+            overflow: hidden;
+        }
+
+        .spinner .choice {
+            display: block;
+            position: absolute;
+        }
+
+        .spinner .choice:after {
+            content: attr(title);
+            display: block;
+            position: absolute;
+            top: 150%;
+            left: 0px;
+            font-size: 20px;
+            text-align: right;
+            width: 100%;
+            transform: rotate(90deg);
+        }
+
+        .spinner .choice span {
+            content: '';
+            display: block;
+            position: absolute;
+            border-color: red;
+            border-style: solid;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            width: 0px;
+            height: 0px;
+        }
+
+        .spinner .pointer {
+            margin-top: -20px;
+            margin-left: -20px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            background: #FFF;
+            border-radius: 100%;
+            width: 40px;
+            height: 40px;
+            transition: all 0.2s linear 0s;
+        }
+
+        .spinner .pointer:after {
+            content: '';
+            display: block;
+            margin-left: -10px;
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            border: 10px transparent solid;
+            border-bottom: 20px #FFF solid;
+            width: 0px;
+            height: 0px;
+        }
+
+        .spinner .pointer span {
+            z-index: 2;
+            margin-top: -16px;
+            margin-left: -16px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            background: #EEE;
+            border-radius: 100%;
+            width: 32px;
+            height: 32px;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 5px 10px;
+            background: #DDD;
+            font: 20px 'Balthazar', serif;
+            border: 0px;
+            border-radius: 5px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        button:hover {
+            background: #666;
+            color: #FFF;
+        }
+    </style>
+    {% load static %}
+    <link rel="stylesheet" href="{% static "just_eating/style.css" %}">
+    <script src="{% static "just_eating/prefixfree.min.js" %}"></script>
+
+</head>
+
+<body>
+<h1>吃啥?</h1>
+
+<div class="spinner" id="id_spinner" style="color: #000000;">
+    <div class="point"></div>
+    {% for each_food in food_list %}
+        <div class="choice" title="{{ each_food }}"><span></span></div>
+    {% endfor %}
+    <div class="pointer" id="id_pointer_span"><span></span></div>
+</div>
+
+<button id="id_spin_me">Spin me</button>
+<br/>
+<script src='{% static "jquery.min.js" %}'></script>
+
+<script src="{% static "just_eating/spinner.js" %}"></script>
+
+</body>
+</html>

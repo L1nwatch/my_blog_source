@@ -58,6 +58,10 @@
 
 重构 form 之后判断 form valid 的小 bug 也被修复了, 删除了之前自定义的 form valid 判断
 
+#### 2017.03.22
+
+添加一个转盘网页, 实现随机选择备选菜单的功能
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：

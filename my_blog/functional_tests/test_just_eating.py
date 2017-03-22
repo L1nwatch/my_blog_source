@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.22 添加一个转盘网页, 实现随机选择备选菜单的功能, 于是新增对应测试
 2017.02.26 开始更新在学校的吃饭菜单
 """
 import re
@@ -70,6 +71,26 @@ class JustEatingHomeViewTest(FunctionalTest):
 
         # 发现 URL 又变回来了, 显示的还是 home 的菜单
         self.assertEqual(home_url, self.browser.current_url)
+
+    def test_random_choice_eating_buttons(self):
+        """
+        测试链接到 random_choice 吃饭的按钮
+        """
+        # Y 发现首页上有一个 random_eating 按钮, 点击一下
+        random_eating_button = self.browser.find_element_by_id("id_random_eating")
+        random_eating_button.click()
+
+        # Y 发现界面显示了一个大转盘
+        spinner = self.browser.find_element_by_id("id_spinner")
+
+        # 它看到大转盘的指针颜色现在是无, 而且还有个 "Spin me" 按钮
+        pointer_span = self.browser.find_element_by_id("id_pointer_span")
+        self.assertEqual("", pointer_span.get_attribute("style"))
+
+        # 它点击了 Spin me 按钮, 发现指针颜色变化了
+        spin_me = self.browser.find_element_by_id("id_spin_me")
+        spin_me.click()
+        self.assertNotEqual("", pointer_span.get_attribute("style"))
 
 
 if __name__ == "__main__":

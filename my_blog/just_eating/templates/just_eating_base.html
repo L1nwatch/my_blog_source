@@ -8,7 +8,6 @@
 
     {% load static %}
     <link rel="stylesheet" href="{% static "just_eating/style.css" %}">
-    <link rel="stylesheet" href="{% static "" %}">
     <link rel="stylesheet" href="{% static "just_eating/meanu_bar_style.css" %}">
 </head>
 
@@ -23,6 +22,9 @@
     </a>
     <a id="id_school_eating" href="{% url "just_eating" eating_place="school" %}" class="mm-item">
         <span class="fontawesome-flag"></span>
+    </a>
+    <a id="id_random_eating" href="{% url "random_eating" eating_place="school" %}" class="mm-item">
+        <span class="fontawesome-food"></span>
     </a>
     <!-- building 图标也不错-->
 </div><!--/mm-menu-->
