@@ -76,7 +76,7 @@
             <div class="content">
                 <br/><br/>
                 <section class="webdesigntuts-workshop">
-                    <form action="{% url 'search' search_type='all' %}" method="post">
+                    <form action="{% url 'search' %}" method="post">
                         {{ form.search_content }}
                         {% csrf_token %}
                         <div class="search_dropdown">

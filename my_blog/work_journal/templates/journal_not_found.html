@@ -41,7 +41,7 @@
             <!-- end .errorNumber -->
             <!-- Search Form -->
             <div class="search">
-                <form class="searchInput" name="search_term" action="{% url 'search' search_type='journals' %}"
+                <form class="searchInput" name="search_term" action="{% url 'search' %}"
                       method="post">
                     {{ form.search_content }}
                     {{ form.search_choice }}

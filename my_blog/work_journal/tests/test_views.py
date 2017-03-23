@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 2017.03.17 重构一下测试用的 md 文件的路径
 2017.02.08 测试提取日期对象的方法
 2017.02.07 添加更新的时候判断文件名的合法性的单元测试
@@ -190,7 +191,7 @@ class HelpFunctionTest(TestCase):
 
 
 class JournalSearchViewTest(BaseCommonTest):
-    unique_url = "/search/search_type=journals"
+    unique_url = "/search/"
 
     def test_use_right_template_to_show_search_result(self):
         """

@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 测试 gitbook_notes 这个 app 下的视图函数
 
+2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 2017.03.10 发现 href 字段的 BUG, 再次补充相关测试代码
 2017.03.10 发现 title 字段的 BUG, 补充相关测试代码
 2017.03.05 发现依旧需要写显示页面的代码, 不过是跳转到 GitBook 罢了
@@ -220,7 +221,7 @@ class UpdateGitBookCodesViewTest(TestCase):
 
 
 class GitBookSearchViewTest(BaseCommonTest):
-    unique_url = "/search/search_type=gitbooks"
+    unique_url = "/search/"
 
     def test_use_right_template_to_show_search_result(self):
         """

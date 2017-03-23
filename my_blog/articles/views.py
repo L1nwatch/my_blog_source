@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 2017.03.18 修正一下解析 markdown tree 的问题, 原本以为是 md 不友好, 结果是自己的代码有问题。。。
 2017.03.17 遇到了 markdown tree 解析的问题, 修正一下
 2017.03.16 重构了搜索框, 于是搜索类型不再是通过 url 传递的了
@@ -180,14 +181,13 @@ def do_articles_search(request):
 
 
 @log_wrapper(str_format="进行了搜索", logger=logger)
-def blog_search(request, search_type="all"):
+def blog_search(request):
     """
     2017.03.16 重构了搜索框, 于是搜索类型不再是通过 url 传递的了
     2017.02.18 实现日记和文章同时搜索的功能
     2017.02.08 要重构视图搜索函数, 支持搜索指定类型的数据, 比如说只搜索文章, 只搜索日记等
     2017.01.27 重构搜索视图函数, 现在要显示搜索结果等的
     2016.10.11 添加能够搜索文章内容的功能
-    :param search_type: str(), 指定要搜索哪部分内容, 比如 "all" 表示全部, "articles" 表示只搜文章, "journals" 表示只搜日记
     :param request: django 传给视图函数的参数 request, 包含 HTTP 请求的各种信息
     """
     if request.method == "POST":

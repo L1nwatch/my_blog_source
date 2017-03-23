@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 2017.03.18 昨天的问题没分析到位, 不是 md 不友好而是自己的代码不够健壮, 已修复, 删除昨天新增的测试
 2017.03.17 发现 markdown 解析方法对于不规范的 md 文件无法做处理, 新编了个测试确保 md 解析功能
 2017.03.16 增加首页搜索选项的测试
@@ -349,7 +350,7 @@ class UpdateNotesViewTest(TestCase):
 
 
 class ArticlesSearchViewTest(TestCase):
-    unique_url = "/search/search_type=articles"
+    unique_url = "/search/"
 
     def test_for_invalid_input_passes_form_to_template(self):
         response = self.client.post(self.unique_url, data={"search_content": "",
@@ -549,7 +550,7 @@ class ArticlesSearchViewTest(TestCase):
 
 
 class BaseSearchViewTest(TestCase):
-    unique_url = "/search/search_type=all"
+    unique_url = "/search/"
 
     def create_test_db(self):
         """
@@ -601,8 +602,7 @@ class BaseSearchViewTest(TestCase):
         response = self.client.post(self.unique_url, data={"search_content": "随便输入的一点什么东西",
                                                            "search_choice": "all"})
 
-        self.assertNotContains(response, ArticlesSearchViewTest.unique_url)
-        self.assertContains(response, self.unique_url)
+        self.assertEqual(response.context["form"]["search_choice"].data, "all")
 
     def test_search_choice_all(self):
         """

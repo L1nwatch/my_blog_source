@@ -22,7 +22,7 @@
                        onclick="check_is_valid_click()">手动更新笔记</a>
                 </li>
                 <li>
-                    <form class="pure-form" action="{% url 'search' search_type=current_type %}" method="post">
+                    <form class="pure-form" action="{% url 'search' %}" method="post">
                         {{ form.search_content }}
                         {{ form.search_choice }}
                         {% csrf_token %}

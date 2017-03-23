@@ -12,6 +12,10 @@ Class-based views
 Including another URL conf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
+
+
+# 更新
+2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 """
 from django.conf.urls import url, include
 from django.contrib import admin
@@ -24,5 +28,5 @@ urlpatterns = [
     url(r"^work_journal/", include("work_journal.urls")),
     url(r"^just_eating/", include("just_eating.urls")),
     url(r'^$', articles.views.home_view, name='home'),
-    url(r"^search/search_type=(?P<search_type>\S+)$", articles.views.blog_search, name="search"),
+    url(r"^search/$", articles.views.blog_search, name="search"),
 ]
