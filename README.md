@@ -17,24 +17,18 @@
 
 ![2017-03-17首页截图](https://github.com/L1nwatch/my_blog_source/blob/master/2017-03-17%E9%A6%96%E9%A1%B5%E6%88%AA%E5%9B%BE.jpg?raw=true)
 
-（2017-02-08 版本）的文章界面如图所示：
+（2017-03-23 版本）的文章界面如图所示：
 
-![2017-02-08文章截图](https://github.com/L1nwatch/my_blog_source/blob/master/2017-02-08%E6%96%87%E7%AB%A0%E7%95%8C%E9%9D%A2.jpg?raw=true)
+![2017-03-23-文章显示]()
 
-（2017-02-15 版本）的日记界面如图所示：
+（2017-03-23 版本）的日记界面如图所示：
 
-![2017-02-15日记截图](https://github.com/L1nwatch/my_blog_source/blob/master/2017-02-15%E6%97%A5%E8%AE%B0%E9%A6%96%E9%A1%B5.jpg?raw=true)
-
-（2017-03-23 版本）的吃饭界面，以及随机选择菜单的界面如下：
-
-![吃饭首页](https://github.com/L1nwatch/my_blog_source/blob/master/2017-03-23-%E5%90%83%E9%A5%AD%E9%A6%96%E9%A1%B5.jpg?raw=true)
-
-![随便吃吃](https://github.com/L1nwatch/my_blog_source/blob/master/2017-03-23-%E9%9A%8F%E6%9C%BA%E9%80%89%E8%8F%9C%E5%8D%95.jpg?raw=true)
+![2017-03-23-日记首页]()
 
 
 ### 更新情况
 
-发现自己的 reamde 一点汇总的跟进信息都没有, 还是写一个吧
+发现自己的 readme 一点汇总的跟进信息都没有, 还是写一个吧
 
 #### 2017.03.13
 
