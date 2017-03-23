@@ -66,6 +66,8 @@
 
 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码, 更新一下 readme
 
+实现了搜索结果进行排序
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：

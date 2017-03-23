@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.23 增加有关搜索结果按关键词出现次数排序的相关代码
 2017.03.17 重构 form 之后判断 form valid 的小 bug 也被修复了
 2017.03.16 发现 request.get 如果采用给定的 form 会导致默认的 choice 失效, 原因未知
 2017.03.08 进行部分重构
@@ -25,6 +26,11 @@ import datetime
 
 __author__ = '__L1n__w@tch'
 
+model_dict = {"articles": Article,
+              "journals": Journal, "work_journal": Journal,
+              "all": BaseModel,
+              "gitbooks": GitBook, "gitbook_notes": GitBook}
+
 
 def get_context_data(request, context_type, update_data=None):
     """
@@ -35,7 +41,6 @@ def get_context_data(request, context_type, update_data=None):
     :return: dict(), 发送给模板的全部数据
     """
     form_dict = {"articles": ArticleForm, "all": BaseSearchForm, "journals": JournalForm, "gitbooks": BaseSearchForm}
-    model_dict = {"articles": Article, "journals": Journal, "all": BaseModel, "gitbooks": BaseModel}
 
     data_return_to_base_template = {"form": form_dict[context_type](initial={"search_choice": context_type}),
                                     "current_type": context_type,
@@ -113,6 +118,25 @@ def clean_form_data(data):
     :return: str(), 清理后的结果, 比如 "aa"
     """
     return data.strip()
+
+
+def sort_search_result(result_list, keyword_set):
+    """
+    对搜索结果进行排序
+    :param result_list: list(), 每一个元素是一个 const.ARTICLE_STRUCTURE 的命名元组
+    :param keyword_set: set(), 比如 {"test"}, 用户查询的关键词集合
+    :return: list(), 排完序的结果, 每一个元素是一个 const.ARTICLE_STRUCTURE
+    """
+
+    def __sorted_function(x):
+        total_count = 0
+
+        for each_keyword in keyword_set:
+            total_count += model_dict[x.type].objects.get(id=x.id).content.count(each_keyword)
+        return total_count
+
+    result_list = sorted(result_list, key=__sorted_function, reverse=True)
+    return result_list
 
 
 def create_search_result(article_list, keyword_set, search_type):

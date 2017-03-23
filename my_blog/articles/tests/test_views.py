@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.23 增加有关搜索结果按关键词出现次数排序的相关测试代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 2017.03.18 昨天的问题没分析到位, 不是 md 不友好而是自己的代码不够健壮, 已修复, 删除昨天新增的测试
 2017.03.17 发现 markdown 解析方法对于不规范的 md 文件无法做处理, 新编了个测试确保 md 解析功能
@@ -548,11 +549,31 @@ class ArticlesSearchViewTest(TestCase):
         # 能搜索到文章
         self.assertContains(response, test_article.title)
 
+    def test_search_result_are_sorted(self):
+        """
+        搜索的结果应该是排序过后的
+        """
+        # 创建 3 篇文章, 均包含关键词 test, 但是出现次数不一致
+        test_article1 = Article.objects.create(title="should be 3rd", content="test")
+        test_article2 = Article.objects.create(title="should be 1st", content="test + test + test")
+        test_article3 = Article.objects.create(title="should be 2nd", content="test + test")
+
+        response = self.client.post(self.unique_url, data={"search_content": "test",
+                                                           "search_choice": "articles"})
+
+        response_text = response.content.decode("utf8")
+        article1_index = response_text.index(test_article1.title)
+        article2_index = response_text.index(test_article2.title)
+        article3_index = response_text.index(test_article3.title)
+
+        self.assertTrue(article2_index < article3_index < article1_index)
+
 
 class BaseSearchViewTest(TestCase):
     unique_url = "/search/"
 
-    def create_test_db(self):
+    @staticmethod
+    def create_test_db():
         """
         建立 articles、journal、gitbooks 的测试数据
         """

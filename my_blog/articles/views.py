@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.23 增加有关搜索结果按关键词出现次数排序的相关代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 2017.03.18 修正一下解析 markdown tree 的问题, 原本以为是 md 不友好, 结果是自己的代码有问题。。。
 2017.03.17 遇到了 markdown tree 解析的问题, 修正一下
@@ -16,11 +17,11 @@ from django.http import Http404
 from django.conf import settings
 
 from articles.models import Article
-from articles.forms import ArticleForm
+from articles.forms import ArticleForm, BaseSearchForm
 from articles.templatetags.custom_filter import custom_markdown_for_tree_parse
 from articles.common_help_function import (clean_form_data, get_ip_from_django_request, search_keyword_in_model,
                                            create_search_result, get_right_content_from_file, get_context_data,
-                                           form_is_valid_and_ignore_exist_error, log_wrapper)
+                                           form_is_valid_and_ignore_exist_error, log_wrapper, sort_search_result)
 from my_constant import const
 from work_journal.views import do_journals_search
 from gitbook_notes.views import do_gitbooks_search
@@ -221,6 +222,9 @@ def blog_search(request):
             context_data = do_gitbooks_search(request)
 
         if context_data is not None and len(context_data) > 0:
+            form = BaseSearchForm(data=request.POST)
+            keyword_set = clean_form_data(form.data["search_content"])
+            context_data["post_list"] = sort_search_result(context_data.get("post_list", list()), keyword_set)
             return render(request, 'search_result.html', context_data)
 
     return home_view(request)
