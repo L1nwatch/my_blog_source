@@ -132,7 +132,7 @@ def sort_search_result(result_list, keyword_set):
         total_count = 0
 
         for each_keyword in keyword_set:
-            total_count += model_dict[x.type].objects.get(id=x.id).content.count(each_keyword)
+            total_count += model_dict[x.type].objects.get(id=x.id).content.lower().count(each_keyword.lower())
         return total_count
 
     result_list = sorted(result_list, key=__sorted_function, reverse=True)

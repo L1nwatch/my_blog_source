@@ -41,8 +41,8 @@ class TestCommonHelpFunc(TestCase):
 
     def test_sort_search_result(self):
         test_article1 = Article.objects.create(title="test 3rd", content="test")
-        test_article2 = Article.objects.create(title="test 1st", content="test test test")
-        test_article3 = Article.objects.create(title="test 2nd", content="test test")
+        test_article2 = Article.objects.create(title="test 1st", content="test test tEsT")
+        test_article3 = Article.objects.create(title="test 2nd", content="tESt test")
 
         test_result_list = [
             const.ARTICLE_STRUCTURE(test_article1.id, test_article1.title, "aaa", "articles"),
