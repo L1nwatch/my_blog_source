@@ -27,9 +27,9 @@
 
 （2017-03-23 版本）的吃饭界面，以及随机选择菜单的界面如下：
 
-![吃饭首页]()
+![吃饭首页](https://github.com/L1nwatch/my_blog_source/blob/master/2017-03-23-%E5%90%83%E9%A5%AD%E9%A6%96%E9%A1%B5.jpg?raw=true)
 
-![随便吃吃]()
+![随便吃吃](https://github.com/L1nwatch/my_blog_source/blob/master/2017-03-23-%E9%9A%8F%E6%9C%BA%E9%80%89%E8%8F%9C%E5%8D%95.jpg?raw=true)
 
 
 ### 更新情况
