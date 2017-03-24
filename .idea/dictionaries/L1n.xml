@@ -6,12 +6,14 @@
       <w>dropdown</w>
       <w>gitbook</w>
       <w>gitbooks</w>
+      <w>github</w>
       <w>gunicorn</w>
       <w>nginx</w>
       <w>runcrons</w>
       <w>sangfor</w>
       <w>sudo</w>
       <w>supervisord</w>
+      <w>toolhub</w>
     </words>
   </dictionary>
 </component>

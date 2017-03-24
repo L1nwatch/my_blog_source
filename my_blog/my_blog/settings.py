@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 
 更新日志:
+2017.03.24 新增 toolhub 这个 app
 2016.10.28 在更新时间的时候遇到了这么个问题:
     RuntimeWarning: DateTimeField Article.update_time received a naive datetime ... while time zone support is active
     搜索得到解决方案: https://my.oschina.net/lyroge/blog/76298, 把 settings.USE_TZ 设置为 False 即可
@@ -48,6 +49,7 @@ INSTALLED_APPS = [
     "gitbook_notes",
     "work_journal",
     "just_eating",
+    "toolhub",
 ]
 
 BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
@@ -204,6 +206,11 @@ LOGGING = {
             'propagate': True
         },
         'my_blog.just_eating.views': {
+            'handlers': ['default', 'error', "info"],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'my_blog.toolhub.views': {
             'handlers': ['default', 'error', "info"],
             'level': 'DEBUG',
             'propagate': True

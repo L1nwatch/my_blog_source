@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.24 新增一个 tool_hub APP, 于是编写相关测试
 2017.02.13 日记更换首页了, 对应的测试得修改下
 2017.02.06 更换首页了, 所以对应测试也得改, 比如说现在首页不显示文章内容了
 2017.02.05 添加吃饭计划表链接的按钮
@@ -150,6 +151,25 @@ class TestHomePageButtons(FunctionalTest):
         # Y 已经知道今晚要吃什么了, 于是点击按钮回到了首页
         self.browser.find_element_by_id("id_home_page").click()
         self.assertEqual(self.browser.current_url, home_page_url)
+
+    def test_toolhub_button(self):
+        """
+        2017.03.24 新增一个 tool_hub APP
+        """
+        # Y 打开首页, 发现右上角多出了一个 tool_hub 的按钮
+        home_url = self.browser.current_url
+        toolhub_button = self.browser.find_element_by_id("id_toolhub")
+
+        # 点击一下
+        toolhub_button.click()
+
+        # 发现页面上显示了很多工具名称, 比如其中一个名称是: GitHub 图片地址转换
+        self.assertIn("GitHub 图片地址转换", self.browser.page_source)
+
+        # Y 知道这个 APP 是干啥的了, 于是点击返回首页按钮回到首页了
+        home_button = self.browser.find_element_by_id("id_home_page")
+        home_button.click()
+        self.assertEqual(self.browser.current_url, home_url)
 
 
 if __name__ == "__main__":

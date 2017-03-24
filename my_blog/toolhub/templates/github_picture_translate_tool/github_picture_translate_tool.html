@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>GitHub 图片地址转换</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static "toolhub/css/base.css" %}">
+    <link rel="stylesheet" href="{% static "toolhub/css/reset.min.css" %}">
+    <link rel="stylesheet" href="{% static "toolhub/css/github_picture_translate_tool.css" %}">
+
+    {% csrf_token %}
+</head>
+
+<body>
+{% include "toolhub_header.html" %}
+
+
+<div class="next-wrap">
+    <h1>GitHub 图片地址转换</h1>
+    <div id="cssminifier">
+        <span class="clear"></span>
+        <textarea autofocus="" id="id_translate_box" placeholder="Paste your CSS code here..."
+                  spellcheck="false"></textarea>
+        <div class="button-group">
+{#            <div class="box">#}
+{#                <input class="opt1" id="stripAllComment" type="checkbox"/>#}
+{#                <label for="stripAllComment">Strip all comments</label>#}
+{#                <input class="opt2" id="superCompact" type="checkbox"/>#}
+{#                <label for="superCompact">Super compact</label>#}
+{#                <input class="opt3" id="betterIndentation" type="checkbox"/>#}
+{#                <label for="betterIndentation">Keep indentation</label>#}
+{#                <input checked="" class="opt4" id="keepLastComma" type="checkbox"/>#}
+{#                <label for="keepLastComma">Remove the last semicolon</label>#}
+{#            </div>#}
+            <button id="id_translate_button">转换</button>
+            <button onclick="clearField(&quot;id_translate_box&quot;);">Clear Field</button>
+            <button onclick="selectAll(&quot;id_translate_box&quot;);">Select All</button>
+        </div>
+        <div class="clear">
+        </div>
+    </div>
+</div>
+
+<script src='{% static "jquery.min.js" %}'></script>
+<script src="{% static "toolhub/js/github_picture_translate_tool.js" %}"></script>
+
+</body>
+</html>

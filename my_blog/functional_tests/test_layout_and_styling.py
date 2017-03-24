@@ -31,7 +31,7 @@ class HomePageLayoutStylingTest(FunctionalTest):
 
         # 看到首页按钮被放置在右上角第一个位置
         home_page_button = self.browser.find_element_by_id("id_home_page")
-        self.assertAlmostEqual(home_page_button.location["x"], 728, delta=25)
+        self.assertAlmostEqual(home_page_button.location["x"], 632, delta=25)
         self.assertAlmostEqual(home_page_button.location["y"], 13, delta=5)
 
         # Y 调整了一下窗口大小

@@ -1,0 +1,98 @@
+{% extends "toolhub_base.html" %}
+
+
+{% block header_content %}
+    {% include "toolhub_header.html" %}
+
+{% endblock %}
+
+{% block result_content %}
+{#    <div id="display_inout">#}
+{#        {% include "result_content.html" %}#}
+{#    </div>#}
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript">
+        $("document").ready(function () {
+
+            function get_frame_state() {
+                $.ajax({
+                            type: "GET",
+                            url: "/new_result",
+                            async: true,
+                            success: function (response) {
+                                $("#display_inout").html(response);
+                            }
+                        }
+                );
+            }
+
+            setInterval(function () {
+                get_frame_state();
+            }, 5000);
+        })
+    </script>
+
+    <script type="text/javascript">
+        $("document").ready(function () {
+            {% for key, value in result_dict %}
+                $("#check_{{ key }}").change(function () {
+                    var $check_state = this.checked;
+                    var $checkbox = $("#check_{{ key }}");
+                    var $image_state = $("#img_{{ key }}");
+                    var switch_on = $checkbox.parent().attr('class');
+                    if ($check_state) {
+                        if (!(switch_on == "switch-on")) {   //这里有个奇怪的变化导致触发了change事件
+                            change_frame_state("no shutdown", {{ key }});
+                            $image_state.attr("src", "/static/computer.png");
+                        }
+                    }
+                    else {
+                        $("#close_frame_{{ key }}").modal('toggle');
+                        $("#button_cancel_{{ key }}").click(function () {
+                            $check_state = true;
+                            $checkbox.parent().removeClass("switch-off switch-animate").addClass("switch-on switch-animate");
+                        });
+                        $("#button_close_{{ key }}").click(function () {
+                            $check_state = true;
+                            $checkbox.parent().removeClass("switch-off switch-animate").addClass("switch-on switch-animate");
+                        });
+                        $("#button_commit_{{ key }}").click(function () {
+                            $image_state.attr("src", "/static/test2.png");
+                            $("#close_frame_{{ key }}").modal('hide');
+                            change_frame_state("shutdown", {{ key }});
+                            $("#button_commit_{{ key }}").off("click");   //解绑事件，只允许触发一次
+                        })
+                    }
+                });
+            {% endfor %}
+
+            function change_frame_state(action, frame_id) {
+                $.ajax({
+                            type: "POST",
+                            url: "/switch",
+                            timeout: 2000,
+                            async: true,
+                            dateType: "json",
+                            data: {
+                                "frame_action": action,
+                                "frame_id": frame_id
+                            },
+                            error: function (xhr, textStatus) {
+                                if (textStatus == 'timeout') {
+                                    alert("接口处理超时，请检查环境");
+                                    return false;
+                                }
+                                else {
+                                    alert("接口处理出现异常，请检查环境");
+                                    return false;
+                                }
+                            }
+                        }
+                );
+                return true
+            }
+        })
+    </script>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% block header_content %}
+    <header class="toolhub_header">
+        <div class="navbar navbar-inverse navbar-fixed-top" id="head_contents">
+            <div class="navbar-header">
+                <button type="button" class="btn btn-navbar" data-toggle="collapse"
+                        data-target=".navbar-collapse-01"></button>
+            </div>
+            <div class="navbar-collapse collapse navbar-collapse-01">
+                <ul class="nav navbar-nav navbar-left">
+                    <li>
+                        <a id="id_home_page" href="{% url "home" %}">
+                            Home
+                            <span class="navbar-unread">1</span>
+                        </a>
+                    </li>
+                    <li class="active">
+                        <a href="#">
+                            编码工具
+                            <span class="navbar-unread">1</span>
+                        </a>
+                        <ul>
+                            <li><a>urlencode</a>
+                                <ul>
+                                    <li><a id="id_github_picture_translate" data-toggle="modal"
+                                           href="{% url "github_picture_translate" %}">
+                                        GitHub 图片地址转换
+                                    </a></li>
+                                    <li><a data-toggle="modal" href="#">Nothing3</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#">Nothing3</a></li>
+                        </ul>
+                        <!-- /Sub menu -->
+                    </li>
+                    <li>
+                        <a>Nothing4</a>
+                        <ul>
+                            <li><a href="#">Nothing5</a></li>
+                            <li><a href="#">Nothing6</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">Nothing7</a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="#">ToolHub</a>
+                    </li>
+                </ul>
+            </div>
+            <!--/.nav -->
+        </div>
+    </header>
+{% endblock %}
