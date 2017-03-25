@@ -9,6 +9,7 @@
       <w>gitbooks</w>
       <w>github</w>
       <w>gunicorn</w>
+      <w>morghulis</w>
       <w>nginx</w>
       <w>rstrip</w>
       <w>runcrons</w>
@@ -18,6 +19,7 @@
       <w>supervisord</w>
       <w>textarea</w>
       <w>toolhub</w>
+      <w>valar</w>
     </words>
   </dictionary>
 </component>

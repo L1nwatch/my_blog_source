@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="cn">
-{% include "toolhub_head.html" %}
+<head>
+    {% include "toolhub_head.html" %}
+    {% block custom_css %}
+    {% endblock %}
+</head>
 <body>
 {% block header_content %}
 {% endblock %}

@@ -74,7 +74,7 @@
 
 #### 2017.03.25
 
-新增 Textarea 的 form, 更改 ajax 为 post 请求
+更新 Toolhub 的内容, 包括新增 Textarea 的 form、更改 ajax 为 post 请求、修改 toolhub 首页、把输入框和输出框分离等
 
 修正一下更新笔记时会删除过多后缀的问题
 

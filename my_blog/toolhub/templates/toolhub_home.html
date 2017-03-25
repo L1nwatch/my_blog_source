@@ -1,9 +1,50 @@
 {% extends "toolhub_base.html" %}
 
-
 {% block header_content %}
     {% include "toolhub_header.html" %}
 {% endblock %}
 
 {% block result_content %}
+    <div class="clock">
+        <h1>Valar Morghulis</h1>
+        <div class="clock-wrap">
+            <div class="hour-wrap">
+                <div class="digit-top">
+                    <div class="front">00</div>
+                    <div class="back">00</div>
+                </div>
+                <div class="digit-bottom">
+                    <div class="front">00</div>
+                </div>
+            </div>
+            <div class="min-wrap">
+                <div class="digit-top">
+                    <div class="front">00</div>
+                    <div class="back">00</div>
+                </div>
+                <div class="digit-bottom">
+                    <div class="front">00</div>
+                </div>
+            </div>
+            <div class="sec-wrap">
+                <div class="digit-top">
+                    <div class="front">00</div>
+                    <div class="back">00</div>
+                </div>
+                <div class="digit-bottom">
+                    <div class="front">00</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    {% load static %}
+    <script src='{% static "toolhub/js/mootools-yui-compressed.js" %}'></script>
+    <script src="{% static "toolhub/js/home.js" %}"></script>
+{% endblock %}
+
+{% block custom_css %}
+    <link href="{% static "toolhub/css/home.css" %}" rel="stylesheet"/>
 {% endblock %}
