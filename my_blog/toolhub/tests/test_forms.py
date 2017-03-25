@@ -19,7 +19,7 @@ class JournalFormTest(TestCase):
         """
         input_form = TextareaForm()
         self.assertIn("autofocus", input_form.as_p())
-        self.assertIn('id="id_translate_box"', input_form.as_p(), "id 属性没有设置?还是说设置错了?")
+        self.assertIn('id="id_input_box"', input_form.as_p(), "id 属性没有设置?还是说设置错了?")
         self.assertIn('placeholder="请输入你要转换的数据"', input_form.as_p(), "没有设置 placeholder?")
 
 

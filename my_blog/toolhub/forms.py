@@ -18,7 +18,7 @@ class TextareaForm(forms.Form):
 
         self.fields["input_area"].widget.attrs.update({
             "autofocus": True,
-            "id": "id_translate_box",
+            "id": "id_input_box",
             "placeholder": "请输入你要转换的数据",
             "spellcheck": False
         })

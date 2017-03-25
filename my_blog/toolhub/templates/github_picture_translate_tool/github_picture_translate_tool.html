@@ -36,9 +36,12 @@
             {#                <label for="keepLastComma">Remove the last semicolon</label>#}
             {#            </div>#}
             <button id="id_translate_button">转换</button>
-            <button onclick="clearField(&quot;id_translate_box&quot;);">Clear Field</button>
-            <button onclick="selectAll(&quot;id_translate_box&quot;);">Select All</button>
+            <button onclick="clearField(&quot;id_input_box&quot;);">Clear Input</button>
+            <button onclick="selectAll(&quot;id_output_box&quot;);">Select Output</button>
         </div>
+
+        <textarea id="id_output_box" autofocus="" placeholder="Result will show here..."
+                  spellcheck="false"></textarea>
 
         <div class="clear">
         </div>

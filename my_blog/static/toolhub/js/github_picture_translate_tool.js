@@ -77,11 +77,11 @@ $(document).ready(function () {
             type: "post",
             url: "data",
             data: {
-                "raw_data": $("#id_translate_box").val(),
+                "raw_data": $("#id_input_box").val(),
                 "csrfmiddlewaretoken": csrftoken
             },
             success: function (result) {
-                $("#id_translate_box").val(result);
+                $("#id_output_box").val(result);
             }
         });
     });

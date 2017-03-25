@@ -12,7 +12,7 @@ body {
 .next-wrap {
     position: relative;
     max-width: 840px;
-    margin: 8% auto;
+    margin: 6% auto;
     background: #ecf0f1;
     color: #666;
     font-size: 1em;
@@ -85,9 +85,9 @@ textarea:focus {
 #cssminifier .button-group {
     background: #2980b9;
     text-align: center;
-    padding: 20px 20px 40px 20px;
+    padding: 10px 20px 10px 20px;
     margin: 0;
-    border-radius: 0 0 5px 5px
+    border-radius: 5px 5px 5px 5px;
 }
 
 #cssminifier button,
