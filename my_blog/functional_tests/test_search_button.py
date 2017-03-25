@@ -340,14 +340,14 @@ class TestSearchButton(FunctionalTest):
 
         # 搜索结果出来了, Y 发现笔记《xxx》排在第一位, 而且点开一看, test 出现的次数有 x 次
         search_result = self.browser.find_elements_by_id("id_search_result_title")
-        search_result[0].click()
+        search_result[0].click()    # 对应 Article
 
         # Y 返回去, 点击第 2 篇笔记, 发现 test 出现的次数有 x - 1 次
         first_test_times = self.browser.page_source.count("test")
         self.browser.back()
 
         search_result = self.browser.find_elements_by_id("id_search_result_title")
-        search_result[2].click()
+        search_result[1].click()    # 对应 Journal
         second_test_times = self.browser.page_source.count("test")
 
         # 原来搜索结果有按出现次数进行排序的, Y 很满意

@@ -185,7 +185,7 @@ def create_search_result(article_list, keyword_set, search_type):
         result_list.append(
             const.ARTICLE_STRUCTURE(each_article.id, each_article.title, result_content_list, search_type))
 
-    return result_list
+    return sort_search_result(result_list, raw_keyword_set)
 
 
 def get_ip_from_django_request(request):

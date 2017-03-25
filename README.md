@@ -78,6 +78,8 @@
 
 修正一下更新笔记时会删除过多后缀的问题
 
+改了一下搜索结果排序的逻辑代码
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：

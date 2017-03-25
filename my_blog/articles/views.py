@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
-2017.03.25 修正一下更新笔记时会删除过多后缀的问题
+2017.03.25 修正一下更新笔记时会删除过多后缀的问题, 重新改了一下搜索排序
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 2017.03.18 修正一下解析 markdown tree 的问题, 原本以为是 md 不友好, 结果是自己的代码有问题。。。
@@ -223,9 +223,6 @@ def blog_search(request):
             context_data = do_gitbooks_search(request)
 
         if context_data is not None and len(context_data) > 0:
-            form = BaseSearchForm(data=request.POST)
-            keyword_set = clean_form_data(form.data["search_content"])
-            context_data["post_list"] = sort_search_result(context_data.get("post_list", list()), keyword_set)
             return render(request, 'search_result.html', context_data)
 
     return home_view(request)

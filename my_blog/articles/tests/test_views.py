@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.25 新增搜索排序的测试, 现在要按照分类来排序了
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关测试代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 2017.03.18 昨天的问题没分析到位, 不是 md 不友好而是自己的代码不够健壮, 已修复, 删除昨天新增的测试
@@ -680,6 +681,30 @@ class BaseSearchViewTest(TestCase):
         self.assertNotContains(response, article.title)
         self.assertContains(response, journal.title)
         self.assertNotContains(response, gitbooks.title)
+
+    def test_search_sorted(self):
+        """
+        搜索结果是排序的, 而且是按类排序, Articles 排在最前, 其次是 Journal, 再其次是 GitBook, 最后才是 Code
+        """
+        article = Article.objects.create(title="1st", content="test")
+        journal = Journal.objects.create(title="2nd", date=datetime.datetime.today(), content="test test")
+        gitbook = GitBook.objects.create(
+            book_name="test_book_name",
+            href="http://{}/{}.html".format("test_book_name", "test"),
+            md_file_name="test.md",
+            title="test_book_name/test",
+            content="test test test",
+        )
+
+        response = self.client.post(self.unique_url, data={"search_content": "test",
+                                                           "search_choice": "all"})
+
+        response_text = response.content.decode("utf8")
+        article_index = response_text.index(article.title)
+        journal_index = response_text.index(journal.title)
+        gitbook_index = response_text.index(gitbook.title)
+
+        self.assertTrue(article_index < journal_index < gitbook_index)
 
 
 if __name__ == "__main__":
