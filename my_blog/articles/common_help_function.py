@@ -206,7 +206,7 @@ def get_right_content_from_file(file_path):
     :param file_path: 文件路径
     :return: 文件内容, str() 形式
     """
-    logging.debug("读取文件内容: {}".format(file_path))
+    # print("[*] 读取文件内容: {}".format(file_path))
     with open(file_path, "rb") as f:
         data = f.read()
         encoding = chardet.detect(data)["encoding"]

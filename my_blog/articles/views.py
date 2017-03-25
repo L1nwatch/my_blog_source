@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.25 修正一下更新笔记时会删除过多后缀的问题
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 2017.03.18 修正一下解析 markdown tree 的问题, 原本以为是 md 不友好, 结果是自己的代码有问题。。。
@@ -252,7 +253,7 @@ def update_notes(request=None):
         return old_content != newest_content
 
     def __sync_database(file_name, file_path):
-        article = file_name.rstrip(".md")
+        article = file_name[:-len(".md")]   # 用 rstrip 会删除多余后缀
         article_category, article_title = article.split("-")
         article_content = get_right_content_from_file(file_path)
 

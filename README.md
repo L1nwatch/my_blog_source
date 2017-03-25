@@ -76,6 +76,8 @@
 
 新增 Textarea 的 form, 更改 ajax 为 post 请求
 
+修正一下更新笔记时会删除过多后缀的问题
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：
