@@ -3,10 +3,12 @@
 # version: Python3.X
 """ 对 toolhub 这个 APP 进行相关的视图测试
 
+2017.03.25 新增有关 form 的测试
 2017.03.24 编写有关视图首页的测试
 """
 from django.test import TestCase
 from toolhub.views import tools_name_list
+from toolhub.forms import TextareaForm
 
 __author__ = '__L1n__w@tch'
 
@@ -40,10 +42,13 @@ class GitHubPictureTranslateViewTest(TestCase):
         self.assertTemplateUsed(response, "github_picture_translate_tool/github_picture_translate_tool.html")
 
     def test_translate_right(self):
-        response = self.client.get(self.data_url, {"raw_data": "2017-03-17首页截图.jpg"})
+        response = self.client.post(self.data_url, {"raw_data": "2017-03-17首页截图.jpg"})
         right_answer = "2017-03-17%E9%A6%96%E9%A1%B5%E6%88%AA%E5%9B%BE.jpg"
         self.assertEqual(response.content.decode("utf8"), right_answer)
 
+    def test_use_form(self):
+        response = self.client.get(self.unique_url)
+        self.assertIsInstance(response.context["textarea_form"], TextareaForm)
 
 if __name__ == "__main__":
     pass

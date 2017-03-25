@@ -1,6 +1,7 @@
 <component name="ProjectDictionaryState">
   <dictionary name="L1n">
     <words>
+      <w>autofocus</w>
       <w>crontab</w>
       <w>csrf</w>
       <w>dropdown</w>
@@ -11,8 +12,10 @@
       <w>nginx</w>
       <w>runcrons</w>
       <w>sangfor</w>
+      <w>spellcheck</w>
       <w>sudo</w>
       <w>supervisord</w>
+      <w>textarea</w>
       <w>toolhub</w>
     </words>
   </dictionary>

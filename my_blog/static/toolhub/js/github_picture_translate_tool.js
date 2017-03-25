@@ -52,15 +52,33 @@ var hc = get("highlightCode"),
     hr = get("highlightedResult"),
     rt = document.getElementsByTagName("h2")[1];
 
+// using jQuery
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+var csrftoken = getCookie('csrftoken');
 
 // ajax 相关代码
 $(document).ready(function () {
     $("#id_translate_button").click(function () {
         $.ajax({
-            type: "get",
+            type: "post",
             url: "data",
             data: {
-                "raw_data": $("#id_translate_box").val()
+                "raw_data": $("#id_translate_box").val(),
+                "csrfmiddlewaretoken": csrftoken
             },
             success: function (result) {
                 $("#id_translate_box").val(result);
