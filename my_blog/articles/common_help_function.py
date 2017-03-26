@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.26 新增有关搜索输入特殊字符的检查
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关代码
 2017.03.17 重构 form 之后判断 form valid 的小 bug 也被修复了
 2017.03.16 发现 request.get 如果采用给定的 form 会导致默认的 choice 失效, 原因未知
@@ -21,6 +22,7 @@ from gitbook_notes.models import GitBook
 import chardet
 import copy
 import logging
+import string
 import re
 import datetime
 
@@ -95,6 +97,15 @@ def search_keyword_in_model(keyword_set, model, search_fields):
     return result_set
 
 
+def data_check(raw_data):
+    """
+    检查一下 form 接收到的 data 是否合法
+    :param raw_data: str(), 原始字符串
+    :return: boolean(), True or False, 表示合法或不合法
+    """
+    return True
+
+
 def form_is_valid_and_ignore_exist_error(my_form):
     """
     判断 form 表单是否合法, 其中判断过程中不认为 "已存在" 是个错误
@@ -103,12 +114,13 @@ def form_is_valid_and_ignore_exist_error(my_form):
     :param my_form: form 实例, 比如 form = ArticleForm(data=request.POST)
     :return: boolean(), True 表示 form 合法
     """
-    if my_form.is_valid() is True:
-        return True
-    # elif len(my_form.errors) == 1 and re.search("具有.*的.*已存在", str(my_form.errors)):
-    #     return True
-    print("[*] 发现错误: {}".format(my_form.errors))
-    return False
+    if not my_form.is_valid():
+        print("[*] 发现错误: {}".format(my_form.errors))
+        return False
+    elif not data_check(clean_form_data(my_form.data["search_content"])):
+        print("[*] 输入数据不合法")
+        return False
+    return True
 
 
 def clean_form_data(data):

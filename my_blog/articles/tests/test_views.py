@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.26 增加特殊字符的相关搜索时的测试代码
 2017.03.25 新增搜索排序的测试, 现在要按照分类来排序了
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关测试代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
@@ -17,7 +18,9 @@
 import os
 import unittest
 import shutil
+import string
 import datetime
+import random
 
 from articles.forms import BaseSearchForm, ArticleForm
 from articles.models import Article
@@ -705,6 +708,27 @@ class BaseSearchViewTest(TestCase):
         gitbook_index = response_text.index(gitbook.title)
 
         self.assertTrue(article_index < journal_index < gitbook_index)
+
+    def test_single_invalid_input_will_redirect_home(self):
+        """
+        进行单个字符的不合法输入搜索时应该会重定向回首页
+        """
+        # 测试单个特殊字符会被视为非法字符
+        for each_invalid in string.punctuation:
+            response = self.client.post(self.unique_url, data={"search_content": each_invalid,
+                                                               "search_choice": "all"})
+            self.assertTemplateUsed(response, "new_home.html")
+
+    def test_only_special_input_will_redirect_home(self):
+        """
+        进行多个字符, 但全是不合法字符时, 搜索会重定向回首页
+        """
+        # 测试多个特殊字符的搜索会被视为非法字符
+        for i in range(100):
+            invalid_input = "".join([random.choice(string.punctuation) for j in range(random.randint(2, 100))])
+            response = self.client.post(self.unique_url, data={"search_content": invalid_input,
+                                                               "search_choice": "all"})
+            self.assertTemplateUsed(response, "new_home.html")
 
 
 if __name__ == "__main__":

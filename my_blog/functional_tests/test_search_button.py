@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.26 增加特殊字符输入的搜索测试
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关测试代码
 2017.03.15 首页添加搜索选项, 于是编写对应的测试代码
 2017.03.09 添加搜索结果显示行数的功能测试
@@ -340,18 +341,40 @@ class TestSearchButton(FunctionalTest):
 
         # 搜索结果出来了, Y 发现笔记《xxx》排在第一位, 而且点开一看, test 出现的次数有 x 次
         search_result = self.browser.find_elements_by_id("id_search_result_title")
-        search_result[0].click()    # 对应 Article
+        search_result[0].click()  # 对应 Article
 
         # Y 返回去, 点击第 2 篇笔记, 发现 test 出现的次数有 x - 1 次
         first_test_times = self.browser.page_source.count("test")
         self.browser.back()
 
         search_result = self.browser.find_elements_by_id("id_search_result_title")
-        search_result[1].click()    # 对应 Journal
+        search_result[1].click()  # 对应 Journal
         second_test_times = self.browser.page_source.count("test")
 
         # 原来搜索结果有按出现次数进行排序的, Y 很满意
         self.assertTrue(first_test_times > second_test_times)
+
+    def test_search_invalid_char(self):
+        """
+        测试搜索非法字符
+        """
+        # Y 打开首页, 看到了一个搜索框
+        self.browser.get(self.server_url)
+        home_url = self.browser.current_url
+        search_button = self.browser.find_element_by_id("id_search")
+
+        # 它想试试这个搜索框是不是有漏洞, 于是输入一个特殊字符
+        search_button.send_keys("(\n")
+
+        # Y 发现点击搜索之后, 又是回到了首页, 而且搜索框的内容被清空了
+        search_button = self.browser.find_element_by_id("id_search")
+        self.assertEqual(search_button.get_attribute("value"), "")
+        self.assertEqual(self.browser.current_url, home_url)
+
+        # Y 怀疑是不是不能输入单个字符, 于是输入多个, 发现结果一样
+        search_button.send_keys("%^&*(\n")
+        self.assertEqual(search_button.get_attribute("value"), "")
+        self.assertEqual(self.browser.current_url, home_url)
 
 
 if __name__ == "__main__":
