@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.26 重构一下搜索代码, form data 合法性在上层做过了, 这里就不做了
 2017.03.10 将记录日记的装饰器装饰到对应视图上
 2017.03.08 开始进行部分重构工作
 """
@@ -177,23 +178,21 @@ def do_journals_search(request):
 
     if request.method == "POST":
         form = JournalForm(data=request.POST)
-        # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
-        if form_is_valid_and_ignore_exist_error(form):
-            search_text = clean_form_data(form.data["search_content"])
-            keywords = set()
+        search_text = clean_form_data(form.data["search_content"])
+        keywords = set()
 
-            if re.match("\d{4}-\d{1,2}-\d{1,2}", search_text):
-                # 按日期来搜索
-                journal_list = search_journal_by_date(search_text)
-            else:
-                # 按关键词来搜索
-                keywords = set(search_text.split(" "))
-                journal_list = search_keyword_in_model(keywords, Journal, ["content"])
+        if re.match("\d{4}-\d{1,2}-\d{1,2}", search_text):
+            # 按日期来搜索
+            journal_list = search_journal_by_date(search_text)
+        else:
+            # 按关键词来搜索
+            keywords = set(search_text.split(" "))
+            journal_list = search_keyword_in_model(keywords, Journal, ["content"])
 
-            context_data = get_context_data(request, "journals",
-                                            {'post_list': create_search_result(journal_list, keywords, "work_journal"),
-                                             'error': None, "form": form})
+        context_data = get_context_data(request, "journals",
+                                        {'post_list': create_search_result(journal_list, keywords, "work_journal"),
+                                         'error': None, "form": form})
 
-            context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(journal_list) == 0 else False
+        context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(journal_list) == 0 else False
 
-            return context_data
+        return context_data

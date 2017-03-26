@@ -80,6 +80,10 @@
 
 改了一下搜索结果排序的逻辑代码
 
+#### 2017.03.26
+
+添加搜索时的合法性校验
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：

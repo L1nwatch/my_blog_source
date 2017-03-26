@@ -373,6 +373,7 @@ class TestSearchButton(FunctionalTest):
 
         # Y 怀疑是不是不能输入单个字符, 于是输入多个, 发现结果一样
         search_button.send_keys("%^&*(\n")
+        search_button = self.browser.find_element_by_id("id_search")
         self.assertEqual(search_button.get_attribute("value"), "")
         self.assertEqual(self.browser.current_url, home_url)
 

@@ -253,7 +253,7 @@ class JournalSearchViewTest(BaseCommonTest):
 
         # 测试只搜年和月, 搜不到
         response = self.client.post(self.unique_url,
-                                    data={"sesarch_content": "{}-{}".format(journal.date.year, journal.date.month),
+                                    data={"search_content": "{}-{}".format(journal.date.year, journal.date.month),
                                           "search_choice": "journals"})
         self.assertNotContains(response, journal.title)
 

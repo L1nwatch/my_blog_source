@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
-2017.03.26 增加特殊字符的相关搜索时的测试代码
+2017.03.26 增加特殊字符的相关搜索时的测试代码, 修改重定向到首页后对应的测试代码
 2017.03.25 新增搜索排序的测试, 现在要按照分类来排序了
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关测试代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
@@ -360,8 +360,8 @@ class ArticlesSearchViewTest(TestCase):
     def test_for_invalid_input_passes_form_to_template(self):
         response = self.client.post(self.unique_url, data={"search_content": "",
                                                            "search_choice": "articles"})
-        # 此时应该是返回到首页了
-        self.assertIsInstance(response.context["form"], BaseSearchForm)
+        # 此时应该是重定向到首页了
+        self.assertRedirects(response, "/")
 
     def test_for_valid_input_passes_form_to_template(self):
         response = self.client.post(self.unique_url, data={"search_content": "不应该有这篇文章的",
@@ -377,8 +377,8 @@ class ArticlesSearchViewTest(TestCase):
         测试是否有将 form 传递给模板
         """
         response = self.client.get(self.unique_url)
-        # GET 请求, 到首页, 应该是 BaseForm
-        self.assertIsInstance(response.context["form"], BaseSearchForm)
+        # GET 请求, 重定向到首页, 应该是 BaseForm
+        self.assertRedirects(response, "/")
 
     def test_valid_input_will_get_response_using_right_template(self):
         test_article = Article.objects.create(title="test_article")
@@ -717,7 +717,7 @@ class BaseSearchViewTest(TestCase):
         for each_invalid in string.punctuation:
             response = self.client.post(self.unique_url, data={"search_content": each_invalid,
                                                                "search_choice": "all"})
-            self.assertTemplateUsed(response, "new_home.html")
+            self.assertRedirects(response, "/")
 
     def test_only_special_input_will_redirect_home(self):
         """
@@ -728,7 +728,7 @@ class BaseSearchViewTest(TestCase):
             invalid_input = "".join([random.choice(string.punctuation) for j in range(random.randint(2, 100))])
             response = self.client.post(self.unique_url, data={"search_content": invalid_input,
                                                                "search_choice": "all"})
-            self.assertTemplateUsed(response, "new_home.html")
+            self.assertRedirects(response, "/")
 
 
 if __name__ == "__main__":

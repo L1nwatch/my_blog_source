@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.26 新增搜索时拒绝非法字符搜索的相关功能
 2017.03.25 修正一下更新笔记时会删除过多后缀的问题, 重新改了一下搜索排序
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
@@ -13,7 +14,7 @@
 2017.02.09 重构一下搜索函数, 跟日记搜索的功能合并一下
 2016.10.28 重构了一下模板传参, 封装成一个函数来处理了, 要不然每个视图都得专门处理传给模板的参数
 """
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import Http404
 from django.conf import settings
 
@@ -163,23 +164,22 @@ def _parse_markdown_file(markdown_content):
 @log_wrapper(str_format="进行了搜索", logger=logger)
 def do_articles_search(request):
     """
+    2017.03.26 删除验证 form 的代码, 在上一层已经验证过了
     2017.02.09 分离搜索视图, 将搜索文章的单独拿出来
     :param request: django 传给视图函数的参数 request, 包含 HTTP 请求的各种信息
     :return: dict() or None, 要传给模板的各个数据, None 表示出现异常了
     """
-
     form = ArticleForm(data=request.POST)
-    if form_is_valid_and_ignore_exist_error(form):
-        keywords = set(clean_form_data(form.data["search_content"]).split(" "))
-        # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
-        article_list = search_keyword_in_model(keywords, Article, ["content", "title"])
+    keywords = set(clean_form_data(form.data["search_content"]).split(" "))
+    # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见上面这个验证函数
+    article_list = search_keyword_in_model(keywords, Article, ["content", "title"])
 
-        context_data = get_context_data(request, "articles",
-                                        {'post_list': create_search_result(article_list, keywords, "articles"),
-                                         'error': None, "form": form})
-        context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(article_list) == 0 else False
+    context_data = get_context_data(request, "articles",
+                                    {'post_list': create_search_result(article_list, keywords, "articles"),
+                                     'error': None, "form": form})
+    context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(article_list) == 0 else False
 
-        return context_data
+    return context_data
 
 
 @log_wrapper(str_format="进行了搜索", logger=logger)
@@ -192,7 +192,7 @@ def blog_search(request):
     2016.10.11 添加能够搜索文章内容的功能
     :param request: django 传给视图函数的参数 request, 包含 HTTP 请求的各种信息
     """
-    if request.method == "POST":
+    if request.method == "POST" and form_is_valid_and_ignore_exist_error(BaseSearchForm(request.POST)):
         context_data = None
         if request.POST["search_choice"] == "all":
             context_data = get_context_data(request, "all", {"total_numbers": 0})
@@ -225,7 +225,7 @@ def blog_search(request):
         if context_data is not None and len(context_data) > 0:
             return render(request, 'search_result.html', context_data)
 
-    return home_view(request)
+    return redirect("home")
 
 
 def update_notes(request=None):
@@ -250,7 +250,7 @@ def update_notes(request=None):
         return old_content != newest_content
 
     def __sync_database(file_name, file_path):
-        article = file_name[:-len(".md")]   # 用 rstrip 会删除多余后缀
+        article = file_name[:-len(".md")]  # 用 rstrip 会删除多余后缀
         article_category, article_title = article.split("-")
         article_content = get_right_content_from_file(file_path)
 

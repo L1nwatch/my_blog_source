@@ -78,12 +78,12 @@ class TestCommonHelpFunc(TestCase):
         for i in range(100):
             test_data = random.choice(string.ascii_letters + string.digits) + "".join(
                 [random.choice(string.punctuation) for j in range(random.randint(2, 30))])
-            self.assertTrue(test_data)
+            self.assertTrue(data_check(test_data))
 
         # 不含非特殊字符
         for i in range(100):
             test_data = "".join([random.choice(string.punctuation) for j in range(random.randint(2, 100))])
-            self.assertFalse(test_data)
+            self.assertFalse(data_check(test_data))
 
 
 if __name__ == "__main__":

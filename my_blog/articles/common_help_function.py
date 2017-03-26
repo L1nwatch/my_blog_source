@@ -103,6 +103,10 @@ def data_check(raw_data):
     :param raw_data: str(), 原始字符串
     :return: boolean(), True or False, 表示合法或不合法
     """
+    if len(raw_data) == 1 and raw_data in string.printable:
+        return False
+    elif raw_data.strip(string.punctuation) == "":
+        return False
     return True
 
 

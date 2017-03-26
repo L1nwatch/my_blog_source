@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.26 重构一下搜索代码, form data 合法性在上层做过了, 这里就不做了
 2017.03.10 将记录日记的装饰器装饰到对应视图上
 2017.03.10 发现 title 字段的 BUG
 2017.03.08 开始进行部分重构工作
@@ -229,20 +230,18 @@ def do_gitbooks_search(request):
 
     if request.method == "POST":
         form = BaseSearchForm(data=request.POST)
-        # 因为自定义无视某个错误所以不能用 form.cleaned_data["title"], 详见下面这个验证函数
-        if form_is_valid_and_ignore_exist_error(form):
-            search_text = clean_form_data(form.data["search_content"])
-            # 按关键词来搜索
-            keywords = set(search_text.split(" "))
+        search_text = clean_form_data(form.data["search_content"])
+        # 按关键词来搜索
+        keywords = set(search_text.split(" "))
 
-            gitbook_list = search_keyword_in_model(keywords, GitBook, ["content"])
+        gitbook_list = search_keyword_in_model(keywords, GitBook, ["content"])
 
-            context_data = get_context_data(request, "gitbooks",
-                                            {'post_list': create_search_result(gitbook_list, keywords, "gitbook_notes"),
-                                             'error': None, "form": form})
-            context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(gitbook_list) == 0 else False
+        context_data = get_context_data(request, "gitbooks",
+                                        {'post_list': create_search_result(gitbook_list, keywords, "gitbook_notes"),
+                                         'error': None, "form": form})
+        context_data["error"] = const.EMPTY_ARTICLE_ERROR if len(gitbook_list) == 0 else False
 
-            return context_data
+        return context_data
 
 
 @log_wrapper(str_format="查看了 GitBook", logger=logger)
