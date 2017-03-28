@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.28 修改 about me 的测试
 2017.03.24 新增一个 tool_hub APP, 于是编写相关测试
 2017.02.13 日记更换首页了, 对应的测试得修改下
 2017.02.06 更换首页了, 所以对应测试也得改, 比如说现在首页不显示文章内容了
@@ -47,14 +48,14 @@ class TestHomePageButtons(FunctionalTest):
         self.assertNotEqual(self.browser.page_source, home_page_source)
 
     def test_about_me_button(self):
+        """
+        2017.03.28 about me 是由 Pages 创建的, 所以测试不太方便, 这里修改成仅测试能否打开 about me 页面
+        """
         home_page_source = self.browser.page_source
 
-        # 看到 about_me 按钮, 点击, 发现界面有所变化, 并且显示了作者的相关信息, 特别注意到了座右铭: "Valar Morghulis"
+        # 看到 about_me 按钮, 点击, 发现界面有所变化, 看上去像是一份简历, 由 Pages 生成的
         self.browser.find_element_by_id("id_about_me").click()
         self.assertNotEqual(self.browser.page_source, home_page_source)
-        table = self.browser.find_element_by_id("id_information_list")
-        rows = table.find_elements_by_tag_name("tr")
-        self.assertIn(r"座右铭: Valar Morghulis", [row.text for row in rows])
 
     @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
     def test_github_button(self):

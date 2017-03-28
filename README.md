@@ -84,6 +84,10 @@
 
 添加搜索时的合法性校验
 
+#### 2017.03.28
+
+新增 about me 页面, 是由 Pages 转换成的, 另外修改 about me 测试
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：
