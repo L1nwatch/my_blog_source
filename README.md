@@ -88,6 +88,8 @@
 
 新增 about me 页面, 是由 Pages 转换成的, 另外修改 about me 测试
 
+开始新增 code_collect 这个 APP, 用于搜索所有笔记中的代码块
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：

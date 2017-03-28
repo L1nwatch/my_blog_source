@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 
 更新日志:
+2017.03.28 新增 code_collect 这个 APP
 2017.03.24 新增 toolhub 这个 app
 2016.10.28 在更新时间的时候遇到了这么个问题:
     RuntimeWarning: DateTimeField Article.update_time received a naive datetime ... while time zone support is active
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
     "work_journal",
     "just_eating",
     "toolhub",
+    "code_collect",
 ]
 
 BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
