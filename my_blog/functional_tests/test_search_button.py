@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.29 新增有关 Code APP 的功能测试代码
 2017.03.26 增加特殊字符输入的搜索测试
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关测试代码
 2017.03.15 首页添加搜索选项, 于是编写对应的测试代码
@@ -260,7 +261,7 @@ class TestSearchButton(FunctionalTest):
         """
         测试搜索选项, 选择 GitBooks 的时候只能搜索包括 GitBooks 的内容
         """
-        # Y 打开首页, 发现了搜索框, 看到了默认搜索选项 All, 点击一看, 发现了 Articles 选项
+        # Y 打开首页, 发现了搜索框, 看到了默认搜索选项 All, 点击一看, 发现了 GitBooks 选项
         self.browser.get(self.server_url)
         search_button = self.browser.find_element_by_id("id_search")
         self.browser.find_element_by_id("id_current_search_choice").click()
@@ -269,7 +270,7 @@ class TestSearchButton(FunctionalTest):
             ["GitBooks" in each_choice.text for each_choice in search_choices]
         ))
 
-        # Y 点击 Articles 选项, 发现当前的搜索选项变成了 Articles
+        # Y 点击 GitBooks 选项, 发现当前的搜索选项变成了 GitBooks
         for each_choice in search_choices:
             if "GitBooks" == each_choice.text:
                 gitbook_choice = each_choice
@@ -297,7 +298,7 @@ class TestSearchButton(FunctionalTest):
         """
         测试搜索选项, 选择 Journals 的时候只能搜索包括 Journals 的内容
         """
-        # Y 打开首页, 发现了搜索框, 看到了默认搜索选项 All, 点击一看, 发现了 Articles 选项
+        # Y 打开首页, 发现了搜索框, 看到了默认搜索选项 All, 点击一看, 发现了 Journals 选项
         self.browser.get(self.server_url)
         search_button = self.browser.find_element_by_id("id_search")
         self.browser.find_element_by_id("id_current_search_choice").click()
@@ -306,7 +307,7 @@ class TestSearchButton(FunctionalTest):
             ["Journals" in each_choice.text for each_choice in search_choices]
         ))
 
-        # Y 点击 Articles 选项, 发现当前的搜索选项变成了 Articles
+        # Y 点击 Journals 选项, 发现当前的搜索选项变成了 Journals
         for each_choice in search_choices:
             if "Journals" == each_choice.text:
                 gitbook_choice = each_choice
@@ -376,6 +377,70 @@ class TestSearchButton(FunctionalTest):
         search_button = self.browser.find_element_by_id("id_search")
         self.assertEqual(search_button.get_attribute("value"), "")
         self.assertEqual(self.browser.current_url, home_url)
+
+    def test_can_search_code(self):
+        """
+        测试能够搜索 code 代码
+        """
+        # Y 打开首页, 发现搜索选项里有个 Code
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+        self.browser.find_element_by_id("id_current_search_choice").click()
+        search_choices = self.browser.find_elements_by_id("id_search_choices")
+        self.assertTrue(any(
+            ["Code" in each_choice.text for each_choice in search_choices]
+        ))
+
+        # Y 点击 Code 选项, 发现当前的搜索选项变成了 Code
+        for each_choice in search_choices:
+            if "Code" == each_choice.text:
+                gitbook_choice = each_choice
+                gitbook_choice.click()
+        current_search_choice = self.browser.find_element_by_id("id_current_search_choice")
+        self.assertEqual(current_search_choice.text, "Code")
+
+        # 它选中了 Code, 打算对 Code 中的有关 time.sleep 进行搜索, 它知道某篇笔记肯定有关于这个的内容
+        search_button.send_keys("time.sleep\n")
+
+        # 搜索 Code, 发现这篇笔记果然出现了
+        search_results = self.browser.find_elements_by_class_name("search-result")
+        self.assertTrue(any(
+            ["article_with_markdown" in each_result.text for each_result in search_results])
+        )
+
+    def test_search_only_code(self):
+        """
+        测试能够只搜索 code 代码
+        """
+        has_code_content = """
+```python
+time.sleep
+```
+"""
+        # 笔记库里存在两篇笔记, 都含有 time.sleep 关键词
+        has_code = Article.objects.create(title="has_code", content=has_code_content)
+        no_code = Article.objects.create(title="no_code", content="time.sleep")
+
+        # Y 打开首页, 找到搜索框, 选择 Code 进行搜索
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+        self.browser.find_element_by_id("id_current_search_choice").click()
+        search_choices = self.browser.find_elements_by_id("id_search_choices")
+        for each_choice in search_choices:
+            if "Code" == each_choice.text:
+                gitbook_choice = each_choice
+                gitbook_choice.click()
+
+        # Y 搜索 "time.sleep", 发现只有 time.sleep 出现在 code 块的笔记被搜出来, 另外一份没有被搜出来
+        search_button.send_keys("time.sleep\n")
+
+        search_results = self.browser.find_elements_by_class_name("search-result")
+        self.assertTrue(any(
+            [has_code.title in each_result.text for each_result in search_results])
+        )
+        self.assertFalse(any(
+            [no_code.title in each_result.text for each_result in search_results])
+        )
 
 
 if __name__ == "__main__":

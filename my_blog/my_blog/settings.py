@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 
 更新日志:
-2017.03.28 新增 code_collect 这个 APP
+2017.03.28 新增 code_collect 这个 APP 及相应的 logger 信息
 2017.03.24 新增 toolhub 这个 app
 2016.10.28 在更新时间的时候遇到了这么个问题:
     RuntimeWarning: DateTimeField Article.update_time received a naive datetime ... while time zone support is active
@@ -213,6 +213,11 @@ LOGGING = {
             'propagate': True
         },
         'my_blog.toolhub.views': {
+            'handlers': ['default', 'error', "info"],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'my_blog.code_collect.views': {
             'handlers': ['default', 'error', "info"],
             'level': 'DEBUG',
             'propagate': True
