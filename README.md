@@ -90,6 +90,10 @@
 
 开始新增 code_collect 这个 APP, 用于搜索所有笔记中的代码块
 
+#### 2017.03.30
+
+全部测试通过了, 现在可以进行 Code 搜索了
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：
