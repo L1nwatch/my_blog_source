@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.28 新增有关 Code 的搜索实现
 2017.03.26 新增搜索时拒绝非法字符搜索的相关功能
 2017.03.25 修正一下更新笔记时会删除过多后缀的问题, 重新改了一下搜索排序
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关代码
@@ -14,7 +15,7 @@
 2017.02.09 重构一下搜索函数, 跟日记搜索的功能合并一下
 2016.10.28 重构了一下模板传参, 封装成一个函数来处理了, 要不然每个视图都得专门处理传给模板的参数
 """
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from django.http import Http404
 from django.conf import settings
 
@@ -27,6 +28,7 @@ from articles.common_help_function import (clean_form_data, get_ip_from_django_r
 from my_constant import const
 from work_journal.views import do_journals_search
 from gitbook_notes.views import do_gitbooks_search
+from code_collect.views import do_code_search
 
 import md2py
 import datetime
@@ -221,6 +223,8 @@ def blog_search(request):
             context_data = do_journals_search(request)
         elif request.POST["search_choice"] == "gitbooks":
             context_data = do_gitbooks_search(request)
+        elif request.POST["search_choice"] == "code":
+            context_data = do_code_search(request)
 
         if context_data is not None and len(context_data) > 0:
             return render(request, 'search_result.html', context_data)

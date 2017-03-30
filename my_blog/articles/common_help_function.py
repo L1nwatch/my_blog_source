@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.28 增加 Code 这个 APP 有关的代码实现
 2017.03.26 新增有关搜索输入特殊字符的检查
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关代码
 2017.03.17 重构 form 之后判断 form valid 的小 bug 也被修复了
@@ -18,6 +19,7 @@ from articles.models import Article, BaseModel
 from work_journal.models import Journal
 from work_journal.forms import JournalForm
 from gitbook_notes.models import GitBook
+from code_collect.models import CodeCollect
 
 import chardet
 import copy
@@ -31,7 +33,8 @@ __author__ = '__L1n__w@tch'
 model_dict = {"articles": Article,
               "journals": Journal, "work_journal": Journal,
               "all": BaseModel,
-              "gitbooks": GitBook, "gitbook_notes": GitBook}
+              "gitbooks": GitBook, "gitbook_notes": GitBook,
+              "code": CodeCollect}
 
 
 def get_context_data(request, context_type, update_data=None):
@@ -42,7 +45,8 @@ def get_context_data(request, context_type, update_data=None):
     :param update_data: dict(), 除了基础数据外, 需要额外发送给模板的数据
     :return: dict(), 发送给模板的全部数据
     """
-    form_dict = {"articles": ArticleForm, "all": BaseSearchForm, "journals": JournalForm, "gitbooks": BaseSearchForm}
+    form_dict = {"articles": ArticleForm, "journals": JournalForm,
+                 "all": BaseSearchForm, "gitbooks": BaseSearchForm, "code": BaseSearchForm}
 
     data_return_to_base_template = {"form": form_dict[context_type](initial={"search_choice": context_type}),
                                     "current_type": context_type,
