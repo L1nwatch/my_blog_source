@@ -2,7 +2,7 @@
 # version: Python3.X
 """ code_collect 的视图函数
 
-2017.03.30 继续完成 do_code_search 相关代码
+2017.03.30 继续完成 do_code_search 相关代码, 给更新函数添加记日记功能
 2017.03.29 新增 do_code_search 视图函数, 不过还没编写对应的测试, 先把 code_collect 的测试通过了再说吧
 2017.03.28 新增一个 code_collect 视图函数, 用于更新数据库信息
 """
@@ -212,16 +212,13 @@ def sync_code_db(each_note_db):
                 each_code.delete()
 
 
+@log_wrapper(str_format="使用了 code_collect 视图函数", logger=logger)
 def code_collect(request=None):
     """
     负责实现代码块信息的收集, 之后保存到数据库中
     :param request: django request, 可有可无, 毕竟这不是用来前端 URL 映射的
     :return: None
     """
-    # request 不为 None 时才记日记
-    if request:
-        logger.info("[*] {} 使用了 code_collect 视图函数".format(get_ip_from_django_request(request)))
-
     # 依次更新 Article、Journal、GitBook
     for each_note_db in [Article, Journal, GitBook]:
         sync_code_db(each_note_db)

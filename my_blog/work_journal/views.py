@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.30 给更新函数添加记日记功能
 2017.03.26 重构一下搜索代码, form data 合法性在上层做过了, 这里就不做了
 2017.03.10 将记录日记的装饰器装饰到对应视图上
 2017.03.08 开始进行部分重构工作
@@ -83,6 +84,7 @@ def extract_date_from_md_file(file_name):
     return datetime.date(year, month, day)
 
 
+@log_wrapper(str_format="更新了日记", logger=logger)
 def update_journals(request=None):
     def __get_latest_notes():
         nonlocal notes_git_path
@@ -127,9 +129,6 @@ def update_journals(request=None):
                 Journal.objects.create(title=journal_title, content=journal_content, date=date)
 
     notes_git_path = const.JOURNALS_GIT_PATH
-
-    if request:
-        logger.info("ip: {} 于时间 {} 更新了笔记".format(get_ip_from_django_request(request), datetime.datetime.today()))
 
     # 将 git 仓库中的所有笔记更新到本地
     __get_latest_notes()

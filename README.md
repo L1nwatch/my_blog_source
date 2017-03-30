@@ -94,6 +94,8 @@
 
 全部测试通过了, 现在可以进行 Code 搜索了
 
+把更新笔记的函数执行也记录进日志里
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：

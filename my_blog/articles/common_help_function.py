@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.30 对 log 添加没有 request 时的支持
 2017.03.28 增加 Code 这个 APP 有关的代码实现
 2017.03.26 新增有关搜索输入特殊字符的检查
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关代码
@@ -260,13 +261,14 @@ def decorator_with_args(decorator_to_enhance):
 def log_wrapper(func, str_format="", level="info", logger=None):
     now = datetime.datetime.today()
 
-    def wrapper(request, *func_args, **func_kwargs):
-        logger_func = getattr(logger, level)
-        if len(func_kwargs) > 0:
-            logger_func(("[*] IP {} 于 {} " + str_format + ", 相关参数为: {}")
-                        .format(get_ip_from_django_request(request), now, func_kwargs))
-        else:
-            logger_func(("[*] IP {} 于 {} " + str_format).format(get_ip_from_django_request(request), now))
+    def wrapper(request=None, *func_args, **func_kwargs):
+        if request is not None:
+            logger_func = getattr(logger, level)
+            if len(func_kwargs) > 0:
+                logger_func(("[*] IP {} 于 {} " + str_format + ", 相关参数为: {}")
+                            .format(get_ip_from_django_request(request), now, func_kwargs))
+            else:
+                logger_func(("[*] IP {} 于 {} " + str_format).format(get_ip_from_django_request(request), now))
         return func(request, *func_args, **func_kwargs)
 
     return wrapper

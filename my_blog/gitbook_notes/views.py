@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.30 给更新函数添加记日记功能
 2017.03.26 重构一下搜索代码, form data 合法性在上层做过了, 这里就不做了
 2017.03.10 将记录日记的装饰器装饰到对应视图上
 2017.03.10 发现 title 字段的 BUG
@@ -197,6 +198,7 @@ def update_gitbook_db(gitbook_name):
     return notes_in_git
 
 
+@log_wrapper(str_format="更新 gitbook 笔记", logger=logger)
 def update_gitbook_codes(request=None):
     """
     2017.03.05 开始实现 gitbook 数据写入数据库的代码

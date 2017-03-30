@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.30 给更新函数添加记日记功能
 2017.03.28 新增有关 Code 的搜索实现
 2017.03.26 新增搜索时拒绝非法字符搜索的相关功能
 2017.03.25 修正一下更新笔记时会删除过多后缀的问题, 重新改了一下搜索排序
@@ -232,6 +233,7 @@ def blog_search(request):
     return redirect("home")
 
 
+@log_wrapper(str_format="更新了笔记", logger=logger)
 def update_notes(request=None):
     def __get_latest_notes():
         nonlocal notes_git_path
@@ -284,9 +286,6 @@ def update_notes(request=None):
         return True
 
     notes_git_path = const.NOTES_GIT_PATH
-
-    if request:
-        logger.info("ip: {} 更新了笔记".format(get_ip_from_django_request(request)))
 
     # settings.UPDATE_TIME_LIMIT s 内不允许重新点击
     global LAST_UPDATE_TIME
