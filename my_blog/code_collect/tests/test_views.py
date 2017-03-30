@@ -424,6 +424,8 @@ class CodeSearchTest(BasicFunction):
         code = self.create_code_associate_with_article(article)
         self.assertEqual(get_note_type(code), "code")
 
+        self.assertEqual(get_note_type(code.note), "articles")
+
     def test_get_all_code_area(self):
         """
         测试获取笔记的代码块
@@ -462,7 +464,24 @@ class CodeSearchTest(BasicFunction):
         article = self.create_article_with_code()
         keyword_set = {"print"}
         all_code_area = ['print("Hello CodeCollect! I am Article")']
-        right_answer = const.SEARCH_RESULT_INFO("print", all_code_area[0], 2)
+        # 注意这里的代码行号表示在代码块里的行号, 而不是整篇文章里的
+        right_answer = [const.SEARCH_RESULT_INFO("print", all_code_area[0], 1)]
+        my_answer = search_code_keyword_in_note(article, keyword_set, all_code_area)
+        self.assertEqual(right_answer, my_answer)
+
+        keyword_set = {"AbCdEfg"}
+        all_code_area = ['print("Hello CodeCollect! I am Article")']
+        # 注意这里的代码行号表示在代码块里的行号, 而不是整篇文章里的
+        right_answer = list()
+        my_answer = search_code_keyword_in_note(article, keyword_set, all_code_area)
+        self.assertEqual(right_answer, my_answer)
+
+        article = self.create_article_with_multiple_code()
+        keyword_set = {"shell"}
+        all_code_area = ['print("Hello CodeCollect! I am Article")',
+                         'echo "Hello CodeCollect! I am Article with shell output"']
+        # 注意这里的代码行号表示在代码块里的行号, 而不是整篇文章里的
+        right_answer = [const.SEARCH_RESULT_INFO("shell", all_code_area[1], 1)]
         my_answer = search_code_keyword_in_note(article, keyword_set, all_code_area)
         self.assertEqual(right_answer, my_answer)
 

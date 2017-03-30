@@ -6,7 +6,7 @@
 2017.03.29 新增 do_code_search 视图函数, 不过还没编写对应的测试, 先把 code_collect 的测试通过了再说吧
 2017.03.28 新增一个 code_collect 视图函数, 用于更新数据库信息
 """
-from articles.models import Article
+from articles.models import Article, BaseModel
 from articles.forms import BaseSearchForm
 from gitbook_notes.models import GitBook
 from work_journal.models import Journal
@@ -52,7 +52,8 @@ def do_code_search(request):
 
         return context_data
 
-def search_code_keyword_in_note(note,keyword_set,all_code_area):
+
+def search_code_keyword_in_note(note, keyword_set, all_code_area):
     """
     在某篇特定笔记中查找所有代码块, 如果查询的所有关键词都存在, 则加入结果列表
     :param note: note 实例
@@ -63,10 +64,17 @@ def search_code_keyword_in_note(note,keyword_set,all_code_area):
     result_list = list()
 
     for each_keyword in keyword_set:
-        search_info = [const.SEARCH_RESULT_INFO("", const.KEYWORD_IN_TITLE, 0)]
-        # const.SEARCH_RESULT_INFO
+        found = False
+        for each_code in all_code_area:
+            for i, each_line in enumerate(each_code.splitlines()):
+                if str(each_keyword).lower() in each_line.lower():
+                    result_list.append(const.SEARCH_RESULT_INFO(each_keyword, each_line, i + 1))
+                    found = True
+        if not found:
+            result_list.clear()
 
     return result_list
+
 
 def search_code_keyword_in_note_set(note_set, keyword_set, code_type):
     """
@@ -84,11 +92,12 @@ def search_code_keyword_in_note_set(note_set, keyword_set, code_type):
 
     # 遍历集合中的每份笔记
     for each_note in note_set:
+        each_note = each_note.note
         # 提取笔记中的每个代码块
         all_code_area = get_all_code_area(each_note, code_type)
 
         # 搜索是否存在关键词, 所有关键词都有则加入到 result_list 中
-        search_result = search_code_keyword_in_note(each_note,keyword_set,all_code_area)
+        search_result = search_code_keyword_in_note(each_note, keyword_set, all_code_area)
 
         if search_result:
             result_list.append(const.ARTICLE_STRUCTURE(
@@ -103,7 +112,7 @@ def get_all_code_area(note, code_type):
     获取笔记中符合 code_type 的所有代码块
     :param note: note 实例
     :param code_type: str(), 比如 "python", 表明只获取 python 代码块
-    :return: list(), 每一个元素是该篇笔记的代码块
+    :return: list(), 每一个元素是该篇笔记的代码块, 比如 ['print("HelloWorld")']
     """
     code_area_re = re.compile("```([^\s]+)([\s\S]*?\n)```", flags=re.IGNORECASE)
     result_list = list()
@@ -133,6 +142,12 @@ def get_note_type(note):
         return "journals"
     elif isinstance(note, CodeCollect):
         return "code"
+    elif isinstance(note, BaseModel) and hasattr(note, "article"):
+        return "articles"
+    elif isinstance(note, BaseModel) and hasattr(note, "gitbook"):
+        return "gitbooks"
+    elif isinstance(note, BaseModel) and hasattr(note, "journal"):
+        return "journals"
     else:
         raise RuntimeError("[-] Get note type 出现错误: {}".format(note))
 

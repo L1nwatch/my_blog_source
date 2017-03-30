@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.30 补充更新操作, 要不然没法进行 Code 搜索
 2017.03.29 新增有关 Code APP 的功能测试代码
 2017.03.26 增加特殊字符输入的搜索测试
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关测试代码
@@ -16,6 +17,7 @@
 """
 from .base import FunctionalTest
 from articles.models import Article
+from code_collect.views import code_collect
 from my_constant import const
 
 from selenium.common.exceptions import NoSuchElementException
@@ -382,6 +384,9 @@ class TestSearchButton(FunctionalTest):
         """
         测试能够搜索 code 代码
         """
+        # 确保进行了代码更新
+        code_collect()
+
         # Y 打开首页, 发现搜索选项里有个 Code
         self.browser.get(self.server_url)
         search_button = self.browser.find_element_by_id("id_search")
@@ -420,6 +425,9 @@ time.sleep
         # 笔记库里存在两篇笔记, 都含有 time.sleep 关键词
         has_code = Article.objects.create(title="has_code", content=has_code_content)
         no_code = Article.objects.create(title="no_code", content="time.sleep")
+
+        # 确保进行了代码更新
+        code_collect()
 
         # Y 打开首页, 找到搜索框, 选择 Code 进行搜索
         self.browser.get(self.server_url)
