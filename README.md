@@ -96,6 +96,10 @@
 
 把更新笔记的函数执行也记录进日志里
 
+#### 2017.03.31
+
+修正一下 code 搜索出来 gitbook 和 journal 链接不正确的问题
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：

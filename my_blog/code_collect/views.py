@@ -2,6 +2,7 @@
 # version: Python3.X
 """ code_collect 的视图函数
 
+2017.03.31 修正一下 code 搜索出来的链接不正确的问题
 2017.03.30 继续完成 do_code_search 相关代码, 给更新函数添加记日记功能
 2017.03.29 新增 do_code_search 视图函数, 不过还没编写对应的测试, 先把 code_collect 的测试通过了再说吧
 2017.03.28 新增一个 code_collect 视图函数, 用于更新数据库信息
@@ -137,17 +138,17 @@ def get_note_type(note):
     if isinstance(note, Article):
         return "articles"
     elif isinstance(note, GitBook):
-        return "gitbooks"
+        return "gitbook_notes"
     elif isinstance(note, Journal):
-        return "journals"
+        return "work_journal"
     elif isinstance(note, CodeCollect):
         return "code"
     elif isinstance(note, BaseModel) and hasattr(note, "article"):
         return "articles"
     elif isinstance(note, BaseModel) and hasattr(note, "gitbook"):
-        return "gitbooks"
+        return "gitbook_notes"
     elif isinstance(note, BaseModel) and hasattr(note, "journal"):
-        return "journals"
+        return "work_journal"
     else:
         raise RuntimeError("[-] Get note type 出现错误: {}".format(note))
 

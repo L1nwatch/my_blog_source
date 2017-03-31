@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 为视图编写相关测试代码
 
+2017.03.31 修正一下 code 搜索出来的链接不正确的问题, 完善对应测试
 2017.03.30 编写有关搜索部分的相关测试
 2017.03.29 编写有关更新代码块数据库的相关测试
 """
@@ -416,10 +417,10 @@ class CodeSearchTest(BasicFunction):
         self.assertEqual(get_note_type(article), "articles")
 
         gitbook = self.create_gitbook_with_code()
-        self.assertEqual(get_note_type(gitbook), "gitbooks")
+        self.assertEqual(get_note_type(gitbook), "gitbook_notes")
 
         journal = self.create_journal_with_code()
-        self.assertEqual(get_note_type(journal), "journals")
+        self.assertEqual(get_note_type(journal), "work_journal")
 
         code = self.create_code_associate_with_article(article)
         self.assertEqual(get_note_type(code), "code")

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.31 手动调试发现搜索 code 时进入日记有问题, 补充对应测试代码
 2017.03.30 补充更新操作, 要不然没法进行 Code 搜索
 2017.03.29 新增有关 Code APP 的功能测试代码
 2017.03.26 增加特殊字符输入的搜索测试
@@ -17,10 +18,13 @@
 """
 from .base import FunctionalTest
 from articles.models import Article
+from work_journal.models import Journal
 from code_collect.views import code_collect
 from my_constant import const
 
 from selenium.common.exceptions import NoSuchElementException
+
+import datetime
 
 __author__ = '__L1n__w@tch'
 
@@ -413,18 +417,11 @@ class TestSearchButton(FunctionalTest):
             ["article_with_markdown" in each_result.text for each_result in search_results])
         )
 
-    def test_search_only_code(self):
+    def test_search_only_code_in_Article(self):
         """
-        测试能够只搜索 code 代码
+        测试能够只搜索 code 代码, 测试 Article 内容
         """
-        has_code_content = """
-```python
-time.sleep
-```
-"""
-        # 笔记库里存在两篇笔记, 都含有 time.sleep 关键词
-        has_code = Article.objects.create(title="has_code", content=has_code_content)
-        no_code = Article.objects.create(title="no_code", content="time.sleep")
+        has_code, no_code = self.create_multiple_articles_with_or_without_code()
 
         # 确保进行了代码更新
         code_collect()
@@ -442,13 +439,85 @@ time.sleep
         # Y 搜索 "time.sleep", 发现只有 time.sleep 出现在 code 块的笔记被搜出来, 另外一份没有被搜出来
         search_button.send_keys("time.sleep\n")
 
-        search_results = self.browser.find_elements_by_class_name("search-result")
+        search_results = self.browser.find_elements_by_id("id_search_result_title")
         self.assertTrue(any(
-            [has_code.title in each_result.text for each_result in search_results])
+            [has_code.title == each_result.text for each_result in search_results])
         )
+
         self.assertFalse(any(
-            [no_code.title in each_result.text for each_result in search_results])
+            [no_code.title == each_result.text for each_result in search_results])
         )
+
+        current_url = self.browser.current_url
+        # 点开文章, 发现页面跳转了, 笔记中确实有搜索的关键词
+        for each_result in search_results:
+            if has_code.title == each_result.text:
+                each_result.click()
+                break
+
+        self.assertNotEqual(current_url, self.browser.current_url)
+        self.assertEqual(has_code.title, self.browser.find_element_by_class_name("post-title").text)
+
+    @staticmethod
+    def create_multiple_articles_with_or_without_code():
+        has_code_content = """
+```python
+time.sleep
+```
+        """
+        # 笔记库里存在两篇笔记, 都含有 time.sleep 关键词
+        has_code = Article.objects.create(title="has_code", content=has_code_content)
+        no_code = Article.objects.create(title="no_code", content="time.sleep")
+
+        return has_code, no_code
+
+    def test_search_only_code_in_Journal_can_link_correct(self):
+        """
+        测试 code 搜索 Journal 能够正确链接
+        """
+        journal_content = """
+```python
+print("Hello Journal")
+```
+"""
+
+        today = datetime.datetime.today()
+        journal, created = Journal.objects.get_or_create(
+            title="{}-{}-{} 任务情况总结".format(today.year, today.month, today.day), date=today)
+        journal.content = journal_content
+        journal.save()
+
+        # 确保 code 更新了
+        code_collect()
+
+        # Y 打开首页, 进行 code 搜索, 能够搜出这篇 journal
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+        self.browser.find_element_by_id("id_current_search_choice").click()
+        search_choices = self.browser.find_elements_by_id("id_search_choices")
+        for each_choice in search_choices:
+            if "Code" == each_choice.text:
+                gitbook_choice = each_choice
+                gitbook_choice.click()
+        search_button.send_keys("print\n")
+
+        # 能够看到搜索结果
+        search_result = self.browser.find_elements_by_id("id_search_result_title")
+        self.assertTrue(
+            any(
+                [journal.title == each_result.text for each_result in search_result]
+            )
+        )
+        current_url = self.browser.current_url
+
+        for each_result in search_result:
+            if journal.title == each_result.text:
+                each_result.click()
+                break
+
+        # Y 点击 journal 想看更详细的内容, 发现成功点开了
+        self.assertNotEqual(current_url, self.browser.current_url)
+        self.assertEqual(journal.title, self.browser.find_element_by_class_name("post-title").text)
 
 
 if __name__ == "__main__":

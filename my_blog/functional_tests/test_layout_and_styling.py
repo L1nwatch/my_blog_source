@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.03.31 发现 journal 的页面没有 sidebar 了, 补充对应测试
 2017.03.17 重构一下测试用的 md 的文件的路径
 2017.02.26 添加一下吃饭界面的 CSS 测试
 2017.01.27 处理一下表格解析错误的问题
@@ -15,7 +16,6 @@ from django.conf import settings
 
 import datetime
 import os
-import unittest
 
 __author__ = '__L1n__w@tch'
 
@@ -197,6 +197,28 @@ class ArticleDisplayTest(FunctionalTest):
         self.assertIn("#_2", self.browser.page_source)
         self.assertIn("#1", self.browser.page_source)
         self.assertIn("#2", self.browser.page_source)
+
+
+class WorkJournalDisplayTest(FunctionalTest):
+    def test_sidebar_work_correct(self):
+        """
+        测试侧边栏工作正确
+        """
+        # 创建测试数据
+        journal = self._create_work_journal_test_db_data()
+
+        # 打开首页, 访问某份日记
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+        search_button.send_keys("{}\n".format(journal.title))
+        journal_link = self.browser.find_element_by_id("id_search_result_title")
+        journal_link.click()
+
+        # 日记标题确实显示出来了
+        self.assertIn(journal.title, self.browser.find_element_by_class_name("post-title").text)
+
+        # 侧边栏也显示出来了
+        self.browser.find_element_by_id("id_sidebar")
 
 
 if __name__ == "__main__":

@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """ 各个功能测试的基类
+
+2017.03.31 完善创建测试数据的代码, 但是还需要重构, 现在的冗余太多
 2017.03.07 给 FIREFOX 添加代理配置
 """
 import sys
@@ -11,7 +13,7 @@ from datetime import datetime
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.proxy import Proxy,ProxyType
+from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.common.exceptions import WebDriverException
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -191,9 +193,11 @@ while True:
                                , content="测试笔记, 应该记录 2017/02/09 的工作内容", date=datetime(2017, 2, 9))
 
         today = datetime.today()
-        Journal.objects.create(title="{}-{}-{} 任务情况总结".format(today.year, today.month, today.day),
-                               content="今天的任务情况总结",
-                               date=today)
+        journal = Journal.objects.create(title="{}-{}-{} 任务情况总结".format(today.year, today.month, today.day),
+                                         content="今天的任务情况总结",
+                                         date=today)
+
+        return journal
 
     @staticmethod
     def create_gitbook_test_db_data():
