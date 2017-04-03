@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.04.03 重构一下创建测试数据的代码
 2017.03.26 增加特殊字符的相关搜索时的测试代码, 修改重定向到首页后对应的测试代码
 2017.03.25 新增搜索排序的测试, 现在要按照分类来排序了
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关测试代码
@@ -37,7 +38,50 @@ from django.test import TestCase, override_settings
 __author__ = '__L1n__w@tch'
 
 
-class HomeViewTest(TestCase):
+class BasicTest(TestCase):
+    test_file_path = os.path.join(settings.BASE_DIR, "articles", "tests")
+    test_markdown_file_path = os.path.join(test_file_path, "markdown_file_for_test.md")
+    unfriendly_test_markdown_file_path = os.path.join(test_file_path, "unfriendly_markdown_file_for_test.md")
+
+    git_test_md_file_name = "测试笔记-测试用的笔记.md"
+    notes_git_path = os.path.join(const.NOTES_PATH_PARENT_DIR, const.NOTES_PATH_NAME)
+    git_test_md_file_path = os.path.join(notes_git_path, git_test_md_file_name)
+
+    @staticmethod
+    def create_multiple_articles(article_number=None):
+        if not article_number:
+            article_number = 3
+        for i in range(article_number):
+            Article.objects.create(title="test_article_{}".format(i + 1))
+
+    def create_markdown_article(self):
+        with open(self.test_markdown_file_path, "r") as f:
+            data = f.read()
+        Article.objects.create(title="test_article_1", content=data)
+
+    def read_test_markdown_file(self):
+        with open(self.test_markdown_file_path, "r") as f:
+            data = f.read()
+        return data
+
+    @staticmethod
+    def create_article(title=None, content=None, category=None):
+        if not title:
+            title = "title"
+        if not content:
+            content = "content"
+        if not category:
+            category = "category"
+        return Article.objects.create(title=title, content=content, category=category)
+
+    def parse_git_test_md_file_name(self):
+        article = self.git_test_md_file_name[:-len(".md")]  # 去掉 .md
+        article_category, article_title = article.split("-")  # 分离 "测试笔记-"
+        article_content = get_right_content_from_file(self.git_test_md_file_path)
+        return article, article_title, article_content, article_category
+
+
+class HomeViewTest(BasicTest):
     def test_use_home_template(self):
         """
         测试是否使用了首页的模板
@@ -52,8 +96,7 @@ class HomeViewTest(TestCase):
         :return:
         """
         error_message = "显示了超过 {} 篇文章在首页了".format(const.HOME_PAGE_ARTICLES_NUMBERS)
-        for i in range(const.HOME_PAGE_ARTICLES_NUMBERS + 10):
-            Article.objects.create(title="test_article_{}".format(i + 1))
+        self.create_multiple_articles(const.HOME_PAGE_ARTICLES_NUMBERS + 10)
 
         response = self.client.get("/")
         counts = 0
@@ -70,20 +113,11 @@ class HomeViewTest(TestCase):
         self.assertContains(response, 'name="search_content"')
 
 
-class ArticleDisplayViewTest(TestCase):
+class ArticleDisplayViewTest(BasicTest):
     unique_url = "/articles/{}/"
 
     def setUp(self):
-        self.test_file_path = os.path.join(settings.BASE_DIR, "articles", "tests")
-        self.test_markdown_file_path = os.path.join(self.test_file_path, "markdown_file_for_test.md")
-        self.unfriendly_test_markdown_file_path = os.path.join(self.test_file_path,
-                                                               "unfriendly_markdown_file_for_test.md")
         self.create_markdown_article()
-
-    def create_markdown_article(self):
-        with open(self.test_markdown_file_path, "r") as f:
-            data = f.read()
-        Article.objects.create(title="test_article_1", content=data)
 
     def test_use_article_template(self):
         response = self.client.get(self.unique_url.format(1))
@@ -97,8 +131,7 @@ class ArticleDisplayViewTest(TestCase):
         测试 markdown 解析成树效果
         :return:
         """
-        with open(self.test_markdown_file_path, "r") as f:
-            data = f.read()
+        data = self.read_test_markdown_file()
 
         my_parse_result = _parse_markdown_file(data)
 
@@ -133,8 +166,7 @@ class ArticleDisplayViewTest(TestCase):
         """
         测试获取 id 的正则是否写对了
         """
-        with open(self.test_markdown_file_path, "r") as f:
-            data = f.read()
+        data = self.read_test_markdown_file()
 
         markdown_html = custom_markdown(data)
 
@@ -145,7 +177,7 @@ class ArticleDisplayViewTest(TestCase):
         self.assertEqual(_get_id_from_markdown_html(markdown_html, "四级标题"), "_3")
 
 
-class AboutMeViewTest(TestCase):
+class AboutMeViewTest(BasicTest):
     unique_url = "/articles/about_me/"
 
     def test_use_about_me_template(self):
@@ -160,7 +192,7 @@ class AboutMeViewTest(TestCase):
         self.assertIsInstance(response.context["form"], BaseSearchForm)
 
 
-class ArchivesViewTest(TestCase):
+class ArchivesViewTest(BasicTest):
     unique_url = "/articles/archives/"
 
     def test_use_archives_template(self):
@@ -175,14 +207,14 @@ class ArchivesViewTest(TestCase):
         self.assertIsInstance(response.context["form"], ArticleForm)
 
 
-class SearchTagViewTest(TestCase):
+class SearchTagViewTest(BasicTest):
     unique_url = "/articles/tag{}/"
 
     def test_can_get_same_category(self):
         test_category_name = "test_category"
-        article_1 = Article.objects.create(title="article_1", category=test_category_name)
-        article_2 = Article.objects.create(title="article_2", category=test_category_name)
-        article_3 = Article.objects.create(title="article_3")
+        article_1 = self.create_article(title="article_1", category=test_category_name)
+        article_2 = self.create_article(title="article_2", category=test_category_name)
+        article_3 = self.create_article(title="article_3")
 
         # 查找同一分类下的所有文章
         response = self.client.get(self.unique_url.format(test_category_name))
@@ -203,19 +235,15 @@ class SearchTagViewTest(TestCase):
 
 @override_settings(UPDATE_TIME_LIMIT=0.1)
 @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
-class UpdateNotesViewTest(TestCase):
+class UpdateNotesViewTest(BasicTest):
     unique_url = "/articles/update_notes/"
-    test_md_file_name = "测试笔记-测试用的笔记.md"
-
-    notes_git_path = os.path.join(const.NOTES_PATH_PARENT_DIR, const.NOTES_PATH_NAME)
-    test_md_file_path = os.path.join(notes_git_path, test_md_file_name)
 
     def __update_test_md_file_and_git_push(self, test_content):
         """
         更新测试文件并将内容上传到仓库中
         :return:
         """
-        with open(self.test_md_file_path, "w") as f:
+        with open(self.git_test_md_file_path, "w") as f:
             f.write(test_content)
         command = "cd {} && git add -A && git commit -m '测试开始' && git push".format(self.notes_git_path)
         os.system(command)
@@ -243,7 +271,7 @@ class UpdateNotesViewTest(TestCase):
                   " && rm {}" \
                   " && git add -A" \
                   " && git commit -m '测试完毕'" \
-                  " && git push".format(self.notes_git_path, self.test_md_file_name)
+                  " && git push".format(self.notes_git_path, self.git_test_md_file_name)
         os.system(command)
 
     @classmethod
@@ -255,7 +283,7 @@ class UpdateNotesViewTest(TestCase):
     def test_can_get_md_from_git(self):
         self.client.get(self.unique_url)
 
-        if not os.path.exists(self.test_md_file_path):
+        if not os.path.exists(self.git_test_md_file_path):
             self.fail("从 git 上获取文件失败了")
 
     def test_can_sync_md_from_git(self):
@@ -268,19 +296,16 @@ class UpdateNotesViewTest(TestCase):
         self.__update_test_md_file_and_git_push(test_content)
 
         # 恢复旧的测试文件
-        with open(self.test_md_file_path, "w") as f:
+        with open(self.git_test_md_file_path, "w") as f:
             f.write(self.old_file_content)
 
         # 再次执行该视图函数, 发现文件夹里的旧测试文件已经变成新的测试文件了
         self.client.get(self.unique_url)
-        data = get_right_content_from_file(self.test_md_file_path)
+        data = get_right_content_from_file(self.git_test_md_file_path)
         self.assertEqual(data, test_content, "更新测试文件失败")
 
     def test_create_notes_from_md(self):
-        # 每个 md 笔记的文件名类似于: "测试笔记-测试用的笔记.md"
-        test_article = self.test_md_file_name.rstrip(".md")  # 去掉 .md
-        test_article_title = test_article.split("-")[1]  # 去掉 "测试笔记-"
-        test_article_content = get_right_content_from_file(self.test_md_file_path)
+        _, test_article_title, test_article_content, _ = self.parse_git_test_md_file_name()
         article = None
 
         # 一开始没有这篇文章
@@ -298,10 +323,8 @@ class UpdateNotesViewTest(TestCase):
             self.fail("没有成功更新数据库啊")
 
     def test_update_notes_from_md(self):
-        # 每个 md 笔记的文件名类似于: "测试笔记-测试用的笔记.md"
-        test_article = self.test_md_file_name.rstrip(".md")  # 去掉 .md
-        test_article_category, test_article_title = test_article.split("-")  # 去掉 "测试笔记-"
-        Article.objects.create(title=test_article_title, category="old_category", content="old content")
+        _, test_article_title, _, test_article_category = self.parse_git_test_md_file_name()
+        self.create_article(title=test_article_title, category="old_category", content="old content")
 
         # 文章进行了更新
         test_content = "# test_hello"
@@ -314,12 +337,10 @@ class UpdateNotesViewTest(TestCase):
         self.assertEqual(latest_article.category, test_article_category, "数据库中依然是老文章的分类")
 
     def test_update_time_when_update_notes(self):
-        # 旧的一份笔记
-        test_article = self.test_md_file_name.rstrip(".md")  # 去掉 .md
-        test_article_category, test_article_title = test_article.split("-")  # 去掉 "测试笔记-"
-        old_article = Article.objects.create(title=test_article_title, category="old_category", content="old content")
+        _, test_article_title, _, _ = self.parse_git_test_md_file_name()
+        old_article = self.create_article(title=test_article_title, category="old_category", content="old content")
 
-        # 文章进行了跟新
+        # 文章进行了更新
         test_content = "# test_hello"
         self.__update_test_md_file_and_git_push(test_content)
 
@@ -340,7 +361,7 @@ class UpdateNotesViewTest(TestCase):
         原先在数据库中已经存在某个笔记, 但是最新版本的 git 仓库中并没有这个笔记, 那么从数据库中删除掉
         :return:
         """
-        should_not_exist_note = Article.objects.create(title="不应该存在的笔记", category="测试笔记")
+        should_not_exist_note = self.create_article(title="不应该存在的笔记", category="测试笔记")
 
         # 确认仓库中没有这个笔记
         not_exist_note_full_name = "{}-{}.md".format(should_not_exist_note.category, should_not_exist_note.title)

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.04.03 重构一下创建测试数据的代码
 2017.03.15 要提供搜索选项的功能, 需要重构一下搜索的 Form, 甚至连对应的 Model 都要修改, 于是编写测试
 2016.10.28 将原来的时间改为创建时间, 另外新增一个更新时间的字段, 所以需要进行 model 测试
 """
@@ -12,7 +13,23 @@ from my_constant import const
 __author__ = '__L1n__w@tch'
 
 
-class SearchModelTest(TestCase):
+class BasicTest(TestCase):
+    @staticmethod
+    def create_search(search_content=None, search_choice=None):
+        if not search_content:
+            search_content = "I HaVe bIg letters"
+        if not search_choice:
+            search_choice = "all"
+
+        return SearchModel.objects.create(search_content=search_content, search_choice=search_choice)
+
+    @staticmethod
+    def create_article():
+        new_article = Article.objects.create(title="test_article_1", content="test_article_content_1")
+        return new_article
+
+
+class SearchModelTest(BasicTest):
     def test_has_search_content_and_choice_fields(self):
         """
         测试该 model 含有搜索内容和搜索选项这两个字段
@@ -20,7 +37,7 @@ class SearchModelTest(TestCase):
         search_content = "这是我要搜索的内容"
         choice = "all"
 
-        new_search = SearchModel.objects.create(search_content=search_content, search_choice="all")
+        new_search = self.create_search(search_content=search_content, search_choice=choice)
         self.assertEqual(new_search.search_content, search_content)
         self.assertEqual(new_search.search_choice, choice)
 
@@ -28,16 +45,15 @@ class SearchModelTest(TestCase):
         """
         测试该 model 的 search_choice 字段只能是指定值: ["All", "GitBooks", "Articles", "Code", "Journals"]
         """
-        search_content = "这是我要搜索的内容"
         choices = ["all", "gitbooks", "articles", "code", "journals"]
         # 正确输入, 不会报错
         for each_right_choice in choices:
-            new_search = SearchModel.objects.create(search_content=search_content, search_choice=each_right_choice)
+            self.create_search(search_choice=each_right_choice)
 
         # 错误输入, 会报错
         wrong_choice = "not_exist_choice"
         with self.assertRaises(RuntimeError):
-            new_search = SearchModel.objects.create(search_content=search_content, search_choice=wrong_choice)
+            self.create_search(search_choice=wrong_choice)
 
     def test_choice_field_ignore_case(self):
         """
@@ -47,7 +63,7 @@ class SearchModelTest(TestCase):
         search_content = "I HaVe bIg letters"
         choice = "aLL"
 
-        new_search = SearchModel.objects.create(search_content=search_content, search_choice=choice)
+        new_search = self.create_search(search_content=search_content, search_choice=choice)
         self.assertEqual(new_search.search_content, search_content.lower())
         self.assertEqual(new_search.search_choice, choice.lower())
 
@@ -55,17 +71,15 @@ class SearchModelTest(TestCase):
         """
         测试各个字段有其固定的帮助信息
         """
-        search_content = "I HaVe bIg letters"
-        choice = "All"
-
-        new_search = SearchModel.objects.create(search_content=search_content, search_choice=choice)
+        new_search = self.create_search()
         self.assertEqual(new_search._meta.get_field("search_content").help_text, const.SEARCH_CONTENT_HELP_TEXT)
         self.assertEqual(new_search._meta.get_field("search_choice").help_text, const.SEARCH_CHOICE_HELP_TEXT)
 
 
-class ArticleModelTest(TestCase):
+class ArticleModelTest(BasicTest):
     def test_has_create_time_and_update_time(self):
-        new_article = Article.objects.create(title="test_article_1", content="test_article_content_1")
+        new_article = self.create_article()
+
         self.assertNotEqual(new_article.create_time, None)
         self.assertNotEqual(new_article.update_time, None)
 
@@ -74,7 +88,8 @@ class ArticleModelTest(TestCase):
         新建一篇文章时, 文章的创建时间和更新时间应该是一样的
         :return:
         """
-        new_article = Article.objects.create(title="test_article_1", content="test_article_content_1")
+        new_article = self.create_article()
+
         create_time = "{}/{}/{}/{}".format(new_article.create_time.year, new_article.create_time.month,
                                            new_article.create_time.day, new_article.create_time.hour)
         update_time = "{}/{}/{}/{}".format(new_article.update_time.year, new_article.update_time.month,

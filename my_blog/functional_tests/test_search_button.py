@@ -464,7 +464,7 @@ class TestSearchButton(FunctionalTest):
 ```python
 time.sleep
 ```
-        """
+"""
         # 笔记库里存在两篇笔记, 都含有 time.sleep 关键词
         has_code = Article.objects.create(title="has_code", content=has_code_content)
         no_code = Article.objects.create(title="no_code", content="time.sleep")
