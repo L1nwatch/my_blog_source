@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
-2017.04.03 重构一下创建测试数据的代码
+2017.04.03 重构一下创建测试数据的代码, 将其分离出来单独作为一个基类了
 2017.03.26 增加特殊字符的相关搜索时的测试代码, 修改重定向到首页后对应的测试代码
 2017.03.25 新增搜索排序的测试, 现在要按照分类来排序了
 2017.03.23 增加有关搜索结果按关键词出现次数排序的相关测试代码
@@ -20,65 +20,20 @@ import os
 import unittest
 import shutil
 import string
-import datetime
+
 import random
 
 from articles.forms import BaseSearchForm, ArticleForm
 from articles.models import Article
 from articles.views import _parse_markdown_file, get_right_content_from_file, _get_id_from_markdown_html
 from articles.templatetags.custom_filter import custom_markdown
+from articles.tests.basic_test import BasicTest
 
-from work_journal.models import Journal
-from gitbook_notes.models import GitBook
 from my_constant import const
 
-from django.conf import settings
-from django.test import TestCase, override_settings
+from django.test import override_settings
 
 __author__ = '__L1n__w@tch'
-
-
-class BasicTest(TestCase):
-    test_file_path = os.path.join(settings.BASE_DIR, "articles", "tests")
-    test_markdown_file_path = os.path.join(test_file_path, "markdown_file_for_test.md")
-    unfriendly_test_markdown_file_path = os.path.join(test_file_path, "unfriendly_markdown_file_for_test.md")
-
-    git_test_md_file_name = "测试笔记-测试用的笔记.md"
-    notes_git_path = os.path.join(const.NOTES_PATH_PARENT_DIR, const.NOTES_PATH_NAME)
-    git_test_md_file_path = os.path.join(notes_git_path, git_test_md_file_name)
-
-    @staticmethod
-    def create_multiple_articles(article_number=None):
-        if not article_number:
-            article_number = 3
-        for i in range(article_number):
-            Article.objects.create(title="test_article_{}".format(i + 1))
-
-    def create_markdown_article(self):
-        with open(self.test_markdown_file_path, "r") as f:
-            data = f.read()
-        Article.objects.create(title="test_article_1", content=data)
-
-    def read_test_markdown_file(self):
-        with open(self.test_markdown_file_path, "r") as f:
-            data = f.read()
-        return data
-
-    @staticmethod
-    def create_article(title=None, content=None, category=None):
-        if not title:
-            title = "title"
-        if not content:
-            content = "content"
-        if not category:
-            category = "category"
-        return Article.objects.create(title=title, content=content, category=category)
-
-    def parse_git_test_md_file_name(self):
-        article = self.git_test_md_file_name[:-len(".md")]  # 去掉 .md
-        article_category, article_title = article.split("-")  # 分离 "测试笔记-"
-        article_content = get_right_content_from_file(self.git_test_md_file_path)
-        return article, article_title, article_content, article_category
 
 
 class HomeViewTest(BasicTest):
@@ -375,7 +330,7 @@ class UpdateNotesViewTest(BasicTest):
             Article.objects.get(title=should_not_exist_note.title)
 
 
-class ArticlesSearchViewTest(TestCase):
+class ArticlesSearchViewTest(BasicTest):
     unique_url = "/search/"
 
     def test_for_invalid_input_passes_form_to_template(self):
@@ -402,7 +357,7 @@ class ArticlesSearchViewTest(TestCase):
         self.assertRedirects(response, "/")
 
     def test_valid_input_will_get_response_using_right_template(self):
-        test_article = Article.objects.create(title="test_article")
+        test_article = self.create_article(title="test_article")
         response = self.client.post(self.unique_url, data={"search_content": test_article.title,
                                                            "search_choice": "articles"})
         self.assertTemplateUsed(response, "search_result.html")
@@ -413,7 +368,7 @@ class ArticlesSearchViewTest(TestCase):
         :return:
         """
         test_article_title = "test_for_search_button"
-        Article.objects.create(title=test_article_title)
+        self.create_article(title=test_article_title)
 
         response = self.client.post(self.unique_url, data={"search_content": test_article_title,
                                                            "search_choice": "articles"})
@@ -424,7 +379,7 @@ class ArticlesSearchViewTest(TestCase):
         测试搜索文章的时候会去搜索文章内容
         :return:
         """
-        test_article = Article.objects.create(title="test_title_文章", content="test_content")
+        test_article = self.create_article(title="test_title_文章", content="test_content")
         response = self.client.post(self.unique_url, data={"search_content": test_article.content,
                                                            "search_choice": "articles"})
         self.assertContains(response, test_article.title)
@@ -434,7 +389,7 @@ class ArticlesSearchViewTest(TestCase):
         测试搜索文章内容的时候会忽略大小写
         :return:
         """
-        test_article = Article.objects.create(title="test_title_文章", content="test_content")
+        test_article = self.create_article(title="test_title_文章", content="test_content")
         response = self.client.post(self.unique_url, data={"search_content": "TeSt_ConTeNt",
                                                            "search_choice": "articles"})
         self.assertContains(response, test_article.title)
@@ -444,7 +399,7 @@ class ArticlesSearchViewTest(TestCase):
         测试搜索出来的内容会从文章以及标题去查找
         :return:
         """
-        test_article = Article.objects.create(title="test_title_文章", content="test_content")
+        test_article = self.create_article(title="test_title_文章", content="test_content")
         # 从标题中查找
         response = self.client.post(self.unique_url, data={"search_content": "title",
                                                            "search_choice": "articles"})
@@ -460,7 +415,7 @@ class ArticlesSearchViewTest(TestCase):
         测试能够同时搜索多个关键词
         :return:
         """
-        test_article = Article.objects.create(title="test_title_文章", content="test content content2")
+        test_article = self.create_article(title="test_title_文章", content="test content content2")
         # 仅存在其中一个关键词
         response = self.client.post(self.unique_url, data={"search_content": "content3 test",
                                                            "search_choice": "articles"})
@@ -475,7 +430,7 @@ class ArticlesSearchViewTest(TestCase):
         """
         测试只搜索一个关键词的时候, 能找到对应的内容及标题
         """
-        test_article = Article.objects.create(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
+        test_article = self.create_article(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
 
         # 关键词在内容中, 搜索 bbb
         response = self.client.post(self.unique_url, data={"search_content": "bBb",
@@ -508,7 +463,7 @@ class ArticlesSearchViewTest(TestCase):
         """
         测试搜索多个关键词的时候, 每个关键词对应的行都显示了出来
         """
-        test_article = Article.objects.create(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
+        test_article = self.create_article(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
 
         # 关键词在内容中, 搜索 ccc 和 aaa
         response = self.client.post(self.unique_url, data={"search_content": "ccc aaa", "search_choice": "articles"})
@@ -534,8 +489,8 @@ class ArticlesSearchViewTest(TestCase):
         """
         没想到自己手测才发现这个错误, 就是只有第一个搜索结果是正确的, 其他几篇文章的搜索结果都是错误的
         """
-        test_article = Article.objects.create(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
-        test_article2 = Article.objects.create(title="test_title_article2", content="eee\nbbb\nfff\nddd\n")
+        test_article = self.create_article(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
+        test_article2 = self.create_article(title="test_title_article2", content="eee\nbbb\nfff\nddd\n")
 
         # 关键词在内容中, 搜索 bbb
         response = self.client.post(self.unique_url, data={"search_content": "bbb", "search_choice": "articles"})
@@ -551,7 +506,7 @@ class ArticlesSearchViewTest(TestCase):
         """
         测试搜索结果显示了正确的 href
         """
-        test_article = Article.objects.create(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
+        test_article = self.create_article(title="test_title_article", content="aaa\nbbb\nccc\nddd\n")
 
         # 关键词在内容中, 搜索 bbb
         response = self.client.post(self.unique_url, data={"search_content": "bbb", "search_choice": "articles"})
@@ -566,7 +521,7 @@ class ArticlesSearchViewTest(TestCase):
         """
         功能测试发现的, 搜索多个关键词的时候, 存在大小写问题
         """
-        test_article = Article.objects.create(title="test_title_article", content="aaa\nbBb\ncCc\nddd\n")
+        test_article = self.create_article(title="test_title_article", content="aaa\nbBb\ncCc\nddd\n")
 
         # 关键词在内容中, 搜索 bbb
         response = self.client.post(self.unique_url, data={"search_content": "ddd Bbb", "search_choice": "articles"})
@@ -579,9 +534,9 @@ class ArticlesSearchViewTest(TestCase):
         搜索的结果应该是排序过后的
         """
         # 创建 3 篇文章, 均包含关键词 test, 但是出现次数不一致
-        test_article1 = Article.objects.create(title="should be 3rd", content="test")
-        test_article2 = Article.objects.create(title="should be 1st", content="test + test + test")
-        test_article3 = Article.objects.create(title="should be 2nd", content="test + test")
+        test_article1 = self.create_article(title="should be 3rd", content="test")
+        test_article2 = self.create_article(title="should be 1st", content="test + test + test")
+        test_article3 = self.create_article(title="should be 2nd", content="test + test")
 
         response = self.client.post(self.unique_url, data={"search_content": "test",
                                                            "search_choice": "articles"})
@@ -594,25 +549,8 @@ class ArticlesSearchViewTest(TestCase):
         self.assertTrue(article2_index < article3_index < article1_index)
 
 
-class BaseSearchViewTest(TestCase):
+class BaseSearchViewTest(BasicTest):
     unique_url = "/search/"
-
-    @staticmethod
-    def create_test_db():
-        """
-        建立 articles、journal、gitbooks 的测试数据
-        """
-        journal = Journal.objects.create(title="test_journal", date=datetime.datetime.today(), content="test journal")
-        article = Article.objects.create(title="test_article", content="test_article")
-        gitbooks = GitBook.objects.create(
-            book_name="test_book_name",
-            href="http://{}/{}.html".format("test_book_name", "test"),
-            md_file_name="test.md",
-            title="test_book_name/test",
-            content="test content",
-        )
-
-        return article, journal, gitbooks
 
     def test_for_valid_input_passes_form_to_template(self):
         """
@@ -710,15 +648,9 @@ class BaseSearchViewTest(TestCase):
         """
         搜索结果是排序的, 而且是按类排序, Articles 排在最前, 其次是 Journal, 再其次是 GitBook, 最后才是 Code
         """
-        article = Article.objects.create(title="1st", content="test")
-        journal = Journal.objects.create(title="2nd", date=datetime.datetime.today(), content="test test")
-        gitbook = GitBook.objects.create(
-            book_name="test_book_name",
-            href="http://{}/{}.html".format("test_book_name", "test"),
-            md_file_name="test.md",
-            title="test_book_name/test",
-            content="test test test",
-        )
+        article = self.create_article(content="test")
+        journal = self.create_journal(content="test test")
+        gitbook = self.create_gitbook(content="test test test")
 
         response = self.client.post(self.unique_url, data={"search_content": "test",
                                                            "search_choice": "all"})

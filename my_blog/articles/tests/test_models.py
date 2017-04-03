@@ -2,31 +2,15 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
-2017.04.03 重构一下创建测试数据的代码
+2017.04.03 重构一下创建测试数据的代码, 将其分离出来单独作为一个基类了
 2017.03.15 要提供搜索选项的功能, 需要重构一下搜索的 Form, 甚至连对应的 Model 都要修改, 于是编写测试
 2016.10.28 将原来的时间改为创建时间, 另外新增一个更新时间的字段, 所以需要进行 model 测试
 """
-from django.test import TestCase
-from articles.models import Article, SearchModel
+
+from articles.tests.basic_test import BasicTest
 from my_constant import const
 
 __author__ = '__L1n__w@tch'
-
-
-class BasicTest(TestCase):
-    @staticmethod
-    def create_search(search_content=None, search_choice=None):
-        if not search_content:
-            search_content = "I HaVe bIg letters"
-        if not search_choice:
-            search_choice = "all"
-
-        return SearchModel.objects.create(search_content=search_content, search_choice=search_choice)
-
-    @staticmethod
-    def create_article():
-        new_article = Article.objects.create(title="test_article_1", content="test_article_content_1")
-        return new_article
 
 
 class SearchModelTest(BasicTest):
