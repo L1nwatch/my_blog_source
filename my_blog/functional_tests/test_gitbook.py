@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.04.04 修正某个老是导致测试失败的 BUG(案例无问题)
 2017.03.10 删除 GitBook 测试, 老是失败搞得我都没耐心了(网速问题)
 2017.03.05 要开始写 GitBook 这个 APP 相关实现了, 于是先编测试文件
 """
@@ -15,11 +16,9 @@ __author__ = '__L1n__w@tch'
 
 
 class GitBookSearchTest(FunctionalTest):
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-
-        cls.create_gitbook_test_db_data()
+    def setUp(self):
+        self.create_gitbook_test_db_data()
+        super().setUp()
 
     @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
     def test_all_search_can_search_exist_gitbook(self):
