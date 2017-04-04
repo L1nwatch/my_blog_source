@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 测试 gitbook_notes 这个 app 下的视图函数
 
+2017.04.04 重构有关创建测试数据的代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 2017.03.10 发现 href 字段的 BUG, 再次补充相关测试代码
 2017.03.10 发现 title 字段的 BUG, 补充相关测试代码
@@ -12,10 +13,13 @@
 2016.10.30 对更新笔记的视图函数进行测试
 """
 from functional_tests.base import FunctionalTest
-from django.test import TestCase, override_settings
+
+from articles.tests.basic_test import BasicTest
 from my_constant import const
 from gitbook_notes.models import GitBook
 from gitbook_notes.views import get_title_list_from_summary, get_title_and_md_file_name, get_right_href
+
+from django.test import TestCase, override_settings
 
 import os
 import unittest
@@ -24,7 +28,7 @@ import shutil
 __author__ = '__L1n__w@tch'
 
 
-class BaseCommonTest(TestCase):
+class BaseCommonTest(BasicTest):
     @staticmethod
     def create_gitbooks_test_db():
         FunctionalTest.create_gitbook_test_db_data()
@@ -32,10 +36,8 @@ class BaseCommonTest(TestCase):
 
 @override_settings(UPDATE_TIME_LIMIT=0.1)
 @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
-class UpdateGitBookCodesViewTest(TestCase):
+class UpdateGitBookCodesViewTest(BaseCommonTest):
     unique_url = "/gitbook_notes/update_gitbook_codes/"
-    gitbook_category_dict = const.GITBOOK_CODES_REPOSITORY
-    notes_git_path = const.GITBOOK_CODES_PATH
 
     def setUp(self):
         """
@@ -51,14 +53,14 @@ class UpdateGitBookCodesViewTest(TestCase):
         for each_gitbook_name in self.gitbook_category_dict:
             self.assertTrue(
                 os.path.exists(
-                    os.path.join(self.notes_git_path, each_gitbook_name, ".git")
+                    os.path.join(self.gitbook_notes_git_path, each_gitbook_name, ".git")
                 ), "找不到 .git")
 
     @classmethod
     def tearDownClass(cls):
         # 清除 git clone 到的文件
-        if os.path.exists(cls.notes_git_path):
-            shutil.rmtree(cls.notes_git_path)
+        if os.path.exists(cls.gitbook_notes_git_path):
+            shutil.rmtree(cls.gitbook_notes_git_path)
 
     def test_can_save_right_book_name(self):
         """
@@ -150,7 +152,7 @@ class UpdateGitBookCodesViewTest(TestCase):
         """
         测试 title 字段的正确性
         """
-        os.path.exists(os.path.join(self.notes_git_path, "PythonWeb开发: 测试驱动方法", "准备工作和应具备的知识", "readme.md"))
+        os.path.exists(os.path.join(self.gitbook_notes_git_path, "PythonWeb开发: 测试驱动方法", "准备工作和应具备的知识", "readme.md"))
 
         self.assertIsNotNone(GitBook.objects.get(title="PythonWeb开发: 测试驱动方法/准备工作和应具备的知识"))
 
@@ -158,7 +160,7 @@ class UpdateGitBookCodesViewTest(TestCase):
         """
         测试 content 字段的正确性
         """
-        test_file_path = os.path.join(self.notes_git_path, "PythonWeb", "PythonWeb开发: 测试驱动方法",
+        test_file_path = os.path.join(self.gitbook_notes_git_path, "PythonWeb", "PythonWeb开发: 测试驱动方法",
                                       "准备工作和应具备的知识", "readme.md")
         with open(test_file_path, "r") as f:
             data = f.read()
@@ -182,7 +184,7 @@ class UpdateGitBookCodesViewTest(TestCase):
         """
         测试函数是否获取 summary.md 信息正确
         """
-        summary_path = os.path.join(self.notes_git_path, "PythonWeb", "SUMMARY.md")
+        summary_path = os.path.join(self.gitbook_notes_git_path, "PythonWeb", "SUMMARY.md")
         title_list = get_title_list_from_summary(summary_path)
 
         self.assertIn("PythonWeb开发: 测试驱动方法/准备工作和应具备的知识/readme.md", title_list)

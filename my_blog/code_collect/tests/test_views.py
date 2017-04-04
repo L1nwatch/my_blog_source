@@ -3,82 +3,66 @@
 # version: Python3.X
 """ 为视图编写相关测试代码
 
+2017.04.04 重构一下创建测试数据的代码
 2017.03.31 修正一下 code 搜索出来的链接不正确的问题, 完善对应测试
 2017.03.30 编写有关搜索部分的相关测试
 2017.03.29 编写有关更新代码块数据库的相关测试
 """
 from articles.models import Article
-from work_journal.models import Journal
+from articles.tests.basic_test import BasicTest
 from code_collect.models import CodeCollect
-from gitbook_notes.models import GitBook
 from my_constant import const
 
 from code_collect.views import (code_collect, get_all_code_type_in_note, parse_query,
                                 get_note_type, get_all_code_area, search_code_keyword_in_note)
 
-from django.test import TestCase
-
-import datetime
-
 __author__ = '__L1n__w@tch'
 
 
-class BasicFunction(TestCase):
-    @staticmethod
-    def create_article_with_code():
+class BasicFunction(BasicTest):
+    def create_article_with_code(self):
         """
         创建含有 code 的 article
         :return: article 实例
         """
-        article = Article.objects.create(title="test", content="""
+        code_content = """
 ```python
 print("Hello CodeCollect! I am Article")
 ```
-""")
-        return article
+"""
+        return self.create_article(content=code_content)
 
-    @staticmethod
-    def create_journal_with_code():
+    def create_journal_with_code(self):
         """
         创建含有 code 的 journal
         :return: journal 实例
         """
-        today = datetime.datetime.today()
-
-        # 创建一篇普通的日记
-        journal = Journal.objects.create(title="test_journal", date=today, content="""
+        content = """
 ```python
 print("Hello CodeCollect! I am Journal")
 ```
-""")
-        return journal
+"""
+        return self.create_journal(content=content)
 
-    @staticmethod
-    def create_gitbook_with_code():
+    def create_gitbook_with_code(self):
         """
         创建含有 code 的 GitBook
         :return: gitbook 实例
         """
-        gitbook = GitBook.objects.create(
-            book_name="test_book_name",
-            href="http://{}/{}.html".format("test_book_name", "test"),
-            md_file_name="test.md",
-            title="test_book_name/test",
-            content="""
+        content = """
 ```python
 print("Hello CodeCollect! I am GitBook")
 ```
-""",
-        )
-        return gitbook
+"""
 
-    @staticmethod
-    def create_article_with_multiple_code():
+        return self.create_gitbook(content=content)
+
+    def create_article_with_multiple_code(self):
         """
         创建含有多个 code 块的 article
                 :return: article 实例
         """
-        article = Article.objects.create(title="test_multiple", content="""
+        content = """
 ```python
 print("Hello CodeCollect! I am Article")
 ```
@@ -86,8 +70,8 @@ print("Hello CodeCollect! I am Article")
 ```shell
 echo "Hello CodeCollect! I am Article with shell output"
 ```
-""")
-        return article
+"""
+        return self.create_article(content=content)
 
     def create_code_associate_with_article(self, article=None):
         """
@@ -95,17 +79,15 @@ echo "Hello CodeCollect! I am Article with shell output"
         """
         if not article:
             article = self.create_article_with_code()
-        code = CodeCollect.objects.create(code_type="python", note=article)
-        return code
+        return self.create_code(code_type="python", note=article)
 
-    @staticmethod
-    def create_article_without_code():
+    def create_article_without_code(self):
         """
         创建不包含代码块的 article
         :return: article 实例
         """
-        article = Article.objects.create(title="article_without_code", content="print('Hello!')")
-        return article
+        content = "print('Hello!')"
+        return self.create_article(content=content)
 
 
 class CodeUpdateTest(BasicFunction):
@@ -120,7 +102,7 @@ class CodeUpdateTest(BasicFunction):
         code_collect()
 
         # 发现成功收录了进来
-        code = CodeCollect.objects.get(note=article)
+        CodeCollect.objects.get(note=article)
 
     def test_can_update_gitbook_code(self):
         """
@@ -133,7 +115,7 @@ class CodeUpdateTest(BasicFunction):
         code_collect()
 
         # 发现成功收录了进来
-        code = CodeCollect.objects.get(note=gitbook)
+        CodeCollect.objects.get(note=gitbook)
 
     def test_can_update_journal_code(self):
         """
@@ -147,7 +129,7 @@ class CodeUpdateTest(BasicFunction):
         code_collect()
 
         # 发现成功收录了进来
-        code = CodeCollect.objects.get(note=journal)
+        CodeCollect.objects.get(note=journal)
 
     def test_will_delete_with_article(self):
         """
@@ -158,14 +140,14 @@ class CodeUpdateTest(BasicFunction):
         code_collect()
 
         # 确保已经有 article
-        code = CodeCollect.objects.get(note=article)
+        CodeCollect.objects.get(note=article)
 
         # 删除 Article
         article.delete()
 
         # 再次查找, 已经找不到了
         with self.assertRaises(CodeCollect.DoesNotExist):
-            code = CodeCollect.objects.get(note=article)
+            CodeCollect.objects.get(note=article)
 
     def test_will_delete_with_gitbooks(self):
         """
@@ -176,14 +158,14 @@ class CodeUpdateTest(BasicFunction):
         code_collect()
 
         # 确保已经有 gitbook
-        code = CodeCollect.objects.get(note=gitbook)
+        CodeCollect.objects.get(note=gitbook)
 
         # 删除 Article
         gitbook.delete()
 
         # 再次查找, 已经找不到了
         with self.assertRaises(CodeCollect.DoesNotExist):
-            code = CodeCollect.objects.get(note=gitbook)
+            CodeCollect.objects.get(note=gitbook)
 
     def test_will_delete_with_journal(self):
         """
@@ -194,14 +176,14 @@ class CodeUpdateTest(BasicFunction):
         code_collect()
 
         # 确保已经有 journal
-        code = CodeCollect.objects.get(note=journal)
+        CodeCollect.objects.get(note=journal)
 
         # 删除 Article
         journal.delete()
 
         # 再次查找, 已经找不到了
         with self.assertRaises(CodeCollect.DoesNotExist):
-            code = CodeCollect.objects.get(note=journal)
+            CodeCollect.objects.get(note=journal)
 
     def test_will_sync_with_article(self):
         """
@@ -240,7 +222,7 @@ cout << "Hello CodeCollect! I am Article!"
 
         # code 也找不到了
         with self.assertRaises(CodeCollect.DoesNotExist):
-            code = CodeCollect.objects.get(note=article)
+            CodeCollect.objects.get(note=article)
 
     def test_will_sync_with_gitbook(self):
         """
@@ -276,12 +258,11 @@ cout << "Hello CodeCollect! I am Article!"
 
         # code 也找不到了
         with self.assertRaises(CodeCollect.DoesNotExist):
-            code = CodeCollect.objects.get(note=gitbook)
+            CodeCollect.objects.get(note=gitbook)
 
     def test_will_sync_with_journal(self):
         """
         测试当 journal 更新的时候, 对应的 Code 信息也会进行更新
-        :return:
         """
         journal = self.create_journal_with_code()
         code_collect()
@@ -312,7 +293,7 @@ cout << "Hello CodeCollect! I am Journal!"
 
         # code 也找不到了
         with self.assertRaises(CodeCollect.DoesNotExist):
-            code = CodeCollect.objects.get(note=journal)
+            CodeCollect.objects.get(note=journal)
 
     def test_can_collect_multiple_code_type(self):
         """
@@ -324,8 +305,8 @@ cout << "Hello CodeCollect! I am Journal!"
         code_collect()
 
         # 两条都能获取到
-        code = CodeCollect.objects.get(note=article, code_type="shell")
-        code = CodeCollect.objects.get(note=article, code_type="python")
+        CodeCollect.objects.get(note=article, code_type="shell")
+        CodeCollect.objects.get(note=article, code_type="python")
 
     def test_get_all_code_type_in_note(self):
         test_note = Article.objects.create(title="test", content="""

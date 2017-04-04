@@ -198,7 +198,7 @@ class UpdateNotesViewTest(BasicTest):
         更新测试文件并将内容上传到仓库中
         :return:
         """
-        with open(self.git_test_md_file_path, "w") as f:
+        with open(self.article_git_test_md_file_path, "w") as f:
             f.write(test_content)
         command = "cd {} && git add -A && git commit -m '测试开始' && git push".format(self.notes_git_path)
         os.system(command)
@@ -226,7 +226,7 @@ class UpdateNotesViewTest(BasicTest):
                   " && rm {}" \
                   " && git add -A" \
                   " && git commit -m '测试完毕'" \
-                  " && git push".format(self.notes_git_path, self.git_test_md_file_name)
+                  " && git push".format(self.notes_git_path, self.article_git_test_md_file_name)
         os.system(command)
 
     @classmethod
@@ -238,7 +238,7 @@ class UpdateNotesViewTest(BasicTest):
     def test_can_get_md_from_git(self):
         self.client.get(self.unique_url)
 
-        if not os.path.exists(self.git_test_md_file_path):
+        if not os.path.exists(self.article_git_test_md_file_path):
             self.fail("从 git 上获取文件失败了")
 
     def test_can_sync_md_from_git(self):
@@ -251,16 +251,16 @@ class UpdateNotesViewTest(BasicTest):
         self.__update_test_md_file_and_git_push(test_content)
 
         # 恢复旧的测试文件
-        with open(self.git_test_md_file_path, "w") as f:
+        with open(self.article_git_test_md_file_path, "w") as f:
             f.write(self.old_file_content)
 
         # 再次执行该视图函数, 发现文件夹里的旧测试文件已经变成新的测试文件了
         self.client.get(self.unique_url)
-        data = get_right_content_from_file(self.git_test_md_file_path)
+        data = get_right_content_from_file(self.article_git_test_md_file_path)
         self.assertEqual(data, test_content, "更新测试文件失败")
 
     def test_create_notes_from_md(self):
-        _, test_article_title, test_article_content, _ = self.parse_git_test_md_file_name()
+        _, test_article_title, test_article_content, _ = self.parse_article_git_test_md_file_name()
         article = None
 
         # 一开始没有这篇文章
@@ -278,7 +278,7 @@ class UpdateNotesViewTest(BasicTest):
             self.fail("没有成功更新数据库啊")
 
     def test_update_notes_from_md(self):
-        _, test_article_title, _, test_article_category = self.parse_git_test_md_file_name()
+        _, test_article_title, _, test_article_category = self.parse_article_git_test_md_file_name()
         self.create_article(title=test_article_title, category="old_category", content="old content")
 
         # 文章进行了更新
@@ -292,7 +292,7 @@ class UpdateNotesViewTest(BasicTest):
         self.assertEqual(latest_article.category, test_article_category, "数据库中依然是老文章的分类")
 
     def test_update_time_when_update_notes(self):
-        _, test_article_title, _, _ = self.parse_git_test_md_file_name()
+        _, test_article_title, _, _ = self.parse_article_git_test_md_file_name()
         old_article = self.create_article(title=test_article_title, category="old_category", content="old content")
 
         # 文章进行了更新

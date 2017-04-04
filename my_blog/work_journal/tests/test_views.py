@@ -1,7 +1,9 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
 # version: Python3.X
-"""
+""" 负责 work_journal 的 view 测试
+
+2017.04.04 重构有关创建测试数据的代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 2017.03.17 重构一下测试用的 md 文件的路径
 2017.02.08 测试提取日期对象的方法
@@ -13,20 +15,20 @@ import shutil
 import os
 import datetime
 
-from work_journal.forms import JournalForm, BaseSearchForm
+from work_journal.forms import JournalForm
 from work_journal.models import Journal
 from work_journal.views import is_valid_update_md_file, extract_date_from_md_file
 from articles.views import get_right_content_from_file
+from articles.tests.basic_test import BasicTest
 from my_constant import const
-from django.test import TestCase, override_settings
-from django.conf import settings
+
+from django.test import override_settings
 
 __author__ = '__L1n__w@tch'
 
 
-class BaseCommonTest(TestCase):
-    @staticmethod
-    def create_journal_test_db():
+class BaseCommonTest(BasicTest):
+    def create_journal_test_db(self):
         """
         创建测试用的日记数据
         """
@@ -34,25 +36,19 @@ class BaseCommonTest(TestCase):
         tomorrow = today + datetime.timedelta(days=1)
 
         # 创建一篇普通的日记
-        Journal.objects.create(title="test_journal_1", content="test_journal_content_1",
-                               date=today)
+        journal = self.create_journal(date=today)
 
         # 创建一篇 Markdown 格式的日记
-        with open(os.path.join(settings.BASE_DIR, "articles", "tests", "markdown_file_for_test.md"), "r") as f:
+        with open(self.test_markdown_file_path, "r") as f:
             content = f.read()
 
-        Journal.objects.create(title="test_journal_with_markdown", content=content, date=tomorrow)
+        journal2 = self.create_journal(content=content, date=tomorrow)
+
+        return journal, journal2
 
 
-class JournalHomeViewTest(TestCase):
+class JournalHomeViewTest(BaseCommonTest):
     unique_url = "/work_journal/"
-
-    @staticmethod
-    def _create_test_db_date():
-        journal = Journal.objects.create(title="test_journal_1", content="test_journal_content_1"
-                                         , date=datetime.datetime.today())
-
-        return journal
 
     def test_view_passes_form_to_template(self):
         """
@@ -83,12 +79,7 @@ class JournalHomeViewTest(TestCase):
         测试显示了所有 journal 而不只是某几篇
         """
         test_journals_number = 10
-        test_date = datetime.datetime.today()
-
-        # 测试 10 篇文章
-        for i in range(test_journals_number):
-            Journal.objects.create(title="test_journal_{}".format(i + 1), date=test_date)
-            test_date += datetime.timedelta(days=1)
+        self.create_multiple_journals(test_journals_number)
 
         response = self.client.get(self.unique_url)
         counts = 0
@@ -102,7 +93,7 @@ class JournalHomeViewTest(TestCase):
         """
         测试日常汇总首页不显示日记的内容
         """
-        journal = self._create_test_db_date()
+        journal = self.create_journal()
 
         response = self.client.get(self.unique_url)
         self.assertNotContains(response, journal.content)
@@ -111,16 +102,11 @@ class JournalHomeViewTest(TestCase):
 class JournalDisplayViewTest(BaseCommonTest):
     unique_url = "/work_journal/{}/"
 
-    def setUp(self):
-        super().__init__()
-
-        self.create_journal_test_db()
-
     def test_use_right_template(self):
         """
         测试使用了正确的模板文件
         """
-        journal = Journal.objects.get(id=1)
+        journal = self.create_journal()
 
         response = self.client.get(self.unique_url.format(journal.id))
         self.assertTemplateUsed(response, "journal_display.html")
@@ -129,7 +115,7 @@ class JournalDisplayViewTest(BaseCommonTest):
         """
         测试是否有把文章的内容显示出来
         """
-        journal = Journal.objects.get(id=1)
+        journal = self.create_journal()
 
         response = self.client.get(self.unique_url.format(journal.id))
         self.assertContains(response, journal.content)
@@ -138,7 +124,7 @@ class JournalDisplayViewTest(BaseCommonTest):
         """
         测试文章是否成功解析 markdown 了, 通过区分 # 号来判断
         """
-        markdown_journal = Journal.objects.get(title="test_journal_with_markdown")
+        _, markdown_journal = self.create_journal_test_db()
 
         # markdown 格式的内容存在于数据库里
         self.assertIn("## 二级标题", markdown_journal.content)
@@ -149,7 +135,7 @@ class JournalDisplayViewTest(BaseCommonTest):
         self.assertNotContains(response, "## 二级标题")
 
 
-class HelpFunctionTest(TestCase):
+class HelpFunctionTest(BaseCommonTest):
     def test_is_valid_update_md_file(self):
         test_file_name = "readme.md"
         self.assertFalse(is_valid_update_md_file(test_file_name))
@@ -205,9 +191,7 @@ class JournalSearchViewTest(BaseCommonTest):
         """
         测试搜索出来能够显示日记的标题和结果
         """
-        self.create_journal_test_db()
-
-        journal = Journal.objects.get(title="test_journal_1")
+        journal = self.create_journal()
         response = self.client.post(self.unique_url, data={"search_content": journal.content,
                                                            "search_choice": "journals"})
         self.assertContains(response, journal.title)
@@ -217,9 +201,8 @@ class JournalSearchViewTest(BaseCommonTest):
         """
         测试搜索出来的日记链接正确
         """
-        self.create_journal_test_db()
+        journal, _ = self.create_journal_test_db()
 
-        journal = Journal.objects.get(title="test_journal_1")
         response = self.client.post(self.unique_url, data={"search_content": journal.content,
                                                            "search_choice": "journals"})
 
@@ -229,10 +212,8 @@ class JournalSearchViewTest(BaseCommonTest):
         """
         测试同时搜索多个关键词, 能搜索出来结果
         """
-        self.create_journal_test_db()
-
         # 日记 <test_journal_1> 里面有单词 <journal> <content>, 所在行为 <test_journal_content_1>
-        journal = Journal.objects.get(title="test_journal_1")
+        journal = self.create_journal(content="test_journal_content_1")
         response = self.client.post(self.unique_url, data={"search_content": "conTent journal",
                                                            "search_choice": "journals"})
 
@@ -242,9 +223,7 @@ class JournalSearchViewTest(BaseCommonTest):
         """
         测试能够通过搜索日期来得到对应的日记
         """
-        self.create_journal_test_db()
-
-        journal = Journal.objects.get(title="test_journal_1")
+        journal = self.create_journal()
 
         # 测试只搜年, 搜不到
         response = self.client.post(self.unique_url, data={"search_content": "{}".format(journal.date.year),
@@ -280,18 +259,14 @@ class JournalSearchViewTest(BaseCommonTest):
 
 @override_settings(UPDATE_TIME_LIMIT=0.1)
 @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
-class UpdateNotesViewTest(TestCase):
+class UpdateNotesViewTest(BaseCommonTest):
     unique_url = "/work_journal/update_journals/"
-    test_md_file_name = "2017-02-03-任务情况总结测试笔记.md"  # 注意这里不能有空格, 要不然 git 命令就失败了...
-
-    journals_git_path = os.path.join(const.NOTES_PATH_PARENT_DIR, const.JOURNALS_PATH_NAME)
-    test_md_file_path = os.path.join(journals_git_path, test_md_file_name)
 
     def __update_test_md_file_and_git_push(self, test_content):
         """
         更新测试文件并将内容上传到仓库中
         """
-        with open(self.test_md_file_path, "w") as f:
+        with open(self.journal_test_md_file_path, "w") as f:
             f.write(test_content)
         command = "cd {} && git add -A && git commit -m '测试开始' && git push".format(self.journals_git_path)
         os.system(command)
@@ -322,7 +297,7 @@ class UpdateNotesViewTest(TestCase):
                   " && rm {}" \
                   " && git add -A" \
                   " && git commit -m '测试完毕'" \
-                  " && git push".format(self.journals_git_path, self.test_md_file_name)
+                  " && git push".format(self.journals_git_path, self.journal_test_md_file_name)
         os.system(command)
 
     @classmethod
@@ -333,7 +308,7 @@ class UpdateNotesViewTest(TestCase):
     def test_can_get_md_from_git(self):
         self.client.get(self.unique_url)
 
-        if not os.path.exists(self.test_md_file_path):
+        if not os.path.exists(self.journal_test_md_file_path):
             self.fail("从 git 上获取文件失败了")
 
     def test_can_sync_md_from_git(self):
@@ -346,22 +321,22 @@ class UpdateNotesViewTest(TestCase):
         self.__update_test_md_file_and_git_push(test_content)
 
         # 恢复旧的测试文件
-        with open(self.test_md_file_path, "w") as f:
+        with open(self.journal_test_md_file_path, "w") as f:
             f.write(self.old_file_content)
 
         # 再次执行该视图函数, 发现文件夹里的旧测试文件已经变成新的测试文件了
         self.client.get(self.unique_url)
-        data = get_right_content_from_file(self.test_md_file_path)
+        data = get_right_content_from_file(self.journal_test_md_file_path)
         self.assertEqual(data, test_content, "更新测试文件失败")
 
     def test_update_empty_md(self):
         """
         测试如果下载到的是空的 md 文件, 则不会写入到数据库中
         """
-        journal_title = self.test_md_file_name.split(".md")[0]
+        journal_title, _ = self.parse_journal_git_test_md_file_name()
 
         # 原来存在这份笔记
-        Journal.objects.create(title=journal_title, content="测试笔记", date=datetime.date.today())
+        self.create_journal(title=journal_title)
 
         # 将测试文件的内容更改为空并且 git 上去
         test_content = ""
@@ -376,8 +351,7 @@ class UpdateNotesViewTest(TestCase):
 
     def test_create_notes_from_md(self):
         # 每个 md 笔记的文件名类似于: "2017-02-03 任务情况总结.md"
-        test_journal_title = self.test_md_file_name.rstrip(".md")  # 去掉 .md
-        test_journal_content = get_right_content_from_file(self.test_md_file_path)
+        test_journal_title, test_journal_content = self.parse_journal_git_test_md_file_name()
         journal = None
 
         # 一开始没有这篇文章
@@ -395,10 +369,8 @@ class UpdateNotesViewTest(TestCase):
             self.fail("没有成功更新数据库啊")
 
     def test_update_notes_from_md(self):
-        # 每个 md 笔记的文件名类似于: "2017-02-03 任务情况总结.md"
-        test_journal_title = self.test_md_file_name.rstrip(".md")  # 去掉 .md
-        Journal.objects.create(title=test_journal_title, category="old_category",
-                               content="old content", date=datetime.date.today())
+        test_journal_title, _ = self.parse_journal_git_test_md_file_name()
+        self.create_journal(title=test_journal_title, content="old content")
 
         # 文章进行了更新
         test_content = "# test_hello"
@@ -420,8 +392,7 @@ class UpdateNotesViewTest(TestCase):
         """
         原先在数据库中已经存在某个笔记, 但是最新版本的 git 仓库中并没有这个笔记, 那么从数据库中删除掉
         """
-        should_not_exist_note = Journal.objects.create(title="不应该存在的笔记",
-                                                       category="测试笔记", date=datetime.date.today())
+        should_not_exist_note = self.create_journal(title="不应该存在的笔记", category="测试笔记")
 
         # 确认仓库中没有这个笔记
         not_exist_note_full_name = "{}.md".format(should_not_exist_note.category)
@@ -464,7 +435,7 @@ class RedirectViewTest(BaseCommonTest):
         测试几种 url 都能够正确解析
         """
         # 类似于 2017-02-13 的 url
-        test_journal = Journal.objects.create(title="2017-02-13 任务情况", date=datetime.datetime(2017, 2, 13))
+        test_journal = self.create_journal(date=datetime.datetime(2017, 2, 13))
         response = self.client.get(self.unique_url.format("2017-02-13"))
         self.assertContains(response, test_journal.title)
 
@@ -473,7 +444,7 @@ class RedirectViewTest(BaseCommonTest):
         self.assertContains(response, test_journal.title)
 
         # 类似于 2016-12-03 的 url
-        test_journal = Journal.objects.create(title="test2", date=datetime.datetime(2016, 12, 3))
+        test_journal = self.create_journal(date=datetime.datetime(2016, 12, 3))
         response = self.client.get(self.unique_url.format("2016-12-03"))
         self.assertContains(response, test_journal.title)
 

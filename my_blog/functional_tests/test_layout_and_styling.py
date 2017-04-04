@@ -53,7 +53,7 @@ class JustEatingLayoutStylingTest(FunctionalTest):
 
         # Y 看到吃饭的标题被放置在页面偏上正中间的位置
         title = self.browser.find_element_by_id("id_eating_place_name")
-        self.assertAlmostEqual(title.location["x"], 475, delta=5)
+        self.assertAlmostEqual(title.location["x"], 483, delta=5)
         self.assertAlmostEqual(title.location["y"], 22, delta=5)
 
 
