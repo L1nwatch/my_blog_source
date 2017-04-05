@@ -108,6 +108,10 @@
 
 新增有关凯撒密码的 toolhub 超链接
 
+#### 2017.04.05
+
+给 selenium 添加 proxy, 以后不用太担心翻墙失败的问题了
+
 ## 自动化部署方法
 
 1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：

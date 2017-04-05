@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 各个功能测试的基类
 
+2017.04.04 新增 proxy 设置
 2017.03.31 完善创建测试数据的代码, 但是还需要重构, 现在的冗余太多
 2017.03.07 给 FIREFOX 添加代理配置
 """
@@ -13,8 +14,8 @@ from datetime import datetime
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.proxy import Proxy, ProxyType
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.conf import settings
@@ -76,7 +77,18 @@ class FunctionalTest(StaticLiveServerTestCase):
         # 在两次测试之间还原服务器中数据库的方法
         # if self.against_staging:
         #     reset_database(self.server_host)
-        self.browser = webdriver.Firefox()
+
+        my_proxy = "localhost:8118"
+
+        proxy = Proxy({
+            'proxyType': ProxyType.MANUAL,
+            'httpProxy': my_proxy,
+            'ftpProxy': my_proxy,
+            'sslProxy': my_proxy,
+            'noProxy': 'localhost'  # set this value as desired
+        })
+
+        self.browser = webdriver.Firefox(proxy=proxy)
         self.browser.implicitly_wait(DEFAULT_WAIT)  # 等待 DEFAULT_WAIT 秒钟
 
     def tearDown(self):
