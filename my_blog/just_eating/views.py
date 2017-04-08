@@ -21,7 +21,8 @@ school_backup_list = ["美食坊快餐",
                       "小米鸡排饭",
                       "微辣香锅",
                       "川味-香干肉丝",
-                      "川渝-腐竹炒肉"]
+                      "川渝-腐竹炒肉",
+                      "烤冷面(待试)"]
 
 
 def create_home_menu():
@@ -52,7 +53,7 @@ def create_school_menu():
     thursday = const.EATING_MENU_STRUCTURE("周四", "海棠\n杂粮煎饼", "丁香\n农家小炒肉", "新综\n快餐")
     friday = const.EATING_MENU_STRUCTURE("周五", "海棠\n花干菜夹馍\n豆浆", "新综\n台湾(油)", "丁香\n三楼自选快餐")
     saturday = const.EATING_MENU_STRUCTURE("周六", "老综(海棠)\n卤肉卷\n", "老综\n029餐厅", " 新综\n包菜肉片(油!)")
-    sunday = const.EATING_MENU_STRUCTURE("周日", "新综\n安仔包\n俩鸡肉", "新综\n鸡米花饭(带)", "待定")
+    sunday = const.EATING_MENU_STRUCTURE("周日", "新综\n安仔包\n俩鸡肉", "新综\n鸡米花饭(带)", "新综\n沙县小吃")
 
     for each_day in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]:
         school_menu.append(each_day)
