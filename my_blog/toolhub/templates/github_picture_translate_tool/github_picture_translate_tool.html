@@ -18,7 +18,8 @@
 
 <div class="next-wrap">
     <h1 style="float:left">GitHub 图片地址转换</h1>
-    <label style="float:right">格式: https://github.com/用户名/仓库名/路径/after_translate.jpg?raw=true</label>
+    <label style="float:right;font-size: 50%;">DEMO:
+        https://github.com/L1nwatch/notes_set/blob/master/picture/ooo/xxx.jpg?raw=true</label>
     <div id="cssminifier">
         <span class="clear"></span>
         <form>
@@ -26,16 +27,6 @@
             {% csrf_token %}
         </form>
         <div class="button-group">
-            {#            <div class="box">#}
-            {#                <input class="opt1" id="stripAllComment" type="checkbox"/>#}
-            {#                <label for="stripAllComment">Strip all comments</label>#}
-            {#                <input class="opt2" id="superCompact" type="checkbox"/>#}
-            {#                <label for="superCompact">Super compact</label>#}
-            {#                <input class="opt3" id="betterIndentation" type="checkbox"/>#}
-            {#                <label for="betterIndentation">Keep indentation</label>#}
-            {#                <input checked="" class="opt4" id="keepLastComma" type="checkbox"/>#}
-            {#                <label for="keepLastComma">Remove the last semicolon</label>#}
-            {#            </div>#}
             <button id="id_translate_button">转换</button>
             <button onclick="clearField(&quot;id_input_box&quot;);">Clear Input</button>
             <button onclick="selectAll(&quot;id_output_box&quot;);">Select Output</button>
