@@ -50,7 +50,7 @@ def create_school_menu():
     wednesday = const.EATING_MENU_STRUCTURE("周三", "竹园\n火腿饼\n豆浆", "海棠\n川味椒盐里脊", "新综\n黑椒牛柳(油!)")
     thursday = const.EATING_MENU_STRUCTURE("周四", "海棠\n杂粮煎饼", "丁香\n农家小炒肉", "新综\n快餐")
     friday = const.EATING_MENU_STRUCTURE("周五", "竹园\n手抓饼\n豆浆", "新综\n台湾(油)", "丁香\n三楼自选快餐")
-    saturday = const.EATING_MENU_STRUCTURE("周六", "待定", "新综\n包菜肉片(油!)", "老综\n029餐厅")
+    saturday = const.EATING_MENU_STRUCTURE("周六", "海棠\n鸡蛋灌饼|鸡蛋卷", "新综\n包菜肉片(油!)", "老综\n029餐厅")
     sunday = const.EATING_MENU_STRUCTURE("周日", "丁香\n待定", "新综\n鸡米花饭(带)", "新综\n沙县小吃")
 
     for each_day in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]:
