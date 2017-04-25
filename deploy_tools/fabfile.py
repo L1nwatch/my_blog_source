@@ -192,7 +192,7 @@ def _update_const_file(source_folder, site_name):
         f.write(data)
 
 
-def _update_setting_to_conf_file(old_content, log_file_path, cron_job):
+def _update_setting_to_conf_file(old_content, cron_job):
     """
     给配置文件添加对应的参数行
     # 2016.10.19 重构一下 _set_cron_job, 将其中关于修改文件内容的代码封装成函数
@@ -242,10 +242,11 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder):
     :return:
     """
     # 大部分代码与 __set_locale_for_supervisor 类似, 这里是第 2 次使用, 如果使用了 3 次的话就要重构了
-    temp_file1_name, temp_file2_name, temp_file3_name = "tEmP_conf1", "tEmP_conf2", "tEmP_conf3"
+    temp_file1_name, temp_file2_name = "tEmP_conf1", "tEmP_conf2"
     temp_file1_path = os.path.join(source_folder, temp_file1_name)
     temp_file2_path = os.path.join(source_folder, temp_file2_name)
-    temp_file3_path = os.path.join(source_folder, temp_file3_name)
+
+    # 直接用 with 语句打不开, 权限不够
     sudo("cd {}"
          " && cp /etc/crontab {}".format(source_folder, temp_file1_name))
 
@@ -259,7 +260,7 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder):
                     .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder,
                             site_name=site_name, site_folder=site_folder))
 
-    result_content_list = _update_setting_to_conf_file(old_content, temp_file3_path, run_cron_job)
+    result_content_list = _update_setting_to_conf_file(old_content, run_cron_job)
 
     with open(temp_file2_path, "w") as f:
         f.writelines(result_content_list)
