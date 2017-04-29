@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.04.29 修改 log_wrapper, 强制使用关键字参数 + 完善元信息
 2017.03.30 对 log 添加没有 request 时的支持
 2017.03.28 增加 Code 这个 APP 有关的代码实现
 2017.03.26 新增有关搜索输入特殊字符的检查
@@ -13,7 +14,6 @@
 2017.02.10 添加搜索时不搜索图片的设定
 2017.02.09 把视图分离在两个 APP 的时候出现嵌套导入了, 所以只好弄一个 common 文件来存放了
 """
-from ipware.ip import get_ip, get_real_ip, get_trusted_ip
 from my_constant import const
 from articles.forms import ArticleForm, BaseSearchForm
 from articles.models import Article, BaseModel
@@ -24,10 +24,12 @@ from code_collect.models import CodeCollect
 
 import chardet
 import copy
-import logging
 import string
 import re
 import datetime
+
+from functools import wraps
+from ipware.ip import get_ip, get_real_ip, get_trusted_ip
 
 __author__ = '__L1n__w@tch'
 
@@ -258,9 +260,10 @@ def decorator_with_args(decorator_to_enhance):
 
 
 @decorator_with_args
-def log_wrapper(func, str_format="", level="info", logger=None):
+def log_wrapper(func, *, str_format="", level="info", logger=None):
     now = datetime.datetime.today()
 
+    @wraps(func)
     def wrapper(request=None, *func_args, **func_kwargs):
         if request is not None:
             logger_func = getattr(logger, level)
