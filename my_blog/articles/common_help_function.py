@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.04.30 新增一个 is_valid_git_address 判断函数
 2017.04.29 修改 log_wrapper, 强制使用关键字参数 + 完善元信息
 2017.03.30 对 log 添加没有 request 时的支持
 2017.03.28 增加 Code 这个 APP 有关的代码实现
@@ -38,6 +39,10 @@ model_dict = {"articles": Article,
               "all": BaseModel,
               "gitbooks": GitBook, "gitbook_notes": GitBook,
               "code": CodeCollect}
+
+
+def is_valid_git_address(raw_data):
+    return re.match("^https?://.+\.git$", raw_data)
 
 
 def get_context_data(request, context_type, update_data=None):

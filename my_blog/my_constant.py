@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 const 变量
 
+2017.04.30 更新 gitbook 格式
 2017.03.15 更新有关搜索框的常量信息
 2017.03.06 更新一堆常量信息
 2017.01.28 把要传给模板的命名数组作为一个常量放进来了
@@ -49,7 +50,7 @@ const.EATING_MENU_STRUCTURE = namedtuple("eating_menu", ["day_time", "morning", 
 
 # 调试选项
 # git 提交前需要改为 False or True, 要不然网站会跑失败的...
-const.SLOW_CONNECT_DEBUG = False  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
+const.SLOW_CONNECT_DEBUG = True  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
 
 # 搜索页面
 const.ID_SEARCH_RESULT_TITLE = "id_search_result_title"
@@ -71,10 +72,10 @@ const.JOURNALS_GIT_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.JOURNA
 const.GITBOOK_PATH_NAME = "gitbooks"
 const.GITBOOK_CODES_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.GITBOOK_PATH_NAME)
 const.GITBOOK_USER_NAME = "l1nwatch"
+const.GITBOOK_INFO = namedtuple("gitbook_info", ["git_address", "book_name"])
 const.GITBOOK_CODES_REPOSITORY = {
-    "PythonWeb": "https://git.oschina.net/w4tch/PythonWeb.git",
+    "pythonweb": const.GITBOOK_INFO("https://git.oschina.net/w4tch/PythonWeb.git", "《PythonWeb 开发:测试驱动开发》"),
     # "violent-python": "https://git.oschina.net/w4tch/violent-python.git",
-
 }
 
 if __name__ == "__main__":

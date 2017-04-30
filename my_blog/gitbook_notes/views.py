@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.04.30 由于 gitbook 格式更改, 代码也做相应修改
 2017.03.30 给更新函数添加记日记功能
 2017.03.26 重构一下搜索代码, form data 合法性在上层做过了, 这里就不做了
 2017.03.10 将记录日记的装饰器装饰到对应视图上
@@ -18,8 +19,7 @@ import urllib.parse
 # 以下为 django 相关的库
 
 from articles.common_help_function import (get_ip_from_django_request, create_search_result, search_keyword_in_model,
-                                           clean_form_data, form_is_valid_and_ignore_exist_error, get_context_data,
-                                           log_wrapper)
+                                           clean_form_data, get_context_data, log_wrapper, is_valid_git_address)
 from articles.forms import BaseSearchForm
 from my_constant import const
 from gitbook_notes.models import GitBook
@@ -30,6 +30,9 @@ logger = logging.getLogger("my_blog.gitbooks.views")
 
 
 def get_latest_gitbooks(gitbook_name, address):
+    if not is_valid_git_address(address):
+        raise RuntimeError("[-] GitBook 地址错误")
+
     notes_git_path = const.GITBOOK_CODES_PATH
 
     # 判断是否已经 git 过
@@ -206,10 +209,10 @@ def update_gitbook_codes(request=None):
     """
     gitbook_category_dict = const.GITBOOK_CODES_REPOSITORY
 
-    for gitbook_name, address in gitbook_category_dict.items():
+    for gitbook_name, gitbook_info in gitbook_category_dict.items():
         try:
             # 获取最新的 gitbook 代码
-            get_latest_gitbooks(gitbook_name, address)
+            get_latest_gitbooks(gitbook_name, gitbook_info.git_address)
 
             # 更新到数据库中
             notes_in_git = update_gitbook_db(gitbook_name)

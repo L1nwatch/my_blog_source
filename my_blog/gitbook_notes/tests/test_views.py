@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 测试 gitbook_notes 这个 app 下的视图函数
 
+2017.04.30 修正大小写导致判定失误的问题
 2017.04.04 重构有关创建测试数据的代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 2017.03.10 发现 href 字段的 BUG, 再次补充相关测试代码
@@ -66,7 +67,7 @@ class UpdateGitBookCodesViewTest(BaseCommonTest):
         """
         测试 book_name 字段的正确性
         """
-        self.assertTrue(len(GitBook.objects.filter(book_name="PythonWeb")) > 0)
+        self.assertTrue(len(GitBook.objects.filter(book_name="PythonWeb".lower())) > 0)
 
     def test_can_save_right_href(self):
         """

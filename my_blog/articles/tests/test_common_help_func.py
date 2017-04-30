@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.04.30 新增有关 git 地址的测试代码
 2017.03.26 新增有关搜索输入的测试代码
 2017.03.23 新增有关搜索结果排序的测试
 2017.03.07 为共有函数进行测试编写
@@ -11,7 +12,7 @@ import random
 
 from django.test import TestCase
 from my_constant import const
-from articles.common_help_function import clean_form_data, sort_search_result, data_check
+from articles.common_help_function import clean_form_data, sort_search_result, data_check, is_valid_git_address
 from articles.models import Article
 
 __author__ = '__L1n__w@tch'
@@ -84,6 +85,19 @@ class TestCommonHelpFunc(TestCase):
         for i in range(100):
             test_data = "".join([random.choice(string.punctuation) for j in range(random.randint(2, 100))])
             self.assertFalse(data_check(test_data))
+
+    def test_is_valid_git_address(self):
+        test_data = "https://xxx.git"
+        my_answer = is_valid_git_address(test_data)
+        self.assertTrue(my_answer)
+
+        test_data = "https://www.baidu.com"
+        my_answer = is_valid_git_address(test_data)
+        self.assertFalse(my_answer)
+
+        test_data = "https://xxx.git.com"
+        my_answer = is_valid_git_address(test_data)
+        self.assertFalse(my_answer)
 
 
 if __name__ == "__main__":

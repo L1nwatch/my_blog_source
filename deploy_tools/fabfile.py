@@ -29,7 +29,7 @@ __author__ = '__L1n__w@tch'
 # 要把常量 REPO_URL 的值改成代码分享网站中你仓库的 URL
 REPO_URL = "https://github.com/L1nwatch/my_blog_source.git"
 USER_PASS_CONF = "user_pass.conf"
-GITBOOKS_CONF = "gitbooks_git.json"
+GITBOOKS_CONF = "gitbooks_git.conf"
 
 
 def deploy():
