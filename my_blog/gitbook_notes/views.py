@@ -65,81 +65,106 @@ def is_valid_md_file(path, file_name, root_path):
     return False
 
 
-def get_right_href(gitbook_name, title, md_file_name):
+def get_right_href(gitbook_name, title):
     """
     计算得到正确的 href
+    2017.04.30 修改了一下 GitBook 书名的显示, 结果求取 href 的也受到影响了
     :param gitbook_name: str(), gitbook 书名
-    :param title: str(), 正确的 URI 路径
-    :param md_file_name: str(), 正确的 md 文件名
+    :param title: str(), 文件名路径, 比如 'PythonWeb开发: 测试驱动方法/readme.md'
     :return: str(), 正确的 gitbook href
     """
     user_name = const.GITBOOK_USER_NAME
-    md_file_name = md_file_name.rsplit(".md", maxsplit=1)[0]
+    title = title[:-len(".md")]
 
     if title.lower() == "readme":
         href_format = "https://{username}.gitbooks.io/{gitbook_name}/content/index.html"
-    elif title == md_file_name:
-        href_format = "https://{username}.gitbooks.io/{gitbook_name}/content/{title}.html"
-    elif "/" in title:
-        if md_file_name == title.rsplit("/", maxsplit=1)[1]:
-            href_format = "https://{username}.gitbooks.io/{gitbook_name}/content/{title}.html"
-        else:
-            href_format = "https://{username}.gitbooks.io/{gitbook_name}/content/{title}/{md_file_name}.html"
     else:
-        href_format = "https://{username}.gitbooks.io/{gitbook_name}/content/{title}/{md_file_name}.html"
+        href_format = "https://{username}.gitbooks.io/{gitbook_name}/content/{title}.html"
 
     return href_format.format(username=user_name,
                               gitbook_name=urllib.parse.quote(gitbook_name).lower(),
-                              title=urllib.parse.quote(title),
-                              md_file_name=urllib.parse.quote(md_file_name))
+                              title=urllib.parse.quote(title))
 
 
-def get_title_and_md_file_name(title):
+def format_title(title, book_name):
+    """
+    主要是针对书名已经存在于 title 的情况进行处理, 还有就是 readme 的去除, 这里进行清除操作
+    对有无书名的判断会清除空白符后进行判断
+    :param title: str(), 比如 "PythonWeb开发: 测试驱动方法/准备工作和应具备的知识/readme"
+    :param book_name: str(), 比如 "《PythonWeb 开发:测试驱动开发》"
+    :return: str(), 格式化过后的 title, 比如 "《PythonWeb 开发:测试驱动开发》-准备工作和应具备的知识"
+    """
+    title = title.lower()
+
+    # 含有书名
+    if "/" in title:
+        book_name_without_symbol = book_name.lower().strip("《》")
+        book_name_without_white = book_name_without_symbol.replace(" ", "").replace("\t", "")
+        title_book_name, title_path = title.split("/", maxsplit=1)
+        if book_name_without_white == title_book_name.replace(" ", "").replace("\t", ""):
+            title = title_path
+
+    # 去除 readme
+    if title.endswith("readme"):
+        title = title[:-len("readme")]
+        title = title.rstrip("/")
+
+    if title != "":
+        return "{}-{}".format(book_name, title)
+    else:
+        return book_name
+
+
+def get_title_and_md_file_name(title, display_book_name):
     """
     根据给定的从 summary.md 中获取的 title 来生成 title 和 md_file_name 字段
     :param title: str(), 比如 "网易 2017 校招笔试编程题/二进制权重.md"
-    :return: tuple, (title, md_file_name), 比如 ("网易 2017 校招笔试编程题/二进制权重", "二进制权重.md")
+    :param display_book_name: str(), 显示用的 GitBook 名字, 比如 "《PythonWeb 开发:测试驱动开发》"
+    :return: tuple, (title, md_file_name), 比如 ("《PythonWeb 开发:测试驱动开发》-网易 2017 校招笔试编程题/二进制权重", "二进制权重.md")
     """
+    # 获取 md 名
     if "/" in title:
-        title_save_to_db = str(title).rstrip(".md")
-        # 这一步主要是用来去除 readme 的, 比如 "PythonWeb开发: 测试驱动方法/readme"
-        # 得把 readme 去掉, 仅保留 / 前面的内容, 比如 "PythonWeb开发: 测试驱动方法"
-        pre_path, final_name = title_save_to_db.rsplit("/", maxsplit=1)
-        if final_name.lower() == "readme":
-            title_save_to_db = pre_path
-        md_file_name = str(title).rsplit("/", maxsplit=1)[1]
+        md_file_name = title.rsplit("/", maxsplit=1)[1]
     else:
-        title_save_to_db, md_file_name = title.rstrip(".md"), title
+        md_file_name = title
+
+    # 获取 title
+    title_save_to_db = title[:-len(".md")]  # 去除后缀名 .md
+
+    # 判断书名是否已经存在于 title 之中, 存在则去掉
+    title_save_to_db = format_title(title_save_to_db, display_book_name)
+
     return title_save_to_db, md_file_name
 
 
-def sync_database(title, gitbook_name):
+def sync_database(title, gitbook_name, display_book_name):
     """
     进行同步数据库的操作, 即会保存最新内容, 如果是不存在的则会进行创建操作
-    :param title: str(), 要放进数据库的每一章的路径, 比如 ""
+    :param title: str(), 要放进数据库的每一章的路径, 比如 "'PythonWeb开发: 测试驱动方法/readme.md'"
     :param gitbook_name: str(), gitbook 的名字
+    :param display_book_name: str(), 显示用的 GitBook 名字, 比如 "《PythonWeb 开发:测试驱动开发》"
     :return: str(), 所操作的 title
     """
     root_path = "{}/{}".format(const.GITBOOK_CODES_PATH, gitbook_name)
 
-    title_save_to_db, md_file_name = get_title_and_md_file_name(title)
+    title_save_to_db, md_file_name = get_title_and_md_file_name(title, display_book_name)
 
-    right_href = get_right_href(gitbook_name, title_save_to_db, md_file_name)
+    right_href = get_right_href(gitbook_name, title)
     with open("{}/{}".format(root_path, title), "r") as f:
         gitbook_content = f.read()
 
     try:
         # 已经存在
-        gitbook = GitBook.objects.get(title=title_save_to_db)
+        gitbook = GitBook.objects.get(href=right_href)
         # 文件内容有所改动
         if gitbook_content != gitbook.content:
             gitbook.content = gitbook_content
         # md 文件名变了
         if md_file_name != gitbook.md_file_name:
             gitbook.md_file_name = md_file_name
-        # href 变化了
-        if right_href != gitbook.href:
-            gitbook.href = right_href
+        # title 变化了
+        if title_save_to_db != gitbook.title:
+            gitbook.title = title_save_to_db
         gitbook.save()
     except GitBook.DoesNotExist:
         # 不存在
@@ -181,10 +206,11 @@ def get_summary_path(gitbook_name):
     raise RuntimeError
 
 
-def update_gitbook_db(gitbook_name):
+def update_gitbook_db(gitbook_name, display_book_name):
     """
     更新 gitbook 数据到数据库中
     :param gitbook_name: str(), gitbook 的名字, 比如 "PythonWeb"
+    :param display_book_name: str(), 显示用的 GitBook 名字, 比如 "《PythonWeb 开发:测试驱动开发》"
     :return: set(), 包含存进数据库的每一章笔记
     """
     notes_in_git = set()
@@ -195,7 +221,7 @@ def update_gitbook_db(gitbook_name):
     title_list = get_title_list_from_summary(summary_path)
     for each_title in title_list:
         # 进行同步数据库的操作
-        title = sync_database(each_title, gitbook_name)
+        title = sync_database(each_title, gitbook_name, display_book_name)
         notes_in_git.add(title)
 
     return notes_in_git
@@ -215,7 +241,7 @@ def update_gitbook_codes(request=None):
             get_latest_gitbooks(gitbook_name, gitbook_info.git_address)
 
             # 更新到数据库中
-            notes_in_git = update_gitbook_db(gitbook_name)
+            notes_in_git = update_gitbook_db(gitbook_name, gitbook_info.book_name)
 
             for each_note_in_db in GitBook.objects.filter(book_name=gitbook_name):
                 if each_note_in_db.title not in notes_in_git:

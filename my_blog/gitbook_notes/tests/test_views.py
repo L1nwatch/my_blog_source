@@ -3,7 +3,7 @@
 # version: Python3.X
 """ 测试 gitbook_notes 这个 app 下的视图函数
 
-2017.04.30 修正大小写导致判定失误的问题
+2017.04.30 修正大小写导致判定失误的问题, 补充完善有关 GitBook 书名的测试代码
 2017.04.04 重构有关创建测试数据的代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 2017.03.10 发现 href 字段的 BUG, 再次补充相关测试代码
@@ -18,13 +18,15 @@ from functional_tests.base import FunctionalTest
 from articles.tests.basic_test import BasicTest
 from my_constant import const
 from gitbook_notes.models import GitBook
-from gitbook_notes.views import get_title_list_from_summary, get_title_and_md_file_name, get_right_href
+from gitbook_notes.views import (get_title_list_from_summary, get_title_and_md_file_name,
+                                 get_right_href, format_title)
 
-from django.test import TestCase, override_settings
+from django.test import override_settings
 
 import os
 import unittest
 import shutil
+import random
 
 __author__ = '__L1n__w@tch'
 
@@ -32,7 +34,7 @@ __author__ = '__L1n__w@tch'
 class BaseCommonTest(BasicTest):
     @staticmethod
     def create_gitbooks_test_db():
-        FunctionalTest.create_gitbook_test_db_data()
+        return FunctionalTest.create_gitbook_test_db_data()
 
 
 @override_settings(UPDATE_TIME_LIMIT=0.1)
@@ -74,7 +76,7 @@ class UpdateGitBookCodesViewTest(BaseCommonTest):
         测试 href 字段的正确性
         """
         # 测试 href1
-        gitbook = GitBook.objects.get(title="PythonWeb开发: 测试驱动方法/准备工作和应具备的知识")
+        gitbook = GitBook.objects.get(title="《PythonWeb 开发: 测试驱动方法》-准备工作和应具备的知识")
         right_href = ("https://l1nwatch.gitbooks.io/pythonweb/content/"
                       "PythonWeb%E5%BC%80%E5%8F%91%3A%20%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E6%96%B9%E6%B3%95/"
                       "%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E5%92%8C%E5%BA%94%E5%85%B7%E5%A4%87%E7%9A%84%E7%9F"
@@ -82,7 +84,7 @@ class UpdateGitBookCodesViewTest(BaseCommonTest):
         self.assertEqual(gitbook.href, right_href)
 
         # 测试 href2
-        gitbook = GitBook.objects.get(title="PythonWeb开发: 测试驱动方法/第一部分 TDD 和 Django 基础/第 1 章 使用功能测试协助安装 Django")
+        gitbook = GitBook.objects.get(title="《PythonWeb 开发: 测试驱动方法》-第一部分 tdd 和 django 基础/第 1 章 使用功能测试协助安装 django")
         right_href = ("https://l1nwatch.gitbooks.io/pythonweb/content/PythonWeb"
                       "%E5%BC%80%E5%8F%91%3A%20%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E6%96%B9%E6%B3%95/"
                       "%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%20TDD%20%E5%92%8C%20Django"
@@ -91,63 +93,12 @@ class UpdateGitBookCodesViewTest(BaseCommonTest):
         self.assertEqual(gitbook.href, right_href)
 
         # 测试 href3
-        gitbook = GitBook.objects.get(title="PythonWeb开发: 测试驱动方法/第二部分 Web 开发要素/第 14 章 部署新代码")
+        gitbook = GitBook.objects.get(title="《PythonWeb 开发: 测试驱动方法》-第二部分 web 开发要素/第 14 章 部署新代码")
         right_href = ("https://l1nwatch.gitbooks.io/pythonweb/content/PythonWeb"
                       "%E5%BC%80%E5%8F%91%3A%20%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E6%96%B9%E6%B3%95/"
                       "%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%20Web%20%E5%BC%80%E5%8F%91%E8%A6%81%E7%B4%A0/"
                       "%E7%AC%AC%2014%20%E7%AB%A0%20%E9%83%A8%E7%BD%B2%E6%96%B0%E4%BB%A3%E7%A0%81/readme.html")
         self.assertEqual(gitbook.href, right_href)
-
-    def test_get_right_href(self):
-        """
-        测试计算 gitbook 的 href 是否正确
-        """
-        # 1、含有 readme 的一级
-        test_data = ("interview_exercise",
-                     "README",
-                     "README.md")
-        right_href = "https://l1nwatch.gitbooks.io/interview_exercise/content/index.html"
-        my_answer = get_right_href(*test_data)
-        self.assertEqual(right_href, my_answer)
-
-        # 2、含有 readme 的多级
-        test_data = ("interview_exercise",
-                     "计算机知识",
-                     "readme.md")
-        right_href = ("https://l1nwatch.gitbooks.io/interview_exercise/content/"
-                      "%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%9F%A5%E8%AF%86/readme.html")
-        my_answer = get_right_href(*test_data)
-        self.assertEqual(right_href, my_answer)
-
-        # 3、含有 readme 的多级 2
-        test_data = ("PythonWeb",
-                     "PythonWeb开发: 测试驱动方法/准备工作和应具备的知识",
-                     "readme.md")
-        right_href = ("https://l1nwatch.gitbooks.io/pythonweb/content/"
-                      "PythonWeb%E5%BC%80%E5%8F%91%3A%20%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E6%96%B9%E6%B3%95/"
-                      "%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E5%92%8C%E5%BA%94%E5%85%B7%E5%A4%87%E7%9A%84%E7%9F"
-                      "%A5%E8%AF%86/readme.html")
-        my_answer = get_right_href(*test_data)
-        self.assertEqual(right_href, my_answer)
-
-        # 4、不含 readme 的一级
-        test_data = ("interview_exercise",
-                     "C_问答题汇总",
-                     "C_问答题汇总.md")
-        right_href = ("https://l1nwatch.gitbooks.io/interview_exercise/content/"
-                      "C_%E9%97%AE%E7%AD%94%E9%A2%98%E6%B1%87%E6%80%BB.html")
-        my_answer = get_right_href(*test_data)
-        self.assertEqual(right_href, my_answer)
-
-        # 5、不含 readme 的多级
-        test_data = ("interview_exercise",
-                     "stackoverflow-about-Python/Python中如何在一个函数中加入多个装饰器",
-                     "Python中如何在一个函数中加入多个装饰器.md")
-        right_href = ("https://l1nwatch.gitbooks.io/interview_exercise/content/stackoverflow-about-Python/"
-                      "Python%E4%B8%AD%E5%A6%82%E4%BD%95%E5%9C%A8%E4%B8%80%E4%B8%AA%E5%87%BD%E6%95%B0%E4%B8"
-                      "%AD%E5%8A%A0%E5%85%A5%E5%A4%9A%E4%B8%AA%E8%A3%85%E9%A5%B0%E5%99%A8.html")
-        my_answer = get_right_href(*test_data)
-        self.assertEqual(right_href, my_answer)
 
     def test_can_save_right_title(self):
         """
@@ -155,7 +106,7 @@ class UpdateGitBookCodesViewTest(BaseCommonTest):
         """
         os.path.exists(os.path.join(self.gitbook_notes_git_path, "PythonWeb开发: 测试驱动方法", "准备工作和应具备的知识", "readme.md"))
 
-        self.assertIsNotNone(GitBook.objects.get(title="PythonWeb开发: 测试驱动方法/准备工作和应具备的知识"))
+        self.assertIsNotNone(GitBook.objects.get(title="《PythonWeb 开发: 测试驱动方法》-准备工作和应具备的知识"))
 
     def test_can_save_right_content(self):
         """
@@ -166,7 +117,7 @@ class UpdateGitBookCodesViewTest(BaseCommonTest):
         with open(test_file_path, "r") as f:
             data = f.read()
 
-        content_in_db = GitBook.objects.get(title="PythonWeb开发: 测试驱动方法/准备工作和应具备的知识")
+        content_in_db = GitBook.objects.get(title="《PythonWeb 开发: 测试驱动方法》-准备工作和应具备的知识")
         self.assertEqual(content_in_db.content, data)
 
     def test_can_save_right_md_file_name(self):
@@ -194,34 +145,6 @@ class UpdateGitBookCodesViewTest(BaseCommonTest):
         self.assertIn("PythonWeb开发: 测试驱动方法/附录/readme.md", title_list)
         self.assertIn("PythonWeb开发: 测试驱动方法/附录/附录 D 测试数据库迁移/readme.md", title_list)
 
-    def test_get_title_and_md_file_name(self):
-        """
-        测试几种情况下得到的 title 字段是否正确
-        """
-        # 情况 1, 直接就是 md 文件名
-        test_data = "第1章入门.md"
-        right_answer = "第1章入门", "第1章入门.md"
-        my_answer = get_title_and_md_file_name(test_data)
-        self.assertEqual(my_answer, right_answer)
-
-        # 情况 2, 一级下的 title
-        test_data = "腾讯 2017 暑期实习生编程题/腾讯 2017 暑期实习生编程题.md"
-        right_answer = "腾讯 2017 暑期实习生编程题/腾讯 2017 暑期实习生编程题", "腾讯 2017 暑期实习生编程题.md"
-        my_answer = get_title_and_md_file_name(test_data)
-        self.assertEqual(my_answer, right_answer)
-
-        # 情况 3, 多级下的 readme
-        test_data = "PythonWeb开发: 测试驱动方法/readme.md"
-        right_answer = "PythonWeb开发: 测试驱动方法", "readme.md"
-        my_answer = get_title_and_md_file_name(test_data)
-        self.assertEqual(my_answer, right_answer)
-
-        # 情况 4, 多级下的 md
-        test_data = "网易 2017 校招笔试编程题/二进制权重.md"
-        right_answer = "网易 2017 校招笔试编程题/二进制权重", "二进制权重.md"
-        my_answer = get_title_and_md_file_name(test_data)
-        self.assertEqual(my_answer, right_answer)
-
 
 class GitBookSearchViewTest(BaseCommonTest):
     unique_url = "/search/"
@@ -238,9 +161,8 @@ class GitBookSearchViewTest(BaseCommonTest):
         """
         测试搜索出来能够显示 GitBook 的标题和结果
         """
-        self.create_gitbooks_test_db()
+        gitbook, _ = self.create_gitbooks_test_db()
 
-        gitbook = GitBook.objects.get(title="test_book_name/test")
         response = self.client.post(self.unique_url, data={"search_content": gitbook.content,
                                                            "search_choice": "gitbooks"})
         self.assertContains(response, gitbook.title)
@@ -250,9 +172,8 @@ class GitBookSearchViewTest(BaseCommonTest):
         """
         测试搜索出来的 GitBook 链接正确
         """
-        self.create_gitbooks_test_db()
+        gitbook, _ = self.create_gitbooks_test_db()
 
-        gitbook = GitBook.objects.get(title="test_book_name/test")
         response = self.client.post(self.unique_url, data={"search_content": gitbook.content,
                                                            "search_choice": "gitbooks"})
 
@@ -262,10 +183,9 @@ class GitBookSearchViewTest(BaseCommonTest):
         """
         测试同时搜索多个关键词, 且能忽略大小写, 能搜索出来结果
         """
-        self.create_gitbooks_test_db()
+        gitbook, _ = self.create_gitbooks_test_db()
 
         #  GitBook <test_book_name> 里面有一章是 <test>, 内容为 <test content>
-        gitbook = GitBook.objects.get(title="test_book_name/test")
         response = self.client.post(self.unique_url, data={"search_content": "conTent teSt",
                                                            "search_choice": "gitbooks"})
 
@@ -279,12 +199,112 @@ class GitBookPageDisplayTest(BaseCommonTest):
         """
         测试是否有跳转到 GitBook 的链接
         """
-        self.create_gitbooks_test_db()
+        gitbooks = self.create_gitbooks_test_db()
 
-        gitbook = GitBook.objects.get(title="stackoverflow-about-Python/super与init方法")
+        gitbook = GitBook.objects.get(title=random.choice(gitbooks))
 
         response = self.client.get(self.unique_url.format(gitbook.id))
         self.assertEqual(response.url, gitbook.href)
+
+    def test_get_title_and_md_file_name(self):
+        """
+        测试几种情况下得到的 title 字段是否正确
+        """
+        # 情况 1, 直接就是 md 文件名
+        book_name = "《PythonWeb 开发: 测试驱动方法》"
+        test_data = "第1章入门.md", book_name
+        right_answer = "{}-第1章入门".format(book_name), "第1章入门.md"
+        my_answer = get_title_and_md_file_name(*test_data)
+        self.assertEqual(my_answer, right_answer)
+
+        # 情况 2, 一级下的 title
+        test_data = "腾讯 2017 暑期实习生编程题/腾讯 2017 暑期实习生编程题.md", book_name
+        right_answer = "{}-腾讯 2017 暑期实习生编程题/腾讯 2017 暑期实习生编程题".format(book_name), "腾讯 2017 暑期实习生编程题.md"
+        my_answer = get_title_and_md_file_name(*test_data)
+        self.assertEqual(my_answer, right_answer)
+
+        # 情况 3, 多级下的 readme
+        test_data = "PythonWeb开发: 测试驱动方法/readme.md", book_name
+        right_answer = "{}".format(book_name), "readme.md"
+        my_answer = get_title_and_md_file_name(*test_data)
+        self.assertEqual(my_answer, right_answer)
+
+        # 情况 4, 多级下的 md
+        test_data = "网易 2017 校招笔试编程题/二进制权重.md", book_name
+        right_answer = "{}-网易 2017 校招笔试编程题/二进制权重".format(book_name), "二进制权重.md"
+        my_answer = get_title_and_md_file_name(*test_data)
+        self.assertEqual(my_answer, right_answer)
+
+        # 情况 5, 书名已存在于路径之中
+        test_data = "PythonWeb开发: 测试驱动方法/准备工作和应具备的知识/readme.md", book_name
+        right_answer = "{}-准备工作和应具备的知识".format(book_name), "readme.md"
+        my_answer = get_title_and_md_file_name(*test_data)
+        self.assertEqual(my_answer, right_answer)
+
+    def test_format_title(self):
+        # 情况 1, 包含书名
+        book_name = "《PythonWeb 开发: 测试驱动方法》"
+        test_data = "PythonWeb开发: 测试驱动方法/准备工作和应具备的知识/readme"
+        right_answer = "{}-准备工作和应具备的知识".format(book_name)
+        my_answer = format_title(test_data, book_name)
+        self.assertEqual(right_answer, my_answer)
+
+        # 情况 2, 不包含书名
+        test_data = "准备工作和应具备的知识/readme"
+        right_answer = "{}-准备工作和应具备的知识".format(book_name)
+        my_answer = format_title(test_data, book_name)
+        self.assertEqual(right_answer, my_answer)
+
+        # 情况 3, 包含书名, 且只有 readme
+        test_data = "PythonWeb开发: 测试驱动方法/readme"
+        right_answer = "{}".format(book_name)
+        my_answer = format_title(test_data, book_name)
+        self.assertEqual(right_answer, my_answer)
+
+    def test_get_right_href(self):
+        """
+        测试计算 gitbook 的 href 是否正确
+        """
+        # 1、含有 readme 的一级
+        test_data = ("interview_exercise", "README.md")
+        right_href = "https://l1nwatch.gitbooks.io/interview_exercise/content/index.html"
+        my_answer = get_right_href(*test_data)
+        self.assertEqual(right_href, my_answer)
+
+        # 2、含有 readme 的多级
+        test_data = ("interview_exercise",
+                     "计算机知识/readme.md")
+        right_href = ("https://l1nwatch.gitbooks.io/interview_exercise/content/"
+                      "%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%9F%A5%E8%AF%86/readme.html")
+        my_answer = get_right_href(*test_data)
+        self.assertEqual(right_href, my_answer)
+
+        # 3、含有 readme 的多级 2
+        test_data = ("PythonWeb",
+                     "PythonWeb开发: 测试驱动方法/准备工作和应具备的知识/readme.md")
+        right_href = ("https://l1nwatch.gitbooks.io/pythonweb/content/"
+                      "PythonWeb%E5%BC%80%E5%8F%91%3A%20%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E6%96%B9%E6%B3%95/"
+                      "%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E5%92%8C%E5%BA%94%E5%85%B7%E5%A4%87%E7%9A%84%E7%9F"
+                      "%A5%E8%AF%86/readme.html")
+        my_answer = get_right_href(*test_data)
+        self.assertEqual(right_href, my_answer)
+
+        # 4、不含 readme 的一级
+        test_data = ("interview_exercise",
+                     "C_问答题汇总.md")
+        right_href = ("https://l1nwatch.gitbooks.io/interview_exercise/content/"
+                      "C_%E9%97%AE%E7%AD%94%E9%A2%98%E6%B1%87%E6%80%BB.html")
+        my_answer = get_right_href(*test_data)
+        self.assertEqual(right_href, my_answer)
+
+        # 5、不含 readme 的多级
+        test_data = ("interview_exercise",
+                     "stackoverflow-about-Python/Python中如何在一个函数中加入多个装饰器.md")
+        right_href = ("https://l1nwatch.gitbooks.io/interview_exercise/content/stackoverflow-about-Python/"
+                      "Python%E4%B8%AD%E5%A6%82%E4%BD%95%E5%9C%A8%E4%B8%80%E4%B8%AA%E5%87%BD%E6%95%B0%E4%B8"
+                      "%AD%E5%8A%A0%E5%85%A5%E5%A4%9A%E4%B8%AA%E8%A3%85%E9%A5%B0%E5%99%A8.html")
+        my_answer = get_right_href(*test_data)
+        self.assertEqual(right_href, my_answer)
 
 
 if __name__ == "__main__":

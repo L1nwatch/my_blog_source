@@ -74,8 +74,7 @@ const.GITBOOK_CODES_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.GITBO
 const.GITBOOK_USER_NAME = "l1nwatch"
 const.GITBOOK_INFO = namedtuple("gitbook_info", ["git_address", "book_name"])
 const.GITBOOK_CODES_REPOSITORY = {
-    "pythonweb": const.GITBOOK_INFO("https://git.oschina.net/w4tch/PythonWeb.git", "《PythonWeb 开发:测试驱动开发》"),
-    # "violent-python": "https://git.oschina.net/w4tch/violent-python.git",
+    "pythonweb": const.GITBOOK_INFO("https://git.oschina.net/w4tch/PythonWeb.git", "《PythonWeb 开发: 测试驱动方法》"),
 }
 
 if __name__ == "__main__":

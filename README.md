@@ -32,6 +32,7 @@
 # Update
 #	============================== 2017 April ==============================
 2017.04.30
+    重构及完善 GitBook title 相关的格式、测试、代码实现等
     完善 GitBook CONF 配置文件, 新增书名信息, 以及 is_valid_git_address 判断函数等
     修正测试, 加入到 django 测试框架中, 补充没写的 test_do_nothing_when_exist
 2017.04.29

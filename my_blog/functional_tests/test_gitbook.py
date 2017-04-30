@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.04.30 补充一下创建测试数据后的引用
 2017.04.04 修正某个老是导致测试失败的 BUG(案例无问题)
 2017.03.10 删除 GitBook 测试, 老是失败搞得我都没耐心了(网速问题)
 2017.03.05 要开始写 GitBook 这个 APP 相关实现了, 于是先编测试文件
@@ -17,7 +18,7 @@ __author__ = '__L1n__w@tch'
 
 class GitBookSearchTest(FunctionalTest):
     def setUp(self):
-        self.create_gitbook_test_db_data()
+        self.gitbook1, self.gitbook2 = self.create_gitbook_test_db_data()
         super().setUp()
 
     @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
@@ -25,8 +26,6 @@ class GitBookSearchTest(FunctionalTest):
         """
         测试进行 All 搜索时能搜索到 GitBook
         """
-        test_gitbook = GitBook.objects.get(title="stackoverflow-about-Python/super与init方法")
-
         # Y 打开首页
         self.browser.get(self.server_url)
 
@@ -35,7 +34,7 @@ class GitBookSearchTest(FunctionalTest):
         search_button.send_keys("{}\n".format("避免直接使用父类的名字"))
 
         # Y 看到搜索结果中确实显示了某个 GitBook 以及对应行的内容
-        self.assertIn(test_gitbook.title, self.browser.page_source)
+        self.assertIn(self.gitbook2.title, self.browser.page_source)
         self.assertIn("避免直接使用父类的名字", self.browser.page_source)
         self.assertNotIn(const.EMPTY_ARTICLE_ERROR, self.browser.page_source)
 

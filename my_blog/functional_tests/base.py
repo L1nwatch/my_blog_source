@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 各个功能测试的基类
 
+2017.04.30 把创建 gitbook 测试数据返回给调用者
 2017.04.04 新增 proxy 设置
 2017.03.31 完善创建测试数据的代码, 但是还需要重构, 现在的冗余太多
 2017.03.07 给 FIREFOX 添加代理配置
@@ -213,25 +214,26 @@ while True:
 
     @staticmethod
     def create_gitbook_test_db_data():
-        GitBook.objects.create(
+        gitbook1 = GitBook.objects.create(
             book_name="test_book_name",
             href="http://{}/{}.html".format("test_book_name", "test"),
             md_file_name="test.md",
-            title="test_book_name/test",
+            title="《test_book_name》-test",
             content="test content",
         )
 
         # 下面这份为真实存在的数据
         with open(os.path.join(settings.BASE_DIR, "gitbook_notes", "tests", "super与init方法.md"), "r") as f:
             content = f.read()
-        GitBook.objects.create(
+        gitbook2 = GitBook.objects.create(
             book_name="interview_exercise",
             href=("https://l1nwatch.gitbooks.io/interview_exercise/content/"
                   "stackoverflow-about-Python/super%E4%B8%8Einit%E6%96%B9%E6%B3%95.html"),
             md_file_name="super与init方法.md",
-            title="stackoverflow-about-Python/super与init方法",
+            title="《stackoverflow-about-Python》-super与init方法",
             content=content,
         )
+        return gitbook1, gitbook2
 
 
 if __name__ == "__main__":
