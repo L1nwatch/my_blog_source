@@ -3,10 +3,11 @@
 # version: Python3.X
 """
 
+2017.05.01 开始实现 ajax 验证用户点击更新是否频繁的相关代码, 修正一下错误的测试代码
 2016.10.05 想要实现的功能, 自动获取 git 仓库上最新的笔记, 然后更新到数据库中
 """
 from .base import FunctionalTest
-from selenium.common.exceptions import NoSuchElementException, NoAlertPresentException
+from selenium.common.exceptions import NoSuchElementException, NoAlertPresentException, UnexpectedAlertPresentException
 from django.conf import settings
 from django.test.utils import override_settings
 from my_constant import const
@@ -14,18 +15,19 @@ from my_constant import const
 import time
 import shutil
 import unittest
+import os
 
 __author__ = '__L1n__w@tch'
 
 
-@override_settings(UPDATE_TIME_LIMIT=5)
+@override_settings(UPDATE_TIME_LIMIT=20)
 @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
 class AutoUpdateDatabaseTest(FunctionalTest):
     def setUp(self):
         super().setUp()
 
-        # 休息 UPDATE_TIME_LIMIT 时间
-        time.sleep(settings.UPDATE_TIME_LIMIT)
+        # # 休息 UPDATE_TIME_LIMIT 时间
+        # time.sleep(settings.UPDATE_TIME_LIMIT)
 
         self.test_url = "{host}/{path}"
 
@@ -59,42 +61,35 @@ class AutoUpdateDatabaseTest(FunctionalTest):
         # TODO: 还没实现
         return True
 
-    # TODO: 暂时没办法通过这个测试
-    @unittest.skipIf(True, "等学了 ajax 才能通过这个功能测试吧")
     def test_can_not_continue_click_update_db_button(self):
         """
         防止恶意点击更新数据库导致后台一直运行, 相邻两次点击之间存在时间间隔
-        :return:
         """
-        # Y 访问首页
-        self.browser.get(self.server_url)
-
         # Y 想当一个坏人, 试图利用更新数据库的按钮就进行 dos 攻击
-        update_note_button = self.browser.find_element_by_id("id_update_notes")
+        # Y 连续点击了 10 次更新数据库按钮
+        with self.assertRaises(UnexpectedAlertPresentException) as e:
+            for i in range(10):
+                update_note_button = self.browser.find_element_by_id("id_update_notes")
+                update_note_button.click()
 
-        # Y 点击了第一次更新数据库按钮
-        update_note_button.click()
-
-        # 紧接着 Y 又点击了第二次
-        update_note_button = self.browser.find_element_by_id("id_update_notes")
-        update_note_button.click()
-
-        # 但是发现网站弹出了个提示, 说是操作频繁, 于是只好点击确认
-        message = self.browser.switch_to_alert()
-        self.assertEqual(message.text, "操作频繁")
-        self.browser.switch_to_alert().accept()
+        self.assertIn("text: [-] 操作频繁, 现在无法执行更新操作", str(e.exception))
 
         # Y 等待 UPDATE_TIME_LIMIT s 后再次点击, 发现没有弹出窗口了
         time.sleep(settings.UPDATE_TIME_LIMIT + 5)
         update_note_button = self.browser.find_element_by_id("id_update_notes")
         update_note_button.click()
+
+        # 验证没有弹出窗口
         with self.assertRaises(NoAlertPresentException):
-            self.browser.switch_to_alert()
+            message = self.browser.switch_to_alert()
+            self.assertEqual(message.text, "[-] 操作频繁, 现在无法执行更新操作")
+            self.browser.switch_to_alert().accept()
 
     @classmethod
     def tearDownClass(cls):
         super().tearDownClass()
-        shutil.rmtree(const.NOTES_GIT_PATH)
+        if os.path.exists(const.NOTES_GIT_PATH):
+            shutil.rmtree(const.NOTES_GIT_PATH)
 
 
 if __name__ == "__main__":

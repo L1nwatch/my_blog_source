@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.01 完善一下验证更新时间的前台交互代码
 2017.03.30 给更新函数添加记日记功能
 2017.03.28 新增有关 Code 的搜索实现
 2017.03.26 新增搜索时拒绝非法字符搜索的相关功能
@@ -16,16 +17,16 @@
 2017.02.09 重构一下搜索函数, 跟日记搜索的功能合并一下
 2016.10.28 重构了一下模板传参, 封装成一个函数来处理了, 要不然每个视图都得专门处理传给模板的参数
 """
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponse
 from django.http import Http404
 from django.conf import settings
 
 from articles.models import Article
 from articles.forms import ArticleForm, BaseSearchForm
 from articles.templatetags.custom_filter import custom_markdown_for_tree_parse
-from articles.common_help_function import (clean_form_data, get_ip_from_django_request, search_keyword_in_model,
+from articles.common_help_function import (clean_form_data, search_keyword_in_model,
                                            create_search_result, get_right_content_from_file, get_context_data,
-                                           form_is_valid_and_ignore_exist_error, log_wrapper, sort_search_result)
+                                           form_is_valid_and_ignore_exist_error, log_wrapper)
 from my_constant import const
 from work_journal.views import do_journals_search
 from gitbook_notes.views import do_gitbooks_search
@@ -41,6 +42,30 @@ import logging
 LAST_UPDATE_TIME = None
 
 logger = logging.getLogger("my_blog.articles.views")
+
+
+@log_wrapper(str_format="尝试进行更新操作", level="info", logger=logger)
+def update_note_check_view(request):
+    """
+    用于前台判断是否现在可以执行更新操作
+    """
+    if request.method == "GET":
+        if is_valid_time_to_update():
+            return HttpResponse("Yes")
+        else:
+            return HttpResponse("No")
+    return HttpResponse("[-] Please Use GET Method")
+
+
+def is_valid_time_to_update():
+    """
+    判断现在是否可以进行更新操作
+    """
+    global LAST_UPDATE_TIME
+    now = datetime.datetime.today()
+    if LAST_UPDATE_TIME is not None and (now - LAST_UPDATE_TIME).total_seconds() < settings.UPDATE_TIME_LIMIT:
+        return False
+    return True
 
 
 @log_wrapper(str_format="访问主页", logger=logger)
@@ -288,13 +313,11 @@ def update_notes(request=None):
     notes_git_path = const.NOTES_GIT_PATH
 
     # settings.UPDATE_TIME_LIMIT s 内不允许重新点击
-    global LAST_UPDATE_TIME
-    now = datetime.datetime.today()
-    if LAST_UPDATE_TIME is not None and (now - LAST_UPDATE_TIME).total_seconds() < settings.UPDATE_TIME_LIMIT:
-        # TODO: 这里只是前台的判断无效了, 后台还是有判断的
-        return home_view(request) if request is not None else None
+    if is_valid_time_to_update():
+        global LAST_UPDATE_TIME
+        LAST_UPDATE_TIME = datetime.datetime.today()
     else:
-        LAST_UPDATE_TIME = now
+        return home_view(request) if request is not None else None
 
     # 将 git 仓库中的所有笔记更新到本地
     __get_latest_notes()

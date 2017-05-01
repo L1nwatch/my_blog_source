@@ -27,3 +27,25 @@
         {% endif %}
     </div>
 {% endblock %}
+
+{% block my_custom_js %}
+    <!-- 以下是处理频繁点击的 js -->
+    <script language="javascript" type="text/javascript">
+        // ajax 相关代码
+        $(document).ready(function () {
+            $("#id_update_notes").click(function () {
+                $.ajax({
+                    type: "get",
+                    url: "{% url "update_notes_check" %}",
+                    success: function (result) {
+                        if (result == "Yes") {
+                            window.location.href = "{% url 'update_notes' %}";
+                        } else {
+                            alert("[-] 操作频繁, 现在无法执行更新操作");
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}

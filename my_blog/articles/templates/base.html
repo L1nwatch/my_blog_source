@@ -49,18 +49,14 @@
 </body>
 
 
-<!-- 以下是处理频繁点击的 js -->
-<script>
-    function check_is_valid_click() {
-        var is_valid = "{{ is_valid_click }}" || null;
-        if (is_valid == "invalid_click") {
-            alert("操作频繁");
-        }
-    }
-</script>
+<script src="{% static 'jquery.min.js' %}" type="text/javascript"></script>
+
+<!-- 用于自定义的 js block, 比如限制频繁点击手动更新笔记按钮 -->
+{% block my_custom_js %}
+{% endblock %}
+
 
 <!-- 以下是管理回到顶部图标的 js -->
-<script src="{% static 'jquery.min.js' %}" type="text/javascript"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         var bt = $('#toolBackTop');
