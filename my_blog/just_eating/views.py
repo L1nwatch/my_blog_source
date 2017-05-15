@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.15 添加转盘页面选择地点功能
 2017.03.22 添加有关备选菜单的相关代码实现
 2017.03.10 将记录日记的装饰器装饰到对应视图上
 """
@@ -15,12 +16,8 @@ import logging
 
 logger = logging.getLogger("my_blog.just_eating.views")
 
-school_backup_list = ["快餐",
-                      "小米鸡排饭",
-                      "微辣香锅",
-                      "029餐厅",
-                      "川渝私房菜",
-                      "新综香干炒肉"]
+school_lunch_backup_list = ["快餐", "小米鸡排饭", "微辣香锅", "029餐厅", "川渝私房菜", "新综香干炒肉"]
+school_dinner_backup_list = ["就知道晚饭", "还是晚饭", "又是晚饭", "晚饭饭饭", "晚饭", "晚饭饭"]
 
 
 def create_home_menu():
@@ -78,4 +75,12 @@ def just_eating_home_view(request, eating_place):
 
 @log_wrapper(str_format="使用了随机选择食物的功能", logger=logger)
 def random_eating(request, eating_place):
-    return render(request, "just_eating_spinner.html", {"food_list": school_backup_list})
+    if eating_place == "school_lunch":
+        food_list = school_lunch_backup_list
+        place = "学校午饭"
+    elif eating_place == "school_dinner":
+        food_list = school_dinner_backup_list
+        place = "学校晚饭"
+    else:
+        raise Http404
+    return render(request, "just_eating_spinner.html", {"food_list": food_list, "eating_place": place})

@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.15 增加转盘页面选择地点功能的相关测试
 2017.03.22 添加一个转盘网页, 实现随机选择备选菜单的功能, 于是新增对应测试
 2017.02.26 开始更新在学校的吃饭菜单
 """
 import re
 
 from .base import FunctionalTest
+from just_eating.views import school_lunch_backup_list, school_dinner_backup_list
 
 __author__ = '__L1n__w@tch'
 
@@ -80,8 +82,12 @@ class JustEatingHomeViewTest(FunctionalTest):
         random_eating_button = self.browser.find_element_by_id("id_random_eating")
         random_eating_button.click()
 
-        # Y 发现界面显示了一个大转盘
+        # Y 发现界面显示了一个大转盘, 而且还有默认的菜单选项
         spinner = self.browser.find_element_by_id("id_spinner")
+        page_source = self.browser.page_source
+        self.assertTrue(all(
+            [x in page_source for x in school_lunch_backup_list]
+        ))
 
         # 它看到大转盘的指针颜色现在是无, 而且还有个 "Spin me" 按钮
         pointer_span = self.browser.find_element_by_id("id_pointer_span")
@@ -94,6 +100,35 @@ class JustEatingHomeViewTest(FunctionalTest):
 
         # Y 知道要吃啥了, 于是想返回首页
         self.browser.find_element_by_id("id_home_page").click()
+
+    def test_random_choice_can_select_place(self):
+        """
+        测试转盘页面可以根据地点不同而显示不同的菜单
+        """
+        # Y 进入了转盘页面
+        self.browser.find_element_by_id("id_random_eating").click()
+
+        # 它发现页面出现了大标题, 内容是学校午饭备选菜单
+        eating_what_title = self.browser.find_element_by_id("id_eating_what")
+        self.assertEqual("学校午饭", eating_what_title.text)
+        page_source = self.browser.page_source
+        self.assertTrue(all(
+            [x in page_source for x in school_lunch_backup_list]
+        ))
+        current_url = self.browser.current_url
+
+        # Y 现在想要知道在学校应该吃什么晚饭, 不是午饭, 于是 Y 选择了地点切换按钮
+        # Y 选中了学校晚饭这一个选项
+        self.browser.execute_script('document.getElementById("id_school_dinner").click()')
+
+        # Y 发现页面重定向了, 而且页面大标题也改了, 菜单内容也改了
+        self.assertNotEqual(self.browser.current_url, current_url)
+        eating_what_title = self.browser.find_element_by_id("id_eating_what")
+        self.assertEqual("学校晚饭", eating_what_title.text)
+        page_source = self.browser.page_source
+        self.assertTrue(all(
+            [x in page_source for x in school_dinner_backup_list]
+        ))
 
 
 if __name__ == "__main__":

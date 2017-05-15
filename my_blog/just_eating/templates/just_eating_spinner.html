@@ -128,6 +128,7 @@
           href="{% static "just_eating/spinner_500.css" %}">
     <script src="{% static "just_eating/prefixfree.min.js" %}"></script>
     <link rel="stylesheet" href="{% static "just_eating/menu_bar_style.css" %}">
+    <link rel="stylesheet" href="{% static "just_eating/spinner.css" %}">
 
 </head>
 
@@ -135,7 +136,16 @@
 
 {% include "menu_bar.html" %}
 
-<h1>吃啥?</h1>
+<div id="id_spainner_info">
+    <div id="id_eating_places" class="dropdown">
+        <button id="id_eating_what" class="dropbtn">{{ eating_place }}</button>
+        <div class="dropdown-content">
+            <a id="id_school_lunch" href="{% url "random_eating" eating_place='school_lunch' %}">学校午饭</a>
+            <a id="id_school_dinner" href="{% url "random_eating" eating_place='school_dinner' %}">学校晚饭</a>
+        </div>
+    </div>
+</div>
+
 
 <div class="spinner" id="id_spinner" style="color: #000000;">
     <div class="point"></div>
@@ -146,6 +156,8 @@
 </div>
 
 <button id="id_spin_me">Spin me</button>
+
+
 <br/>
 <script src='{% static "jquery.min.js" %}'></script>
 
