@@ -33,7 +33,7 @@ class LogPacker:
 
         # 还没为昨天打包过, 则执行打包操作
         if not os.path.exists(zip_file_path):
-            with zipfile.ZipFile(zip_file_name, "w") as my_zip:
+            with zipfile.ZipFile(zip_file_path, "w") as my_zip:
                 for each_file in (x for x in os.listdir(self.log_path) if x.endswith(".log")):
                     file_path = os.path.join(self.log_path, each_file)
                     my_zip.write(file_path)
