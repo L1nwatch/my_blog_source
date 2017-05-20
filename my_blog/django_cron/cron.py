@@ -29,7 +29,7 @@ class AutoUpdateNotes(CronJobBase):
 
     @staticmethod
     def do():
-        log_path = os.path.join(os.path.dirname(settings.BASE_DIR), "log")
+        log_path = os.path.join(os.path.dirname(os.path.dirname(settings.BASE_DIR)), "log")
         log_deal = LogPacker(log_path)
         now = datetime.datetime.today()
         jobs = list()

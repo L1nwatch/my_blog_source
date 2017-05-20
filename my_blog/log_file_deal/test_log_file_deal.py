@@ -51,7 +51,7 @@ class TestLogPacker(unittest.TestCase):
             raise RuntimeError("[-] {} 不是标准的 ZIP 文件".format(file_path))
 
     def test_run(self):
-        # 原本不存在 日期_log.gz 的压缩包
+        # 原本不存在 日期_log.zip 的压缩包
         self.assertFalse(os.path.exists(self.log_zip_name))
 
         self.lp.run()
