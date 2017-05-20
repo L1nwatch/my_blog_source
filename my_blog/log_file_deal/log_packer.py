@@ -36,7 +36,7 @@ class LogPacker:
             with zipfile.ZipFile(zip_file_path, "w") as my_zip:
                 for each_file in (x for x in os.listdir(self.log_path) if x.endswith(".log")):
                     file_path = os.path.join(self.log_path, each_file)
-                    my_zip.write(file_path,compress_type=zipfile.ZIP_DEFLATED)
+                    my_zip.write(file_path, each_file, compress_type=zipfile.ZIP_DEFLATED)
                     with open(file_path, "w") as f:
                         pass
 
