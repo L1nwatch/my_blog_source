@@ -32,9 +32,9 @@ function clearField(e) {
     a.value = "", a.focus()
 }
 
-function selectAll(e) {
-    get(e).focus(), get(e).select()
-}
+// function selectAll(e) {
+//     get(e).focus(), get(e).select()
+// }
 
 var hc = get("highlightCode"),
     sa = get("stripAllComment"),
@@ -86,3 +86,8 @@ $(document).ready(function () {
         });
     });
 });
+
+// 复制到剪切板的代码
+(function () {
+    new Clipboard('#id_copy_button');
+})();

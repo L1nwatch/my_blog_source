@@ -29,7 +29,7 @@
         <div class="button-group">
             <button id="id_translate_button">转换</button>
             <button onclick="clearField(&quot;id_input_box&quot;);">Clear Input</button>
-            <button onclick="selectAll(&quot;id_output_box&quot;);">Select Output</button>
+            <button id="id_copy_button" data-clipboard-target="#id_output_box">Copy Output</button>
         </div>
 
         <textarea id="id_output_box" autofocus="" placeholder="Result will show here..."
@@ -40,6 +40,7 @@
     </div>
 </div>
 
+<script src="{% static "toolhub/js/clipboard.min.js" %}"></script>
 <script src='{% static "jquery.min.js" %}'></script>
 <script src="{% static "toolhub/js/github_picture_translate_tool.js" %}"></script>
 
