@@ -3,18 +3,18 @@
 # version: Python3.X
 """ 为视图编写相关测试代码
 
+2017.05.21 修改 common_module 路径
 2017.04.04 重构一下创建测试数据的代码
 2017.03.31 修正一下 code 搜索出来的链接不正确的问题, 完善对应测试
 2017.03.30 编写有关搜索部分的相关测试
 2017.03.29 编写有关更新代码块数据库的相关测试
 """
 from articles.models import Article
-from articles.tests.basic_test import BasicTest
 from code_collect.models import CodeCollect
-from my_constant import const
-
 from code_collect.views import (code_collect, get_all_code_type_in_note, parse_query,
                                 get_note_type, get_all_code_area, search_code_keyword_in_note)
+from common_module.tests.basic_test import BasicTest
+from my_constant import const
 
 __author__ = '__L1n__w@tch'
 

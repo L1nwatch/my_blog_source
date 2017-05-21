@@ -18,9 +18,13 @@
 
                 {% for post in post_list %}
                     <div class="search-result">
-                        <p class="search-result-box-title">
-                            <a id="id_search_result_title" href="/{{ post.type }}/{{ post.id }}/">{{ post.title }}</a>
-                        </p>
+                        <form action="/{{ post.type }}/{{ post.id }}/" class="search-result-box-title" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="visited" value="True"/>
+                            <a id="id_search_result_title" href="#"
+                               onclick="this.parentNode.submit()">{{ post.title }}</a>
+                        </form>
+
                         <div class="search-result-box">
                             <table class="search-result-box-table">
                                 <tbody>

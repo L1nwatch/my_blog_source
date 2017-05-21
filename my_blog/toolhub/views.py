@@ -2,17 +2,18 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.21 修改 common_module 路径
 2017.03.25 新增 form, 更改 ajax 为 post 请求
 2017.03.24 新增 toolhub 这个 APP
 """
 import logging
-
-from toolhub.forms import TextareaForm
-from articles.common_help_function import log_wrapper
-
-from django.shortcuts import render
-from django.http import HttpResponse
 from urllib.parse import quote
+
+from django.http import HttpResponse
+from django.shortcuts import render
+
+from common_module.common_help_function import log_wrapper
+from toolhub.forms import TextareaForm
 
 __author__ = '__L1n__w@tch'
 

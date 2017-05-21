@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.21 修改 common_module 路径
 2017.04.30 新增一个 is_valid_git_address 判断函数
 2017.04.29 修改 log_wrapper, 强制使用关键字参数 + 完善元信息
 2017.03.30 对 log 添加没有 request 时的支持
@@ -148,20 +149,15 @@ def clean_form_data(data):
     return data.strip()
 
 
-def sort_search_result(result_list, keyword_set):
+def sort_search_result(result_list):
     """
-    对搜索结果进行排序
+    对搜索结果进行排序, 按照点击次数来排序
     :param result_list: list(), 每一个元素是一个 const.ARTICLE_STRUCTURE 的命名元组
-    :param keyword_set: set(), 比如 {"test"}, 用户查询的关键词集合
     :return: list(), 排完序的结果, 每一个元素是一个 const.ARTICLE_STRUCTURE
     """
 
     def __sorted_function(x):
-        total_count = 0
-
-        for each_keyword in keyword_set:
-            total_count += model_dict[x.type].objects.get(id=x.id).content.lower().count(each_keyword.lower())
-        return total_count
+        return model_dict[x.type].objects.get(id=x.id).click_times
 
     result_list = sorted(result_list, key=__sorted_function, reverse=True)
     return result_list
@@ -213,7 +209,7 @@ def create_search_result(article_list, keyword_set, search_type):
         result_list.append(
             const.ARTICLE_STRUCTURE(each_article.id, each_article.title, result_content_list, search_type))
 
-    return sort_search_result(result_list, raw_keyword_set)
+    return sort_search_result(result_list)
 
 
 def get_ip_from_django_request(request):

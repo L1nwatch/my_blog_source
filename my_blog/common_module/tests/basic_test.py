@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 作为测试基类
 
+2017.05.21 为 Article 构造函数添加字段 click_times
 2017.04.03 重构一下创建测试数据的代码, 将其分离出来单独作为一个基类了
 """
 import datetime
@@ -22,6 +23,11 @@ from my_constant import const
 
 __author__ = '__L1n__w@tch'
 
+search_url = "/search/"
+article_display_url = "/articles/{}/"
+journal_display_url = "/work_journal/{}/"
+gitbook_display_url = "/gitbook_notes/{}/"
+
 
 class BasicTest(TestCase):
     test_file_path = os.path.join(settings.BASE_DIR, "articles", "tests")
@@ -38,6 +44,16 @@ class BasicTest(TestCase):
     journal_test_md_file_name = "2017-02-03-任务情况总结测试笔记.md"  # 注意这里不能有空格, 要不然 git 命令就失败了...
     journals_git_path = os.path.join(const.NOTES_PATH_PARENT_DIR, const.JOURNALS_PATH_NAME)
     journal_test_md_file_path = os.path.join(journals_git_path, journal_test_md_file_name)
+
+    @staticmethod
+    def get_random_string(length):
+        """
+        获得一个随机的字符串
+        :param length: int(), 字符串长度, 比如 10
+        :return: str(), 随机字符串, 比如 "absdadsdsa"
+        """
+        result = "".join([random.choice(string.ascii_letters) for j in range(length)])
+        return result
 
     @staticmethod
     def create_multiple_articles(article_number=None):
@@ -64,15 +80,16 @@ class BasicTest(TestCase):
             data = f.read()
         return data
 
-    @staticmethod
-    def create_article(title=None, content=None, category=None):
+    def create_article(self, title=None, content=None, category=None, click_times=None):
         if not title:
-            title = "".join([random.choice(string.ascii_letters) for j in range(10)])
+            title = "{}_{}".format("articles", self.get_random_string(10))
         if not content:
             content = "content"
         if not category:
             category = "category"
-        return Article.objects.create(title=title, content=content, category=category)
+        if not click_times:
+            click_times = 0
+        return Article.objects.create(title=title, content=content, category=category, click_times=click_times)
 
     def parse_article_git_test_md_file_name(self):
         article = self.article_git_test_md_file_name[:-len(".md")]  # 去掉 .md
@@ -86,31 +103,33 @@ class BasicTest(TestCase):
 
         return test_journal_title, test_journal_content
 
-    @staticmethod
-    def create_journal(title=None, content=None, date=None, category=None):
+    def create_journal(self, title=None, content=None, date=None, category=None, click_times=None):
         if not title:
-            title = "".join([random.choice(string.ascii_letters) for j in range(10)])
+            title = self.get_random_string(10)
         if not content:
             content = "test journal"
         if not date:
-            date = datetime.datetime.today()
+            date = datetime.datetime.today() + datetime.timedelta(days=random.randint(0, 365))
         if not category:
             category = "category"
+        if not click_times:
+            click_times = 0
+        return Journal.objects.create(title=title, date=date, content=content, category=category,
+                                      click_times=click_times)
 
-        return Journal.objects.create(title=title, date=date, content=content, category=category)
-
-    @staticmethod
-    def create_gitbook(book_name=None, href=None, md_file_name=None, title=None, content=None):
+    def create_gitbook(self, book_name=None, href=None, md_file_name=None, title=None, content=None, click_times=None):
         if not book_name:
             book_name = "test_book_name"
         if not href:
-            href = "http://{}/{}.html".format("test_book_name", "test")
+            href = "http://{}/{}.html".format("test_book_name", self.get_random_string(10))
         if not md_file_name:
             md_file_name = "test.md"
         if not title:
-            title = "test_book_name/test"
+            title = "test_book_name/{}".format(self.get_random_string(10))
         if not content:
             content = "test content"
+        if not click_times:
+            click_times = 0
 
         gitbook = GitBook.objects.create(
             book_name=book_name,
@@ -118,6 +137,7 @@ class BasicTest(TestCase):
             md_file_name=md_file_name,
             title=title,
             content=content,
+            click_times=click_times,
         )
 
         return gitbook
@@ -147,6 +167,44 @@ class BasicTest(TestCase):
         if not note:
             note = self.create_article()
         return CodeCollect.objects.create(code_type=code_type, note=note)
+
+    def create_func_map(self, types):
+        """
+        对创建函数进行映射
+        :param types: str(), 比如 "articles"
+        :return: func, 比如 create_article
+        """
+        return {
+            "articles": self.create_article,
+            "journals": self.create_journal,
+            "gitbooks": self.create_gitbook,
+        }[types]
+
+    @staticmethod
+    def model_map(types):
+        """
+        对 model 进行映射
+        :param types: str(), 比如 "articles"
+        :return: model, 比如 Article
+        """
+        return {
+            "articles": Article,
+            "journals": Journal,
+            "gitbooks": GitBook,
+        }[types]
+
+    @staticmethod
+    def display_url_map(types):
+        """
+        对显示笔记的 URL 进行映射
+        :param types: str(), 比如 "articles"
+        :return: str, 比如 "/articles/{}/"
+        """
+        return {
+            "articles": article_display_url,
+            "journals": journal_display_url,
+            "gitbooks": gitbook_display_url,
+        }[types]
 
 
 if __name__ == "__main__":

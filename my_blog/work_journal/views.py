@@ -2,25 +2,25 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.21 新增搜索结果点击次数排序的功能实现
 2017.03.30 给更新函数添加记日记功能
 2017.03.26 重构一下搜索代码, form data 合法性在上层做过了, 这里就不做了
 2017.03.10 将记录日记的装饰器装饰到对应视图上
 2017.03.08 开始进行部分重构工作
 """
 
-from django.shortcuts import render
-from .models import Journal
-from .forms import JournalForm
-
-from articles.common_help_function import (get_context_data, get_right_content_from_file, get_ip_from_django_request,
-                                           form_is_valid_and_ignore_exist_error, search_keyword_in_model,
-                                           create_search_result, clean_form_data, log_wrapper)
-from my_constant import const
-
-import re
 import datetime
-import os
 import logging
+import os
+import re
+
+from django.shortcuts import render
+
+from common_module.common_help_function import (get_context_data, get_right_content_from_file, search_keyword_in_model,
+                                                create_search_result, clean_form_data, log_wrapper)
+from my_constant import const
+from .forms import JournalForm
+from .models import Journal
 
 logger = logging.getLogger("my_blog.work_journal.views")
 
@@ -38,6 +38,11 @@ def journal_display(request, journal_id):
     :param journal_id: 请求的日记 id
     """
     journal = Journal.objects.get(id=journal_id)
+
+    if request.method == "POST" and request.POST["visited"] == "True":
+        journal.click_times += 1
+        journal.save()
+
     return render(request, 'journal_display.html', get_context_data(request, "journals", {"post": journal}))
 
 

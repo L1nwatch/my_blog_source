@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 测试 gitbook_notes 这个 app 下的视图函数
 
+2017.05.21 修改 common_module 路径
 2017.04.30 修正大小写导致判定失误的问题, 补充完善有关 GitBook 书名的测试代码
 2017.04.04 重构有关创建测试数据的代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
@@ -13,20 +14,19 @@
 2017.01.28 增加了测试完毕之后删除测试文件夹的代码
 2016.10.30 对更新笔记的视图函数进行测试
 """
-from functional_tests.base import FunctionalTest
-
-from articles.tests.basic_test import BasicTest
-from my_constant import const
-from gitbook_notes.models import GitBook
-from gitbook_notes.views import (get_title_list_from_summary, get_title_and_md_file_name,
-                                 get_right_href, format_title)
+import os
+import random
+import shutil
+import unittest
 
 from django.test import override_settings
 
-import os
-import unittest
-import shutil
-import random
+from common_module.tests.basic_test import BasicTest, gitbook_display_url
+from functional_tests.base import FunctionalTest
+from gitbook_notes.models import GitBook
+from gitbook_notes.views import (get_title_list_from_summary, get_title_and_md_file_name,
+                                 get_right_href, format_title)
+from my_constant import const
 
 __author__ = '__L1n__w@tch'
 
@@ -193,7 +193,7 @@ class GitBookSearchViewTest(BaseCommonTest):
 
 
 class GitBookPageDisplayTest(BaseCommonTest):
-    unique_url = "/gitbook_notes/{}/"
+    unique_url = gitbook_display_url
 
     def test_display_href_redirect(self):
         """

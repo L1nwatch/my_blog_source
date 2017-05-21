@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.21 添加按点击次数排序的相关代码
 2017.04.30 由于 gitbook 格式更改, 代码也做相应修改
 2017.03.30 给更新函数添加记日记功能
 2017.03.26 重构一下搜索代码, form data 合法性在上层做过了, 这里就不做了
@@ -11,20 +12,18 @@
 2017.03.07 新增 form data 的清理工作
 2017.03.05 开始编写 GitBook 这个 APP
 """
+import logging
 import os
 import re
-import logging
 import urllib.parse
 
-# 以下为 django 相关的库
-
-from articles.common_help_function import (get_ip_from_django_request, create_search_result, search_keyword_in_model,
-                                           clean_form_data, get_context_data, log_wrapper, is_valid_git_address)
-from articles.forms import BaseSearchForm
-from my_constant import const
-from gitbook_notes.models import GitBook
-
 from django.shortcuts import redirect
+
+from articles.forms import BaseSearchForm
+from common_module.common_help_function import (get_ip_from_django_request, create_search_result, search_keyword_in_model,
+                                                clean_form_data, get_context_data, log_wrapper, is_valid_git_address)
+from gitbook_notes.models import GitBook
+from my_constant import const
 
 logger = logging.getLogger("my_blog.gitbooks.views")
 
@@ -284,4 +283,9 @@ def gitbook_display(request, gitbook_id):
     """
     gitbook = GitBook.objects.get(id=gitbook_id)
     logger.info("ip: {} 查看 gitbook: {}".format(get_ip_from_django_request(request), gitbook.title))
+
+    if request.method == "POST" and request.POST["visited"] == "True":
+        gitbook.click_times += 1
+        gitbook.save()
+
     return redirect(gitbook.href)

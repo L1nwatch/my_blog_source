@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 负责 work_journal 的 view 测试
 
+2017.05.21 修改 common_module 路径
 2017.04.04 重构有关创建测试数据的代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 2017.03.17 重构一下测试用的 md 文件的路径
@@ -10,19 +11,19 @@
 2017.02.07 添加更新的时候判断文件名的合法性的单元测试
 2017.02.03 开始写这个 APP, 需要新建单元测试
 """
-import unittest
-import shutil
-import os
 import datetime
+import os
+import shutil
+import unittest
 
+from django.test import override_settings
+
+from articles.views import get_right_content_from_file
+from common_module.tests.basic_test import BasicTest, journal_display_url
+from my_constant import const
 from work_journal.forms import JournalForm
 from work_journal.models import Journal
 from work_journal.views import is_valid_update_md_file, extract_date_from_md_file
-from articles.views import get_right_content_from_file
-from articles.tests.basic_test import BasicTest
-from my_constant import const
-
-from django.test import override_settings
 
 __author__ = '__L1n__w@tch'
 
@@ -100,7 +101,7 @@ class JournalHomeViewTest(BaseCommonTest):
 
 
 class JournalDisplayViewTest(BaseCommonTest):
-    unique_url = "/work_journal/{}/"
+    unique_url = journal_display_url
 
     def test_use_right_template(self):
         """

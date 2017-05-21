@@ -2,17 +2,18 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.21 修改 common_module 路径
 2017.05.15 添加转盘页面选择地点功能
 2017.03.22 添加有关备选菜单的相关代码实现
 2017.03.10 将记录日记的装饰器装饰到对应视图上
 """
+import logging
+
 from django.http import Http404
 from django.shortcuts import render
 
-from articles.common_help_function import log_wrapper
+from common_module.common_help_function import log_wrapper
 from my_constant import const
-
-import logging
 
 logger = logging.getLogger("my_blog.just_eating.views")
 

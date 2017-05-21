@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.05.21 新增两个关于搜索结果按照点击次数排序的测试
 2017.05.21 重构一下, 把所有测试放到同一个类中不好看
 2017.04.30 重新定义搜索结果中 GitBook title 的样式, 另外重构一下代码
 2017.03.31 手动调试发现搜索 code 时进入日记有问题, 补充对应测试代码
@@ -91,6 +92,14 @@ class BasicSearch(FunctionalTest):
         """
         self.do_choose_search("Code", search_content)
 
+    def do_all_search(self, search_content):
+        """
+        进行 ALL 搜索
+        :param search_content: str(), 要搜索的关键字
+        :return: None
+        """
+        self.do_choose_search("All", search_content)
+
     @staticmethod
     def create_multiple_articles_with_or_without_code():
         has_code_content = """
@@ -109,37 +118,76 @@ class TestSearchSort(BasicSearch):
     """
     主要是测试搜索结果排序问题
     """
+
     def setUp(self):
         super().setUp()
 
         # 创建测试数据
         self._create_articles_test_db_data()
         self._create_work_journal_test_db_data()
-        self.test_gitbooks = list(self.create_gitbook_test_db_data())
 
     def test_search_result_sort(self):
         """
-        测试搜索结果依赖于单词的出现次数
+        测试搜索结果依赖于点击次数
         """
         # Y 打开首页, 发现了搜索按钮, 于是搜索 test
-        self.browser.get(self.server_url)
-        search_button = self.browser.find_element_by_id("id_search")
-        search_button.send_keys("{}\n".format("test"))
+        self.do_all_search("test")
 
-        # 搜索结果出来了, Y 发现笔记《xxx》排在第一位, 而且点开一看, test 出现的次数有 x 次
+        # 搜索结果出来了, Y 发现笔记《xxx》排在第一位, 《yyy》排在第二位
         search_result = self.browser.find_elements_by_id("id_search_result_title")
-        search_result[0].click()  # 对应 Article
+        first_time_first_title = search_result[0].text
+        first_time_second_title = search_result[1].text
 
-        # Y 返回去, 点击第 2 篇笔记, 发现 test 出现的次数有 x - 1 次
-        first_test_times = self.browser.page_source.count("test")
-        self.browser.back()
+        # 两份结果的标题不一样
+        self.assertNotEqual(first_time_first_title, first_time_second_title)
 
+        # Y 觉得第二个结果才是自己想要的, 于是点进去第二个结果进行查看
+        search_result[1].click()  # 对应 Article
+
+        # Y 想知道自己的点击次数会不会影响搜索结果排序, 于是狂点了 10 下
+        for i in range(10):
+            self.browser.back()
+            search_result = self.browser.find_elements_by_id("id_search_result_title")
+            search_result[1].click()
+
+        # 点完之后, Y 回到首页, 再次搜索 test
+        self.do_all_search("test")
+
+        # 它发现果然排名变了, 刚才的第二个变成了现在的第一个, 刚才的第一个变成了第二个
         search_result = self.browser.find_elements_by_id("id_search_result_title")
-        search_result[1].click()  # 对应 Journal
-        second_test_times = self.browser.page_source.count("test")
+        second_time_first_title = search_result[0].text
+        second_time_second_title = search_result[1].text
+        self.assertEqual(first_time_first_title, second_time_second_title)
+        self.assertEqual(first_time_second_title, second_time_first_title)
 
-        # 原来搜索结果有按出现次数进行排序的, Y 很满意
-        self.assertTrue(first_test_times > second_test_times)
+    def test_search_result_sort_will_not_effect_by_url_visit(self):
+        """
+        测试搜索结果的排序不会因为 URL 的直接访问而改变
+        """
+        # Y 打开首页, 搜索关键词 test
+        self.do_all_search("test")
+
+        # 它发现结果出来了两篇文章, 第一篇是 《xxx》, 第二篇是 《yyy》
+        search_result = self.browser.find_elements_by_id("id_search_result_title")
+        first_time_first_title = search_result[0].text
+        first_time_second_title = search_result[1].text
+
+        # 它记下了第二篇的 URL, 想看看是不是能够通过刷 URL 访问量来提高第二篇的排名
+        first_time_second_url = search_result[1].get_attribute("href")
+
+        # Y 一口气访问了第二篇 10 次
+        for i in range(10):
+            self.browser.get(first_time_second_url)
+
+        # Y 再次搜索关键词 test
+        self.do_all_search("test")
+
+        # 它发现结果居然还是一样, 第二篇的排名依旧是第二
+        search_result = self.browser.find_elements_by_id("id_search_result_title")
+        second_time_first_title = search_result[0].text
+        second_time_second_title = search_result[1].text
+        self.assertEqual(first_time_first_title, second_time_first_title)
+        self.assertEqual(first_time_second_title, second_time_second_title)
 
 
 class TestSearchButton(BasicSearch):

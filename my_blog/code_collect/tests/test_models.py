@@ -3,6 +3,7 @@
 # version: Python3.X
 """  测试 code_collect 对应的 model
 
+2017.05.21 修改 common_module 路径
 2017.04.04 重构一下创建测试数据的代码
 2017.03.28 新增 APP, 编写相关 model 测试
 """
@@ -10,8 +11,7 @@
 from django.db.utils import IntegrityError
 
 from code_collect.models import CodeCollect
-from articles.models import Article
-from articles.tests.basic_test import BasicTest
+from common_module.tests.basic_test import BasicTest
 
 __author__ = '__L1n__w@tch'
 

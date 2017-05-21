@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.21 添加字段 click_times, 用来表示访问次数的, 因此也添加相关 model 测试
 2017.04.03 重构一下创建测试数据的代码, 将其分离出来单独作为一个基类了
 2017.03.15 要提供搜索选项的功能, 需要重构一下搜索的 Form, 甚至连对应的 Model 都要修改, 于是编写测试
 2016.10.28 将原来的时间改为创建时间, 另外新增一个更新时间的字段, 所以需要进行 model 测试
 """
 
-from articles.tests.basic_test import BasicTest
+from common_module.tests.basic_test import BasicTest
 from my_constant import const
 
 __author__ = '__L1n__w@tch'
@@ -79,6 +80,13 @@ class ArticleModelTest(BasicTest):
         update_time = "{}/{}/{}/{}".format(new_article.update_time.year, new_article.update_time.month,
                                            new_article.update_time.day, new_article.update_time.hour)
         self.assertEqual(create_time, update_time)
+
+    def test_has_default_visited_times(self):
+        """
+        测试创建文章之后初始的访问次数应该为 0
+        """
+        new_article = self.create_article()
+        self.assertEqual(new_article.click_times, 0)
 
 
 if __name__ == "__main__":

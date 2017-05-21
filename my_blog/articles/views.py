@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.21 实现搜索结果按照点击次数排序的相关视图代码
+2017.05.21 日志记录的格式有问题, 修正一下
 2017.05.01 完善一下验证更新时间的前台交互代码
 2017.03.30 给更新函数添加记日记功能
 2017.03.28 新增有关 Code 的搜索实现
@@ -17,27 +19,27 @@
 2017.02.09 重构一下搜索函数, 跟日记搜索的功能合并一下
 2016.10.28 重构了一下模板传参, 封装成一个函数来处理了, 要不然每个视图都得专门处理传给模板的参数
 """
-from django.shortcuts import render, redirect, HttpResponse
-from django.http import Http404
-from django.conf import settings
-
-from articles.models import Article
-from articles.forms import ArticleForm, BaseSearchForm
-from articles.templatetags.custom_filter import custom_markdown_for_tree_parse
-from articles.common_help_function import (clean_form_data, search_keyword_in_model,
-                                           create_search_result, get_right_content_from_file, get_context_data,
-                                           form_is_valid_and_ignore_exist_error, log_wrapper)
-from my_constant import const
-from work_journal.views import do_journals_search
-from gitbook_notes.views import do_gitbooks_search
-from code_collect.views import do_code_search
+import datetime
+import logging
+import os
+import re
+import traceback
 
 import md2py
-import datetime
-import traceback
-import re
-import os
-import logging
+from django.conf import settings
+from django.http import Http404
+from django.shortcuts import render, redirect, HttpResponse
+
+from articles.forms import ArticleForm, BaseSearchForm
+from articles.models import Article
+from articles.templatetags.custom_filter import custom_markdown_for_tree_parse
+from code_collect.views import do_code_search
+from common_module.common_help_function import (clean_form_data, search_keyword_in_model,
+                                                create_search_result, get_right_content_from_file, get_context_data,
+                                                form_is_valid_and_ignore_exist_error, log_wrapper, sort_search_result)
+from gitbook_notes.views import do_gitbooks_search
+from my_constant import const
+from work_journal.views import do_journals_search
 
 LAST_UPDATE_TIME = None
 
@@ -87,6 +89,10 @@ def article_display(request, article_id):
         toc_data = _parse_markdown_file(db_data.content)
     except Article.DoesNotExist:
         raise Http404
+
+    if request.method == "POST" and request.POST["visited"] == "True":
+        db_data.click_times += 1
+        db_data.save()
 
     return render(request, "article.html",
                   get_context_data(request, "articles",
@@ -183,7 +189,7 @@ def _parse_markdown_file(markdown_content):
                 result_list = __recursive_create(toc, root_level)
                 return result_list
     except TypeError:
-        logging.error("[- 解析 Markdown 出错, 针对内容: {}".format(markdown_content[:display_length]))
+        logging.error("[-] 解析 Markdown 出错, 针对内容: {}".format(markdown_content[:display_length]))
     except Exception as e:
         traceback.print_exc()
         logging.error("[-] 解析 Markdown 出错, 针对内容: {}".format(markdown_content[:display_length]))
@@ -253,6 +259,7 @@ def blog_search(request):
             context_data = do_code_search(request)
 
         if context_data is not None and len(context_data) > 0:
+            context_data["post_list"] = sort_search_result(context_data["post_list"])
             return render(request, 'search_result.html', context_data)
 
     return redirect("home")

@@ -2,24 +2,24 @@
 # version: Python3.X
 """ code_collect 的视图函数
 
+2017.05.21 修改 common_module 路径
 2017.03.31 修正一下 code 搜索出来的链接不正确的问题
 2017.03.30 继续完成 do_code_search 相关代码, 给更新函数添加记日记功能
 2017.03.29 新增 do_code_search 视图函数, 不过还没编写对应的测试, 先把 code_collect 的测试通过了再说吧
 2017.03.28 新增一个 code_collect 视图函数, 用于更新数据库信息
 """
-from articles.models import Article, BaseModel
-from articles.forms import BaseSearchForm
-from gitbook_notes.models import GitBook
-from work_journal.models import Journal
-from code_collect.models import CodeCollect
-from my_constant import const
-
-from django.shortcuts import redirect
-from articles.common_help_function import (log_wrapper, get_ip_from_django_request,
-                                           clean_form_data, get_context_data, create_search_result)
-
 import logging
 import re
+
+from django.shortcuts import redirect
+
+from articles.forms import BaseSearchForm
+from articles.models import Article, BaseModel
+from code_collect.models import CodeCollect
+from common_module.common_help_function import (log_wrapper, clean_form_data, get_context_data)
+from gitbook_notes.models import GitBook
+from my_constant import const
+from work_journal.models import Journal
 
 logger = logging.getLogger("my_blog.code_collect.views")
 

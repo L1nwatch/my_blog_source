@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.21 添加字段 click_times, 用来表示访问次数的
 2017.03.15 要提供搜索选项的功能, 需要重构一下搜索的 Form, 甚至连对应的 Model 都要修改
 """
 
@@ -37,6 +38,7 @@ class BaseModel(models.Model):
     title = models.CharField(max_length=100, blank=False, unique=True)  # 文章或日记的题目
     category = models.CharField(max_length=50)  # 博客分类
     content = models.TextField(null=True, default=str())  # 博客文章正文
+    click_times = models.IntegerField(default=0)  # 被访问次数
 
     # python3使用__str__
     def __str__(self):

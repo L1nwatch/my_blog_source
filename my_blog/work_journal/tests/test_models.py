@@ -3,13 +3,14 @@
 # version: Python3.X
 """ 负责 work_journal 的 Model 测试
 
+2017.05.21 修改 common_module 路径
 2017.04.04 重构创建测试数据相关的代码
 2017.02.07 需要给日记添加日期, 进行测试
 2017.02.03 新建了 MODEL, 虽然不知道要测试啥, 就简单写个字段测试吧
 """
 import datetime
 
-from articles.tests.basic_test import BasicTest
+from common_module.tests.basic_test import BasicTest
 
 __author__ = '__L1n__w@tch'
 

@@ -2,23 +2,23 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.21 将该文件移到共同测试模块
 2017.04.30 新增有关 git 地址的测试代码
 2017.03.26 新增有关搜索输入的测试代码
 2017.03.23 新增有关搜索结果排序的测试
 2017.03.07 为共有函数进行测试编写
 """
-import string
 import random
+import string
 
-from django.test import TestCase
+from common_module.common_help_function import clean_form_data, sort_search_result, data_check, is_valid_git_address
 from my_constant import const
-from articles.common_help_function import clean_form_data, sort_search_result, data_check, is_valid_git_address
-from articles.models import Article
+from .basic_test import BasicTest
 
 __author__ = '__L1n__w@tch'
 
 
-class TestCommonHelpFunc(TestCase):
+class TestCommonHelpFunc(BasicTest):
     def test_clean_form_data(self):
         # 测试 "aa ", 应该得到 "aa"
         test_data = "aa "
@@ -45,9 +45,12 @@ class TestCommonHelpFunc(TestCase):
         self.assertEqual(right_answer, my_answer)
 
     def test_sort_search_result(self):
-        test_article1 = Article.objects.create(title="test 3rd", content="test")
-        test_article2 = Article.objects.create(title="test 1st", content="test test tEsT")
-        test_article3 = Article.objects.create(title="test 2nd", content="tESt test")
+        """
+        测试排序结果的函数是否排序正确
+        """
+        test_article1 = self.create_article(click_times=1)
+        test_article2 = self.create_article(click_times=3)
+        test_article3 = self.create_article(click_times=2)
 
         test_result_list = [
             const.ARTICLE_STRUCTURE(test_article1.id, test_article1.title, "aaa", "articles"),
@@ -59,7 +62,7 @@ class TestCommonHelpFunc(TestCase):
             const.ARTICLE_STRUCTURE(test_article3.id, test_article3.title, "ccc", "articles"),
             const.ARTICLE_STRUCTURE(test_article1.id, test_article1.title, "aaa", "articles"),
         ]
-        my_answer = sort_search_result(test_result_list, {"test"})
+        my_answer = sort_search_result(test_result_list)
         self.assertEqual(len(my_answer), 3)
         for each_right, each_mine in zip(right_answer, my_answer):
             self.assertEqual(each_right, each_mine)

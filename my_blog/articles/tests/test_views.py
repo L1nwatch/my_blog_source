@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.21 实现搜索结果按照访问次数排序的相关测试
 2017.04.03 重构一下创建测试数据的代码, 将其分离出来单独作为一个基类了
 2017.03.26 增加特殊字符的相关搜索时的测试代码, 修改重定向到首页后对应的测试代码
 2017.03.25 新增搜索排序的测试, 现在要按照分类来排序了
@@ -17,21 +18,19 @@
 2016.10.03 测试视图函数是否正常
 """
 import os
-import unittest
+import random
 import shutil
 import string
+import unittest
 
-import random
+from django.test import override_settings
 
 from articles.forms import BaseSearchForm, ArticleForm
 from articles.models import Article
-from articles.views import _parse_markdown_file, get_right_content_from_file, _get_id_from_markdown_html
 from articles.templatetags.custom_filter import custom_markdown
-from articles.tests.basic_test import BasicTest
-
+from articles.views import _parse_markdown_file, get_right_content_from_file, _get_id_from_markdown_html
+from common_module.tests.basic_test import BasicTest, search_url, article_display_url
 from my_constant import const
-
-from django.test import override_settings
 
 __author__ = '__L1n__w@tch'
 
@@ -69,7 +68,7 @@ class HomeViewTest(BasicTest):
 
 
 class ArticleDisplayViewTest(BasicTest):
-    unique_url = "/articles/{}/"
+    unique_url = article_display_url
 
     def setUp(self):
         self.create_markdown_article()
@@ -331,7 +330,7 @@ class UpdateNotesViewTest(BasicTest):
 
 
 class ArticlesSearchViewTest(BasicTest):
-    unique_url = "/search/"
+    unique_url = search_url
 
     def test_for_invalid_input_passes_form_to_template(self):
         response = self.client.post(self.unique_url, data={"search_content": "",
@@ -529,28 +528,9 @@ class ArticlesSearchViewTest(BasicTest):
         # 能搜索到文章
         self.assertContains(response, test_article.title)
 
-    def test_search_result_are_sorted(self):
-        """
-        搜索的结果应该是排序过后的
-        """
-        # 创建 3 篇文章, 均包含关键词 test, 但是出现次数不一致
-        test_article1 = self.create_article(title="should be 3rd", content="test")
-        test_article2 = self.create_article(title="should be 1st", content="test + test + test")
-        test_article3 = self.create_article(title="should be 2nd", content="test + test")
-
-        response = self.client.post(self.unique_url, data={"search_content": "test",
-                                                           "search_choice": "articles"})
-
-        response_text = response.content.decode("utf8")
-        article1_index = response_text.index(test_article1.title)
-        article2_index = response_text.index(test_article2.title)
-        article3_index = response_text.index(test_article3.title)
-
-        self.assertTrue(article2_index < article3_index < article1_index)
-
 
 class BaseSearchViewTest(BasicTest):
-    unique_url = "/search/"
+    unique_url = search_url
 
     def test_for_valid_input_passes_form_to_template(self):
         """
