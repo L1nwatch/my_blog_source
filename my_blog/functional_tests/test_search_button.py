@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+
+2017.05.21 重构一下, 把所有测试放到同一个类中不好看
 2017.04.30 重新定义搜索结果中 GitBook title 的样式, 另外重构一下代码
 2017.03.31 手动调试发现搜索 code 时进入日记有问题, 补充对应测试代码
 2017.03.30 补充更新操作, 要不然没法进行 Code 搜索
@@ -30,15 +32,7 @@ import datetime
 __author__ = '__L1n__w@tch'
 
 
-class TestSearchButton(FunctionalTest):
-    def setUp(self):
-        super().setUp()
-
-        # 创建测试数据
-        self._create_articles_test_db_data()
-        self._create_work_journal_test_db_data()
-        self.test_gitbooks = list(self.create_gitbook_test_db_data())
-
+class BasicSearch(FunctionalTest):
     def do_choose_search(self, pointed_choice, search_content):
         """
         从首页选择某个下拉菜单后进行对应的搜索
@@ -96,6 +90,66 @@ class TestSearchButton(FunctionalTest):
         :return: None
         """
         self.do_choose_search("Code", search_content)
+
+    @staticmethod
+    def create_multiple_articles_with_or_without_code():
+        has_code_content = """
+```python
+time.sleep
+```
+"""
+        # 笔记库里存在两篇笔记, 都含有 time.sleep 关键词
+        has_code = Article.objects.create(title="has_code", content=has_code_content)
+        no_code = Article.objects.create(title="no_code", content="time.sleep")
+
+        return has_code, no_code
+
+
+class TestSearchSort(BasicSearch):
+    """
+    主要是测试搜索结果排序问题
+    """
+    def setUp(self):
+        super().setUp()
+
+        # 创建测试数据
+        self._create_articles_test_db_data()
+        self._create_work_journal_test_db_data()
+        self.test_gitbooks = list(self.create_gitbook_test_db_data())
+
+    def test_search_result_sort(self):
+        """
+        测试搜索结果依赖于单词的出现次数
+        """
+        # Y 打开首页, 发现了搜索按钮, 于是搜索 test
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+        search_button.send_keys("{}\n".format("test"))
+
+        # 搜索结果出来了, Y 发现笔记《xxx》排在第一位, 而且点开一看, test 出现的次数有 x 次
+        search_result = self.browser.find_elements_by_id("id_search_result_title")
+        search_result[0].click()  # 对应 Article
+
+        # Y 返回去, 点击第 2 篇笔记, 发现 test 出现的次数有 x - 1 次
+        first_test_times = self.browser.page_source.count("test")
+        self.browser.back()
+
+        search_result = self.browser.find_elements_by_id("id_search_result_title")
+        search_result[1].click()  # 对应 Journal
+        second_test_times = self.browser.page_source.count("test")
+
+        # 原来搜索结果有按出现次数进行排序的, Y 很满意
+        self.assertTrue(first_test_times > second_test_times)
+
+
+class TestSearchButton(BasicSearch):
+    def setUp(self):
+        super().setUp()
+
+        # 创建测试数据
+        self._create_articles_test_db_data()
+        self._create_work_journal_test_db_data()
+        self.test_gitbooks = list(self.create_gitbook_test_db_data())
 
     def test_can_search_title(self):
         """
@@ -347,30 +401,6 @@ class TestSearchButton(FunctionalTest):
             ["test_book_name" in each_result.text for each_result in search_results])
         )
 
-    def test_search_result_sort(self):
-        """
-        测试搜索结果依赖于单词的出现次数
-        """
-        # Y 打开首页, 发现了搜索按钮, 于是搜索 test
-        self.browser.get(self.server_url)
-        search_button = self.browser.find_element_by_id("id_search")
-        search_button.send_keys("{}\n".format("test"))
-
-        # 搜索结果出来了, Y 发现笔记《xxx》排在第一位, 而且点开一看, test 出现的次数有 x 次
-        search_result = self.browser.find_elements_by_id("id_search_result_title")
-        search_result[0].click()  # 对应 Article
-
-        # Y 返回去, 点击第 2 篇笔记, 发现 test 出现的次数有 x - 1 次
-        first_test_times = self.browser.page_source.count("test")
-        self.browser.back()
-
-        search_result = self.browser.find_elements_by_id("id_search_result_title")
-        search_result[1].click()  # 对应 Journal
-        second_test_times = self.browser.page_source.count("test")
-
-        # 原来搜索结果有按出现次数进行排序的, Y 很满意
-        self.assertTrue(first_test_times > second_test_times)
-
     def test_search_invalid_char(self):
         """
         测试搜索非法字符
@@ -440,19 +470,6 @@ class TestSearchButton(FunctionalTest):
 
         self.assertNotEqual(current_url, self.browser.current_url)
         self.assertEqual(has_code.title, self.browser.find_element_by_class_name("post-title").text)
-
-    @staticmethod
-    def create_multiple_articles_with_or_without_code():
-        has_code_content = """
-```python
-time.sleep
-```
-"""
-        # 笔记库里存在两篇笔记, 都含有 time.sleep 关键词
-        has_code = Article.objects.create(title="has_code", content=has_code_content)
-        no_code = Article.objects.create(title="no_code", content="time.sleep")
-
-        return has_code, no_code
 
     def test_search_only_code_in_Journal_can_link_correct(self):
         """
