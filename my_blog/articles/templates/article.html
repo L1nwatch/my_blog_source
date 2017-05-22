@@ -39,3 +39,8 @@
         </section>
     </div>
 {% endblock %}
+
+{% block my_custom_js %}
+    {% load static %}
+    <script src="{% static "articles/display.js" %}" type="text/javascript"></script>
+{% endblock %}

@@ -660,6 +660,28 @@ h3 {
     list-style: none;
 }
 
+.sidebar-search-menu > ul > li > ul {
+    display: none;
+}
+
+.sidebar-search-menu li.current ul {
+    display: block;
+}
+
+.sidebar-search-menu li.current {
+    background: #121a21;
+}
+
+.sidebar-search-menu a.current {
+    color: lightskyblue;
+    font-weight: bold;
+}
+
+.sidebar-search-menu .a-show.current {
+    color: greenyellow;
+    background: #4b5d7d;
+}
+
 .sidebar {
     overflow-y: auto;
     overflow-x: hidden;
@@ -697,7 +719,6 @@ h3 {
     display: block;
     font-size: 0.8em;
 }
-
 
 .search-result-box {
     border: 1px solid #dddddd;

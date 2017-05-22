@@ -1,14 +1,14 @@
 <ul>
     {% if toc %}
         {% for l1 in toc %}
-            <li>
+            <li class="toctree-l1">
                 <a href="#{{ l1.id }}">
                     {% if l1.child %}
-                        <span class="toctree-expand fa fa-plus-square-o"></span>{{ l1.title }}
+                        <span class="toctree-expand fa fa-plus-square-o show-button"></span>{{ l1.title }}
                         <ul>
                             {% for l2 in l1.child %}
                                 <li>
-                                    <a href="#{{ l2.id }}">
+                                    <a class="a-show" href="#{{ l2.id }}">
                                         {% if l2.child %}
                                             <span class="toctree-expand fa fa-plus-square-o"></span>
                                             {{ l2.title }}
