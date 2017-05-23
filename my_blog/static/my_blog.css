@@ -664,11 +664,19 @@ h3 {
     display: none;
 }
 
-.sidebar-search-menu li.current ul {
+.sidebar-search-menu li.toctree-l1.current ul {
     display: block;
 }
 
-.sidebar-search-menu li.current {
+.sidebar-search-menu li.toctree-l1.current li.toctree-l2 ul {
+    display: none;
+}
+
+.sidebar-search-menu li.toctree-l1.current li.toctree-l2.current ul {
+    display: block;
+}
+
+.sidebar-search-menu li.toctree-l1.current {
     background: #121a21;
 }
 
@@ -677,7 +685,7 @@ h3 {
     font-weight: bold;
 }
 
-.sidebar-search-menu .a-show.current {
+.sidebar-search-menu .a-show1.current {
     color: greenyellow;
     background: #4b5d7d;
 }
