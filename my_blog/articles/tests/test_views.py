@@ -22,6 +22,7 @@ import random
 import shutil
 import string
 import unittest
+import html
 
 from django.test import override_settings
 
@@ -129,6 +130,21 @@ class ArticleDisplayViewTest(BasicTest):
         self.assertEqual(_get_id_from_markdown_html(markdown_html, "三级标题 1"), "1")
         self.assertEqual(_get_id_from_markdown_html(markdown_html, "三级标题 2"), "2")
         self.assertEqual(_get_id_from_markdown_html(markdown_html, "四级标题"), "_3")
+
+    def test_display_unfriendly_md(self):
+        """
+        测试当 md 文件有不安全内容时会怎么样
+        """
+        test_string = "<script>alert(1)</script>"
+
+        data = self.read_test_markdown_file(self.unfriendly_test_markdown_file_path)
+        data += test_string
+
+        markdown_html = custom_markdown(data)
+
+        # 这里应该被转义了
+        self.assertNotIn(test_string, markdown_html)
+        self.assertIn(html.escape(test_string), markdown_html)
 
 
 class AboutMeViewTest(BasicTest):

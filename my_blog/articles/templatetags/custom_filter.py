@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """ 配置 markdown 等给模板使用的 filter
+
+2017.05.24 并不了解当初为什么把 bleach 注释掉了, 现在补回来, 因为缺少这一句发现了 BUG
 2017.02.26 添加一个菜单格式化器
 2017.02.11 需要给前端使用, 给特定关键字添加标签
 2017.01.27 添加表格解析的支持, 添加 bleach 库用于清除不安全的 html 代码
@@ -9,6 +11,7 @@
 import markdown
 import re
 import html
+import bleach
 
 # import markdown2
 # from django.utils.encoding import force_text
@@ -55,7 +58,7 @@ def add_em_tag(keyword, raw_content):
 @register.filter(is_safe=True)  # 注册template filter
 @stringfilter  # 希望字符串作为参数
 def custom_markdown(value):
-    # value = bleach.clean(value)  # 清除不安全因素
+    value = bleach.clean(value)  # 清除不安全因素
 
     return mark_safe(markdown.markdown(value,
                                        extensions=["codehilite", "fenced_code", "tables", "toc"],

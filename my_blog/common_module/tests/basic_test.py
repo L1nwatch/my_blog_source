@@ -75,8 +75,10 @@ class BasicTest(TestCase):
             data = f.read()
         Article.objects.create(title="test_article_1", content=data)
 
-    def read_test_markdown_file(self):
-        with open(self.test_markdown_file_path, "r") as f:
+    def read_test_markdown_file(self, md_file_path=None):
+        if not md_file_path:
+            md_file_path = self.test_markdown_file_path
+        with open(md_file_path, "r") as f:
             data = f.read()
         return data
 
