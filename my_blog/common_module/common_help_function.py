@@ -280,7 +280,7 @@ def log_wrapper(func, *, str_format="", level="info", logger=None):
             logger_func = getattr(logger, level)
             ip_address = get_ip_from_django_request(request)
             if len(func_kwargs) > 0:
-                log_data = "[*] IP {} 于 {} " + str_format + ", 相关参数为: {}".format(ip_address, now, func_kwargs)
+                log_data = ("[*] IP {} 于 {} " + str_format + ", 相关参数为: {}").format(ip_address, now, func_kwargs)
             else:
                 log_data = ("[*] IP {} 于 {} " + str_format).format(ip_address, now)
 
