@@ -338,7 +338,7 @@ def _update_settings(source_folder, site_name, host_name):
     sed(settings_path, 'EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"',
         'EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"')
     # 修改 SMTP 登录密码
-    sed(settings_path, "EMAIL_HOST_PASSWORD = ''", "EMAIL_HOST_PASSWORD = '{}'".format(SMTP_LOGIN_PASSWORD))
+    sed(settings_path, 'EMAIL_HOST_PASSWORD = ""', 'EMAIL_HOST_PASSWORD = "{}"'.format(SMTP_LOGIN_PASSWORD))
     secret_key_file = source_folder + "/{site_name}/{site_name}/secret_key.py".format(site_name=site_name)
 
     # Django 有几处加密操作要使用 SECRET_KEY: cookie 和 CSRF 保护。在服务器中和(可能公开的)源码仓库中使用不同的密钥是个好习惯。
