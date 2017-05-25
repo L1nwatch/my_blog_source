@@ -17,6 +17,7 @@
 2017.02.10 添加搜索时不搜索图片的设定
 2017.02.09 把视图分离在两个 APP 的时候出现嵌套导入了, 所以只好弄一个 common 文件来存放了
 """
+# 自己的模块
 from my_constant import const
 from articles.forms import ArticleForm, BaseSearchForm
 from articles.models import Article, BaseModel
@@ -26,11 +27,13 @@ from gitbook_notes.models import GitBook
 from code_collect.models import CodeCollect
 from common_module.email_send import email_sender
 
+# 标准库
 import chardet
 import copy
 import string
 import re
 import datetime
+import threading
 
 from functools import wraps
 from ipware.ip import get_ip, get_real_ip, get_trusted_ip
@@ -262,6 +265,24 @@ def decorator_with_args(decorator_to_enhance):
     return decorator_maker
 
 
+def background_deal(*, logger, level, request, func_kwargs, str_format):
+    """
+    记录日志 + 发送邮件
+    :return:
+    """
+    now = datetime.datetime.today()
+
+    logger_func = getattr(logger, level)
+    ip_address = get_ip_from_django_request(request)
+    if len(func_kwargs) > 0:
+        log_data = ("[*] IP {} 于 {} " + str_format + ", 相关参数为: {}").format(ip_address, now, func_kwargs)
+    else:
+        log_data = ("[*] IP {} 于 {} " + str_format).format(ip_address, now)
+
+    email_sender.send_email(log_data, ip_address, logger)
+    logger_func(log_data)
+
+
 @decorator_with_args
 def log_wrapper(func, *, str_format="", level="info", logger=None):
     """
@@ -272,19 +293,13 @@ def log_wrapper(func, *, str_format="", level="info", logger=None):
     :param logger:
     :return:
     """
-    now = datetime.datetime.today()
 
     @wraps(func)
     def wrapper(request=None, *func_args, **func_kwargs):
         if request is not None:
-            logger_func = getattr(logger, level)
-            ip_address = get_ip_from_django_request(request)
-            if len(func_kwargs) > 0:
-                log_data = ("[*] IP {} 于 {} " + str_format + ", 相关参数为: {}").format(ip_address, now, func_kwargs)
-            else:
-                log_data = ("[*] IP {} 于 {} " + str_format).format(ip_address, now)
+            # 记录日志并发送邮件
+            background_deal(logger=logger, level=level, request=request, func_kwargs=func_kwargs, str_format=str_format)
 
-            logger_func(log_data + email_sender.send_email(log_data, ip_address))
         return func(request, *func_args, **func_kwargs)
 
     return wrapper
