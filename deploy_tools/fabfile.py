@@ -335,8 +335,8 @@ def _update_settings(source_folder, site_name, host_name):
     sed(settings_path, "DEBUG = True", "DEBUG = False")
     sed(settings_path, 'DOMAIN = "localhost"', 'DOMAIN = "{}"'.format(host_name))
     # 修改发送邮件后台终端
-    sed(settings_path, "EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'",
-        "EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'")
+    sed(settings_path, 'EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"',
+        'EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"')
     # 修改 SMTP 登录密码
     sed(settings_path, "EMAIL_HOST_PASSWORD = ''", "EMAIL_HOST_PASSWORD = '{}'".format(SMTP_LOGIN_PASSWORD))
     secret_key_file = source_folder + "/{site_name}/{site_name}/secret_key.py".format(site_name=site_name)
