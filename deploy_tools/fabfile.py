@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """ 使用 Fabric 进行自动化部署
+
+2017.05.25 补充发送邮件所需的相关部署操作
 2017.03.05 更新 GitBook 的相关代码实线, 通过了全部测试, 另外也在 fab 中加入了对应的配置代码及文件
 2017.02.10 添加配置文件读取, 将 git/username 等需要临时输入的信息用配置文件实现
 2017.01.27 突然发现自己的 fab 不会去修改 DEBUG 选项, 现在改正了, 原来是那一句话被注释掉了
@@ -30,6 +32,7 @@ __author__ = '__L1n__w@tch'
 REPO_URL = "https://github.com/L1nwatch/my_blog_source.git"
 USER_PASS_CONF = "user_pass.conf"
 GITBOOKS_CONF = "gitbooks_git.conf"
+SMTP_LOGIN_PASSWORD = ""
 
 
 def deploy():
@@ -124,7 +127,7 @@ def _user_pass_file_config():
     """
     判断一下 conf 文件是否存在指定内容, 如果是第一次运行的话得把 git 帐号密码保存进来
     """
-    global USER_PASS_CONF
+    global USER_PASS_CONF, SMTP_LOGIN_PASSWORD
 
     # 确保配置文件存在
     _create_config_file()
@@ -135,7 +138,7 @@ def _user_pass_file_config():
     username, password = cp.get("journals_git", "username"), cp.get("journals_git", "password")
     articles_address = cp.get("articles_git", "address")
 
-    while username == "" or password == "" or articles_address == "":
+    while username == "" or password == "" or articles_address == "" or SMTP_LOGIN_PASSWORD == "":
         print("[+] 需要输入相关信息, 如不需要则随便打些字符即可")
 
         # 兼容 Python2.7
@@ -148,6 +151,9 @@ def _user_pass_file_config():
         if articles_address == "":
             print("[+] 请输入 articles_git 的地址: ")
             articles_address = sys.stdin.readline().strip()
+        if SMTP_LOGIN_PASSWORD == "":
+            print("[+] 请输入 SMTP 登录密码(邮箱硬编码): ")
+            SMTP_LOGIN_PASSWORD = sys.stdin.readline().strip()
 
         # 保存到配置文件中
         if username != "" and password != "" and articles_address != "":
@@ -314,10 +320,25 @@ def _get_latest_source(source_folder):
 
 
 def _update_settings(source_folder, site_name, host_name):
+    """
+    更新 settings 文件
+    :param source_folder:
+    :param site_name:
+    :param host_name:
+    :return: None
+    """
+    global SMTP_LOGIN_PASSWORD
     settings_path = source_folder + "/{site_name}/{site_name}/settings.py".format(site_name=site_name)
+
     # Fabric 提供的 sed 函数作用是在文本中替换字符串。这里把 DEBUG 的值由 True 改成 False
+    # 关闭 django 调试模式
     sed(settings_path, "DEBUG = True", "DEBUG = False")
     sed(settings_path, 'DOMAIN = "localhost"', 'DOMAIN = "{}"'.format(host_name))
+    # 修改发送邮件后台终端
+    sed(settings_path, "EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'",
+        "EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'")
+    # 修改 SMTP 登录密码
+    sed(settings_path, "EMAIL_HOST_PASSWORD = ''", "EMAIL_HOST_PASSWORD = '{}'".format(SMTP_LOGIN_PASSWORD))
     secret_key_file = source_folder + "/{site_name}/{site_name}/secret_key.py".format(site_name=site_name)
 
     # Django 有几处加密操作要使用 SECRET_KEY: cookie 和 CSRF 保护。在服务器中和(可能公开的)源码仓库中使用不同的密钥是个好习惯。

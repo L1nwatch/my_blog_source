@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.25 在日志记录函数中新增发送邮件的操作
 2017.05.21 修改 common_module 路径
 2017.04.30 新增一个 is_valid_git_address 判断函数
 2017.04.29 修改 log_wrapper, 强制使用关键字参数 + 完善元信息
@@ -23,6 +24,7 @@ from work_journal.models import Journal
 from work_journal.forms import JournalForm
 from gitbook_notes.models import GitBook
 from code_collect.models import CodeCollect
+from common_module.email_send import email_sender
 
 import chardet
 import copy
@@ -262,17 +264,27 @@ def decorator_with_args(decorator_to_enhance):
 
 @decorator_with_args
 def log_wrapper(func, *, str_format="", level="info", logger=None):
+    """
+    负责进行日志记录的装饰器
+    :param func:
+    :param str_format:
+    :param level:
+    :param logger:
+    :return:
+    """
     now = datetime.datetime.today()
 
     @wraps(func)
     def wrapper(request=None, *func_args, **func_kwargs):
         if request is not None:
             logger_func = getattr(logger, level)
+            ip_address = get_ip_from_django_request(request)
             if len(func_kwargs) > 0:
-                logger_func(("[*] IP {} 于 {} " + str_format + ", 相关参数为: {}")
-                            .format(get_ip_from_django_request(request), now, func_kwargs))
+                log_data = "[*] IP {} 于 {} " + str_format + ", 相关参数为: {}".format(ip_address, now, func_kwargs)
             else:
-                logger_func(("[*] IP {} 于 {} " + str_format).format(get_ip_from_django_request(request), now))
+                log_data = ("[*] IP {} 于 {} " + str_format).format(ip_address, now)
+
+            logger_func(log_data + email_sender.send_email(log_data, ip_address))
         return func(request, *func_args, **func_kwargs)
 
     return wrapper

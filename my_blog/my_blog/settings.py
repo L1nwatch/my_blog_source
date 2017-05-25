@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 
 更新日志:
+2017.05.25 增加发送邮件的配置信息
 2017.03.28 新增 code_collect 这个 APP 及相应的 logger 信息
 2017.03.24 新增 toolhub 这个 app
 2016.10.28 在更新时间的时候遇到了这么个问题:
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
     "just_eating",
     "toolhub",
     "code_collect",
+    "common_module",
 ]
 
 BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
@@ -229,3 +231,13 @@ UPDATE_TIME_LIMIT = 30
 CRON_CLASSES = [
     "django_cron.cron.AutoUpdateNotes",
 ]
+
+# 测试用
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# 生产环境使用
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_HOST_USER = '490772448@qq.com'
+EMAIL_HOST_PASSWORD = ''
+DEFAULT_FROM_EMAIL = 'watch0.top <490772448@qq.com>'

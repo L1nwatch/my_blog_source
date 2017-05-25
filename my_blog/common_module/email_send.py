@@ -1,0 +1,75 @@
+#!/bin/env python3
+# -*- coding: utf-8 -*-
+# version: Python3.X
+""" 负责发送邮件
+
+2017.05.25 新建一个发送邮件类, 专门负责发送邮件
+"""
+# 自己的模块
+from common_module.models import VisitedIP
+from my_constant import const
+
+# 标准库
+from django.core.mail import send_mail
+from smtplib import SMTPException
+
+__author__ = '__L1n__w@tch'
+
+
+class EmailSend:
+    def __init__(self, want_send_email=True):
+        self.send_email_flag = want_send_email  # flag, 用来表示用户是否想要进行发送邮件的操作
+        self.send_email_success = True  # True 表示到目前为止邮件发送系统没有故障, 可以继续发送
+
+    @staticmethod
+    def is_new_ip_address(ip_address):
+        """
+        判断是否是新的 IP 地址, 同时更新计数器
+        :return: True or False, 新 IP 地址则为 True
+        """
+        ip, created = VisitedIP.objects.get_or_create(ip_address=ip_address)
+        ip.times += 1
+        ip.save()
+
+        return created
+
+    def want_to_send_email(self, ip_address):
+        """
+        判断是否要进行发送邮件操作
+        :param ip_address: str(), 表示访问者的 IP 地址
+        :return: True or False, True 表示希望发送邮件
+        """
+        # IP 查询, IP 第一次出现则发送邮件
+        # 检查之前几次邮件是否发送成功, 失败则不再发送
+        # 检查相关信息是否完整, 完整才进行发送
+        if self.send_email_flag and self.send_email_success and self.is_new_ip_address(ip_address):
+            return True
+        else:
+            return False
+
+    def send_email(self, message, ip_address):
+        """
+        发送邮件
+        :param message: str(), 邮件正文
+        :param ip_address: str(), 表示访问者的 IP 地址
+        :return: str(), 如果执行异常则返回消息方便记录到日志中, 没异常则返回空字符串
+        """
+        if not self.want_to_send_email(ip_address):
+            return str()
+
+        try:
+            send_mail(subject="[!] 有人访问了你的网站",
+                      message=message,
+                      from_email="490772448@qq.com",
+                      recipient_list=["490772448@qq.com"],
+                      fail_silently=False)
+            return str()
+        except SMTPException as e:
+            self.send_email_success = False
+            return "[*] 发送失败: {}".format(e)
+
+
+email_sender = EmailSend(want_send_email=const.WANT_SEND_EMAIL)
+
+if __name__ == "__main__":
+    pass
