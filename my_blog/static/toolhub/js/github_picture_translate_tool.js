@@ -91,3 +91,9 @@ $(document).ready(function () {
 (function () {
     new Clipboard('#id_copy_button');
 })();
+
+// 设置 active
+$(document).ready(function () {
+    // $("#id_toolhub_home").removeClass("active");
+    $("#id_encoding_cipher").addClass("active");
+});
