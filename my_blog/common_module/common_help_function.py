@@ -33,7 +33,6 @@ import copy
 import string
 import re
 import datetime
-import threading
 
 from functools import wraps
 from ipware.ip import get_ip, get_real_ip, get_trusted_ip

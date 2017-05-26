@@ -2,18 +2,25 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.26 补充 log 的测试
 2017.05.21 将该文件移到共同测试模块
 2017.04.30 新增有关 git 地址的测试代码
 2017.03.26 新增有关搜索输入的测试代码
 2017.03.23 新增有关搜索结果排序的测试
 2017.03.07 为共有函数进行测试编写
 """
-import random
-import string
-
-from common_module.common_help_function import clean_form_data, sort_search_result, data_check, is_valid_git_address
+# 自己的模块
+from common_module.common_help_function import (clean_form_data, sort_search_result,
+                                                data_check, is_valid_git_address, background_deal)
 from my_constant import const
 from .basic_test import BasicTest
+
+# 标准库
+import random
+import string
+import unittest.mock
+import re
+from django.test.client import RequestFactory
 
 __author__ = '__L1n__w@tch'
 
@@ -101,6 +108,30 @@ class TestCommonHelpFunc(BasicTest):
         test_data = "https://xxx.git.com"
         my_answer = is_valid_git_address(test_data)
         self.assertFalse(my_answer)
+
+    def test_can_log_data(self):
+        """
+        测试日志记录, 有发送邮件的记录, 还有 IP 以及时间的记录
+        :return:
+        """
+        rf = RequestFactory()
+        get_request = rf.get("/")
+
+        with unittest.mock.patch("articles.views.logger") as log_mock, unittest.mock.patch(
+                "django.core.mail.send_mail") as email_sender:
+            background_deal(logger=log_mock, level="info", request=get_request, func_kwargs=dict(), str_format=str())
+
+            method_calls = log_mock.method_calls
+
+            # 有发送邮件的记录
+            self.assertTrue(any(
+                ['[*] 开始尝试发送邮件' == x[1][0] for x in method_calls]
+            ))
+
+            # 有 IP 以及时间信息
+            message_re = re.compile("\[\*\] IP \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} 于 \d{4}-\d{2}-\d{2}",
+                                    flags=re.IGNORECASE)
+            self.assertTrue(any([message_re.match(x[1][0]) for x in method_calls]))
 
 
 if __name__ == "__main__":
