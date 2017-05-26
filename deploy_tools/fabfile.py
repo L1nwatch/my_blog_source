@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 使用 Fabric 进行自动化部署
 
+2017.05.26 补充 SMTP 登录密码部署时的记录操作
 2017.05.25 补充发送邮件所需的相关部署操作
 2017.03.05 更新 GitBook 的相关代码实线, 通过了全部测试, 另外也在 fab 中加入了对应的配置代码及文件
 2017.02.10 添加配置文件读取, 将 git/username 等需要临时输入的信息用配置文件实现
@@ -114,10 +115,12 @@ def _create_config_file():
         cp = configparser.ConfigParser()
         cp.add_section("journals_git")
         cp.add_section("articles_git")
+        cp.add_section("email_info")
 
         cp.set("journals_git", "username", "")
         cp.set("journals_git", "password", "")
         cp.set("articles_git", "address", "")
+        cp.set("email_info", "smtp_password", "")
 
         with open(USER_PASS_CONF, "w") as f:
             cp.write(f)
@@ -136,9 +139,9 @@ def _user_pass_file_config():
     cp = configparser.ConfigParser()
     cp.read(USER_PASS_CONF)
     username, password = cp.get("journals_git", "username"), cp.get("journals_git", "password")
-    articles_address = cp.get("articles_git", "address")
+    articles_address, email_password = cp.get("articles_git", "address"), cp.get("email_info", "smtp_password")
 
-    while username == "" or password == "" or articles_address == "" or SMTP_LOGIN_PASSWORD == "":
+    while username == "" or password == "" or articles_address == "" or email_password == "":
         print("[+] 需要输入相关信息, 如不需要则随便打些字符即可")
 
         # 兼容 Python2.7
@@ -153,17 +156,19 @@ def _user_pass_file_config():
             articles_address = sys.stdin.readline().strip()
         if SMTP_LOGIN_PASSWORD == "":
             print("[+] 请输入 SMTP 登录密码(邮箱硬编码): ")
-            SMTP_LOGIN_PASSWORD = sys.stdin.readline().strip()
+            email_password = sys.stdin.readline().strip()
 
         # 保存到配置文件中
-        if username != "" and password != "" and articles_address != "":
+        if username != "" and password != "" and articles_address != "" and email_password != "":
             cp.set("journals_git", "username", username)
             cp.set("journals_git", "password", password)
             cp.set("articles_git", "address", articles_address)
+            cp.set("email_info", "smtp_password", email_password)
 
             with open(USER_PASS_CONF, "w") as f:
                 cp.write(f)
 
+    SMTP_LOGIN_PASSWORD = email_password
     print("[*] 成功读取文件 {} 的用户名和密码信息".format(USER_PASS_CONF))
 
 
