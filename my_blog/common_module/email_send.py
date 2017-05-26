@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 负责发送邮件
 
+2017.05.26 修正代码逻辑, 要不然子线程中无法捕获异常也不会记录发送邮件失败的日志
 2017.05.25 改为多线程, 避免邮件发送失败时导致前端也显示不了了
 2017.05.25 新建一个发送邮件类, 专门负责发送邮件
 """
@@ -49,6 +50,23 @@ class EmailSend:
         else:
             return False
 
+    def try_to_send_email(self, message, logger):
+        """
+        尝试发送邮件, 并进行异常捕获
+        :param message: str(), 邮件正文
+        :param logger: logger 对象, 日志记录使用
+        :return:
+        """
+        try:
+            send_mail(subject="[!] 有人访问了你的网站", message=message, from_email="490772448@qq.com",
+                      recipient_list=["490772448@qq.com"], fail_silently=False)
+            logger.info("[*] 邮件发送成功")
+            print("[*] 邮件发送成功")
+        except SMTPException as e:
+            self.send_email_success = False
+            logger.error("[*] 发送失败: {}".format(e))
+            print("[*] 发送失败: {}".format(e))
+
     def send_email(self, message, ip_address, logger):
         """
         发送邮件
@@ -57,20 +75,10 @@ class EmailSend:
         :param logger: logger 对象, 日志记录使用
         :return: str(), 如果执行异常则返回消息方便记录到日志中, 没异常则返回空字符串
         """
+
         if self.want_to_send_email(ip_address):
-            try:
-                send_mail_thread = threading.Thread(target=send_mail, kwargs={
-                    "subject": "[!] 有人访问了你的网站",
-                    "message": message,
-                    "from_email": "490772448@qq.com",
-                    "recipient_list": ["490772448@qq.com"],
-                    "fail_silently": False
-                })
-                send_mail_thread.start()
-                logger.info("[*] 邮件发送成功")
-            except SMTPException as e:
-                self.send_email_success = False
-                logger.error("[*] 发送失败: {}".format(e))
+            send_mail_thread = threading.Thread(target=self.try_to_send_email, args=(message,logger))
+            send_mail_thread.start()
 
 
 email_sender = EmailSend(want_send_email=const.WANT_SEND_EMAIL)
