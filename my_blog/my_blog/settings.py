@@ -233,11 +233,11 @@ CRON_CLASSES = [
 ]
 
 # 测试用
-# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # 生产环境使用
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+# EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'hwsmtp.exmail.qq.com'
+EMAIL_HOST = 'smtp.exmail.qq.com'
 EMAIL_HOST_USER = 'watch@watch0.top'
 EMAIL_HOST_PASSWORD = ""
 DEFAULT_FROM_EMAIL = 'watch@watch0.top'

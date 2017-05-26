@@ -57,6 +57,7 @@ class EmailSend:
         :param logger: logger 对象, 日志记录使用
         :return:
         """
+        logger.info("[*] 开始尝试发送邮件")
         try:
             send_mail(subject="[!] 有人访问了你的网站", message=message, from_email="watch@watch0.top",
                       recipient_list=["490772448@qq.com"], fail_silently=False)
@@ -73,7 +74,6 @@ class EmailSend:
         :param logger: logger 对象, 日志记录使用
         :return: str(), 如果执行异常则返回消息方便记录到日志中, 没异常则返回空字符串
         """
-        logger.info("[*] 开始记录发送邮件情况")
         if self.want_to_send_email(ip_address):
             send_mail_thread = threading.Thread(target=self.try_to_send_email, args=(message,logger))
             send_mail_thread.start()
