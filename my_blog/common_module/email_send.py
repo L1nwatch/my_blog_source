@@ -62,7 +62,7 @@ class EmailSend:
                       recipient_list=["490772448@qq.com"], fail_silently=False)
             logger.info("[*] 邮件发送成功")
             print("[*] 邮件发送成功")
-        except SMTPException as e:
+        except Exception as e:
             self.send_email_success = False
             logger.error("[*] 发送失败: {}".format(e))
             print("[*] 发送失败: {}".format(e))
