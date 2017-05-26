@@ -58,7 +58,7 @@ class EmailSend:
         :return:
         """
         try:
-            send_mail(subject="[!] 有人访问了你的网站", message=message, from_email="490772448@qq.com",
+            send_mail(subject="[!] 有人访问了你的网站", message=message, from_email="watch@watch0.top",
                       recipient_list=["490772448@qq.com"], fail_silently=False)
             logger.info("[*] 邮件发送成功")
         except Exception as e:
