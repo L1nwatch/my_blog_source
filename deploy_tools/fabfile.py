@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 使用 Fabric 进行自动化部署
 
+2017.05.27 尝试重构部署代码
 2017.05.26 补充 SMTP 登录密码部署时的记录操作
 2017.05.25 补充发送邮件所需的相关部署操作
 2017.03.05 更新 GitBook 的相关代码实线, 通过了全部测试, 另外也在 fab 中加入了对应的配置代码及文件
@@ -36,6 +37,79 @@ GITBOOKS_CONF = "gitbooks_git.conf"
 SMTP_LOGIN_PASSWORD = ""
 
 
+class ConfigInteractive:
+    """
+    负责与用户交互获取必要的配置信息
+    """
+
+    def __init__(self):
+        global USER_PASS_CONF
+        self.config_file_name = USER_PASS_CONF
+
+    def _create_config_file(self):
+        """
+        创建配置文件
+        """
+        if not os.path.exists(self.config_file_name):
+            cp = configparser.ConfigParser()
+            cp.add_section("journals_git")
+            cp.add_section("articles_git")
+            cp.add_section("email_info")
+
+            cp.set("journals_git", "username", "")
+            cp.set("journals_git", "password", "")
+            cp.set("articles_git", "address", "")
+            cp.set("email_info", "smtp_password", "")
+
+            with open(self.config_file_name, "w") as f:
+                cp.write(f)
+
+    def user_pass_file_config(self):
+        """
+        判断一下 conf 文件是否存在指定内容, 如果是第一次运行的话得把 git 帐号密码保存进来
+        """
+        global SMTP_LOGIN_PASSWORD
+
+        # 确保配置文件存在
+        self._create_config_file()
+
+        # 判断是否已经配置
+        cp = configparser.ConfigParser()
+        cp.read(self.config_file_name)
+        username, password = cp.get("journals_git", "username"), cp.get("journals_git", "password")
+        articles_address, email_password = cp.get("articles_git", "address"), cp.get("email_info", "smtp_password")
+
+        while username == "" or password == "" or articles_address == "" or email_password == "":
+            print("[+] 需要输入相关信息, 如不需要则随便打些字符即可")
+
+            # 兼容 Python2.7
+            if username == "":
+                print("[+] 请输入 journals_git 的用户名: ")
+                username = sys.stdin.readline().strip()
+            if password == "":
+                print("[+] 请输入 journals_git 的密码: ")
+                password = sys.stdin.readline().strip()
+            if articles_address == "":
+                print("[+] 请输入 articles_git 的地址: ")
+                articles_address = sys.stdin.readline().strip()
+            if email_password == "":
+                print("[+] 请输入 SMTP 登录密码(邮箱硬编码): ")
+                email_password = sys.stdin.readline().strip()
+
+            # 保存到配置文件中
+            if username != "" and password != "" and articles_address != "" and email_password != "":
+                cp.set("journals_git", "username", username)
+                cp.set("journals_git", "password", password)
+                cp.set("articles_git", "address", articles_address)
+                cp.set("email_info", "smtp_password", email_password)
+
+                with open(self.config_file_name, "w") as f:
+                    cp.write(f)
+
+        SMTP_LOGIN_PASSWORD = email_password
+        print("[*] 成功读取文件 {} 的用户名和密码信息".format(self.config_file_name))
+
+
 def deploy():
     """
     2016.10.04 根据之前的自动化部署代码进行更改, 这里要进行的几个操作包括:
@@ -55,8 +129,9 @@ def deploy():
     # 更新代码
     _get_latest_source(source_folder)
 
-    # 更新用户名密码的配置文件
-    _user_pass_file_config()
+    # 与用户交互获取相关配置信息
+    ci = ConfigInteractive()
+    ci.user_pass_file_config()
 
     # 更新 gitbooks 链接
     _gitbooks_config(source_folder, site_name)
@@ -104,72 +179,6 @@ def _gitbooks_config(source_folder, site_name):
         f.write(raw_git_data)
 
     print("[*] 成功将 {} 中的 gitbooks 路径更新到配置文件中".format(GITBOOKS_CONF))
-
-
-def _create_config_file():
-    """
-    创建配置文件
-    """
-    global USER_PASS_CONF
-    if not os.path.exists(USER_PASS_CONF):
-        cp = configparser.ConfigParser()
-        cp.add_section("journals_git")
-        cp.add_section("articles_git")
-        cp.add_section("email_info")
-
-        cp.set("journals_git", "username", "")
-        cp.set("journals_git", "password", "")
-        cp.set("articles_git", "address", "")
-        cp.set("email_info", "smtp_password", "")
-
-        with open(USER_PASS_CONF, "w") as f:
-            cp.write(f)
-
-
-def _user_pass_file_config():
-    """
-    判断一下 conf 文件是否存在指定内容, 如果是第一次运行的话得把 git 帐号密码保存进来
-    """
-    global USER_PASS_CONF, SMTP_LOGIN_PASSWORD
-
-    # 确保配置文件存在
-    _create_config_file()
-
-    # 判断是否已经配置
-    cp = configparser.ConfigParser()
-    cp.read(USER_PASS_CONF)
-    username, password = cp.get("journals_git", "username"), cp.get("journals_git", "password")
-    articles_address, email_password = cp.get("articles_git", "address"), cp.get("email_info", "smtp_password")
-
-    while username == "" or password == "" or articles_address == "" or email_password == "":
-        print("[+] 需要输入相关信息, 如不需要则随便打些字符即可")
-
-        # 兼容 Python2.7
-        if username == "":
-            print("[+] 请输入 journals_git 的用户名: ")
-            username = sys.stdin.readline().strip()
-        if password == "":
-            print("[+] 请输入 journals_git 的密码: ")
-            password = sys.stdin.readline().strip()
-        if articles_address == "":
-            print("[+] 请输入 articles_git 的地址: ")
-            articles_address = sys.stdin.readline().strip()
-        if SMTP_LOGIN_PASSWORD == "":
-            print("[+] 请输入 SMTP 登录密码(邮箱硬编码): ")
-            email_password = sys.stdin.readline().strip()
-
-        # 保存到配置文件中
-        if username != "" and password != "" and articles_address != "" and email_password != "":
-            cp.set("journals_git", "username", username)
-            cp.set("journals_git", "password", password)
-            cp.set("articles_git", "address", articles_address)
-            cp.set("email_info", "smtp_password", email_password)
-
-            with open(USER_PASS_CONF, "w") as f:
-                cp.write(f)
-
-    SMTP_LOGIN_PASSWORD = email_password
-    print("[*] 成功读取文件 {} 的用户名和密码信息".format(USER_PASS_CONF))
 
 
 def _update_const_file(source_folder, site_name):
