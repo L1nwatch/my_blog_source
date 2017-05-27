@@ -13,11 +13,13 @@
 2016.10.17 增加一个定时任务, 每隔两个小时自动更新数据库
 2016.10.06 本来是使用 gunicorn 模板来自动运行 gunicorn 的, 但是发现这样存在一个问题, 就是 gunicorn 的 locale 默认为空, 于是改为使用 supervisor
 """
+# 标准库
 import random
 import string
 import os
 import sys
 import re
+from collections import namedtuple
 
 # 兼容 Python 3 和 2 的导入
 try:
@@ -26,7 +28,7 @@ except ImportError:
     import ConfigParser as configparser
 
 from fabric.contrib.files import append, exists, sed
-from fabric.api import env, local, run, sudo
+from fabric.api import env, run, sudo
 
 __author__ = '__L1n__w@tch'
 
@@ -42,27 +44,40 @@ class ConfigInteractive:
     负责与用户交互获取必要的配置信息
     """
 
-    def __init__(self):
+    def __init__(self, config_file_name=USER_PASS_CONF):
         global USER_PASS_CONF
-        self.config_file_name = USER_PASS_CONF
+        self.config_file_name = config_file_name
+        self.config_structure = namedtuple("config_structure", ("section", "option"))
+
+        # 配置文件所包含的配置项
+        self.sections_options = [
+            self.config_structure("journals_git", "username"),
+            self.config_structure("journals_git", "password"),
+            self.config_structure("articles_git", "address"),
+            self.config_structure("email_info", "smtp_password"),
+        ]
 
     def _create_config_file(self):
         """
-        创建配置文件
+        创建配置文件, 如果已存在则进行更新操作
         """
         if not os.path.exists(self.config_file_name):
-            cp = configparser.ConfigParser()
-            cp.add_section("journals_git")
-            cp.add_section("articles_git")
-            cp.add_section("email_info")
-
-            cp.set("journals_git", "username", "")
-            cp.set("journals_git", "password", "")
-            cp.set("articles_git", "address", "")
-            cp.set("email_info", "smtp_password", "")
-
+            # 创建配置文件
             with open(self.config_file_name, "w") as f:
-                cp.write(f)
+                pass
+
+        cp = configparser.ConfigParser()
+        cp.read(self.config_file_name)
+
+        # 创建 section 及对应的 option
+        for each_config in self.sections_options:
+            if not cp.has_section(each_config.section):
+                cp.add_section(each_config.section)
+            if not cp.has_option(each_config.section, each_config.option):
+                cp.set(each_config.section, each_config.option, str())
+
+        with open(self.config_file_name, "w") as f:
+            cp.write(f)
 
     def user_pass_file_config(self):
         """
@@ -76,37 +91,22 @@ class ConfigInteractive:
         # 判断是否已经配置
         cp = configparser.ConfigParser()
         cp.read(self.config_file_name)
-        username, password = cp.get("journals_git", "username"), cp.get("journals_git", "password")
-        articles_address, email_password = cp.get("articles_git", "address"), cp.get("email_info", "smtp_password")
 
-        while username == "" or password == "" or articles_address == "" or email_password == "":
+        while any([cp.get(x.section, x.option) == "" for x in self.sections_options]):
             print("[+] 需要输入相关信息, 如不需要则随便打些字符即可")
 
             # 兼容 Python2.7
-            if username == "":
-                print("[+] 请输入 journals_git 的用户名: ")
-                username = sys.stdin.readline().strip()
-            if password == "":
-                print("[+] 请输入 journals_git 的密码: ")
-                password = sys.stdin.readline().strip()
-            if articles_address == "":
-                print("[+] 请输入 articles_git 的地址: ")
-                articles_address = sys.stdin.readline().strip()
-            if email_password == "":
-                print("[+] 请输入 SMTP 登录密码(邮箱硬编码): ")
-                email_password = sys.stdin.readline().strip()
+            for x in self.sections_options:
+                if cp.get(x.section, x.option) == "":
+                    print("[+] 请输入 {} 的 {}: ".format(x.section, x.option))
+                    user_input = sys.stdin.readline().strip()
+                    cp.set(x.section, x.option, user_input)
 
             # 保存到配置文件中
-            if username != "" and password != "" and articles_address != "" and email_password != "":
-                cp.set("journals_git", "username", username)
-                cp.set("journals_git", "password", password)
-                cp.set("articles_git", "address", articles_address)
-                cp.set("email_info", "smtp_password", email_password)
+            with open(self.config_file_name, "w") as f:
+                cp.write(f)
 
-                with open(self.config_file_name, "w") as f:
-                    cp.write(f)
-
-        SMTP_LOGIN_PASSWORD = email_password
+        SMTP_LOGIN_PASSWORD = cp.get("email_info", "smtp_password")
         print("[*] 成功读取文件 {} 的用户名和密码信息".format(self.config_file_name))
 
 
@@ -485,4 +485,4 @@ def _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user):
 
 
 if __name__ == "__main__":
-    pass
+    print("Hello")

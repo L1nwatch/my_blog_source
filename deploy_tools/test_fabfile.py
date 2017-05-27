@@ -2,14 +2,21 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.27 补充 ConfigInteractive 的相关测试
 2017.04.30 修正测试, 加入到 django 测试框架中, 补充没写的 test_do_nothing_when_exist
 2016.10.19 编写单元测试, 测试自己的代码能否正确修改 /etc/crontab 文件
 """
+# 自己的模块
+from fabfile import _update_setting_to_conf_file, ConfigInteractive
+import my_constant
+
+# 标准库
 import os
 import re
-
-from fabfile import _update_setting_to_conf_file
-import my_constant
+import configparser
+import io
+import sys
+from collections import namedtuple
 
 from django.test import TestCase
 from django.conf import settings
@@ -124,6 +131,88 @@ class TestGitBookConf(BaseFabfileTest):
             # 以及包含有 book_name 属性, 书名用 《》 括起来
             self.assertIsNotNone(my_answer[each_book].book_name)
             self.assertRegex(my_answer[each_book].book_name, "^《.+》$")
+
+
+class TestConfigInteractive(BaseFabfileTest):
+    @classmethod
+    def setUpClass(cls):
+        cls.config_structure = namedtuple("config_structure", ("section", "option"))
+
+        # 配置文件所包含的配置项
+        cls.test_config_file_path = "test_config.conf"
+        cls.ci = ConfigInteractive(cls.test_config_file_path)
+
+        super().setUpClass()
+
+    def setUp(self):
+        """
+        创建测试用的配置文件
+        """
+        cp = configparser.ConfigParser()
+
+        # 创建 section 及对应的 option
+        for each_config in self.ci.sections_options:
+            if not cp.has_section(each_config.section):
+                cp.add_section(each_config.section)
+            if not cp.has_option(each_config.section, each_config.option):
+                cp.set(each_config.section, each_config.option, str())
+
+        with open(self.test_config_file_path, "w") as f:
+            cp.write(f)
+
+    def tearDown(self):
+        """
+        删除测试用的 conf 文件
+        """
+        if os.path.exists(self.test_config_file_path):
+            os.remove(self.test_config_file_path)
+
+    def read_config_file(self):
+        cp = configparser.ConfigParser()
+        cp.read(self.test_config_file_path)
+        return cp
+
+    def test_config_can_update_when_has_new_option(self):
+        """
+        创建当配置文件存在时, 如果某些字段不存在于配置文件中, 则配置文件会对这些字段进行更新
+        """
+        # 添加某个字段
+        test_section, test_option = "test_section", "test_option"
+
+        self.ci.sections_options.append(self.config_structure(test_section, test_option))
+
+        # 验证当前配置文件中不存在某个字段
+        cp = self.read_config_file()
+        with self.assertRaises(configparser.NoSectionError):
+            cp.get(test_section, test_option)
+
+        # 调用创建配置文件的函数
+        self.ci._create_config_file()
+
+        # 发现最新的字段已经被添加进来了, 且设置了默认值空值
+        cp = self.read_config_file()
+        self.assertEqual(cp.get(test_section, test_option), str())
+
+    def test_can_set_option_correct(self):
+        """
+        测试可以正确设置字段值到配置文件中
+        """
+        # 确保当前所有字段值为空
+        cp = self.read_config_file()
+        for each_config in self.ci.sections_options:
+            self.assertEqual(cp.get(each_config.section, each_config.option), str())
+
+        # 为每一个字段进行赋值
+        config_data_string = io.StringIO("\n".join(["a" * (i + 1) for i in range(len(self.ci.sections_options))]))
+
+        old_sys_stdin, sys.stdin = sys.stdin, config_data_string
+        self.ci.user_pass_file_config()
+        sys.stdin = old_sys_stdin
+
+        # 验证每个字段的值都是正确的
+        cp = self.read_config_file()
+        for i, each_config in enumerate(self.ci.sections_options):
+            self.assertEqual(cp.get(each_config.section, each_config.option), "a" * (i + 1))
 
 
 if __name__ == "__main__":
