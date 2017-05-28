@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.28 改成 unittest.TC 了, 因为 django.test 没法测试到这边的。。。
 2017.05.27 补充 ConfigInteractive 的相关测试
 2017.04.30 修正测试, 加入到 django 测试框架中, 补充没写的 test_do_nothing_when_exist
 2016.10.19 编写单元测试, 测试自己的代码能否正确修改 /etc/crontab 文件
@@ -16,16 +17,16 @@ import re
 import configparser
 import io
 import sys
+import unittest
 from collections import namedtuple
 
-from django.test import TestCase
 from django.conf import settings
 from importlib import reload
 
 __author__ = '__L1n__w@tch'
 
 
-class BaseFabfileTest(TestCase):
+class BaseFabfileTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

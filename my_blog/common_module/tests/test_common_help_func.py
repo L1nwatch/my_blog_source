@@ -133,6 +133,22 @@ class TestCommonHelpFunc(BasicTest):
                                     flags=re.IGNORECASE)
             self.assertTrue(any([message_re.match(x[1][0]) for x in method_calls]))
 
+    def test_will_send_email_when_new_ip_visit(self):
+        """
+        测试当有新 IP 访问时会执行发送邮件的操作
+        """
+        # 前置条件设置, 确保是一个新的 IP, 并且对发送邮件函数进行 mock 操作
+        with unittest.mock.patch("common_module.email_send.email_sender.want_to_send_email") as send_check, \
+                unittest.mock.patch("common_module.email_send.email_sender.try_to_send_email") as send_email:
+            send_check.return_value = True
+
+            # 存在一个访问请求, 访问首页
+            self.client.get("/")
+
+            # 确认两个函数都被调用了
+            self.assertTrue(send_check.called)
+            self.assertTrue(send_email.called)
+
 
 if __name__ == "__main__":
     pass

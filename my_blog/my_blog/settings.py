@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "toolhub",
     "code_collect",
     "common_module",
+    "log_file_deal",
 ]
 
 BOOTSTRAP_ADMIN_SIDEBAR_MENU = True

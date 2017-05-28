@@ -3,18 +3,22 @@
 # version: Python3.X
 """  对 log_file_deal 模块进行测试
 
+2017.05.28 修正继承类, 使其可以跟 Django Test All 一起
 2017.05.20 测试 log_packer 是否进行正常打包工作
 """
-import unittest
+# 标准库
 import os
 import zipfile
 import datetime
+from django.test import TestCase
+
+# 自己的模块
 from log_file_deal.log_packer import LogPacker
 
 __author__ = '__L1n__w@tch'
 
 
-class TestLogPacker(unittest.TestCase):
+class TestLogPacker(TestCase):
     def setUp(self):
         self.lp = LogPacker(os.curdir)
         self.test_file_names = ["a", "b", "c"]
