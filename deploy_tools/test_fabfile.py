@@ -22,7 +22,6 @@ import unittest.mock
 import re
 import subprocess
 from collections import namedtuple
-from contextlib import redirect_stdout
 
 from django.conf import settings
 from importlib import reload
@@ -313,13 +312,11 @@ smtp_server_port = {smtp_server_port}
             """
             自己实现的 sed 函数
             """
+            call_result = subprocess.check_output(
+                ["sed", "-e", "s/{}/{}/g".format(raw_string, new_string), file_path])
 
-            with io.StringIO() as buf, redirect_stdout(buf):
-                call_result = subprocess.check_output(
-                    ["sed", "-e", "s/{}/{}/g".format(raw_string, new_string), file_path])
-
-                with open(file_path, "wb") as f:
-                    f.write(call_result)
+            with open(file_path, "wb") as f:
+                f.write(call_result)
 
         # 备份 settings.py 文件
         with open(self.settings_py_path, "rb") as f:
