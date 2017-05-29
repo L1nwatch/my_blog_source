@@ -119,7 +119,7 @@ class UpdateConfigFile:
     负责将用户输入的配置信息更新到对应的配置文件中
     """
 
-    def __init__(self, source_folder=None, site_name=None, host_name=None):
+    def __init__(self, source_folder, site_name, host_name):
         self.source_folder = source_folder
         self.site_name = site_name
         self.host_name = host_name
@@ -223,7 +223,8 @@ class UpdateConfigFile:
             'EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"')
         sed(settings_py_path, 'EMAIL_HOST = ""', 'EMAIL_HOST = "{}"'.format(cp.get("email_info", "smtp_server_host")))
         sed(settings_py_path, 'EMAIL_PORT = 465', 'EMAIL_PORT = {}'.format(cp.get("email_info", "smtp_server_port")))
-        sed(settings_py_path, 'EMAIL_HOST_USER = ""', 'EMAIL_HOST_USER = "{}"'.format(cp.get("email_info", "smtp_user")))
+        sed(settings_py_path, 'EMAIL_HOST_USER = ""',
+            'EMAIL_HOST_USER = "{}"'.format(cp.get("email_info", "smtp_user")))
         sed(settings_py_path, 'EMAIL_HOST_PASSWORD = ""',
             'EMAIL_HOST_PASSWORD = "{}"'.format(cp.get("email_info", "smtp_password")))
 
@@ -262,7 +263,7 @@ def deploy():
     ci = ConfigInteractive()
     ci.user_pass_file_config()
 
-    ucf = UpdateConfigFile()
+    ucf = UpdateConfigFile(source_folder=source_folder, site_name=site_name, host_name=host_name)
     ucf.update()
 
     # 更新虚拟环境以及所需的各个包
