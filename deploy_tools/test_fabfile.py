@@ -18,8 +18,11 @@ import configparser
 import io
 import sys
 import unittest
+import unittest.mock
 import re
+import subprocess
 from collections import namedtuple
+from contextlib import redirect_stdout
 
 from django.conf import settings
 from importlib import reload
@@ -170,7 +173,8 @@ class TestUpdateConfigFile(BaseFabfileTest):
         self.gitbook_conf_path = os.path.join(self.current_dir_name, "gitbooks_git.conf")
         self.my_constant_py_path = os.path.join(settings.BASE_DIR, "my_constant.py")
         self.user_pass_config_file_path = os.path.join(self.current_dir_name, "test_config.conf")
-        self.ucf = UpdateConfigFile()
+        self.settings_py_path = os.path.join(settings.BASE_DIR, "my_blog", "settings.py")
+        self.ucf = UpdateConfigFile(source_folder=self.base_dir, site_name="my_blog", host_name="127.0.0.1")
 
         # 保存原来 my_constant.py 中的内容
         with open(self.my_constant_py_path, "rb") as f:
@@ -231,21 +235,12 @@ class TestUpdateConfigFile(BaseFabfileTest):
         """
         测试能够将 journal 的相关配置以及 article 的相关配置更新到 my_constant.py 中去
         """
-        test_username, test_password, test_address = "测试用的用户名", "测试用的密码", "测试用的地址"
-        test_content = """
-[journals_git]
-username = {username}
-password = {password}
-
-[articles_git]
-address = {address}
-""".format(username=test_username, password=test_password, address=test_address)
+        # 创建 user_pass 的测试文件
+        test_input = self.create_user_pass_test_file()
+        test_username, test_password = test_input["username"], test_input["password"]
+        test_address = test_input["address"]
 
         try:
-            # 创建 user_pass 的测试文件
-            with open(self.user_pass_config_file_path, "w") as f:
-                f.write(test_content)
-
             # 原本几个测试数据都不存在于配置文件中
             for x in (test_username, test_password, test_address):
                 self.assertNotIn(x.encode(), self.my_constant_py_old_content)
@@ -273,8 +268,101 @@ address = {address}
             if os.path.exists(self.user_pass_config_file_path):
                 os.remove(self.user_pass_config_file_path)
 
+    def create_user_pass_test_file(self):
+        """
+        创建 user_pass.conf 文件以供测试
+        """
+        result = dict()
+
+        result["username"] = "测试用的用户名"
+        result["password"] = "测试用的密码"
+        result["address"] = "测试用的地址"
+        result["smtp_password"] = "SMTP 密码"
+        result["smtp_user"] = "SMTP 用户名"
+        result["smtp_server_host"] = "服务器主机地址"
+        result["smtp_server_port"] = 12306
+
+        test_content = """
+[journals_git]
+username = {username}
+password = {password}
+
+[articles_git]
+address = {address}
+
+[email_info]
+smtp_password = {smtp_password}
+smtp_user = {smtp_user}
+smtp_server_host = {smtp_server_host}
+smtp_server_port = {smtp_server_port}
+""".format(username=result["username"], password=result["password"], address=result["address"],
+           smtp_password=result["smtp_password"], smtp_server_host=result["smtp_server_host"],
+           smtp_user=result["smtp_user"], smtp_server_port=result["smtp_server_port"])
+
+        with open(self.user_pass_config_file_path, "w") as f:
+            f.write(test_content)
+
+        return result
+
     def test_update_settings(self):
-        pass
+        """
+        测试能否更新 settings.py 文件, 主要是把 email 配置写入, 还有 DEBUG、DOMAIN 等字段的调整
+        """
+
+        def __my_sed(file_path, raw_string, new_string):
+            """
+            自己实现的 sed 函数
+            """
+
+            with io.StringIO() as buf, redirect_stdout(buf):
+                call_result = subprocess.check_output(
+                    ["sed", "-e", "s/{}/{}/g".format(raw_string, new_string), file_path])
+
+                with open(file_path, "wb") as f:
+                    f.write(call_result)
+
+        # 备份 settings.py 文件
+        with open(self.settings_py_path, "rb") as f:
+            settings_old_content = f.read()
+
+        # 创建 USER_PASS 测试文件, 提供 email 配置信息
+        test_data = self.create_user_pass_test_file()
+
+        try:
+            # 原本几个 email 字段(除了 PORT 字段)的内容都不在 settings.py 中
+            for each_email_info in ("smtp_password", "smtp_user", "smtp_server_host"):
+                self.assertNotIn(test_data[each_email_info].encode(), settings_old_content)
+
+            # 调用更新函数
+            with unittest.mock.patch("fabfile.sed", side_effect=__my_sed) as my_sed, \
+                    unittest.mock.patch("fabfile.exists") as my_exists, \
+                    unittest.mock.patch("fabfile.append") as my_append:
+                self.ucf.update_settings(self.settings_py_path, self.user_pass_config_file_path)
+
+            # 重新读取文件内容
+            with open(self.settings_py_path, "r") as f:
+                new_settings_content = f.read()
+
+            patterns = ["EMAIL_HOST = \"(.*)\"", "EMAIL_PORT = (\d+)", "EMAIL_HOST_USER = \"(.*)\"",
+                        "EMAIL_HOST_PASSWORD = \"(.*)\""]
+            fields = ["smtp_server_host", "smtp_server_port", "smtp_user", "smtp_password"]
+            for pattern, each_field in zip(patterns, fields):
+                # 检查更新是否成功, 发现这几个字段都出现在文件中了
+                self.assertTrue(str(test_data[each_field]) in new_settings_content,
+                                msg="[-] 关键词: '{}' 不在内容中".format(test_data[each_field]))
+
+                # 并且存在于对应的项中
+                re_result = re.findall(pattern, new_settings_content, flags=re.IGNORECASE)
+                self.assertEqual(re_result[0], str(test_data[each_field]),
+                                 msg="[-] 找不到: {}".format(test_data[each_field]))
+        finally:
+            # 恢复 settings.py 文件的内容
+            with open(self.settings_py_path, "wb") as f:
+                f.write(settings_old_content)
+
+            # 删除 user_pass 的测试文件
+            if os.path.exists(self.user_pass_config_file_path):
+                os.remove(self.user_pass_config_file_path)
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 使用 Fabric 进行自动化部署
 
+2017.05.28 继续完善发送邮件的配置代码
 2017.05.27 尝试重构部署代码
 2017.05.26 补充 SMTP 登录密码部署时的记录操作
 2017.05.25 补充发送邮件所需的相关部署操作
@@ -36,7 +37,7 @@ __author__ = '__L1n__w@tch'
 REPO_URL = "https://github.com/L1nwatch/my_blog_source.git"
 USER_PASS_CONF = "user_pass.conf"
 GITBOOKS_CONF = "gitbooks_git.conf"
-SMTP_LOGIN_PASSWORD = ""
+SMTP_LOGIN_PASSWORD = str()
 
 
 class ConfigInteractive:
@@ -127,18 +128,21 @@ class UpdateConfigFile:
         """
         完成所有必要的配置更新操作
         """
-        # 更新 gitbooks 链接
+        # 几个文件的路径
         gitbooks_conf_path = GITBOOKS_CONF
         constant_file_path = "{source_folder}/{site_name}/my_constant.py".format(source_folder=self.source_folder,
                                                                                  site_name=self.site_name)
+        settings_path = self.source_folder + "/{site_name}/{site_name}/settings.py".format(site_name=self.site_name)
+        user_config_path = USER_PASS_CONF
+
+        # 更新 gitbooks 链接
         self.update_gitbooks_config(gitbooks_conf_path, constant_file_path)
 
         # 更新 const 文件
-        user_config_path = USER_PASS_CONF
         self.update_user_pass_config(user_config_path, constant_file_path)
 
         # 更新 setting 文件
-        self._update_settings(self.source_folder, self.site_name, self.host_name)
+        self.update_settings(settings_path, user_config_path)
 
     @staticmethod
     def update_gitbooks_config(gitbooks_conf_path, constant_path):
@@ -173,6 +177,7 @@ class UpdateConfigFile:
         :param constant_file_path: str(), my_constant.py 文件的路径
         :return:
         """
+
         def __sub_callback(raw_string, user, pw):
             url = raw_string.group(1)
             new_url = "{0}//{username}:{password}@{1}".format(url.split("//")[0], url.split("//")[1],
@@ -198,40 +203,40 @@ class UpdateConfigFile:
         with open(constant_file_path, "w") as f:
             f.write(data)
 
-    def _update_settings(self, source_folder, site_name, host_name):
+    def update_settings(self, settings_py_path, user_config_path):
         """
-        更新 settings 文件
-        :param source_folder:
-        :param site_name:
-        :param host_name:
+        更新 settings 文件, 包括 email 几个字段, SECRET_KEY、DEBUG、DOMAIN 等
+        :param settings_py_path: str(), settings.py 文件的路径
+        :param user_config_path: str(), user_pass.conf 文件的路径, 该文件保存用户部署时交互输入的信息
         :return: None
         """
         global SMTP_LOGIN_PASSWORD
-        settings_path = source_folder + "/{site_name}/{site_name}/settings.py".format(site_name=site_name)
 
-        # Fabric 提供的 sed 函数作用是在文本中替换字符串。这里把 DEBUG 的值由 True 改成 False
-        # 关闭 django 调试模式
-        sed(settings_path, "DEBUG = True", "DEBUG = False")
-        sed(settings_path, 'DOMAIN = "localhost"', 'DOMAIN = "{}"'.format(host_name))
-        # 修改发送邮件后台终端
-        sed(settings_path, 'EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"',
+        # Fabric 提供的 sed 函数, 类似于 sed 命令
+        sed(settings_py_path, "DEBUG = True", "DEBUG = False")  # 关闭调试模式
+        sed(settings_py_path, 'DOMAIN = "localhost"', 'DOMAIN = "{}"'.format(self.host_name))
+
+        # 修改发送邮件相关配置
+        cp = configparser.ConfigParser()
+        cp.read(user_config_path)
+        sed(settings_py_path, 'EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"',
             'EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"')
-        # 修改 SMTP 登录密码
-        sed(settings_path, 'EMAIL_HOST_PASSWORD = ""', 'EMAIL_HOST_PASSWORD = "{}"'.format(SMTP_LOGIN_PASSWORD))
-        secret_key_file = source_folder + "/{site_name}/{site_name}/secret_key.py".format(site_name=site_name)
+        sed(settings_py_path, 'EMAIL_HOST = ""', 'EMAIL_HOST = "{}"'.format(cp.get("email_info", "smtp_server_host")))
+        sed(settings_py_path, 'EMAIL_PORT = 465', 'EMAIL_PORT = {}'.format(cp.get("email_info", "smtp_server_port")))
+        sed(settings_py_path, 'EMAIL_HOST_USER = ""', 'EMAIL_HOST_USER = "{}"'.format(cp.get("email_info", "smtp_user")))
+        sed(settings_py_path, 'EMAIL_HOST_PASSWORD = ""',
+            'EMAIL_HOST_PASSWORD = "{}"'.format(cp.get("email_info", "smtp_password")))
 
-        # Django 有几处加密操作要使用 SECRET_KEY: cookie 和 CSRF 保护。在服务器中和(可能公开的)源码仓库中使用不同的密钥是个好习惯。
+        # 加密密钥
+        secret_key_file = self.source_folder + "/{site_name}/{site_name}/secret_key.py".format(site_name=self.site_name)
+
         # 如果还没有密钥，这段代码会生成一个新密钥，然后写入密钥文件。有密钥后，每次部署都要使用相同的密钥。
-        # 更多信息参见 [Django 文档](https://docs.djangoproject.com/en/1.7/topics/signing/)
         if not exists(secret_key_file):
             chars = string.ascii_letters + string.digits + "!@#$%^&*(-_=+)"
             key = "".join(random.SystemRandom().choice(chars) for _ in range(50))
             append(secret_key_file, "SECRET_KEY = '{}'".format(key))
         # append 的作用是在文件末尾添加一行内容
-        # (如果要添加的行已经存在，就不会再次添加；但如果文件末尾不是一个空行，它却不能自动添加一个空行。因此加上了 \n。)
-        # 使用的是 "相对导入"(relative import，使用 from .secret key 而不是 from secret_key)
-        # 目的是确保从本地而不是从 sys.path 中其他位置的模块导入。
-        append(settings_path, "\nfrom .secret_key import SECRET_KEY")
+        append(settings_py_path, "\nfrom .secret_key import SECRET_KEY")
 
 
 def deploy():
