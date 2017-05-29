@@ -55,6 +55,9 @@ class ConfigInteractive:
             self.config_structure("journals_git", "password"),
             self.config_structure("articles_git", "address"),
             self.config_structure("email_info", "smtp_password"),
+            self.config_structure("email_info", "smtp_user"),
+            self.config_structure("email_info", "smtp_server_host"),
+            self.config_structure("email_info", "smtp_server_port"),
         ]
 
     def _create_config_file(self):
@@ -110,6 +113,127 @@ class ConfigInteractive:
         print("[*] 成功读取文件 {} 的用户名和密码信息".format(self.config_file_name))
 
 
+class UpdateConfigFile:
+    """
+    负责将用户输入的配置信息更新到对应的配置文件中
+    """
+
+    def __init__(self, source_folder=None, site_name=None, host_name=None):
+        self.source_folder = source_folder
+        self.site_name = site_name
+        self.host_name = host_name
+
+    def update(self):
+        """
+        完成所有必要的配置更新操作
+        """
+        # 更新 gitbooks 链接
+        gitbooks_conf_path = GITBOOKS_CONF
+        constant_file_path = "{source_folder}/{site_name}/my_constant.py".format(source_folder=self.source_folder,
+                                                                                 site_name=self.site_name)
+        self.update_gitbooks_config(gitbooks_conf_path, constant_file_path)
+
+        # 更新 const 文件
+        user_config_path = USER_PASS_CONF
+        self.update_user_pass_config(user_config_path, constant_file_path)
+
+        # 更新 setting 文件
+        self._update_settings(self.source_folder, self.site_name, self.host_name)
+
+    @staticmethod
+    def update_gitbooks_config(gitbooks_conf_path, constant_path):
+        """
+        更新 gitbooks_conf 中的内容到 my_constant.py 中去
+        :param gitbooks_conf_path: str(), gitbooks_conf 的路径
+        :param constant_path: str(), my_constant.py 文件的路径
+        :return:
+        """
+        print("[*] 即将读取 {} 下的 gitbooks 路径".format(gitbooks_conf_path))
+
+        # 读取文件内容
+        with open(gitbooks_conf_path, "r") as f:
+            data = f.read()
+
+        # 替换掉 constant.py 中的内容, 通过 re 修改
+        with open(constant_path, "r") as f:
+            raw_git_data = f.read()
+        raw_git_data = re.sub('const\.GITBOOK_CODES_REPOSITORY = \{[^}]*\}',
+                              'const.GITBOOK_CODES_REPOSITORY = {}'.format(data), raw_git_data)
+
+        with open(constant_path, "w") as f:
+            f.write(raw_git_data)
+
+        print("[*] 成功将 {} 中的 gitbooks 路径更新到配置文件中".format(gitbooks_conf_path))
+
+    @staticmethod
+    def update_user_pass_config(user_config_path, constant_file_path):
+        """
+        将用户输入的相关配置更新到 my_constant.py 中去
+        :param user_config_path: str(), user_pass.conf 文件的路径, 该文件保存用户部署时交互输入的信息
+        :param constant_file_path: str(), my_constant.py 文件的路径
+        :return:
+        """
+        def __sub_callback(raw_string, user, pw):
+            url = raw_string.group(1)
+            new_url = "{0}//{username}:{password}@{1}".format(url.split("//")[0], url.split("//")[1],
+                                                              username=user, password=pw)
+
+            return 'const.JOURNALS_GIT_REPOSITORY = "{}"'.format(new_url)
+
+        # 获取 username 和 password
+        cp = configparser.ConfigParser()
+        cp.read(user_config_path)
+
+        username, password = cp.get("journals_git", "username"), cp.get("journals_git", "password")
+        articles_address = cp.get("articles_git", "address")
+
+        # 通过 re 修改 const 文件
+        with open(constant_file_path, "r") as f:
+            data = f.read()
+        data = re.sub('const.JOURNALS_GIT_REPOSITORY = "(?P<git_url>.*)"',
+                      lambda x: __sub_callback(x, username, password), data)
+        data = re.sub('const.ARTICLES_GIT_REPOSITORY = ".*"',
+                      'const.ARTICLES_GIT_REPOSITORY = "{}"'.format(articles_address), data)
+
+        with open(constant_file_path, "w") as f:
+            f.write(data)
+
+    def _update_settings(self, source_folder, site_name, host_name):
+        """
+        更新 settings 文件
+        :param source_folder:
+        :param site_name:
+        :param host_name:
+        :return: None
+        """
+        global SMTP_LOGIN_PASSWORD
+        settings_path = source_folder + "/{site_name}/{site_name}/settings.py".format(site_name=site_name)
+
+        # Fabric 提供的 sed 函数作用是在文本中替换字符串。这里把 DEBUG 的值由 True 改成 False
+        # 关闭 django 调试模式
+        sed(settings_path, "DEBUG = True", "DEBUG = False")
+        sed(settings_path, 'DOMAIN = "localhost"', 'DOMAIN = "{}"'.format(host_name))
+        # 修改发送邮件后台终端
+        sed(settings_path, 'EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"',
+            'EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"')
+        # 修改 SMTP 登录密码
+        sed(settings_path, 'EMAIL_HOST_PASSWORD = ""', 'EMAIL_HOST_PASSWORD = "{}"'.format(SMTP_LOGIN_PASSWORD))
+        secret_key_file = source_folder + "/{site_name}/{site_name}/secret_key.py".format(site_name=site_name)
+
+        # Django 有几处加密操作要使用 SECRET_KEY: cookie 和 CSRF 保护。在服务器中和(可能公开的)源码仓库中使用不同的密钥是个好习惯。
+        # 如果还没有密钥，这段代码会生成一个新密钥，然后写入密钥文件。有密钥后，每次部署都要使用相同的密钥。
+        # 更多信息参见 [Django 文档](https://docs.djangoproject.com/en/1.7/topics/signing/)
+        if not exists(secret_key_file):
+            chars = string.ascii_letters + string.digits + "!@#$%^&*(-_=+)"
+            key = "".join(random.SystemRandom().choice(chars) for _ in range(50))
+            append(secret_key_file, "SECRET_KEY = '{}'".format(key))
+        # append 的作用是在文件末尾添加一行内容
+        # (如果要添加的行已经存在，就不会再次添加；但如果文件末尾不是一个空行，它却不能自动添加一个空行。因此加上了 \n。)
+        # 使用的是 "相对导入"(relative import，使用 from .secret key 而不是 from secret_key)
+        # 目的是确保从本地而不是从 sys.path 中其他位置的模块导入。
+        append(settings_path, "\nfrom .secret_key import SECRET_KEY")
+
+
 def deploy():
     """
     2016.10.04 根据之前的自动化部署代码进行更改, 这里要进行的几个操作包括:
@@ -126,21 +250,15 @@ def deploy():
     # 创建结构树
     _create_directory_structure_if_necessary(site_folder)
 
-    # 更新代码
+    # 从 GitHub 上更新代码
     _get_latest_source(source_folder)
 
     # 与用户交互获取相关配置信息
     ci = ConfigInteractive()
     ci.user_pass_file_config()
 
-    # 更新 gitbooks 链接
-    _gitbooks_config(source_folder, site_name)
-
-    # 更新 const 文件
-    _update_const_file(source_folder, site_name)
-
-    # 更新 setting 文件
-    _update_settings(source_folder, site_name, host_name)
+    ucf = UpdateConfigFile()
+    ucf.update()
 
     # 更新虚拟环境以及所需的各个包
     _update_virtualenv(source_folder, virtualenv_folder)
@@ -156,99 +274,6 @@ def deploy():
 
     # 定时任务
     _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder)
-
-
-def _gitbooks_config(source_folder, site_name):
-    print("[*] 即将读取 {} 下的 gitbooks 路径".format(GITBOOKS_CONF))
-
-    # 读取文件内容
-    with open(GITBOOKS_CONF, "r") as f:
-        data = f.read()
-
-    # 替换掉 constant.py 中的内容
-    const_file_path = "{source_folder}/{site_name}/my_constant.py".format(source_folder=source_folder,
-                                                                          site_name=site_name)
-
-    # 通过 re 修改 const 文件
-    with open(const_file_path, "r") as f:
-        raw_git_data = f.read()
-    raw_git_data = re.sub('const\.GITBOOK_CODES_REPOSITORY = \{[^}]*\}',
-                          'const.GITBOOK_CODES_REPOSITORY = {}'.format(data), raw_git_data)
-
-    with open(const_file_path, "w") as f:
-        f.write(raw_git_data)
-
-    print("[*] 成功将 {} 中的 gitbooks 路径更新到配置文件中".format(GITBOOKS_CONF))
-
-
-def _update_const_file(source_folder, site_name):
-    def __sub_callback(raw_string, user, pw):
-        url = raw_string.group(1)
-        new_url = "{0}//{username}:{password}@{1}".format(url.split("//")[0], url.split("//")[1],
-                                                          username=user, password=pw)
-
-        return 'const.JOURNALS_GIT_REPOSITORY = "{}"'.format(new_url)
-
-    global USER_PASS_CONF
-    const_file_path = "{source_folder}/{site_name}/my_constant.py".format(source_folder=source_folder,
-                                                                          site_name=site_name)
-
-    # 获取 username 和 password
-    cp = configparser.ConfigParser()
-    cp.read(USER_PASS_CONF)
-
-    username, password = cp.get("journals_git", "username"), cp.get("journals_git", "password")
-    articles_address = cp.get("articles_git", "address")
-
-    # 通过 re 修改 const 文件
-    with open(const_file_path, "r") as f:
-        data = f.read()
-    data = re.sub('const.JOURNALS_GIT_REPOSITORY = "(?P<git_url>.*)"',
-                  lambda x: __sub_callback(x, username, password), data)
-    data = re.sub('const.ARTICLES_GIT_REPOSITORY = ".*"',
-                  'const.ARTICLES_GIT_REPOSITORY = "{}"'.format(articles_address), data)
-
-    with open(const_file_path, "w") as f:
-        f.write(data)
-
-
-def _update_setting_to_conf_file(old_content, cron_job):
-    """
-    给配置文件添加对应的参数行
-    # 2016.10.19 重构一下 _set_cron_job, 将其中关于修改文件内容的代码封装成函数
-    :param old_content: 原来 crontab 已经存在的内容
-    :param cron_job: 要添加到 crontab 的命令
-    :return:
-    """
-    result_content_list = list()
-    is_in_command_section = False
-    has_set_cron_job = False
-    for each_line in old_content:
-        if is_in_command_section:
-            # 已经存在 run_cron 设定, 那就不理了
-            if "manage.py runcrons --force" in each_line.lower():
-                if each_line.strip().lower() != cron_job:
-                    each_line = cron_job
-                has_set_cron_job = True
-            # 到达该节的末尾了
-            if each_line.strip() == "#":
-                # 没设定的话就添加 run_cron 设定
-                if not has_set_cron_job:
-                    result_content_list.append(cron_job)
-            result_content_list.append(each_line)
-        else:
-            result_content_list.append(each_line)
-
-        # 设置 command 节标志位
-        if "# m h dom mon dow user" in each_line.strip():
-            is_in_command_section = True
-        elif is_in_command_section and each_line.strip() == "#":
-            is_in_command_section = False
-
-    result_content_list = [each_line.strip() for each_line in result_content_list]
-    result_content_list = [each_line + os.linesep for each_line in result_content_list]
-
-    return result_content_list
 
 
 def _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder):
@@ -331,42 +356,6 @@ def _get_latest_source(source_folder):
     else:
         # 如果仓库不存在，就执行 git clone 命令克隆一份全新的源码。
         run("git clone {} {}".format(REPO_URL, source_folder))
-
-
-def _update_settings(source_folder, site_name, host_name):
-    """
-    更新 settings 文件
-    :param source_folder:
-    :param site_name:
-    :param host_name:
-    :return: None
-    """
-    global SMTP_LOGIN_PASSWORD
-    settings_path = source_folder + "/{site_name}/{site_name}/settings.py".format(site_name=site_name)
-
-    # Fabric 提供的 sed 函数作用是在文本中替换字符串。这里把 DEBUG 的值由 True 改成 False
-    # 关闭 django 调试模式
-    sed(settings_path, "DEBUG = True", "DEBUG = False")
-    sed(settings_path, 'DOMAIN = "localhost"', 'DOMAIN = "{}"'.format(host_name))
-    # 修改发送邮件后台终端
-    sed(settings_path, 'EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"',
-        'EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"')
-    # 修改 SMTP 登录密码
-    sed(settings_path, 'EMAIL_HOST_PASSWORD = ""', 'EMAIL_HOST_PASSWORD = "{}"'.format(SMTP_LOGIN_PASSWORD))
-    secret_key_file = source_folder + "/{site_name}/{site_name}/secret_key.py".format(site_name=site_name)
-
-    # Django 有几处加密操作要使用 SECRET_KEY: cookie 和 CSRF 保护。在服务器中和(可能公开的)源码仓库中使用不同的密钥是个好习惯。
-    # 如果还没有密钥，这段代码会生成一个新密钥，然后写入密钥文件。有密钥后，每次部署都要使用相同的密钥。
-    # 更多信息参见 [Django 文档](https://docs.djangoproject.com/en/1.7/topics/signing/)
-    if not exists(secret_key_file):
-        chars = string.ascii_letters + string.digits + "!@#$%^&*(-_=+)"
-        key = "".join(random.SystemRandom().choice(chars) for _ in range(50))
-        append(secret_key_file, "SECRET_KEY = '{}'".format(key))
-    # append 的作用是在文件末尾添加一行内容
-    # (如果要添加的行已经存在，就不会再次添加；但如果文件末尾不是一个空行，它却不能自动添加一个空行。因此加上了 \n。)
-    # 使用的是 "相对导入"(relative import，使用 from .secret key 而不是 from secret_key)
-    # 目的是确保从本地而不是从 sys.path 中其他位置的模块导入。
-    append(settings_path, "\nfrom .secret_key import SECRET_KEY")
 
 
 def _update_virtualenv(source_folder, virtualenv_folder):
@@ -482,6 +471,45 @@ def _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user):
     sudo('service nginx reload'
          ' && supervisorctl update'
          ' && supervisorctl restart gunicorn')
+
+
+def _update_setting_to_conf_file(old_content, cron_job):
+    """
+    给配置文件添加对应的参数行
+    # 2016.10.19 重构一下 _set_cron_job, 将其中关于修改文件内容的代码封装成函数
+    :param old_content: 原来 crontab 已经存在的内容
+    :param cron_job: 要添加到 crontab 的命令
+    :return:
+    """
+    result_content_list = list()
+    is_in_command_section = False
+    has_set_cron_job = False
+    for each_line in old_content:
+        if is_in_command_section:
+            # 已经存在 run_cron 设定, 那就不理了
+            if "manage.py runcrons --force" in each_line.lower():
+                if each_line.strip().lower() != cron_job:
+                    each_line = cron_job
+                has_set_cron_job = True
+            # 到达该节的末尾了
+            if each_line.strip() == "#":
+                # 没设定的话就添加 run_cron 设定
+                if not has_set_cron_job:
+                    result_content_list.append(cron_job)
+            result_content_list.append(each_line)
+        else:
+            result_content_list.append(each_line)
+
+        # 设置 command 节标志位
+        if "# m h dom mon dow user" in each_line.strip():
+            is_in_command_section = True
+        elif is_in_command_section and each_line.strip() == "#":
+            is_in_command_section = False
+
+    result_content_list = [each_line.strip() for each_line in result_content_list]
+    result_content_list = [each_line + os.linesep for each_line in result_content_list]
+
+    return result_content_list
 
 
 if __name__ == "__main__":

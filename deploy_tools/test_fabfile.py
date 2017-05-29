@@ -2,22 +2,23 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.05.28 补充更新配置文件的测试代码
 2017.05.28 改成 unittest.TC 了, 因为 django.test 没法测试到这边的。。。
 2017.05.27 补充 ConfigInteractive 的相关测试
 2017.04.30 修正测试, 加入到 django 测试框架中, 补充没写的 test_do_nothing_when_exist
 2016.10.19 编写单元测试, 测试自己的代码能否正确修改 /etc/crontab 文件
 """
 # 自己的模块
-from fabfile import _update_setting_to_conf_file, ConfigInteractive
+from fabfile import _update_setting_to_conf_file, ConfigInteractive, UpdateConfigFile
 import my_constant
 
 # 标准库
 import os
-import re
 import configparser
 import io
 import sys
 import unittest
+import re
 from collections import namedtuple
 
 from django.conf import settings
@@ -30,8 +31,8 @@ class BaseFabfileTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.current_dir_name = os.path.dirname(__file__)
-        cls.base_dir = os.path.dirname(cls.current_dir_name)
+        cls.current_dir_name = os.path.dirname(__file__)  # 当前文件夹名字
+        cls.base_dir = os.path.dirname(cls.current_dir_name)  # 根文件夹路径
 
 
 class TestModifyCrontabFile(BaseFabfileTest):
@@ -73,74 +74,14 @@ class TestModifyCrontabFile(BaseFabfileTest):
         )
 
 
-class TestGitBookConf(BaseFabfileTest):
-    def setUp(self):
-        super(TestGitBookConf, self).setUp()
-
-        self.gitbook_conf_name = "gitbooks_git.conf"
-        self.test_file_name = os.path.join(self.base_dir, self.current_dir_name, self.gitbook_conf_name)
-        self.const_file_path = os.path.join(settings.BASE_DIR, "my_constant.py")
-
-        # 保存原来的文件
-        with open(self.const_file_path, "rb") as f:
-            self.old_content = f.read()
-
-        # 调用函数, 将 Conf 中的内容应用到文件中去
-        self.update_const_file()
-
-    def update_const_file(self):
-        print("[*] 即将读取 {} 下的 gitbooks 路径".format(self.gitbook_conf_name))
-
-        # 读取文件内容
-        with open(self.test_file_name, "r") as f:
-            data = f.read()
-
-        # 通过 re 修改 const 文件
-        with open(self.const_file_path, "r") as f:
-            raw_git_data = f.read()
-        raw_git_data = re.sub('const\.GITBOOK_CODES_REPOSITORY = \{[^}]*\}',
-                              'const.GITBOOK_CODES_REPOSITORY = {}'.format(data), raw_git_data)
-
-        with open(self.const_file_path, "w") as f:
-            f.write(raw_git_data)
-
-        print("[*] 成功将 {} 中的 gitbooks 路径更新到配置文件中".format(self.gitbook_conf_name))
-
-    def tearDown(self):
-        # 恢复原来的文件
-        with open(self.const_file_path, "wb") as f:
-            f.write(self.old_content)
-
-        super(TestGitBookConf, self).tearDown()
-
-    def test_gitbook_conf_format_is_right(self):
-        """
-        测试 gitbook_conf 文件的格式是正确的
-        :return:
-        """
-        reload(my_constant)
-        my_answer = my_constant.const.GITBOOK_CODES_REPOSITORY
-
-        for each_book in my_answer:
-            # 首先得是个命名元组
-            self.assertIsInstance(my_answer[each_book], my_constant.const.GITBOOK_INFO)
-
-            # 然后包含有 git_address 属性, 之后要符合 git 的格式
-            self.assertIsNotNone(my_answer[each_book].git_address)
-            self.assertRegex(my_answer[each_book].git_address, "^https?://.+\.git$")
-
-            # 以及包含有 book_name 属性, 书名用 《》 括起来
-            self.assertIsNotNone(my_answer[each_book].book_name)
-            self.assertRegex(my_answer[each_book].book_name, "^《.+》$")
-
-
 class TestConfigInteractive(BaseFabfileTest):
+    test_config_file_path = "test_config.conf"
+
     @classmethod
     def setUpClass(cls):
         cls.config_structure = namedtuple("config_structure", ("section", "option"))
 
         # 配置文件所包含的配置项
-        cls.test_config_file_path = "test_config.conf"
         cls.ci = ConfigInteractive(cls.test_config_file_path)
 
         super().setUpClass()
@@ -149,6 +90,9 @@ class TestConfigInteractive(BaseFabfileTest):
         """
         创建测试用的配置文件
         """
+        self.create_user_pass_config_file()
+
+    def create_user_pass_config_file(self):
         cp = configparser.ConfigParser()
 
         # 创建 section 及对应的 option
@@ -161,12 +105,15 @@ class TestConfigInteractive(BaseFabfileTest):
         with open(self.test_config_file_path, "w") as f:
             cp.write(f)
 
+    def delete_user_pass_config_file(self):
+        if os.path.exists(self.test_config_file_path):
+            os.remove(self.test_config_file_path)
+
     def tearDown(self):
         """
         删除测试用的 conf 文件
         """
-        if os.path.exists(self.test_config_file_path):
-            os.remove(self.test_config_file_path)
+        self.delete_user_pass_config_file()
 
     def read_config_file(self):
         cp = configparser.ConfigParser()
@@ -214,6 +161,120 @@ class TestConfigInteractive(BaseFabfileTest):
         cp = self.read_config_file()
         for i, each_config in enumerate(self.ci.sections_options):
             self.assertEqual(cp.get(each_config.section, each_config.option), "a" * (i + 1))
+
+
+class TestUpdateConfigFile(BaseFabfileTest):
+    def setUp(self):
+        super().setUp()
+
+        self.gitbook_conf_path = os.path.join(self.current_dir_name, "gitbooks_git.conf")
+        self.my_constant_py_path = os.path.join(settings.BASE_DIR, "my_constant.py")
+        self.user_pass_config_file_path = os.path.join(self.current_dir_name, "test_config.conf")
+        self.ucf = UpdateConfigFile()
+
+        # 保存原来 my_constant.py 中的内容
+        with open(self.my_constant_py_path, "rb") as f:
+            self.my_constant_py_old_content = f.read()
+
+    def tearDown(self):
+        # 恢复 my_constant.py 中的内容
+        with open(self.my_constant_py_path, "wb") as f:
+            f.write(self.my_constant_py_old_content)
+
+    def test_update_gitbooks_config(self):
+        """
+        测试将 GitBook 链接更新到 my_constant.py 文件中
+        """
+
+        with open(self.gitbook_conf_path, "r") as f:
+            conf_data = f.read()
+
+        # 原本 conf 文件里面的内容不存在于 py 文件中
+        self.assertNotIn(conf_data.encode(), self.my_constant_py_old_content)
+
+        # 调用更新操作
+        self.ucf.update_gitbooks_config(self.gitbook_conf_path, self.my_constant_py_path)
+
+        # 发现 conf 文件里面的内容都存在于 py 文件中了
+        with open(self.my_constant_py_path, "r") as f:
+            my_constant_py_new_content = f.read()
+        self.assertIn(conf_data, my_constant_py_new_content)
+
+        # 而且格式是正确的
+        self.test_gitbook_conf_format_is_right()
+
+        # 并且是位于 const.GITBOOK_CODES_REPOSITORY 的花括号之间
+        pattern = "const.GITBOOK_CODES_REPOSITORY = (\{.*\})"
+        re_result = re.findall(pattern, my_constant_py_new_content, flags=re.IGNORECASE | re.DOTALL)[0]
+        self.assertEqual(re_result, conf_data)
+
+    def test_gitbook_conf_format_is_right(self):
+        """
+        测试 gitbook_conf 文件的格式是正确的
+        """
+        reload(my_constant)
+        my_answer = my_constant.const.GITBOOK_CODES_REPOSITORY
+
+        for each_book in my_answer:
+            # 首先得是个命名元组
+            self.assertIsInstance(my_answer[each_book], my_constant.const.GITBOOK_INFO)
+
+            # 然后包含有 git_address 属性, 之后要符合 git 的格式
+            self.assertIsNotNone(my_answer[each_book].git_address)
+            self.assertRegex(my_answer[each_book].git_address, "^https?://.+\.git$")
+
+            # 以及包含有 book_name 属性, 书名用 《》 括起来
+            self.assertIsNotNone(my_answer[each_book].book_name)
+            self.assertRegex(my_answer[each_book].book_name, "^《.+》$")
+
+    def test_update_const_config(self):
+        """
+        测试能够将 journal 的相关配置以及 article 的相关配置更新到 my_constant.py 中去
+        """
+        test_username, test_password, test_address = "测试用的用户名", "测试用的密码", "测试用的地址"
+        test_content = """
+[journals_git]
+username = {username}
+password = {password}
+
+[articles_git]
+address = {address}
+""".format(username=test_username, password=test_password, address=test_address)
+
+        try:
+            # 创建 user_pass 的测试文件
+            with open(self.user_pass_config_file_path, "w") as f:
+                f.write(test_content)
+
+            # 原本几个测试数据都不存在于配置文件中
+            for x in (test_username, test_password, test_address):
+                self.assertNotIn(x.encode(), self.my_constant_py_old_content)
+
+            # 调用更新函数
+            self.ucf.update_user_pass_config(self.user_pass_config_file_path, self.my_constant_py_path)
+
+            # 现在几个测试数据都存在于配置文件中了
+            with open(self.my_constant_py_path, "r") as f:
+                my_constant_py_content = f.read()
+            for x in (test_username, test_password, test_address):
+                self.assertIn(x, my_constant_py_content)
+
+            # 并且存在于对应的项中
+            pattern = "const.JOURNALS_GIT_REPOSITORY = \"(.*)\""
+            re_result = re.findall(pattern, my_constant_py_content, flags=re.IGNORECASE)
+            right_answer = "https://{}:{}@git.oschina.net/w4tch/sxf_notes_set.git".format(test_username, test_password)
+            self.assertEqual(re_result[0], right_answer)
+
+            pattern = "const.ARTICLES_GIT_REPOSITORY = \"(.*)\""
+            re_result = re.findall(pattern, my_constant_py_content, flags=re.IGNORECASE)
+            self.assertEqual(re_result[0], test_address)
+        finally:
+            # 删除 user_pass 的测试文件
+            if os.path.exists(self.user_pass_config_file_path):
+                os.remove(self.user_pass_config_file_path)
+
+    def test_update_settings(self):
+        pass
 
 
 if __name__ == "__main__":
