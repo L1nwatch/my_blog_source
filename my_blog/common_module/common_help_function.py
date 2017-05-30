@@ -32,7 +32,14 @@ import chardet
 import copy
 import string
 import re
+import requests
 import datetime
+import ipaddress
+
+try:
+    import simplejson as json
+except ImportError:
+    import json
 
 from functools import wraps
 from ipware.ip import get_ip, get_real_ip, get_trusted_ip
@@ -44,6 +51,25 @@ model_dict = {"articles": Article,
               "all": BaseModel,
               "gitbooks": GitBook, "gitbook_notes": GitBook,
               "code": CodeCollect}
+
+
+def locate_using_ip_address(ip_address):
+    """
+    根据 IP 地址定位地理位置, 中国则返回具体市县, 其他国家则只返回国家
+    :param ip_address: str(), 比如 "113.140.11.123"
+    :return: str(), 比如 "中国-西安市"
+    """
+    if ipaddress.ip_address(ip_address).is_private:
+        return "内网 IP"
+
+    response = requests.get("http://ip.taobao.com/service/getIpInfo.php?ip={ip_address}".format(ip_address=ip_address))
+    result = json.loads(response.content.decode("unicode_escape"))
+    country = result["data"]["country"]
+
+    if country == "中国":
+        return "{}-{}".format(country, result["data"]["city"])
+    else:
+        return country
 
 
 def is_valid_git_address(raw_data):
@@ -267,16 +293,16 @@ def decorator_with_args(decorator_to_enhance):
 def background_deal(*, logger, level, request, func_kwargs, str_format):
     """
     记录日志 + 发送邮件
-    :return:
     """
     now = datetime.datetime.today()
 
     logger_func = getattr(logger, level)
     ip_address = get_ip_from_django_request(request)
+    location = locate_using_ip_address(ip_address)
+
+    log_data = ("[*] {} 的IP {} 于 {} " + str_format).format(location, ip_address, now)
     if len(func_kwargs) > 0:
-        log_data = ("[*] IP {} 于 {} " + str_format + ", 相关参数为: {}").format(ip_address, now, func_kwargs)
-    else:
-        log_data = ("[*] IP {} 于 {} " + str_format).format(ip_address, now)
+        log_data += ", 相关参数为: {}".format(func_kwargs)
 
     email_sender.send_email(log_data, ip_address, logger)
     logger_func(log_data)

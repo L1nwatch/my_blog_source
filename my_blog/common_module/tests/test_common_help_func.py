@@ -10,7 +10,7 @@
 2017.03.07 为共有函数进行测试编写
 """
 # 自己的模块
-from common_module.common_help_function import (clean_form_data, sort_search_result,
+from common_module.common_help_function import (clean_form_data, sort_search_result, locate_using_ip_address,
                                                 data_check, is_valid_git_address, background_deal)
 from my_constant import const
 from .basic_test import BasicTest
@@ -129,7 +129,7 @@ class TestCommonHelpFunc(BasicTest):
             ))
 
             # 有 IP 以及时间信息
-            message_re = re.compile("\[\*\] IP \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} 于 \d{4}-\d{2}-\d{2}",
+            message_re = re.compile("\[\*\].*IP \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} 于 \d{4}-\d{2}-\d{2}",
                                     flags=re.IGNORECASE)
             self.assertTrue(any([message_re.match(x[1][0]) for x in method_calls]))
 
@@ -148,6 +148,27 @@ class TestCommonHelpFunc(BasicTest):
             # 确认两个函数都被调用了
             self.assertTrue(send_check.called)
             self.assertTrue(send_email.called)
+
+    def test_locate_using_ip_address(self):
+        """
+        测试通过 IP 定位地理信息是否正确
+        """
+        my_answer = locate_using_ip_address("66.249.79.71")
+        right_answer = "美国"
+        self.assertEqual(right_answer, my_answer)
+
+        my_answer = locate_using_ip_address("88.198.54.49")
+        right_answer = "德国"
+        self.assertEqual(right_answer, my_answer)
+
+        my_answer = locate_using_ip_address("113.140.11.123")
+        right_answer = "中国-西安市"
+        self.assertEqual(right_answer, my_answer)
+
+        my_answer = locate_using_ip_address("127.0.0.1")
+        right_answer = "内网 IP"
+        self.assertEqual(right_answer, my_answer)
+
 
 
 if __name__ == "__main__":
