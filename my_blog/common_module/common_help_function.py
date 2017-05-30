@@ -26,23 +26,17 @@ from work_journal.forms import JournalForm
 from gitbook_notes.models import GitBook
 from code_collect.models import CodeCollect
 from common_module.email_send import email_sender
+from common_module.ip_deal import locate_using_ip_address, get_ip_from_django_request
 
 # 标准库
 import chardet
 import copy
 import string
 import re
-import requests
-import datetime
-import ipaddress
 
-try:
-    import simplejson as json
-except ImportError:
-    import json
+import datetime
 
 from functools import wraps
-from ipware.ip import get_ip, get_real_ip, get_trusted_ip
 
 __author__ = '__L1n__w@tch'
 
@@ -51,25 +45,6 @@ model_dict = {"articles": Article,
               "all": BaseModel,
               "gitbooks": GitBook, "gitbook_notes": GitBook,
               "code": CodeCollect}
-
-
-def locate_using_ip_address(ip_address):
-    """
-    根据 IP 地址定位地理位置, 中国则返回具体市县, 其他国家则只返回国家
-    :param ip_address: str(), 比如 "113.140.11.123"
-    :return: str(), 比如 "中国-西安市"
-    """
-    if ipaddress.ip_address(ip_address).is_private:
-        return "内网 IP"
-
-    response = requests.get("http://ip.taobao.com/service/getIpInfo.php?ip={ip_address}".format(ip_address=ip_address))
-    result = json.loads(response.content.decode("unicode_escape"))
-    country = result["data"]["country"]
-
-    if country == "中国":
-        return "{}-{}".format(country, result["data"]["city"])
-    else:
-        return country
 
 
 def is_valid_git_address(raw_data):
@@ -240,18 +215,6 @@ def create_search_result(article_list, keyword_set, search_type):
             const.ARTICLE_STRUCTURE(each_article.id, each_article.title, result_content_list, search_type))
 
     return sort_search_result(result_list)
-
-
-def get_ip_from_django_request(request):
-    """
-    # 用来获取访问者 IP 的
-    # 参考
-    ## https://my.oschina.net/u/167994/blog/156184
-    ## http://stackoverflow.com/questions/4581789/how-do-i-get-user-ip-address-in-django
-    :param request: 传给视图函数的 request
-    :return: ip 地址, 比如 116.26.110.36
-    """
-    return get_ip(request)
 
 
 def get_right_content_from_file(file_path):
