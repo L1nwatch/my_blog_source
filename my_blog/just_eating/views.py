@@ -17,8 +17,9 @@ from my_constant import const
 
 logger = logging.getLogger("my_blog.just_eating.views")
 
-school_lunch_backup_list = ["快餐", "小米鸡排饭", "微辣香锅", "029餐厅", "川渝私房菜", "新综香干炒肉"]
-school_dinner_backup_list = ["就知道晚饭", "还是晚饭", "又是晚饭", "晚饭饭饭", "晚饭", "晚饭饭"]
+school_breakfast_backup_list = ["海棠-照烧鸡腿"]
+school_lunch_backup_list = ["快餐", "微辣香锅", "新综香干炒肉", "暂无其他午饭列表"]
+school_dinner_backup_list = ["海棠-瓦罐汤", "暂无其他晚饭列表"]
 
 
 def create_home_menu():
@@ -44,12 +45,12 @@ def create_school_menu():
     school_menu = list()
 
     monday = const.EATING_MENU_STRUCTURE("周一", "海棠\n油饼夹菜", "竹园\n蒙古烤肉(油)", "待定")
-    tuesday = const.EATING_MENU_STRUCTURE("周二", "老综\n卤肉卷", "海棠\n川渝-杏鲍菇炒肉", "竹园\n快餐")
+    tuesday = const.EATING_MENU_STRUCTURE("周二", "老综\n卤肉卷", "待定", "竹园\n快餐")
     wednesday = const.EATING_MENU_STRUCTURE("周三", "竹园\n火腿饼", "海棠\n川味椒盐里脊", "新综\n黑椒牛柳(油!)")
     thursday = const.EATING_MENU_STRUCTURE("周四", "海棠\n杂粮煎饼", "丁香\n农家小炒肉", "新综\n快餐")
     friday = const.EATING_MENU_STRUCTURE("周五", "竹园\n手抓饼", "新综\n台湾(油)", "丁香\n三楼自选快餐")
     saturday = const.EATING_MENU_STRUCTURE("周六", "海棠\n鸡蛋灌饼|鸡蛋卷", "新综\n包菜肉片(油!)", "待定")
-    sunday = const.EATING_MENU_STRUCTURE("周日", "丁香\n肉夹馍|鸡蛋饼卷", "新综\n鸡米花饭|胖子小厨", "新综\n沙县小吃")
+    sunday = const.EATING_MENU_STRUCTURE("周日", "丁香\n肉夹馍|鸡蛋饼卷", "待定", "新综\n沙县小吃")
 
     for each_day in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]:
         school_menu.append(each_day)
