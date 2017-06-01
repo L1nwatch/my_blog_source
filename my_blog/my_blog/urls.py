@@ -21,6 +21,7 @@ Including another URL conf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.conf import settings
 import articles.views
 
 urlpatterns = [
@@ -34,3 +35,8 @@ urlpatterns = [
     url(r"^tool_hub/", include("toolhub.urls")),
     url(r"^code_collect/", include("code_collect.urls")),
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+
+    urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))

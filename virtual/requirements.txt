@@ -6,6 +6,7 @@ certifi==2017.4.17
 chardet==3.0.3
 Django==1.10.1
 django-common-helpers==0.8.0
+django-debug-toolbar==1.8
 django-ipware==1.1.6
 ecdsa==0.13
 Fabric3==1.12.post1
@@ -23,4 +24,5 @@ pytz==2016.6.1
 requests==2.17.3
 selenium==2.53.6
 six==1.10.0
+sqlparse==0.2.3
 urllib3==1.21.1

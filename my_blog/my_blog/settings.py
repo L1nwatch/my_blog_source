@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "code_collect",
     "common_module",
     "log_file_deal",
+    "debug_toolbar",
 ]
 
 BOOTSTRAP_ADMIN_SIDEBAR_MENU = True
@@ -68,6 +69,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'my_blog.urls'
@@ -244,3 +246,6 @@ EMAIL_PORT = 465  # 发件箱的SMTP服务器端口
 EMAIL_HOST_USER = ""  # 发送邮件的邮箱地址
 EMAIL_HOST_PASSWORD = ""
 DEFAULT_FROM_EMAIL = 'watch0.top <watch@watch0.top>'
+
+# 内部 IP 变量:
+INTERNAL_IPS = ("127.0.0.1",)
