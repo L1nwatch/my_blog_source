@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.02 添加多线程, 主要是为了那个访问淘宝 IP 库的函数使用的
 2017.06.02 优化排序代码 + 新增更新笔记数的功能
 2017.05.25 在日志记录函数中新增发送邮件的操作
 2017.05.21 修改 common_module 路径
@@ -34,7 +35,7 @@ import chardet
 import copy
 import string
 import re
-
+import threading
 import datetime
 
 from functools import wraps
@@ -305,7 +306,12 @@ def log_wrapper(func, *, str_format="", level="info", logger=None):
     def wrapper(request=None, *func_args, **func_kwargs):
         if request is not None:
             # 记录日志并发送邮件
-            background_deal(logger=logger, level=level, request=request, func_kwargs=func_kwargs, str_format=str_format)
+            make_a_log = threading.Thread(target=background_deal, kwargs={"logger": logger,
+                                                                          "level": level,
+                                                                          "request": request,
+                                                                          "func_kwargs": func_kwargs,
+                                                                          "str_format": str_format})
+            make_a_log.start()
 
         return func(request, *func_args, **func_kwargs)
 

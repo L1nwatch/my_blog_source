@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 负责发送邮件
 
+2017.06.02 更改检索数据库 IP 的代码, 避免由于多线程导致没法立即检索数据库然后抛出异常
 2017.05.30 完善发送邮件的内容, 邮件标题加上访问 IP 的地理信息
 2017.05.26 修正代码逻辑, 要不然子线程中无法捕获异常也不会记录发送邮件失败的日志
 2017.05.25 改为多线程, 避免邮件发送失败时导致前端也显示不了了
@@ -15,7 +16,9 @@ from my_constant import const
 
 # 标准库
 from django.core.mail import send_mail
+from django.db.utils import OperationalError
 import threading
+import time
 
 __author__ = '__L1n__w@tch'
 
@@ -31,11 +34,16 @@ class EmailSend:
         判断是否是新的 IP 地址, 同时更新计数器
         :return: True or False, 新 IP 地址则为 True
         """
-        ip, created = VisitedIP.objects.get_or_create(ip_address=ip_address)
-        ip.times += 1
-        ip.save()
+        while True:
+            try:
+                ip, created = VisitedIP.objects.get_or_create(ip_address=ip_address)
+                ip.times += 1
+                ip.save()
+                return created
+            except OperationalError:
+                time.sleep(1)
 
-        return created
+        return False
 
     def want_to_send_email(self, ip_address):
         """
@@ -51,7 +59,7 @@ class EmailSend:
         else:
             return False
 
-    def try_to_send_email(self, message, logger,ip_address):
+    def try_to_send_email(self, message, logger, ip_address):
         """
         尝试发送邮件, 并进行异常捕获
         :param message: str(), 邮件正文
@@ -79,8 +87,9 @@ class EmailSend:
         :return: str(), 如果执行异常则返回消息方便记录到日志中, 没异常则返回空字符串
         """
         if self.want_to_send_email(ip_address):
-            send_mail_thread = threading.Thread(target=self.try_to_send_email, args=(message, logger, ip_address))
-            send_mail_thread.start()
+            self.try_to_send_email(message, logger, ip_address)
+            # send_mail_thread = threading.Thread(target=self.try_to_send_email, args=(message, logger, ip_address))
+            # send_mail_thread.start()
 
 
 email_sender = EmailSend(want_send_email=const.WANT_SEND_EMAIL)
