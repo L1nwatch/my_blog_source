@@ -17,9 +17,9 @@ from my_constant import const
 
 logger = logging.getLogger("my_blog.just_eating.views")
 
-school_breakfast_backup_list = ["海棠-照烧鸡腿"]
-school_lunch_backup_list = ["快餐", "微辣香锅", "新综香干炒肉", "暂无其他午饭列表"]
-school_dinner_backup_list = ["海棠-瓦罐汤", "暂无其他晚饭列表"]
+school_breakfast_backup_list = ["海棠-照烧鸡腿", "暂无其他早饭列表", "暂无其他早饭列表", "暂无其他早饭列表", "暂无其他早饭列表"]
+school_lunch_backup_list = ["快餐", "微辣香锅", "新综香干炒肉", "暂无其他午饭列表", "暂无其他午饭列表", "暂无其他午饭列表"]
+school_dinner_backup_list = ["海棠-瓦罐汤", "暂无其他晚饭列表", "暂无其他晚饭列表", "暂无其他晚饭列表", "暂无其他晚饭列表"]
 
 
 def create_home_menu():

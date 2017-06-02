@@ -39,14 +39,16 @@ class AutoUpdateNotes(CronJobBase):
         jobs = list()
 
         # 多进程更新
-        # 包括更新文章、更新日志、更新 GitBook、更新代码数据库、日志压缩、更新文章数
-        for func in [update_notes, update_journals, update_gitbook_codes,
-                     code_collect, log_deal.run, update_notes_numbers]:
+        # 包括更新文章、更新日志、更新 GitBook、更新代码数据库、日志压缩
+        for func in [update_notes, update_journals, update_gitbook_codes, code_collect, log_deal.run]:
             p = multiprocessing.Process(target=func, args=())
             jobs.append(p)
             p.start()
 
         for process in jobs:
             process.join()
+
+        # 这不能在子进程中完成, 因为需要更新全局变量
+        update_notes_numbers()
 
         print("[*] [{}] {separator} 进行定时更新 {separator}".format(now, separator="*" * 30))
