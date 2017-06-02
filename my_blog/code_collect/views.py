@@ -2,6 +2,7 @@
 # version: Python3.X
 """ code_collect 的视图函数
 
+2017.06.02 优化排序代码
 2017.05.21 修改 common_module 路径
 2017.03.31 修正一下 code 搜索出来的链接不正确的问题
 2017.03.30 继续完成 do_code_search 相关代码, 给更新函数添加记日记功能
@@ -102,7 +103,7 @@ def search_code_keyword_in_note_set(note_set, keyword_set, code_type):
 
         if search_result:
             result_list.append(const.ARTICLE_STRUCTURE(
-                each_note.id, each_note.title, search_result, get_note_type(each_note)
+                each_note.id, each_note.title, search_result, get_note_type(each_note), each_note.click_times
             ))
 
     return result_list

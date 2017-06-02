@@ -39,7 +39,7 @@ const.KEYWORD_IN_HREF = "关键词出现在 url 链接中"
 const.PLACE_HOLDER = "What are you looking for?"
 const.HOME_PAGE_ARTICLES_NUMBERS = 2
 const.NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
-const.ARTICLE_STRUCTURE = namedtuple("article_post", ["id", "title", "content", "type"])
+const.ARTICLE_STRUCTURE = namedtuple("article_post", ["id", "title", "content", "type", "click_times"])
 const.MARKDOWN_TREE_STRUCTURE = namedtuple("toc_tree", ["title", "id", "child"])
 
 # 日记页面

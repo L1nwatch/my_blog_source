@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.02 优化排序代码 + 新增更新笔记数的功能
 2017.05.25 在日志记录函数中新增发送邮件的操作
 2017.05.21 修改 common_module 路径
 2017.04.30 新增一个 is_valid_git_address 判断函数
@@ -46,6 +47,23 @@ model_dict = {"articles": Article,
               "gitbooks": GitBook, "gitbook_notes": GitBook,
               "code": CodeCollect}
 
+numbers_dict = {"articles": 0,
+                "journals": 0, "work_journal": 0,
+                "all": 0,
+                "gitbooks": 0, "gitbook_notes": 0,
+                "code": 0}
+
+
+def update_notes_numbers():
+    """
+    更新 numbers_dict
+    :return: None, 直接将结果更新到对应的字典中
+    """
+    global numbers_dict
+
+    for key, value in model_dict.items():
+        numbers_dict[key] = len(value.objects.all())
+
 
 def is_valid_git_address(raw_data):
     return re.match("^https?://.+\.git$", raw_data)
@@ -65,7 +83,7 @@ def get_context_data(request, context_type, update_data=None):
     data_return_to_base_template = {"form": form_dict[context_type](initial={"search_choice": context_type}),
                                     "current_type": context_type,
                                     "is_valid_click": "True",
-                                    "{}_numbers".format(context_type): len(model_dict[context_type].objects.all())}
+                                    "{}_numbers".format(context_type): numbers_dict[context_type]}
     if request.method == "POST":
         data_return_to_base_template["form"] = form_dict[context_type](request.POST)
 
@@ -162,7 +180,7 @@ def sort_search_result(result_list):
     """
 
     def __sorted_function(x):
-        return model_dict[x.type].objects.get(id=x.id).click_times
+        return x.click_times
 
     result_list = sorted(result_list, key=__sorted_function, reverse=True)
     return result_list
@@ -211,8 +229,9 @@ def create_search_result(article_list, keyword_set, search_type):
             # 设置默认值
             result_content_list = [const.SEARCH_RESULT_INFO("", const.KEYWORD_IN_TITLE, 0)]
 
-        result_list.append(
-            const.ARTICLE_STRUCTURE(each_article.id, each_article.title, result_content_list, search_type))
+        result_list.append(const.ARTICLE_STRUCTURE(
+            each_article.id, each_article.title, result_content_list, search_type, each_article.click_times)
+        )
 
     return sort_search_result(result_list)
 

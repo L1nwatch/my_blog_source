@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.02 优化排序代码, 更改对应测试代码, 新增一个更新笔记数的函数
 2017.05.26 补充 log 的测试
 2017.05.21 将该文件移到共同测试模块
 2017.04.30 新增有关 git 地址的测试代码
@@ -11,7 +12,8 @@
 """
 # 自己的模块
 from common_module.common_help_function import (clean_form_data, sort_search_result, locate_using_ip_address,
-                                                data_check, is_valid_git_address, background_deal)
+                                                data_check, is_valid_git_address, background_deal, numbers_dict,
+                                                model_dict,update_notes_numbers)
 from my_constant import const
 from .basic_test import BasicTest
 
@@ -60,14 +62,14 @@ class TestCommonHelpFunc(BasicTest):
         test_article3 = self.create_article(click_times=2)
 
         test_result_list = [
-            const.ARTICLE_STRUCTURE(test_article1.id, test_article1.title, "aaa", "articles"),
-            const.ARTICLE_STRUCTURE(test_article2.id, test_article2.title, "bbb", "articles"),
-            const.ARTICLE_STRUCTURE(test_article3.id, test_article3.title, "ccc", "articles"),
+            const.ARTICLE_STRUCTURE(test_article1.id, test_article1.title, "aa", "articles", test_article1.click_times),
+            const.ARTICLE_STRUCTURE(test_article2.id, test_article2.title, "bb", "articles", test_article2.click_times),
+            const.ARTICLE_STRUCTURE(test_article3.id, test_article3.title, "cc", "articles", test_article3.click_times),
         ]
         right_answer = [
-            const.ARTICLE_STRUCTURE(test_article2.id, test_article2.title, "bbb", "articles"),
-            const.ARTICLE_STRUCTURE(test_article3.id, test_article3.title, "ccc", "articles"),
-            const.ARTICLE_STRUCTURE(test_article1.id, test_article1.title, "aaa", "articles"),
+            const.ARTICLE_STRUCTURE(test_article2.id, test_article2.title, "bb", "articles", test_article2.click_times),
+            const.ARTICLE_STRUCTURE(test_article3.id, test_article3.title, "cc", "articles", test_article3.click_times),
+            const.ARTICLE_STRUCTURE(test_article1.id, test_article1.title, "aa", "articles", test_article1.click_times),
         ]
         my_answer = sort_search_result(test_result_list)
         self.assertEqual(len(my_answer), 3)
@@ -169,6 +171,27 @@ class TestCommonHelpFunc(BasicTest):
         right_answer = "内网 IP"
         self.assertEqual(right_answer, my_answer)
 
+    def test_update_notes_number(self):
+        """
+        测试更新函数能够正确更新对应的变量
+        """
+        # 一开始变量数为 xxx
+        for key, value in model_dict.items():
+            numbers_dict[key] = len(value.objects.all())
+
+        # 新增了笔记
+        for types in ("articles", "journals", "gitbooks"):
+            create_func = self.create_func_map(types)
+            # 创建 3 篇笔记
+            for i in range(3):
+                create_func()
+
+            # 调用更新函数
+            update_notes_numbers()
+
+            # 检查笔记数的统计是否正确
+            for key, value in model_dict.items():
+                self.assertEqual(numbers_dict[key], len(value.objects.all()))
 
 
 if __name__ == "__main__":
