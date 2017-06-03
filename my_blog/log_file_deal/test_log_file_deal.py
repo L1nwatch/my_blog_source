@@ -3,6 +3,7 @@
 # version: Python3.X
 """  对 log_file_deal 模块进行测试
 
+2017.06.03 修改 log 打包后的名字, 主要是补充 0 位
 2017.05.28 修正继承类, 使其可以跟 Django Test All 一起
 2017.05.20 测试 log_packer 是否进行正常打包工作
 """
@@ -30,7 +31,9 @@ class TestLogPacker(TestCase):
 
         self.today = datetime.datetime.today()
         self.yesterday = self.today - datetime.timedelta(days=1)
-        self.log_zip_name = "{}{}{}_log.zip".format(self.yesterday.year, self.yesterday.month, self.yesterday.day)
+        self.log_zip_name = "{}{}{}_log.zip".format(self.yesterday.year,
+                                                    str(self.yesterday.month).zfill(2),
+                                                    str(self.yesterday.day).zfill(2))
 
     def tearDown(self):
         # 删除测试用的 log 文件

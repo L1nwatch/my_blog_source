@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 负责对日志进行打包
 
+2017.06.03 修改 log 打包后的名字, 主要是补充 0 位
 2017.05.20 开始编写基本功能, 即打包日志
 """
 import os
@@ -28,7 +29,8 @@ class LogPacker:
         """
         now = datetime.datetime.today()
         yesterday = now - datetime.timedelta(days=1)
-        zip_file_name = "{}{}{}_log.zip".format(yesterday.year, yesterday.month, yesterday.day)
+        zip_file_name = "{}{}{}_log.zip".format(yesterday.year,
+                                                str(yesterday.month).zfill(2), str(yesterday.day).zfill(2))
         zip_file_path = os.path.join(self.log_path, zip_file_name)
 
         # 还没为昨天打包过, 则执行打包操作
