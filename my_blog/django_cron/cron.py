@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.03 剔除更新笔记数的功能, 因为某些不知名的原因导致出 BUG 了
 2017.06.02 新增更新笔记数的功能
 2017.05.20 添加日志打包功能
 2017.03.30 新增 code_collect 更新操作
@@ -22,7 +23,6 @@ from work_journal.views import update_journals
 from gitbook_notes.views import update_gitbook_codes
 from code_collect.views import code_collect
 from log_file_deal.log_packer import LogPacker
-from common_module.common_help_function import update_notes_numbers
 
 
 class AutoUpdateNotes(CronJobBase):
@@ -47,8 +47,5 @@ class AutoUpdateNotes(CronJobBase):
 
         for process in jobs:
             process.join()
-
-        # 这不能在子进程中完成, 因为需要更新全局变量
-        update_notes_numbers()
 
         print("[*] [{}] {separator} 进行定时更新 {separator}".format(now, separator="*" * 30))

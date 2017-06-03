@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.03 修正笔记数的获取方式, 换了一个好像更高效的方法来统计
 2017.06.03 继续重写代码逻辑, 避免数据库锁定以及发邮件卡顿的问题, 于是修改对应测试代码
 2017.06.02 优化排序代码, 更改对应测试代码, 新增一个更新笔记数的函数
 2017.05.26 补充 log 的测试
@@ -13,8 +14,7 @@
 """
 # 自己的模块
 from common_module.common_help_function import (clean_form_data, sort_search_result, locate_using_ip_address,
-                                                data_check, is_valid_git_address, background_deal, numbers_dict,
-                                                model_dict, update_notes_numbers)
+                                                data_check, is_valid_git_address, background_deal, model_dict)
 from my_constant import const
 from .basic_test import BasicTest
 
@@ -175,12 +175,8 @@ class TestCommonHelpFunc(BasicTest):
 
     def test_update_notes_number(self):
         """
-        测试更新函数能够正确更新对应的变量
+        验证获取统计数的方法是正确
         """
-        # 一开始变量数为 xxx
-        for key, value in model_dict.items():
-            numbers_dict[key] = len(value.objects.all())
-
         # 新增了笔记
         for types in ("articles", "journals", "gitbooks"):
             create_func = self.create_func_map(types)
@@ -188,12 +184,9 @@ class TestCommonHelpFunc(BasicTest):
             for i in range(3):
                 create_func()
 
-            # 调用更新函数
-            update_notes_numbers()
-
             # 检查笔记数的统计是否正确
             for key, value in model_dict.items():
-                self.assertEqual(numbers_dict[key], len(value.objects.all()))
+                self.assertEqual(value.objects.all().count(), len(value.objects.all()))
 
 
 if __name__ == "__main__":

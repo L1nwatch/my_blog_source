@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.06.03 修正笔记数的获取方式, 换了一个好像更高效的方法来统计
 2017.06.03 继续重写代码逻辑, 避免数据库锁定以及发邮件卡顿的问题
 2017.06.02 添加多线程, 主要是为了那个访问淘宝 IP 库的函数使用的
 2017.06.02 优化排序代码 + 新增更新笔记数的功能
@@ -50,23 +51,6 @@ model_dict = {"articles": Article,
               "gitbooks": GitBook, "gitbook_notes": GitBook,
               "code": CodeCollect}
 
-numbers_dict = {"articles": 0,
-                "journals": 0, "work_journal": 0,
-                "all": 0,
-                "gitbooks": 0, "gitbook_notes": 0,
-                "code": 0}
-
-
-def update_notes_numbers():
-    """
-    更新 numbers_dict
-    :return: None, 直接将结果更新到对应的字典中
-    """
-    global numbers_dict
-
-    for key, value in model_dict.items():
-        numbers_dict[key] = len(value.objects.all())
-
 
 def is_valid_git_address(raw_data):
     return re.match("^https?://.+\.git$", raw_data)
@@ -86,7 +70,7 @@ def get_context_data(request, context_type, update_data=None):
     data_return_to_base_template = {"form": form_dict[context_type](initial={"search_choice": context_type}),
                                     "current_type": context_type,
                                     "is_valid_click": "True",
-                                    "{}_numbers".format(context_type): numbers_dict[context_type]}
+                                    "{}_numbers".format(context_type): model_dict[context_type].objects.all().count()}
     if request.method == "POST":
         data_return_to_base_template["form"] = form_dict[context_type](request.POST)
 
