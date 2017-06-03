@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+
+2017.06.03 继续重写代码逻辑, 避免数据库锁定以及发邮件卡顿的问题
 2017.06.02 添加多线程, 主要是为了那个访问淘宝 IP 库的函数使用的
 2017.06.02 优化排序代码 + 新增更新笔记数的功能
 2017.05.25 在日志记录函数中新增发送邮件的操作
@@ -273,21 +275,24 @@ def decorator_with_args(decorator_to_enhance):
     return decorator_maker
 
 
-def background_deal(*, logger, level, request, func_kwargs, str_format):
+def background_deal(*, logger, level, request, func_kwargs, str_format, ip_address, email_check):
     """
     记录日志 + 发送邮件
+    :param ip_address: str(), 触发日志的 IP 地址
+    :return: None
     """
     now = datetime.datetime.today()
 
     logger_func = getattr(logger, level)
-    ip_address = get_ip_from_django_request(request)
+
     location = locate_using_ip_address(ip_address)
 
     log_data = ("[*] {} 的IP {} 于 {} " + str_format).format(location, ip_address, now)
     if len(func_kwargs) > 0:
         log_data += ", 相关参数为: {}".format(func_kwargs)
 
-    email_sender.send_email(log_data, ip_address, logger)
+    email_sender.send_email(message=log_data, ip_address=ip_address, logger=logger, location=location,
+                            send_email_check=email_check)
     logger_func(log_data)
 
 
@@ -305,12 +310,19 @@ def log_wrapper(func, *, str_format="", level="info", logger=None):
     @wraps(func)
     def wrapper(request=None, *func_args, **func_kwargs):
         if request is not None:
+            # 检查是否要发送邮件
+            ip_address = get_ip_from_django_request(request)
+
+            email_check = email_sender.want_to_send_email(ip_address)
+
             # 记录日志并发送邮件
             make_a_log = threading.Thread(target=background_deal, kwargs={"logger": logger,
                                                                           "level": level,
                                                                           "request": request,
                                                                           "func_kwargs": func_kwargs,
-                                                                          "str_format": str_format})
+                                                                          "str_format": str_format,
+                                                                          "ip_address": ip_address,
+                                                                          "email_check": email_check})
             make_a_log.start()
 
         return func(request, *func_args, **func_kwargs)

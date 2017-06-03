@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.03 继续重写代码逻辑, 避免数据库锁定以及发邮件卡顿的问题, 于是修改对应测试代码
 2017.06.02 优化排序代码, 更改对应测试代码, 新增一个更新笔记数的函数
 2017.05.26 补充 log 的测试
 2017.05.21 将该文件移到共同测试模块
@@ -13,7 +14,7 @@
 # 自己的模块
 from common_module.common_help_function import (clean_form_data, sort_search_result, locate_using_ip_address,
                                                 data_check, is_valid_git_address, background_deal, numbers_dict,
-                                                model_dict,update_notes_numbers)
+                                                model_dict, update_notes_numbers)
 from my_constant import const
 from .basic_test import BasicTest
 
@@ -121,7 +122,8 @@ class TestCommonHelpFunc(BasicTest):
 
         with unittest.mock.patch("articles.views.logger") as log_mock, unittest.mock.patch(
                 "django.core.mail.send_mail") as email_sender:
-            background_deal(logger=log_mock, level="info", request=get_request, func_kwargs=dict(), str_format=str())
+            background_deal(logger=log_mock, level="info", request=get_request, func_kwargs=dict(),
+                            str_format=str(), ip_address="11.11.11.11", email_check=True)
 
             method_calls = log_mock.method_calls
 

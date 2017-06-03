@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 负责发送邮件
 
+2017.06.03 继续重写代码逻辑, 避免数据库锁定以及发邮件卡顿的问题
 2017.06.02 更改检索数据库 IP 的代码, 避免由于多线程导致没法立即检索数据库然后抛出异常
 2017.05.30 完善发送邮件的内容, 邮件标题加上访问 IP 的地理信息
 2017.05.26 修正代码逻辑, 要不然子线程中无法捕获异常也不会记录发送邮件失败的日志
@@ -59,16 +60,16 @@ class EmailSend:
         else:
             return False
 
-    def try_to_send_email(self, message, logger, ip_address):
+    def try_to_send_email(self, message, logger, ip_address, location):
         """
         尝试发送邮件, 并进行异常捕获
         :param message: str(), 邮件正文
         :param logger: logger 对象, 日志记录使用
         :param ip_address: str(), ip 地址
+        :param location: str(), 表示 IP 地址的地理位置
         :return:
         """
         logger.info("[*] 开始尝试发送邮件")
-        location = locate_using_ip_address(ip_address)
 
         try:
             send_mail(subject="[!] {} 的某人访问了你的网站".format(location), message=message, from_email="watch@watch0.top",
@@ -78,18 +79,18 @@ class EmailSend:
             self.send_email_success = False
             logger.error("[*] 发送失败: {}".format(e))
 
-    def send_email(self, message, ip_address, logger):
+    def send_email(self, *, message, ip_address, logger, send_email_check, location):
         """
         发送邮件
         :param message: str(), 邮件正文
         :param ip_address: str(), 表示访问者的 IP 地址
         :param logger: logger 对象, 日志记录使用
+        :param send_email_check: boolean(), True or False, 表示 Email 发送检查是否通过
+        :param location: str(), 表示 IP 地址的地理位置
         :return: str(), 如果执行异常则返回消息方便记录到日志中, 没异常则返回空字符串
         """
-        if self.want_to_send_email(ip_address):
-            self.try_to_send_email(message, logger, ip_address)
-            # send_mail_thread = threading.Thread(target=self.try_to_send_email, args=(message, logger, ip_address))
-            # send_mail_thread.start()
+        if send_email_check:
+            self.try_to_send_email(message, logger, ip_address, location)
 
 
 email_sender = EmailSend(want_send_email=const.WANT_SEND_EMAIL)
