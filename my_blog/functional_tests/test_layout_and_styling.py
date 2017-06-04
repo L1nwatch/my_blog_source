@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.04 重构基类测试, 修改对应代码
 2017.03.31 发现 journal 的页面没有 sidebar 了, 补充对应测试
 2017.03.17 重构一下测试用的 md 的文件的路径
 2017.02.26 添加一下吃饭界面的 CSS 测试
@@ -60,7 +61,7 @@ class JustEatingLayoutStylingTest(FunctionalTest):
 class ArticleTimeInfoTest(FunctionalTest):
     def setUp(self):
         super().setUp()
-        self._create_articles_test_db_data()
+        self.create_articles_test_db_data()
         self.test_time = datetime.datetime.now()
         self.test_url = "{host}/{path}".format(host=self.server_url, path="articles/archives/")
 
@@ -205,7 +206,7 @@ class WorkJournalDisplayTest(FunctionalTest):
         测试侧边栏工作正确
         """
         # 创建测试数据
-        journal = self._create_work_journal_test_db_data()
+        journal = self.create_work_journal_test_db_data()
 
         # 打开首页, 访问某份日记
         self.browser.get(self.server_url)

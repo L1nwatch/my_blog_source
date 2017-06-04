@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.04 重构基类测试, 修改对应代码
 2017.03.28 修改 about me 的测试
 2017.03.24 新增一个 tool_hub APP, 于是编写相关测试
 2017.02.13 日记更换首页了, 对应的测试得修改下
@@ -73,7 +74,7 @@ class TestHomePageButtons(FunctionalTest):
 
     def test_archive_button(self):
         # 创建测试数据
-        self._create_articles_test_db_data()
+        self.create_articles_test_db_data()
 
         # 刷新首页
         self.browser.refresh()
@@ -109,7 +110,7 @@ class TestHomePageButtons(FunctionalTest):
         """
         today = datetime.datetime.today()
         # 创建测试数据
-        self._create_work_journal_test_db_data()
+        self.create_work_journal_test_db_data()
 
         # Y 在首页发现了一个按钮, 日常工作笔记
         work_journal_button = self.browser.find_element_by_id("id_work_journal")

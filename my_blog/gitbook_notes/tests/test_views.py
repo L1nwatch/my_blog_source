@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 测试 gitbook_notes 这个 app 下的视图函数
 
+2017.06.04 重构基类测试, 修改对应代码
 2017.05.21 修改 common_module 路径
 2017.04.30 修正大小写导致判定失误的问题, 补充完善有关 GitBook 书名的测试代码
 2017.04.04 重构有关创建测试数据的代码
@@ -34,7 +35,8 @@ __author__ = '__L1n__w@tch'
 class BaseCommonTest(BasicTest):
     @staticmethod
     def create_gitbooks_test_db():
-        return FunctionalTest.create_gitbook_test_db_data()
+        ft = FunctionalTest()
+        return ft.create_gitbook_test_db_data()
 
 
 @override_settings(UPDATE_TIME_LIMIT=0.1)

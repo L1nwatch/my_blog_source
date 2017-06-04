@@ -52,9 +52,6 @@ const.EATING_MENU_STRUCTURE = namedtuple("eating_menu", ["day_time", "morning", 
 # git 提交前需要改为 False or True, 要不然网站会跑失败的...
 const.SLOW_CONNECT_DEBUG = False  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
 
-# False 表示真的会尝试进行邮件发送操作
-# const.EMAIL_DEBUG_MODEL = True if input("是否在调试模式下测试邮件发送?(yes/no)") == "yes" else False
-
 # 发送邮件
 const.WANT_SEND_EMAIL = True
 

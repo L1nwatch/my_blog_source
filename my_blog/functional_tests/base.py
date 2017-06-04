@@ -3,11 +3,13 @@
 # version: Python3.X
 """ 各个功能测试的基类
 
+2017.06.04 重构基类测试, 修改对应代码
 2017.04.30 把创建 gitbook 测试数据返回给调用者
 2017.04.04 新增 proxy 设置
 2017.03.31 完善创建测试数据的代码, 但是还需要重构, 现在的冗余太多
 2017.03.07 给 FIREFOX 添加代理配置
 """
+# 标准库
 import sys
 import os
 import time
@@ -21,9 +23,11 @@ from selenium.webdriver.common.proxy import Proxy, ProxyType
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.conf import settings
 
+# 自己的模块
 from articles.models import Article, Tag
 from work_journal.models import Journal
 from gitbook_notes.models import GitBook
+from common_module.tests.basic_test import CreateTestData
 
 DEFAULT_WAIT = 5
 SCREEN_DUMP_LOCATION = os.path.abspath(
@@ -33,7 +37,7 @@ SCREEN_DUMP_LOCATION = os.path.abspath(
 __author__ = '__L1n__w@tch'
 
 
-class FunctionalTest(StaticLiveServerTestCase):
+class FunctionalTest(CreateTestData, StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         """
@@ -53,16 +57,6 @@ class FunctionalTest(StaticLiveServerTestCase):
         super().setUpClass()
         cls.against_staging = False
         cls.server_url = cls.live_server_url
-
-        # my_proxy = "127.0.0.1:1080"
-        #
-        # cls.proxy = Proxy({
-        #     'proxyType': ProxyType.MANUAL,
-        #     'httpProxy': my_proxy,
-        #     'ftpProxy': my_proxy,
-        #     'sslProxy': my_proxy,
-        #     'noProxy': 'localhost*'  # set this value as desired
-        # })
 
     @classmethod
     def tearDownClass(cls):
@@ -153,25 +147,23 @@ class FunctionalTest(StaticLiveServerTestCase):
         # 再试一次，如果还不行就抛出所有异常
         return function_with_assertion()
 
-    @staticmethod
-    def _create_articles_test_db_data():
+    def create_articles_test_db_data(self):
         """
         创建测试用的相关数据
-        :return:
         """
         # 创建三个标签, Python, Markdown, Others
-        tag_python = Tag.objects.create(tag_name="Python")
-        tag_markdown = Tag.objects.create(tag_name="Markdown")
-        tag_others = Tag.objects.create(tag_name="Others")
+        tag_python = self.create_tag(tag_name="Python")
+        tag_markdown = self.create_tag(tag_name="Markdown")
+        tag_others = self.create_tag(tag_name="Others")
 
         # 创建一篇文章, 分类为默认值 Others, 无标签, 内容为默认值空
-        Article.objects.create(title="article_with_nothing")
+        self.create_article(title="article_with_nothing")
 
         # 创建一篇文章, 分类为默认值 Others, 无标签, 有内容
-        Article.objects.create(title="article_with_no_tag_category", content="I only have content and title")
+        self.create_article(title="article_with_no_tag_category", content="I only have content and title")
 
         # 创建一篇文章, 有分类, 无标签, 有内容
-        Article.objects.create(title="article_with_markdown", category="Markdown", content="""
+        article_content = """
 ## I am 2nd title
 * test markdown1
 * test markdown2
@@ -183,38 +175,33 @@ import time
 while True:
     time.sleep(50)
     print "hello world!"
-```""")
+```
+"""
+        self.create_article(title="article_with_markdown", category="Markdown", content=article_content)
 
         # 创建文章二, 有分类, 有标签, 有内容
-        new_article = Article.objects.create(title="article_with_python", category="Python",
-                                             content="I am `Python`")
+        new_article = self.create_article(title="article_with_python", category="Python", content="I am `Python`")
         new_article.tag = (tag_python,)
 
         # 创建三篇文章, 带标签 Others 以及分类 Test_Category
         for i in range(3):
-            new_article = Article.objects.create(title="article_with_same_category{}".format(i + 1),
-                                                 category="Test_Category", content="Same category {}".format(i + 1))
+            new_article = self.create_article(title="article_with_same_category{}".format(i + 1),
+                                              category="Test_Category", content="Same category {}".format(i + 1))
             new_article.tag = (tag_others,)
 
-    @staticmethod
-    def _create_work_journal_test_db_data():
-        Journal.objects.create(title="2017-02-07 任务情况总结"
-                               , content="测试笔记, 应该记录 2017/02/07 的工作内容", date=datetime(2017, 2, 7))
-        Journal.objects.create(title="2017-02-08 任务情况总结"
-                               , content="# Test pyThon", date=datetime(2017, 2, 8))
-        Journal.objects.create(title="2017-02-09 任务情况总结"
-                               , content="测试笔记, 应该记录 2017/02/09 的工作内容", date=datetime(2017, 2, 9))
+    def create_work_journal_test_db_data(self):
+        self.create_journal(title="2017-02-07 任务情况总结", content="测试笔记, 应该记录 2017/02/07 的工作内容", date=datetime(2017, 2, 7))
+        self.create_journal(title="2017-02-08 任务情况总结", content="# Test pyThon", date=datetime(2017, 2, 8))
+        self.create_journal(title="2017-02-09 任务情况总结", content="测试笔记, 应该记录 2017/02/09 的工作内容", date=datetime(2017, 2, 9))
 
         today = datetime.today()
-        journal = Journal.objects.create(title="{}-{}-{} 任务情况总结".format(today.year, today.month, today.day),
-                                         content="今天的任务情况总结",
-                                         date=today)
+        journal = self.create_journal(title="{}-{}-{} 任务情况总结".format(today.year, today.month, today.day),
+                                      content="今天的任务情况总结", date=today)
 
         return journal
 
-    @staticmethod
-    def create_gitbook_test_db_data():
-        gitbook1 = GitBook.objects.create(
+    def create_gitbook_test_db_data(self):
+        gitbook1 = self.create_gitbook(
             book_name="test_book_name",
             href="http://{}/{}.html".format("test_book_name", "test"),
             md_file_name="test.md",
@@ -225,7 +212,7 @@ while True:
         # 下面这份为真实存在的数据
         with open(os.path.join(settings.BASE_DIR, "gitbook_notes", "tests", "super与init方法.md"), "r") as f:
             content = f.read()
-        gitbook2 = GitBook.objects.create(
+        gitbook2 = self.create_gitbook(
             book_name="interview_exercise",
             href=("https://l1nwatch.gitbooks.io/interview_exercise/content/"
                   "stackoverflow-about-Python/super%E4%B8%8Einit%E6%96%B9%E6%B3%95.html"),

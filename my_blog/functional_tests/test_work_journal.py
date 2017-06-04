@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.04 继续完善笔记数显示代码
 2017.06.02 完善左下角显示日记数的测试代码
 2017.02.16 手测发现搜索页面左下角居然显示的是文章数?什么情况...
 2017.02.14 给 404 页面的搜索功能添加功能测试
@@ -15,7 +16,6 @@ import datetime
 # 自己的库
 from .base import FunctionalTest
 from my_constant import const
-from common_module.common_help_function import update_notes_numbers
 
 __author__ = '__L1n__w@tch'
 
@@ -68,7 +68,7 @@ class TestWorkJournalHomePage(FunctionalTest):
         self.browser.get("{host}{path}".format(host=self.server_url, path=self.unique_url))
 
         # Y 知道站长今天已经写日记了
-        self._create_work_journal_test_db_data()
+        self.create_work_journal_test_db_data()
 
         # 于是 Y 试着点击一下, 想看看今天的日记
         self.browser.find_element_by_id("id_journal").click()
@@ -87,7 +87,7 @@ class TestWorkJournalSearch(FunctionalTest):
     def setUp(self):
         super().setUp()
         self.work_journal_home = "{host}{path}".format(host=self.server_url, path=self.unique_url)
-        self._create_work_journal_test_db_data()
+        self.create_work_journal_test_db_data()
 
         # Y 打开日记的首页
         self.browser.get(self.work_journal_home)
@@ -162,7 +162,7 @@ class TestWorkJournalSearch(FunctionalTest):
         """
         日记 APP 的搜索功能只支持搜索日记, 不会去搜索文章
         """
-        self._create_articles_test_db_data()
+        self.create_articles_test_db_data()
         # Y 知道某篇文章及某篇日记都有 python 这个关键词, 于是 Y 打算试试搜索结果是否都能搜索出来
         search_button = self.browser.find_element_by_id("id_search_work_journal")
         search_button.send_keys("python\n")
@@ -181,10 +181,10 @@ class TestWorkJournalSearch(FunctionalTest):
         self.assertNotIn("article_with_python", search_result)
 
     def test_search_view_sidebar_display(self):
-        self._create_articles_test_db_data()
-
-        # 调用更新函数
-        update_notes_numbers()
+        """
+        测试左下角笔记数的显示是否正确
+        """
+        self.create_articles_test_db_data()
 
         # Y 知道某篇文章及某篇日记都有 python 这个关键词, 于是 Y 打算试试搜索结果是否都能搜索出来
         search_button = self.browser.find_element_by_id("id_search_work_journal")
@@ -214,7 +214,7 @@ class Test404Page(FunctionalTest):
         """
         测试 404 页面的搜索功能可用
         """
-        self._create_work_journal_test_db_data()
+        self.create_work_journal_test_db_data()
 
         # Y 进入了 404 页面
         self.browser.get("{host}{path}".format(host=self.server_url, path=self.unique_url))

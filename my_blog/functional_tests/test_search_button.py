@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.06.04 重构基类测试, 修改对应代码
 2017.05.21 新增两个关于搜索结果按照点击次数排序的测试
 2017.05.21 重构一下, 把所有测试放到同一个类中不好看
 2017.04.30 重新定义搜索结果中 GitBook title 的样式, 另外重构一下代码
@@ -123,8 +124,8 @@ class TestSearchSort(BasicSearch):
         super().setUp()
 
         # 创建测试数据
-        self._create_articles_test_db_data()
-        self._create_work_journal_test_db_data()
+        self.create_articles_test_db_data()
+        self.create_work_journal_test_db_data()
 
     def test_search_result_sort(self):
         """
@@ -195,8 +196,8 @@ class TestSearchButton(BasicSearch):
         super().setUp()
 
         # 创建测试数据
-        self._create_articles_test_db_data()
-        self._create_work_journal_test_db_data()
+        self.create_articles_test_db_data()
+        self.create_work_journal_test_db_data()
         self.test_gitbooks = list(self.create_gitbook_test_db_data())
 
     def test_can_search_title(self):
