@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.04 更新笔记时现在会添加 Tag 了
 2017.05.21 实现搜索结果按照点击次数排序的相关视图代码
 2017.05.21 日志记录的格式有问题, 修正一下
 2017.05.01 完善一下验证更新时间的前台交互代码
@@ -19,6 +20,7 @@
 2017.02.09 重构一下搜索函数, 跟日记搜索的功能合并一下
 2016.10.28 重构了一下模板传参, 封装成一个函数来处理了, 要不然每个视图都得专门处理传给模板的参数
 """
+# 标准库
 import datetime
 import logging
 import os
@@ -30,13 +32,15 @@ from django.conf import settings
 from django.http import Http404
 from django.shortcuts import render, redirect, HttpResponse
 
+# 自己的模块
 from articles.forms import ArticleForm, BaseSearchForm
-from articles.models import Article
+from articles.models import Article, Tag
 from articles.templatetags.custom_filter import custom_markdown_for_tree_parse
 from code_collect.views import do_code_search
 from common_module.common_help_function import (clean_form_data, search_keyword_in_model,
                                                 create_search_result, get_right_content_from_file, get_context_data,
-                                                form_is_valid_and_ignore_exist_error, log_wrapper, sort_search_result)
+                                                form_is_valid_and_ignore_exist_error, log_wrapper, sort_search_result,
+                                                extract_tag_name_from_path)
 from gitbook_notes.views import do_gitbooks_search
 from my_constant import const
 from work_journal.views import do_journals_search
@@ -288,9 +292,11 @@ def update_notes(request=None):
         return old_content != newest_content
 
     def __sync_database(file_name, file_path):
+        nonlocal notes_git_path
         article = file_name[:-len(".md")]  # 用 rstrip 会删除多余后缀
         article_category, article_title = article.split("-")
         article_content = get_right_content_from_file(file_path)
+        tag_names = extract_tag_name_from_path(notes_git_path, file_path)
 
         try:
             article_from_db = Article.objects.get(title=article_title)
@@ -301,9 +307,12 @@ def update_notes(request=None):
                 article_from_db.update_time = datetime.datetime.now()
             article_from_db.category = article_category
             article_from_db.save()
+            article = article_from_db
         except Article.DoesNotExist:
             # 不存在
-            Article.objects.create(title=article_title, category=article_category, content=article_content)
+            article = Article.objects.create(title=article_title, category=article_category, content=article_content)
+
+        article.tag = [(Tag.objects.get_or_create(tag_name=x))[0] for x in tag_names]
 
     def __is_valid_md_file(file_name):
         """

@@ -18,15 +18,18 @@
 
                 {% for post in post_list %}
                     <div class="search-result">
-                        <form action="/{{ post.type }}/{{ post.note.id }}/" class="search-result-box-title" method="POST">
+                        <form action="/{{ post.type }}/{{ post.note.id }}/" class="search-result-box-title"
+                              method="POST">
                             {% csrf_token %}
                             <input type="hidden" name="visited" value="True"/>
                             <a id="id_search_result_title" href="#"
                                onclick="this.parentNode.submit()">{{ post.note.title }}</a>
+
+                            {% for tag in post.note.tag.all %}
+                                <a id="id_article_tag" class="post-category post-category-design" href="#">{{ tag }}</a>
+                            {% endfor %}
                         </form>
-                        {% for tag in post.tag.all %}
-                            <a class="post-category post-category-design" href="#">{{ tag }}</a>
-                        {% endfor %}
+
 
                         <div class="search-result-box">
                             <table class="search-result-box-table">

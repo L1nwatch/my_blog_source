@@ -3,7 +3,7 @@
 # version: Python3.X
 """
 
-2017.06.04 重构搜索结果数据结构
+2017.06.04 重构搜索结果数据结构 + 新增一个解析 tag 的函数
 2017.06.03 修正笔记数的获取方式, 换了一个好像更高效的方法来统计
 2017.06.03 继续重写代码逻辑, 避免数据库锁定以及发邮件卡顿的问题
 2017.06.02 添加多线程, 主要是为了那个访问淘宝 IP 库的函数使用的
@@ -313,6 +313,16 @@ def log_wrapper(func, *, str_format="", level="info", logger=None):
         return func(request, *func_args, **func_kwargs)
 
     return wrapper
+
+
+def extract_tag_name_from_path(root_path, file_path):
+    """
+    从路径中提取 tag 的信息
+    :param root_path: str(), 比如 '/Users/L1n/Desktop/Code/Python/my_blog_source/notes'
+    :param file_path: str(), 比如 '/Users/L1n/Desktop/Code/Python/my_blog_source/notes/aa/bb/总结笔记-Docker学习.md'
+    :return: list(), ("aa", "bb")
+    """
+    return file_path[len(root_path):].split("/")[1:-1]
 
 
 if __name__ == "__main__":

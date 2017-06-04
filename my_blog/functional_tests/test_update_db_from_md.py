@@ -26,9 +26,6 @@ class AutoUpdateDatabaseTest(FunctionalTest):
     def setUp(self):
         super().setUp()
 
-        # # 休息 UPDATE_TIME_LIMIT 时间
-        # time.sleep(settings.UPDATE_TIME_LIMIT)
-
         self.test_url = "{host}/{path}"
 
         # Y 访问归档页

@@ -24,7 +24,6 @@
 # 标准库
 from selenium.common.exceptions import NoSuchElementException
 
-import unittest
 import datetime
 
 # 自己的模块
@@ -33,8 +32,6 @@ from articles.models import Article
 from work_journal.models import Journal
 from code_collect.views import code_collect
 from my_constant import const
-
-
 
 __author__ = '__L1n__w@tch'
 
@@ -267,17 +264,15 @@ class TestSearchDisplay(BasicSearch):
         result_table = self.browser.find_element_by_class_name("search-result-box-table-td")
         self.assertIn("12", result_table.text)
 
-    @unittest.expectedFailure
     def test_search_result_will_show_tag(self):
         """
         测试搜索结果会显示对应文章的标签信息
         """
-        # TODO: 这个测试还没写完
         # Y 知道某篇内容含有 "same category" 的笔记包含有 tag, 于是 Y 搜索这篇笔记
         self.do_all_search("same category")
 
         # Y 知道这篇文章的 tag 名字是 Others 和 Others2, 所以界面中应该有这俩个单词, 并且这俩个单词使用了正确的样式
-        tag_result = self.browser.find_element_by_class_name("search-result-box-table-td")
+        tag_result = self.browser.find_elements_by_id("id_article_tag")
 
         self.assertTrue(any(
             ["Others" == x.text for x in tag_result]
@@ -286,8 +281,6 @@ class TestSearchDisplay(BasicSearch):
         self.assertTrue(any(
             ["Others2" == x.text for x in tag_result]
         ))
-
-        self.fail("aaa")
 
 
 class TestSearchButton(BasicSearch):

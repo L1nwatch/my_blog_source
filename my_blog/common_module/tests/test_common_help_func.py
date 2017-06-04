@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
-2017.06.04 重构搜索结果数据结构, 因此更改对应测试代码
+2017.06.04 重构搜索结果数据结构, 因此更改对应测试代码 + 添加一个测试解析 tag 的函数
 2017.06.03 修正笔记数的获取方式, 换了一个好像更高效的方法来统计
 2017.06.03 继续重写代码逻辑, 避免数据库锁定以及发邮件卡顿的问题, 于是修改对应测试代码
 2017.06.02 优化排序代码, 更改对应测试代码, 新增一个更新笔记数的函数
@@ -15,7 +15,8 @@
 """
 # 自己的模块
 from common_module.common_help_function import (clean_form_data, sort_search_result, locate_using_ip_address,
-                                                data_check, is_valid_git_address, background_deal, model_dict)
+                                                data_check, is_valid_git_address, background_deal, model_dict,
+                                                extract_tag_name_from_path)
 from my_constant import const
 from .basic_test import BasicTest
 
@@ -188,6 +189,28 @@ class TestCommonHelpFunc(BasicTest):
             # 检查笔记数的统计是否正确
             for key, value in model_dict.items():
                 self.assertEqual(value.objects.all().count(), len(value.objects.all()))
+
+    def test_extract_tag_name_from_path(self):
+        # 含 2 个目录
+        test_data = ('/Users/L1n/Desktop/Code/Python/my_blog_source/notes',
+                     '/Users/L1n/Desktop/Code/Python/my_blog_source/notes/aa/bb/总结笔记-Docker学习.md')
+        right_answer = ["aa", "bb"]
+        my_answer = extract_tag_name_from_path(*test_data)
+        self.assertEqual(right_answer, my_answer)
+
+        # 根目录
+        test_data = ('/Users/L1n/Desktop/Code/Python/my_blog_source/notes',
+                     '/Users/L1n/Desktop/Code/Python/my_blog_source/notes/总结笔记-Docker学习.md')
+        right_answer = list()
+        my_answer = extract_tag_name_from_path(*test_data)
+        self.assertEqual(right_answer, my_answer)
+
+        # 只含 1 个目录
+        test_data = ('/Users/L1n/Desktop/Code/Python/my_blog_source/notes',
+                     '/Users/L1n/Desktop/Code/Python/my_blog_source/notes/aa/总结笔记-Docker学习.md')
+        right_answer = ["aa"]
+        my_answer = extract_tag_name_from_path(*test_data)
+        self.assertEqual(right_answer, my_answer)
 
 
 if __name__ == "__main__":

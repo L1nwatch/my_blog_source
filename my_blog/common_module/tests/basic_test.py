@@ -30,6 +30,7 @@ search_url = "/search/"
 article_display_url = "/articles/{}/"
 journal_display_url = "/work_journal/{}/"
 gitbook_display_url = "/gitbook_notes/{}/"
+article_update_url = "/articles/update_notes/"
 
 
 class CreateTestData:
@@ -184,8 +185,15 @@ class BasicTest(CreateTestData, TestCase):
             data = f.read()
         return data
 
-    def parse_article_git_test_md_file_name(self):
-        article = self.article_git_test_md_file_name[:-len(".md")]  # 去掉 .md
+    def parse_article_git_test_md_file_name(self, file_name=None):
+        """
+        解析 article md 文件的文件名
+        :param file_name: str(), 比如 "总结笔记-Docker学习.md"
+        :return: tuple(), 比如 ("总结笔记-Docker学习", "Docker学习", md 文件里的内容, "总结笔记")
+        """
+        if not file_name:
+            file_name = self.article_git_test_md_file_name
+        article = file_name[:-len(".md")]  # 去掉 .md
         article_category, article_title = article.split("-")  # 分离 "测试笔记-"
         article_content = get_right_content_from_file(self.article_git_test_md_file_path)
         return article, article_title, article_content, article_category

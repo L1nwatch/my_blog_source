@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.04 新增更新笔记时会添加 Tag 的相关测试
 2017.05.21 实现搜索结果按照访问次数排序的相关测试
 2017.04.03 重构一下创建测试数据的代码, 将其分离出来单独作为一个基类了
 2017.03.26 增加特殊字符的相关搜索时的测试代码, 修改重定向到首页后对应的测试代码
@@ -17,6 +18,7 @@
 2017.01.28 加强了搜索结果显示
 2016.10.03 测试视图函数是否正常
 """
+# 标准库
 import os
 import random
 import shutil
@@ -26,11 +28,12 @@ import html
 
 from django.test import override_settings
 
+# 自己的模块
 from articles.forms import BaseSearchForm, ArticleForm
-from articles.models import Article
+from articles.models import Article, Tag
 from articles.templatetags.custom_filter import custom_markdown
 from articles.views import _parse_markdown_file, get_right_content_from_file, _get_id_from_markdown_html
-from common_module.tests.basic_test import BasicTest, search_url, article_display_url
+from common_module.tests.basic_test import BasicTest, search_url, article_display_url, article_update_url
 from my_constant import const
 
 __author__ = '__L1n__w@tch'
@@ -206,7 +209,7 @@ class SearchTagViewTest(BasicTest):
 @override_settings(UPDATE_TIME_LIMIT=0.1)
 @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
 class UpdateNotesViewTest(BasicTest):
-    unique_url = "/articles/update_notes/"
+    unique_url = article_update_url
 
     def __update_test_md_file_and_git_push(self, test_content):
         """
@@ -343,6 +346,31 @@ class UpdateNotesViewTest(BasicTest):
         # 发现数据库中已经不存在该笔记了
         with self.assertRaises(Article.DoesNotExist):
             Article.objects.get(title=should_not_exist_note.title)
+
+    def test_update_tag_when_update_notes(self):
+        """
+        测试更新笔记的时候会更新对应的 tag 信息
+        """
+        # 确保有 Python、Django 目录下的某篇笔记
+        test_note_path = os.path.join(self.notes_git_path, "Python", "Django")
+        self.assertTrue(os.path.exists(test_note_path))
+        test_file = random.choice(os.listdir(test_note_path))
+
+        _, article_title, _, _ = self.parse_article_git_test_md_file_name(test_file)
+
+        # 进行更新操作
+        self.client.get(self.unique_url)
+
+        # 发现数据库中对应的文章, 其 Tag 包括了 Python 和 Django 这两个 Tag
+        article = Article.objects.get(title=article_title)
+
+        # 首先确认有这两个 Tag
+        python_tag = Tag.objects.get(tag_name="Python")
+        django_tag = Tag.objects.get(tag_name="Django")
+
+        # 确认这篇文章里面的 tag 有这俩 tag
+        self.assertIn(python_tag, article.tag.all())
+        self.assertIn(django_tag, article.tag.all())
 
 
 class ArticlesSearchViewTest(BasicTest):

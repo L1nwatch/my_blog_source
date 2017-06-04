@@ -36,7 +36,7 @@ SCREEN_DUMP_LOCATION = os.path.abspath(
 __author__ = '__L1n__w@tch'
 
 
-@unittest.skipUnless(const.FUNCTION_TEST is True, "[*] 用户选择不进行功能测试")
+@unittest.skipUnless(const.FUNCTION_TEST is True, "[*] 配置指定不进行功能测试")
 class FunctionalTest(CreateTestData, StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
