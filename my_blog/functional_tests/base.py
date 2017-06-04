@@ -3,7 +3,7 @@
 # version: Python3.X
 """ 各个功能测试的基类
 
-2017.06.04 重构基类测试, 修改对应代码
+2017.06.04 重构基类测试, 修改对应代码 + 添加控制是否进行功能测试的相关代码
 2017.04.30 把创建 gitbook 测试数据返回给调用者
 2017.04.04 新增 proxy 设置
 2017.03.31 完善创建测试数据的代码, 但是还需要重构, 现在的冗余太多
@@ -12,6 +12,7 @@
 # 标准库
 import sys
 import os
+import unittest
 import time
 from datetime import datetime
 
@@ -24,10 +25,8 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.conf import settings
 
 # 自己的模块
-from articles.models import Article, Tag
-from work_journal.models import Journal
-from gitbook_notes.models import GitBook
 from common_module.tests.basic_test import CreateTestData
+from my_constant import const
 
 DEFAULT_WAIT = 5
 SCREEN_DUMP_LOCATION = os.path.abspath(
@@ -37,6 +36,7 @@ SCREEN_DUMP_LOCATION = os.path.abspath(
 __author__ = '__L1n__w@tch'
 
 
+@unittest.skipUnless(const.FUNCTION_TEST is True, "[*] 用户选择不进行功能测试")
 class FunctionalTest(CreateTestData, StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
@@ -155,6 +155,7 @@ class FunctionalTest(CreateTestData, StaticLiveServerTestCase):
         tag_python = self.create_tag(tag_name="Python")
         tag_markdown = self.create_tag(tag_name="Markdown")
         tag_others = self.create_tag(tag_name="Others")
+        tag_others2 = self.create_tag(tag_name="Others2")
 
         # 创建一篇文章, 分类为默认值 Others, 无标签, 内容为默认值空
         self.create_article(title="article_with_nothing")
@@ -183,11 +184,11 @@ while True:
         new_article = self.create_article(title="article_with_python", category="Python", content="I am `Python`")
         new_article.tag = (tag_python,)
 
-        # 创建三篇文章, 带标签 Others 以及分类 Test_Category
+        # 创建三篇文章, 带标签 Others/Others2, 以及分类 Test_Category
         for i in range(3):
             new_article = self.create_article(title="article_with_same_category{}".format(i + 1),
                                               category="Test_Category", content="Same category {}".format(i + 1))
-            new_article.tag = (tag_others,)
+            new_article.tag = (tag_others, tag_others2)
 
     def create_work_journal_test_db_data(self):
         self.create_journal(title="2017-02-07 任务情况总结", content="测试笔记, 应该记录 2017/02/07 的工作内容", date=datetime(2017, 2, 7))

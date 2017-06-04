@@ -3,7 +3,7 @@
 # version: Python3.X
 """ 作为测试基类
 
-2017.06.04 继续重构创建测试数据的基类
+2017.06.04 继续重构创建测试数据的基类, 给创建 Article 添加 Tag 创建的相关代码实现
 2017.05.21 为 Article 构造函数添加字段 click_times
 2017.04.03 重构一下创建测试数据的代码, 将其分离出来单独作为一个基类了
 """
@@ -47,7 +47,7 @@ class CreateTestData:
         result = "".join([random.choice(string.ascii_letters) for j in range(length)])
         return result
 
-    def create_article(self, title=None, content=None, category=None, click_times=None):
+    def create_article(self, title=None, content=None, category=None, click_times=None, article_tag=None):
         if not title:
             title = "{}_{}".format("articles", self.get_random_string(10))
         if not content:
@@ -56,7 +56,13 @@ class CreateTestData:
             category = "category"
         if not click_times:
             click_times = 0
-        return Article.objects.create(title=title, content=content, category=category, click_times=click_times)
+
+        article = Article.objects.create(title=title, content=content, category=category, click_times=click_times)
+
+        if article_tag:
+            article.tag = article_tag
+
+        return article
 
     def create_journal(self, title=None, content=None, date=None, category=None, click_times=None):
         if not title:

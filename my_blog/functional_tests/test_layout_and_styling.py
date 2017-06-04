@@ -58,7 +58,11 @@ class JustEatingLayoutStylingTest(FunctionalTest):
         self.assertAlmostEqual(title.location["y"], 22, delta=5)
 
 
-class ArticleTimeInfoTest(FunctionalTest):
+class ArticleArchivesTest(FunctionalTest):
+    """
+    文章归档页的相关显示测试
+    """
+
     def setUp(self):
         super().setUp()
         self.create_articles_test_db_data()
@@ -87,7 +91,6 @@ class ArticleTimeInfoTest(FunctionalTest):
     def test_tag_html_has_right_time(self):
         """
         测试 tag.html 显示的时间是正确的
-        :return:
         """
         # 发现分类包含个超链接, 点击进去看看
         self.browser.find_element_by_id("id_category").click()
@@ -97,6 +100,22 @@ class ArticleTimeInfoTest(FunctionalTest):
                                       .format(self.test_time.year, str(self.test_time.month).zfill(2),
                                               str(self.test_time.day).zfill(2), str(self.test_time.hour).zfill(2)))
         self.assertIn(publish_time_label_content, self.browser.page_source)
+
+    def test_display_article_tag(self):
+        """
+        测试会显示对应文章的 tag 信息
+        """
+        # 创建测试用的带 tag 的文章
+        test_tag = self.create_tag("test_tag")
+        test_tag2 = self.create_tag("test_tag2")
+        self.create_article(article_tag=(test_tag, test_tag2))
+
+        # 重新访问归档页
+        self.browser.get(self.test_url)
+
+        # 发现 2 个 tag 都出现在了归档页中
+        self.assertIn(test_tag.tag_name, self.browser.page_source)
+        self.assertIn(test_tag2.tag_name, self.browser.page_source)
 
 
 class ArticleDisplayTest(FunctionalTest):

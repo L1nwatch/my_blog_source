@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.06.04 重构搜索结果数据结构
 2017.06.03 修正笔记数的获取方式, 换了一个好像更高效的方法来统计
 2017.06.03 继续重写代码逻辑, 避免数据库锁定以及发邮件卡顿的问题
 2017.06.02 添加多线程, 主要是为了那个访问淘宝 IP 库的函数使用的
@@ -167,7 +168,7 @@ def sort_search_result(result_list):
     """
 
     def __sorted_function(x):
-        return x.click_times
+        return x.note.click_times
 
     result_list = sorted(result_list, key=__sorted_function, reverse=True)
     return result_list
@@ -217,7 +218,7 @@ def create_search_result(article_list, keyword_set, search_type):
             result_content_list = [const.SEARCH_RESULT_INFO("", const.KEYWORD_IN_TITLE, 0)]
 
         result_list.append(const.ARTICLE_STRUCTURE(
-            each_article.id, each_article.title, result_content_list, search_type, each_article.click_times)
+            each_article, result_content_list, search_type)
         )
 
     return sort_search_result(result_list)

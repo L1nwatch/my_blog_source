@@ -3,7 +3,7 @@
 # version: Python3.X
 """
 
-2017.06.04 重构基类测试, 修改对应代码
+2017.06.04 重构基类测试, 修改对应代码 + 添加有关搜索结果页面显示 Tag 的测试代码
 2017.05.21 新增两个关于搜索结果按照点击次数排序的测试
 2017.05.21 重构一下, 把所有测试放到同一个类中不好看
 2017.04.30 重新定义搜索结果中 GitBook title 的样式, 另外重构一下代码
@@ -21,15 +21,20 @@
 2016.10.29 将搜索按钮的测试分离出来, 成为一个单独的测试文件
 2016.10.04 更新一下关于首页搜索按钮的测试, 现在要求能够搜索各个文章的标题
 """
+# 标准库
+from selenium.common.exceptions import NoSuchElementException
+
+import unittest
+import datetime
+
+# 自己的模块
 from .base import FunctionalTest
 from articles.models import Article
 from work_journal.models import Journal
 from code_collect.views import code_collect
 from my_constant import const
 
-from selenium.common.exceptions import NoSuchElementException
 
-import datetime
 
 __author__ = '__L1n__w@tch'
 
@@ -99,7 +104,15 @@ class BasicSearch(FunctionalTest):
         :param search_content: str(), 要搜索的关键字
         :return: None
         """
-        self.do_choose_search("All", search_content)
+        # 默认是 ALL 搜索, 所以暂时不用 choose search 了
+        # self.do_choose_search("All", search_content)
+
+        # Y 打开首页, 看到了搜索按钮
+        self.browser.get(self.server_url)
+        search_button = self.browser.find_element_by_id("id_search")
+
+        # Y 搜索对应内容
+        search_button.send_keys("{}\n".format(search_content))
 
     @staticmethod
     def create_multiple_articles_with_or_without_code():
@@ -191,6 +204,92 @@ class TestSearchSort(BasicSearch):
         self.assertEqual(first_time_second_title, second_time_second_title)
 
 
+class TestSearchDisplay(BasicSearch):
+    """
+    测试搜索结果界面的显示
+    """
+
+    def setUp(self):
+        super().setUp()
+
+        # 创建测试数据
+        self.create_articles_test_db_data()
+        self.test_gitbooks = list(self.create_gitbook_test_db_data())
+
+    def test_search_result_display(self):
+        """
+        2017.02.18 左下角显示的不只是文章数, 还有日记数
+        测试搜索的结果, 应该显示对应的文章及对应到的搜索内容
+        """
+        # Y 知道文章 <article_with_markdown> 有这么一个关键字 <markdown1>, 所在行内容为 <* test markdown1>
+        # 于是 Y 搜索 markdown1, 看是否显示这篇文章及结果出来
+        self.do_all_search("markdown1")
+
+        # 搜索结果出来了, Y 看到了自己搜索的关键词
+        search_keyword = self.browser.find_element_by_id("id_search").get_attribute("value")
+        self.assertEqual(search_keyword, "markdown1")
+
+        # Y 查看搜索结果, 发现其找到对应文章了
+        search_result = self.browser.find_element_by_tag_name("body").text
+        self.assertIn("article_with_markdown", search_result)
+
+        # 显示对应搜索结果
+        self.assertIn("test markdown1", search_result)
+
+        # 左下角显示的标题是笔记总数
+        sidebar = self.browser.find_element_by_id("id_sidebar").text
+        self.assertIn("笔记总数", sidebar)
+
+    def test_search_nothing_display(self):
+        """
+        测试搜索不到的时候显示的内容
+        """
+        # Y 随便打了个关键词, 看能搜索出什么
+        self.do_all_search("随便打了什么肯定式不会搜索到的才对的啊")
+
+        # Y 看见了提示信息, 提示什么都搜不到
+        self.assertIn(const.EMPTY_ARTICLE_ERROR, self.browser.page_source)
+
+        # 同时也确实找不到文章标题信息等
+        with self.assertRaises(NoSuchElementException):
+            self.browser.find_element_by_id("id_search_result_title")
+
+    def test_search_result_can_show_line_number(self):
+        # Y 搜索 test, 发现搜索结果里面每个对应结果的前面都有数字, Y 怀疑是不是行号?
+        self.do_all_search("test")
+        result_table = self.browser.find_element_by_class_name("search-result-box-table-td")
+        self.assertTrue(str(result_table.text).isdigit())
+
+        # Y 再次搜索 created, 它知道笔记 <super与init方法> 中 created 应该在第 12 行
+        search_button = self.browser.find_element_by_id("id_search")
+        search_button.clear()
+        search_button.send_keys("{}\n".format("created"))
+        result_table = self.browser.find_element_by_class_name("search-result-box-table-td")
+        self.assertIn("12", result_table.text)
+
+    @unittest.expectedFailure
+    def test_search_result_will_show_tag(self):
+        """
+        测试搜索结果会显示对应文章的标签信息
+        """
+        # TODO: 这个测试还没写完
+        # Y 知道某篇内容含有 "same category" 的笔记包含有 tag, 于是 Y 搜索这篇笔记
+        self.do_all_search("same category")
+
+        # Y 知道这篇文章的 tag 名字是 Others 和 Others2, 所以界面中应该有这俩个单词, 并且这俩个单词使用了正确的样式
+        tag_result = self.browser.find_element_by_class_name("search-result-box-table-td")
+
+        self.assertTrue(any(
+            ["Others" == x.text for x in tag_result]
+        ))
+
+        self.assertTrue(any(
+            ["Others2" == x.text for x in tag_result]
+        ))
+
+        self.fail("aaa")
+
+
 class TestSearchButton(BasicSearch):
     def setUp(self):
         super().setUp()
@@ -260,34 +359,6 @@ class TestSearchButton(BasicSearch):
         articles_after_search = self.browser.find_elements_by_id(const.ID_SEARCH_RESULT_TITLE)
         self.assertTrue(len(articles_after_search) == 0, "居然找到文章了?!")
 
-    def test_search_result_display(self):
-        """
-        2017.02.18 左下角显示的不只是文章数, 还有日记数
-        测试搜索的结果, 应该显示对应的文章及对应到的搜索内容
-        """
-        # Y 打开首页, 看到了搜索按钮
-        self.browser.get(self.server_url)
-        search_button = self.browser.find_element_by_id("id_search")
-
-        # Y 知道文章 <article_with_markdown> 有这么一个关键字 <markdown1>, 所在行内容为 <* test markdown1>
-        # 于是 Y 搜索 markdown1, 看是否显示这篇文章及结果出来
-        search_button.send_keys("markdown1\n")
-
-        # 搜索结果出来了, Y 看到了自己搜索的关键词
-        search_keyword = self.browser.find_element_by_id("id_search").get_attribute("value")
-        self.assertEqual(search_keyword, "markdown1")
-
-        # Y 查看搜索结果, 发现其找到对应文章了
-        search_result = self.browser.find_element_by_tag_name("body").text
-        self.assertIn("article_with_markdown", search_result)
-
-        # 显示对应搜索结果
-        self.assertIn("test markdown1", search_result)
-
-        # 左下角显示的标题是笔记总数
-        sidebar = self.browser.find_element_by_id("id_sidebar").text
-        self.assertIn("笔记总数", sidebar)
-
     def test_can_search_among_article_journals_gitbooks(self):
         """
         测试主页的搜索既能搜索文章又能搜索日记还能搜索 gitbooks
@@ -305,24 +376,6 @@ class TestSearchButton(BasicSearch):
         self.assertTrue(any(
             [x.title in self.browser.page_source for x in self.test_gitbooks]
         ))
-
-    def test_search_nothing_display(self):
-        """
-        测试搜索不到的时候显示的内容
-        """
-        # Y 打开首页, 看到了搜索按钮
-        self.browser.get(self.server_url)
-        search_button = self.browser.find_element_by_id("id_search")
-
-        # Y 随便打了个关键词, 看能搜索出什么
-        search_button.send_keys("随便打了什么肯定式不会搜索到的才对的啊\n")
-
-        # Y 看见了提示信息, 提示什么都搜不到
-        self.assertIn(const.EMPTY_ARTICLE_ERROR, self.browser.page_source)
-
-        # 同时也确实找不到文章标题信息等
-        with self.assertRaises(NoSuchElementException):
-            self.browser.find_element_by_id("id_search_result_title")
 
     def test_search_again(self):
         """
@@ -347,23 +400,6 @@ class TestSearchButton(BasicSearch):
         self.assertEqual(search_url, self.browser.current_url)
         self.assertIn("article_with_markdown", self.browser.page_source)
         self.assertIn("2017-02-08 任务情况总结", self.browser.page_source)
-
-    def test_search_result_can_show_line_number(self):
-        # Y 打开首页, 看到了搜索按钮, 便尝试了搜索功能
-        self.browser.get(self.server_url)
-        search_button = self.browser.find_element_by_id("id_search")
-
-        # Y 搜索 test, 发现搜索结果里面每个对应结果的前面都有数字, Y 怀疑是不是行号?
-        search_button.send_keys("{}\n".format("test"))
-        result_table = self.browser.find_element_by_class_name("search-result-box-table-td")
-        self.assertTrue(str(result_table.text).isdigit())
-
-        # Y 再次搜索 created, 它知道笔记 <super与init方法> 中 created 应该在第 12 行
-        search_button = self.browser.find_element_by_id("id_search")
-        search_button.clear()
-        search_button.send_keys("{}\n".format("created"))
-        result_table = self.browser.find_element_by_class_name("search-result-box-table-td")
-        self.assertIn("12", result_table.text)
 
     def test_search_choice_all(self):
         """

@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 const 变量
 
+2017.06.04 添加控制是否进行功能测试的选项
 2017.04.30 更新 gitbook 格式
 2017.03.15 更新有关搜索框的常量信息
 2017.03.06 更新一堆常量信息
@@ -39,7 +40,7 @@ const.KEYWORD_IN_HREF = "关键词出现在 url 链接中"
 const.PLACE_HOLDER = "What are you looking for?"
 const.HOME_PAGE_ARTICLES_NUMBERS = 2
 const.NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
-const.ARTICLE_STRUCTURE = namedtuple("article_post", ["id", "title", "content", "type", "click_times"])
+const.ARTICLE_STRUCTURE = namedtuple("article_post", ["note", "content", "type"])
 const.MARKDOWN_TREE_STRUCTURE = namedtuple("toc_tree", ["title", "id", "child"])
 
 # 日记页面
@@ -51,6 +52,7 @@ const.EATING_MENU_STRUCTURE = namedtuple("eating_menu", ["day_time", "morning", 
 # 调试选项
 # git 提交前需要改为 False or True, 要不然网站会跑失败的...
 const.SLOW_CONNECT_DEBUG = False  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
+const.FUNCTION_TEST = False  # True if input("是否进行功能测试?(yes/no)") == "yes" else False
 
 # 发送邮件
 const.WANT_SEND_EMAIL = True

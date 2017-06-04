@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.04 重构搜索结果数据结构, 因此更改对应测试代码
 2017.06.03 修正笔记数的获取方式, 换了一个好像更高效的方法来统计
 2017.06.03 继续重写代码逻辑, 避免数据库锁定以及发邮件卡顿的问题, 于是修改对应测试代码
 2017.06.02 优化排序代码, 更改对应测试代码, 新增一个更新笔记数的函数
@@ -63,14 +64,14 @@ class TestCommonHelpFunc(BasicTest):
         test_article3 = self.create_article(click_times=2)
 
         test_result_list = [
-            const.ARTICLE_STRUCTURE(test_article1.id, test_article1.title, "aa", "articles", test_article1.click_times),
-            const.ARTICLE_STRUCTURE(test_article2.id, test_article2.title, "bb", "articles", test_article2.click_times),
-            const.ARTICLE_STRUCTURE(test_article3.id, test_article3.title, "cc", "articles", test_article3.click_times),
+            const.ARTICLE_STRUCTURE(test_article1, "aa", "articles"),
+            const.ARTICLE_STRUCTURE(test_article2, "bb", "articles"),
+            const.ARTICLE_STRUCTURE(test_article3, "cc", "articles"),
         ]
         right_answer = [
-            const.ARTICLE_STRUCTURE(test_article2.id, test_article2.title, "bb", "articles", test_article2.click_times),
-            const.ARTICLE_STRUCTURE(test_article3.id, test_article3.title, "cc", "articles", test_article3.click_times),
-            const.ARTICLE_STRUCTURE(test_article1.id, test_article1.title, "aa", "articles", test_article1.click_times),
+            const.ARTICLE_STRUCTURE(test_article2, "bb", "articles"),
+            const.ARTICLE_STRUCTURE(test_article3, "cc", "articles"),
+            const.ARTICLE_STRUCTURE(test_article1, "aa", "articles"),
         ]
         my_answer = sort_search_result(test_result_list)
         self.assertEqual(len(my_answer), 3)
