@@ -2,13 +2,17 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.05 补充一个在 code 内不进行转义的函数测试
 2017.03.10 重构一下添加 em 标签的函数
 2017.02.26 添加关于菜单格式化的代码测试
 2017.01.31 发现对自定义 markdown 解析方法有要求, 所以还是写个单元测试吧
 """
+# 标准库
 from django.test import TestCase
+
+# 自己的模块
 from my_constant import const
-from articles.templatetags.custom_filter import remove_code_tag_in_h_tags, add_em_tag, menu_format
+from articles.templatetags.custom_filter import remove_code_tag_in_h_tags, add_em_tag, menu_format, unescape_tag_in_code
 
 __author__ = '__L1n__w@tch'
 
@@ -107,6 +111,34 @@ class TestCustomFilter(TestCase):
         right_answer = '<a href="#">可乐鸡翅</a>'
         my_answer = menu_format(test_data)
         self.assertEqual(right_answer, my_answer)
+
+    def test_unescape_tag_in_code(self):
+        """
+        测试在 code 标签内的字符的转义会被取消
+        """
+        # code 标签内的 tag 不应该被转义(指的是显示到客户端上正常)
+        test_string = "<code>&amp;lt;script&amp;gt;</code>"
+        right_answer = "<code>&lt;script&gt;</code>"
+        my_answer = unescape_tag_in_code(test_string)
+        self.assertEqual(right_answer, my_answer)
+
+        # 非 code 标签内的依旧保持转义
+        test_string = "&amp;lt;script&amp;gt;"
+        right_answer = test_string
+        my_answer = unescape_tag_in_code(test_string)
+        self.assertEqual(right_answer, my_answer)
+
+        # 多个 code, 每个都不应该被转义
+        test_string = "<code>&amp;lt;script&amp;gt;</code><code>&amp;lt;script&amp;gt;</code>"
+        right_answer = "<code>&lt;script&gt;</code><code>&lt;script&gt;</code>"
+        my_answer = unescape_tag_in_code(test_string)
+        self.assertEqual(right_answer, my_answer)
+
+        # 测试 code_block, 也不应该被转义显示(TODO: 太难实现, 暂时放弃)
+        # test_string = """<div class="codehilite"><pre><span></span><span class="ni">&amp;lt;</span>script<span class="ni">&amp;gt;</span>alert(1)<span class="ni">&amp;lt;</span>/script<span class="ni">&amp;gt;</span></pre></div>"""
+        # right_answer = """<div class="codehilite"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mi">1</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span></pre></div>"""
+        # my_answer = unescape_tag_in_code(test_string)
+        # self.assertEqual(right_answer, my_answer)
 
 
 if __name__ == "__main__":

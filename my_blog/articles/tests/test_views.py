@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.05 继续完善有关 XSS 的测试代码
 2017.06.04 新增更新笔记时会添加 Tag 的相关测试
 2017.05.21 实现搜索结果按照访问次数排序的相关测试
 2017.04.03 重构一下创建测试数据的代码, 将其分离出来单独作为一个基类了
@@ -138,16 +139,31 @@ class ArticleDisplayViewTest(BasicTest):
         """
         测试当 md 文件有不安全内容时会怎么样
         """
-        test_string = "<script>alert(1)</script>"
+        # 这里几个字符串等同于 md 里面的对应字符串
+        hack_string = "<script>alert(1)</script>"
+        quote_string = "`<script>alert(3)</script>`"
+        code_block_string = """```html
+<script>alert(2)</script>
+```"""
 
         data = self.read_test_markdown_file(self.unfriendly_test_markdown_file_path)
-        data += test_string
 
         markdown_html = custom_markdown(data)
 
-        # 这里应该被转义了
-        self.assertNotIn(test_string, markdown_html)
-        self.assertIn(html.escape(test_string), markdown_html)
+        # 测试 quote_string 是否显示正常(不带 &amp; 表明显示正常), 比如 '&amp;lt;script&amp;gt;' 就算是显示不正常
+        right_string = quote_string.strip("`")
+        self.assertNotIn(html.escape(html.escape(right_string)), markdown_html)
+        self.assertIn(html.escape(right_string), markdown_html)
+
+        # 测试 hack_string 是否显示正常
+        right_string = hack_string
+        self.assertNotIn(right_string, markdown_html)
+        self.assertIn(html.escape(right_string), markdown_html)
+
+        # 测试 code_block_string 是否显示正常(TODO: 太难实现, 暂时放弃)
+        # right_string = code_block_string.strip("`html\n")
+        # self.assertNotIn(html.escape(html.escape(right_string)), markdown_html)
+        # self.assertIn(html.escape(right_string), markdown_html)
 
 
 class AboutMeViewTest(BasicTest):

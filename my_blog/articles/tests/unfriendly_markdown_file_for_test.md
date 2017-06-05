@@ -5,3 +5,9 @@
 XSS:
 
 <script>alert(1)</script>
+
+```html
+<script>alert(2)</script>
+```
+
+`<script>alert(3)</script>`

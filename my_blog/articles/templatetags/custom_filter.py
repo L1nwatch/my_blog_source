@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 配置 markdown 等给模板使用的 filter
 
+2017.06.05 bleach 是为了保证 md 文件无法输送恶意语句, 但是因此也会导致 code 的显示不正确, 现在进行修正
 2017.05.24 并不了解当初为什么把 bleach 注释掉了, 现在补回来, 因为缺少这一句发现了 BUG
 2017.02.26 添加一个菜单格式化器
 2017.02.11 需要给前端使用, 给特定关键字添加标签
@@ -60,9 +61,10 @@ def add_em_tag(keyword, raw_content):
 def custom_markdown(value):
     value = bleach.clean(value)  # 清除不安全因素
 
-    return mark_safe(markdown.markdown(value,
-                                       extensions=["codehilite", "fenced_code", "tables", "toc"],
-                                       enable_attributes=False))
+    result = markdown.markdown(value, extensions=["codehilite", "fenced_code", "tables", "toc"],
+                               enable_attributes=False)
+
+    return mark_safe(unescape_tag_in_code(result))
 
 
 def custom_markdown_for_tree_parse(value):
@@ -106,10 +108,29 @@ def menu_format(raw_data):
     return mark_safe("<br/>".join(result_list))
 
 
-# def custom_markdown(value):
-#     return mark_safe(markdown2.markdown(force_text(value),
-#                                         extras=["fenced-code-blocks", "cuddled-lists", "metadata", "tables",
-#                                                 "spoiler"]))
+def unescape_tag_in_code(html_content):
+    """
+    确保所有 code 标签内的 tag 都没有被转义
+    :param html_content: str(), 比如 "<code>&amp;lt;script&amp;gt;</code><code>&amp;lt;script&amp;gt;</code>"
+    :return: str(), 确保没有转义, 比如 "<code><script></code><code><script></code>"
+    """
+
+    def __unescape_in_code(data):
+        content = data.group(1)
+
+        return "<code>{}</code>".format(html.unescape(content))
+
+    # def __unescape_in_code_block(data):
+    #     content = data.group(1)
+    #
+    #     return """<div class="codehilite">{}</div>""".format(html.unescape(html.unescape(content)))
+
+    unescape_tag_in_code_re = re.compile("<code>(?P<content>.*?)</code>")
+    # unescape_tag_in_code_block_re = re.compile("""<div class="codehilite">(?P<content>.*?)</div>""")
+
+    result = unescape_tag_in_code_re.sub(__unescape_in_code, html_content)
+    # result = unescape_tag_in_code_block_re.sub(__unescape_in_code_block, result)
+    return result
 
 
 if __name__ == "__main__":
