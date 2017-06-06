@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.06 重构, 将有关 archive 的测试分离出来
 2017.06.04 重构基类测试, 修改对应代码
 2017.03.31 发现 journal 的页面没有 sidebar 了, 补充对应测试
 2017.03.17 重构一下测试用的 md 的文件的路径
@@ -56,66 +57,6 @@ class JustEatingLayoutStylingTest(FunctionalTest):
         title = self.browser.find_element_by_id("id_eating_place_name")
         self.assertAlmostEqual(title.location["x"], 483, delta=5)
         self.assertAlmostEqual(title.location["y"], 22, delta=5)
-
-
-class ArticleArchivesTest(FunctionalTest):
-    """
-    文章归档页的相关显示测试
-    """
-
-    def setUp(self):
-        super().setUp()
-        self.create_articles_test_db_data()
-        self.test_time = datetime.datetime.now()
-        self.test_url = "{host}/{path}".format(host=self.server_url, path="articles/archives/")
-
-        # Y 访问归档页
-        self.browser.get(self.test_url)
-
-    def test_has_article_create_time(self):
-        # 发现存在创建时间的字样, 而且能看到格式是: "Y 年 m 月 d 号 H 时"
-        self.browser.find_element_by_id("id_create_time")
-        create_time_label_content = ("Create: {} 年 {} 月 {} 号 {} 时"
-                                     .format(self.test_time.year, str(self.test_time.month).zfill(2),
-                                             str(self.test_time.day).zfill(2), str(self.test_time.hour).zfill(2)))
-        self.assertIn(create_time_label_content, self.browser.page_source)
-
-    def test_has_article_update_time(self):
-        # 发现存在更新时间的字样, 而且能看到格式是: "Y 年 m 月 d 号 H 时"
-        self.browser.find_element_by_id("id_update_time")
-        update_time_label_content = ("Update: {} 年 {} 月 {} 号 {} 时"
-                                     .format(self.test_time.year, str(self.test_time.month).zfill(2),
-                                             str(self.test_time.day).zfill(2), str(self.test_time.hour).zfill(2)))
-        self.assertIn(update_time_label_content, self.browser.page_source)
-
-    def test_tag_html_has_right_time(self):
-        """
-        测试 tag.html 显示的时间是正确的
-        """
-        # 发现分类包含个超链接, 点击进去看看
-        self.browser.find_element_by_id("id_category").click()
-
-        # 出现了一个新页面, 页面上显示了每篇文章的发布时间
-        publish_time_label_content = ("发布：{} 年 {} 月 {} 号 {} 时"
-                                      .format(self.test_time.year, str(self.test_time.month).zfill(2),
-                                              str(self.test_time.day).zfill(2), str(self.test_time.hour).zfill(2)))
-        self.assertIn(publish_time_label_content, self.browser.page_source)
-
-    def test_display_article_tag(self):
-        """
-        测试会显示对应文章的 tag 信息
-        """
-        # 创建测试用的带 tag 的文章
-        test_tag = self.create_tag("test_tag")
-        test_tag2 = self.create_tag("test_tag2")
-        self.create_article(article_tag=(test_tag, test_tag2))
-
-        # 重新访问归档页
-        self.browser.get(self.test_url)
-
-        # 发现 2 个 tag 都出现在了归档页中
-        self.assertIn(test_tag.tag_name, self.browser.page_source)
-        self.assertIn(test_tag2.tag_name, self.browser.page_source)
 
 
 class ArticleDisplayTest(FunctionalTest):

@@ -9,11 +9,12 @@
 
     <label class="post-description">Category: </label>
     <a class="post-category post-category-js" id="id_category" href=
-            "{% url 'search_tag' tag=post.category %}">{{ post.category }}
+            "{% url 'search_category' category=post.category %}">{{ post.category }}
     </a>&nbsp&nbsp
 
     <label class="post-description">Tag: </label>
     {% for tag in post.tag.all %}
-        <a class="post-category post-category-design" href="#">{{ tag }}</a>
+        <a id="id_tags" class="post-category post-category-design"
+           href="{% url "search_tag" tag_name=tag %}">{{ tag }}</a>
     {% endfor %}
 </p>

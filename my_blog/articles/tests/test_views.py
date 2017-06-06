@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.06.06 将有关 Category 的测试分离了出去
 2017.06.06 继续完善 XSS 测试代码, 现在这个版本可以保证普通数据、内联代码、代码块里面的 XSS 攻击都显示正常了
 2017.06.05 继续完善有关 XSS 的测试代码
 2017.06.04 新增更新笔记时会添加 Tag 的相关测试
@@ -193,32 +194,6 @@ class ArchivesViewTest(BasicTest):
         测试是否有将 form 传递给模板
         """
         response = self.client.get(self.unique_url)
-        self.assertIsInstance(response.context["form"], ArticleForm)
-
-
-class SearchTagViewTest(BasicTest):
-    unique_url = "/articles/tag{}/"
-
-    def test_can_get_same_category(self):
-        test_category_name = "test_category"
-        article_1 = self.create_article(title="article_1", category=test_category_name)
-        article_2 = self.create_article(title="article_2", category=test_category_name)
-        article_3 = self.create_article(title="article_3")
-
-        # 查找同一分类下的所有文章
-        response = self.client.get(self.unique_url.format(test_category_name))
-        self.assertTemplateUsed(response, "tag.html")
-
-        # 不属于这个分类的都不会找到
-        self.assertContains(response, article_1.title)
-        self.assertContains(response, article_2.title)
-        self.assertNotContains(response, article_3.title)
-
-    def test_view_passes_form_to_template(self):
-        """
-        测试是否有将 form 传递给模板
-        """
-        response = self.client.get(self.unique_url.format("just_a_test"))
         self.assertIsInstance(response.context["form"], ArticleForm)
 
 

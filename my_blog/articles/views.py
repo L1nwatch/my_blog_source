@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.06 实现基于 tag 的搜索
 2017.06.04 更新笔记时现在会添加 Tag 了
 2017.05.21 实现搜索结果按照点击次数排序的相关视图代码
 2017.05.21 日志记录的格式有问题, 修正一下
@@ -135,14 +136,25 @@ def about_me_view(request):
     return render(request, 'about_me.html', get_context_data(request, "all"))
 
 
-@log_wrapper(str_format="进行了搜索", logger=logger)
-def search_tag_view(request, tag):
+@log_wrapper(str_format="进行了 Category 搜索", logger=logger)
+def search_category_view(request, category):
     try:
-        post_list = Article.objects.filter(category__iexact=tag)  # contains
+        post_list = Article.objects.filter(category__iexact=category)  # contains
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, 'tag.html', get_context_data(request, "articles", {'post_list': post_list}))
+    return render(request, 'tag_category.html', get_context_data(request, "articles", {'post_list': post_list}))
+
+
+@log_wrapper(str_format="进行了 Tag 搜索", logger=logger)
+def search_tag_view(request, tag_name):
+    try:
+        search_tag = Tag.objects.get(tag_name=tag_name)
+        post_list = Article.objects.filter(tag=search_tag)
+    except Article.DoesNotExist:
+        raise Http404
+
+    return render(request, 'tag_category.html', get_context_data(request, "articles", {'post_list': post_list}))
 
 
 def _parse_markdown_file(markdown_content):

@@ -31,6 +31,8 @@ article_display_url = "/articles/{}/"
 journal_display_url = "/work_journal/{}/"
 gitbook_display_url = "/gitbook_notes/{}/"
 article_update_url = "/articles/update_notes/"
+category_search_url = "/articles/category{}/"
+tag_search_url = "/articles/tag{}/"
 
 
 class CreateTestData:

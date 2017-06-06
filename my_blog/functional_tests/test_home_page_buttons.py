@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.06 重构, 将有关 archive 的测试分离出来
 2017.06.04 重构基类测试, 修改对应代码
 2017.03.28 修改 about me 的测试
 2017.03.24 新增一个 tool_hub APP, 于是编写相关测试
@@ -71,29 +72,6 @@ class TestHomePageButtons(FunctionalTest):
         self.browser.find_element_by_id("id_gitbook").click()
         self.assertIn("gitbook", self.browser.current_url)
         self.assertIn("L1nwatch".lower(), self.browser.current_url)
-
-    def test_archive_button(self):
-        # 创建测试数据
-        self.create_articles_test_db_data()
-
-        # 刷新首页
-        self.browser.refresh()
-        home_page_source = self.browser.page_source
-        home_page_url = self.browser.current_url
-
-        # 看到了归档按钮, 不知道有什么用, 点击看看
-        self.browser.find_element_by_id("id_archives").click()
-
-        # 发现 URL 变了
-        self.assertNotEqual(self.browser.current_url, home_page_url)
-
-        # 看见页面显示的内容跟首页不一样了
-        self.assertNotEqual(self.browser.page_source, home_page_source)
-
-        # 而且不显示文章内容
-        with self.assertRaises(NoSuchElementException):
-            # 如果找不到会抛出 NoSuchElementException 异常
-            self.browser.find_element_by_id("id_article_content")
 
     def test_email_button(self):
         # Y 想联系网站拥有者, 发现了个 email 按钮

@@ -17,11 +17,13 @@
 {% block content %}
     <div class="blog-post">
         {% for post in post_list %}
-            <h2 class="blog-post-title"><a href="{% url 'detail' article_id=post.id %}">{{ post.title }}</a></h2>
+            <h2 class="blog-post-title">
+                <a id="id_article_title" href="{% url 'detail' article_id=post.id %}">{{ post.title }}</a>
+            </h2>
             <p class="blog-post-meta">
                 <label class="btn btn-xs btn-info">发布：{{ post.create_time |date:'Y 年 m 月 d 号 H 时' }}</label>&nbsp&nbsp
                 <label class="btn btn-xs btn-info">分类：</label>
-                <a class="btn btn-xs btn-info" href="{% url 'search_tag' post.category %}">
+                <a class="btn btn-xs btn-info" href="{% url 'search_category' post.category %}">
                     {{ post.category | title }}
                 </a>&nbsp&nbsp
                 <label class="btn btn-xs btn-info">标签：</label>
