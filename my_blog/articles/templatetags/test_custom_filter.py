@@ -9,10 +9,12 @@
 """
 # 标准库
 from django.test import TestCase
+import bleach
 
 # 自己的模块
 from my_constant import const
-from articles.templatetags.custom_filter import remove_code_tag_in_h_tags, add_em_tag, menu_format, unescape_tag_in_code
+from articles.templatetags.custom_filter import (remove_code_tag_in_h_tags, add_em_tag, special_bleach_clean,
+                                                 menu_format, unescape_tag_in_code, )
 
 __author__ = '__L1n__w@tch'
 
@@ -36,6 +38,29 @@ class TestCustomMarkdown(TestCase):
         right_answer = "<h1>aaabbbcccddd</h1>"
         my_answer = remove_code_tag_in_h_tags(test_data)
         self.assertEqual(right_answer, my_answer)
+
+    def test_special_bleach_clean(self):
+        """
+        测试 bleach.clean 的时候只清除除了 `` 以及 ```xxx``` 以外的隐患
+        """
+        # 测试不会清除反引号里面的隐患
+        hack_string = "<script>alert(1)</script>"
+        normal_string = "`<script>`"
+        test_string = hack_string + normal_string + hack_string + normal_string
+        right_answer = bleach.clean(hack_string) + normal_string + bleach.clean(hack_string) + normal_string
+        my_answer = special_bleach_clean(test_string)
+        self.assertEqual(right_answer, my_answer)
+
+        # 测试不会清除代码块里面的隐患
+        normal_string = """```html
+<script>alert(1)<script>
+```"""
+        test_string = hack_string + normal_string + hack_string
+        right_answer = bleach.clean(hack_string) + normal_string + bleach.clean(hack_string)
+        my_answer = special_bleach_clean(test_string)
+        self.assertEqual(right_answer, my_answer)
+
+
 
 
 class TestCustomFilter(TestCase):
@@ -133,12 +158,6 @@ class TestCustomFilter(TestCase):
         right_answer = "<code>&lt;script&gt;</code><code>&lt;script&gt;</code>"
         my_answer = unescape_tag_in_code(test_string)
         self.assertEqual(right_answer, my_answer)
-
-        # 测试 code_block, 也不应该被转义显示(TODO: 太难实现, 暂时放弃)
-        # test_string = """<div class="codehilite"><pre><span></span><span class="ni">&amp;lt;</span>script<span class="ni">&amp;gt;</span>alert(1)<span class="ni">&amp;lt;</span>/script<span class="ni">&amp;gt;</span></pre></div>"""
-        # right_answer = """<div class="codehilite"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mi">1</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span></pre></div>"""
-        # my_answer = unescape_tag_in_code(test_string)
-        # self.assertEqual(right_answer, my_answer)
 
 
 if __name__ == "__main__":

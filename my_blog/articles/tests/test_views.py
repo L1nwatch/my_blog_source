@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+
+2017.06.06 继续完善 XSS 测试代码, 现在这个版本可以保证普通数据、内联代码、代码块里面的 XSS 攻击都显示正常了
 2017.06.05 继续完善有关 XSS 的测试代码
 2017.06.04 新增更新笔记时会添加 Tag 的相关测试
 2017.05.21 实现搜索结果按照访问次数排序的相关测试
@@ -150,20 +152,18 @@ class ArticleDisplayViewTest(BasicTest):
 
         markdown_html = custom_markdown(data)
 
-        # 测试 quote_string 是否显示正常(不带 &amp; 表明显示正常), 比如 '&amp;lt;script&amp;gt;' 就算是显示不正常
+        # 测试 quote_string 是否显示正常(带 &amp; 表明显示正常)
         right_string = quote_string.strip("`")
-        self.assertNotIn(html.escape(html.escape(right_string)), markdown_html)
-        self.assertIn(html.escape(right_string), markdown_html)
+        self.assertIn(html.escape(html.escape(right_string)), markdown_html)
 
         # 测试 hack_string 是否显示正常
         right_string = hack_string
         self.assertNotIn(right_string, markdown_html)
         self.assertIn(html.escape(right_string), markdown_html)
 
-        # 测试 code_block_string 是否显示正常(TODO: 太难实现, 暂时放弃)
-        # right_string = code_block_string.strip("`html\n")
-        # self.assertNotIn(html.escape(html.escape(right_string)), markdown_html)
-        # self.assertIn(html.escape(right_string), markdown_html)
+        # 测试 code_block_string 是否显示正常
+        right_string = """<div class="codehilite"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mi">2</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>\n</pre></div>"""
+        self.assertIn(right_string, markdown_html)
 
 
 class AboutMeViewTest(BasicTest):

@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 配置 markdown 等给模板使用的 filter
 
+2017.06.06 再次修正, 现在可以确保正常内容、内联代码、代码块中的 XSS 攻击都正常显示了
 2017.06.05 bleach 是为了保证 md 文件无法输送恶意语句, 但是因此也会导致 code 的显示不正确, 现在进行修正
 2017.05.24 并不了解当初为什么把 bleach 注释掉了, 现在补回来, 因为缺少这一句发现了 BUG
 2017.02.26 添加一个菜单格式化器
@@ -59,12 +60,12 @@ def add_em_tag(keyword, raw_content):
 @register.filter(is_safe=True)  # 注册template filter
 @stringfilter  # 希望字符串作为参数
 def custom_markdown(value):
-    value = bleach.clean(value)  # 清除不安全因素
+    value = special_bleach_clean(value)  # 清除不安全因素
 
     result = markdown.markdown(value, extensions=["codehilite", "fenced_code", "tables", "toc"],
                                enable_attributes=False)
 
-    return mark_safe(unescape_tag_in_code(result))
+    return mark_safe(result)
 
 
 def custom_markdown_for_tree_parse(value):
@@ -88,6 +89,34 @@ def remove_code_tag_in_h_tags(html_content):
     result, n = remove_code_tag.subn("\g<content>", html_content)
     while n > 0:
         result, n = remove_code_tag.subn("\g<content>", result)
+    return result
+
+
+def special_bleach_clean(raw_data):
+    """
+    按照自己的方式特殊进行 bleach.clean 操作, 主要是指不清除反引号以及代码块里的隐患
+    :param raw_data: str(), 含有不安全的数据
+    :return: str(), 按照特殊方式处理过后的数据
+    """
+
+    def __bleach_clean_pre(match_data):
+        pre, raw_content = match_data.groups()
+
+        return "{}{}".format(bleach.clean(pre), raw_content)
+
+    def __bleach_clean_suf(match_data):
+        pre, raw_content, suffix = match_data.groups()
+        return "{}{}{}".format(pre, raw_content, bleach.clean(suffix))
+
+    # 处理每个关键词的转义
+    special_bleach_clean_re = re.compile("(?P<pre>[^`]*?)(?P<code>`[^`]*`)")
+    result = special_bleach_clean_re.sub(__bleach_clean_pre, raw_data)
+
+    # 专门处理一下最后一次匹配关键词后面的字符的转义
+    # 这里的 {{1}} 表示把括号内的标记为组 1
+    suffix_bleach_clean_re = re.compile("(.*)(`[^`]*`){1}(?P<suf>.*)$", flags=re.IGNORECASE)
+    result = suffix_bleach_clean_re.sub(__bleach_clean_suf, result)
+
     return result
 
 
@@ -120,16 +149,9 @@ def unescape_tag_in_code(html_content):
 
         return "<code>{}</code>".format(html.unescape(content))
 
-    # def __unescape_in_code_block(data):
-    #     content = data.group(1)
-    #
-    #     return """<div class="codehilite">{}</div>""".format(html.unescape(html.unescape(content)))
-
     unescape_tag_in_code_re = re.compile("<code>(?P<content>.*?)</code>")
-    # unescape_tag_in_code_block_re = re.compile("""<div class="codehilite">(?P<content>.*?)</div>""")
 
     result = unescape_tag_in_code_re.sub(__unescape_in_code, html_content)
-    # result = unescape_tag_in_code_block_re.sub(__unescape_in_code_block, result)
     return result
 
 
