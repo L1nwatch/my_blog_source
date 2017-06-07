@@ -31,6 +31,7 @@ urlpatterns = [
     url(r"^work_journal/", include("work_journal.urls")),
     url(r"^just_eating/", include("just_eating.urls")),
     url(r'^$', articles.views.home_view, name='home'),
+    url(r'^googlef0b96351a9e6fd45.html$', articles.views.temp, name='temp'),
     url(r"^search/$", articles.views.blog_search, name="search"),
     url(r"^tool_hub/", include("toolhub.urls")),
     url(r"^code_collect/", include("code_collect.urls")),
