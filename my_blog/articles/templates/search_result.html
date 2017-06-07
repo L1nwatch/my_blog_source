@@ -26,7 +26,8 @@
                                onclick="this.parentNode.submit()">{{ post.note.title }}</a>
 
                             {% for tag in post.note.tag.all %}
-                                <a id="id_article_tag" class="post-category post-category-design" href="#">{{ tag }}</a>
+                                <a id="id_article_tag" class="post-category post-category-design"
+                                   href="{% url "search_tag" tag_name=tag %}">{{ tag }}</a>
                             {% endfor %}
                         </form>
 
