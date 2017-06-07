@@ -15,6 +15,7 @@ Including another URL conf
 
 
 # 更新
+2017.06.07 补充 google 认证网页
 2017.03.28 新增 code_collect 这个 APP
 2017.03.24 新增 tool hub 这个 APP
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
@@ -31,6 +32,7 @@ urlpatterns = [
     url(r"^work_journal/", include("work_journal.urls")),
     url(r"^just_eating/", include("just_eating.urls")),
     url(r'^$', articles.views.home_view, name='home'),
+    url(r'^googlef0b96351a9e6fd45\.html$', articles.views.google_verify, name='google_verify'),
     url(r"^search/$", articles.views.blog_search, name="search"),
     url(r"^tool_hub/", include("toolhub.urls")),
     url(r"^code_collect/", include("code_collect.urls")),

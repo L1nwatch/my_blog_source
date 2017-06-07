@@ -80,6 +80,11 @@ def home_view(request):
     return render(request, 'new_home.html', get_context_data(request, "all"))
 
 
+@log_wrapper(str_format="进行了 Google 站长认证", logger=logger)
+def google_verify(request):
+    return render(request, "googlef0b96351a9e6fd45.html")
+
+
 @log_wrapper(str_format="查看文章", logger=logger)
 def article_display(request, article_id):
     """

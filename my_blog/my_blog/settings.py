@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 
 更新日志:
+2017.06.07 修正域名部署, 现在要同时支持 www/non-www 的访问
 2017.05.25 增加发送邮件的配置信息
 2017.03.28 新增 code_collect 这个 APP 及相应的 logger 信息
 2017.03.24 新增 toolhub 这个 app
