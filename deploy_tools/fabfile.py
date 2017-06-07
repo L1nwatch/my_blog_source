@@ -3,7 +3,7 @@
 # version: Python3.X
 """ 使用 Fabric 进行自动化部署
 
-2017.06.07 修正域名部署, 现在要同时支持 www/non-www 的访问
+2017.06.07 修正域名部署, 现在要同时支持 www/non-www 的访问 + 删除 nginx 默认欢迎界面
 2017.05.28 继续完善发送邮件的配置代码
 2017.05.27 尝试重构部署代码
 2017.05.26 补充 SMTP 登录密码部署时的记录操作
@@ -473,6 +473,10 @@ def _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user):
 
     # 给 supervisor 添加 locale 配置
     __set_locale_for_supervisor(source_folder)
+
+    # 删除默认的欢迎界面
+    if os.path.exists("/etc/nginx/sites-enabled/default"):
+        sudo("sudo rm /etc/nginx/sites-enabled/default")
 
     # 重启 nginx 服务以及 supervisor
     sudo('service nginx reload'
