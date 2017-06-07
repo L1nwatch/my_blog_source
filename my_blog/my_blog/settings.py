@@ -34,7 +34,7 @@ DEBUG = True
 # 部署脚本会修改这个变量
 DOMAIN = "localhost"
 
-ALLOWED_HOSTS = [DOMAIN]
+ALLOWED_HOSTS = [DOMAIN, "www.{}".format(DOMAIN)]
 
 # Application definition
 
