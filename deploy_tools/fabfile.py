@@ -214,7 +214,7 @@ class UpdateConfigFile:
 
         # Fabric 提供的 sed 函数, 类似于 sed 命令
         sed(settings_py_path, "DEBUG = True", "DEBUG = False")  # 关闭调试模式
-        sed(settings_py_path, 'DOMAIN = "localhost"', 'DOMAIN = "{}"'.format(self.host_name))
+        sed(settings_py_path, 'DOMAIN = "localhost"', 'DOMAIN = ["{0}", "www.{0}"]'.format(self.host_name))
 
         # 修改发送邮件相关配置
         cp = configparser.ConfigParser()
