@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.06.07 补充搜索界面中对 Tag 进行搜索的测试
 2017.06.04 重构基类测试, 修改对应代码 + 添加有关搜索结果页面显示 Tag 的测试代码
 2017.05.21 新增两个关于搜索结果按照点击次数排序的测试
 2017.05.21 重构一下, 把所有测试放到同一个类中不好看
@@ -28,7 +29,7 @@ import datetime
 
 # 自己的模块
 from .base import FunctionalTest
-from articles.models import Article
+from articles.models import Article, Tag
 from work_journal.models import Journal
 from code_collect.views import code_collect
 from my_constant import const
@@ -281,6 +282,33 @@ class TestSearchDisplay(BasicSearch):
         self.assertTrue(any(
             ["Others2" == x.text for x in tag_result]
         ))
+
+    def test_search_result_tag_can_search(self):
+        """
+        测试搜索结果中显示出来的 tag 应该是可以进一步搜索的
+        """
+        # Y 想知道搜索页面中显示的 Tag 能不能继续搜索, 它知道有个 Others Tag, 想用这个 tag 来做测试
+        test_tag_name = "Others"
+        test_tag = Tag.objects.get(tag_name=test_tag_name)
+
+        # Y 知道某篇笔记中含有 same category 这个内容, 且这篇笔记含有 Others 这个 tag, 于是 Y 想把这篇笔记搜索出来
+        self.do_all_search("same category")
+        search_result_url = self.browser.current_url
+
+        # Y 知道搜索结果中肯定有一个 tag 是 Others, 于是在搜索结果中找它
+        tags = self.browser.find_elements_by_id("id_article_tag")
+        for each_tag in tags:
+            if each_tag.text == "Others":
+                each_tag.click()
+                break
+
+        # Y 发现 URL 变化了, 看上去像是对 Tag 进行了搜索的样子
+        self.assertNotEqual(search_result_url, self.browser.current_url)
+
+        # Y 知道笔记库中有 Others 这个 Tag 的笔记总共有 x 篇, 而且界面上刚好显示出来 x 篇笔记
+        articles_has_test_tag = Article.objects.filter(tag=test_tag)
+        articles_display = self.browser.find_elements_by_id("id_article_title")
+        self.assertEqual(len(articles_has_test_tag), len(articles_display))
 
 
 class TestSearchButton(BasicSearch):
