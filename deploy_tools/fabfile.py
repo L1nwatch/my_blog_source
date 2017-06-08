@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 使用 Fabric 进行自动化部署
 
+2017.06.08 完善部署, 发现在本地 Ubuntu 运行 git 命令也要 sudo 权限。。。
 2017.06.07 修正域名部署, 现在要同时支持 www/non-www 的访问 + 删除 nginx 默认欢迎界面
 2017.05.28 继续完善发送邮件的配置代码
 2017.05.27 尝试重构部署代码
@@ -354,15 +355,15 @@ def _get_latest_source(source_folder):
         # current_commit = local("git log -n 1 --format=%H", capture=True)
         # 执行 git reset --hard 命令，切换到指定的提交。这个命令会撤销在服务器中对代码仓库所做的任何改动。
         # run("cd {} && git reset --hard {}".format(source_folder, current_commit))
-        run("cd {} && git reset --hard".format(source_folder))
-        run("cd {} && git pull".format(source_folder))
+        sudo("cd {} && git reset --hard".format(source_folder))
+        sudo("cd {} && git pull".format(source_folder))
 
         # 再次确保获取最新版本
-        run("cd {} && git reset --hard".format(source_folder))
-        run("cd {} && git pull".format(source_folder))
+        sudo("cd {} && git reset --hard".format(source_folder))
+        sudo("cd {} && git pull".format(source_folder))
     else:
         # 如果仓库不存在，就执行 git clone 命令克隆一份全新的源码。
-        run("git clone {} {}".format(REPO_URL, source_folder))
+        sudo("git clone {} {}".format(REPO_URL, source_folder))
 
 
 def _update_virtualenv(source_folder, virtualenv_folder):
