@@ -108,7 +108,7 @@ class ConfigInteractive:
             # 对端口号进行特殊处理
             port = cp.get("email_info", "smtp_server_port")
             if not port.isnumeric():
-                cp.set("email_info", "smtp_server_port", 465)
+                cp.set("email_info", "smtp_server_port", "465")
 
             # 保存到配置文件中
             with open(self.config_file_name, "w") as f:

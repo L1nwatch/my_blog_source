@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
-2017.06.08 由于重构了常量脚本, 因此重构对应测试
+2017.06.08 由于重构了常量脚本, 因此重构对应测试 + 根据部署脚本的更改修改对应测试
 2017.05.28 补充更新配置文件的测试代码
 2017.05.28 改成 unittest.TC 了, 因为 django.test 没法测试到这边的。。。
 2017.05.27 补充 ConfigInteractive 的相关测试
@@ -153,7 +153,7 @@ class TestConfigInteractive(BaseFabfileTest):
             self.assertEqual(cp.get(each_config.section, each_config.option), str())
 
         # 为每一个字段进行赋值
-        config_data_string = io.StringIO("\n".join(["a" * (i + 1) for i in range(len(self.ci.sections_options))]))
+        config_data_string = io.StringIO("\n".join(["1" * (i + 1) for i in range(len(self.ci.sections_options))]))
 
         old_sys_stdin, sys.stdin = sys.stdin, config_data_string
         self.ci.user_pass_file_config()
@@ -162,7 +162,7 @@ class TestConfigInteractive(BaseFabfileTest):
         # 验证每个字段的值都是正确的
         cp = self.read_config_file()
         for i, each_config in enumerate(self.ci.sections_options):
-            self.assertEqual(cp.get(each_config.section, each_config.option), "a" * (i + 1))
+            self.assertEqual(cp.get(each_config.section, each_config.option), "1" * (i + 1))
 
 
 class TestUpdateConfigFile(BaseFabfileTest):
