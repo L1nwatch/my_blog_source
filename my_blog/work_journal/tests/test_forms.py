@@ -7,7 +7,7 @@
 
 from work_journal.forms import JournalForm
 from django.test import TestCase
-from my_constant import const
+import my_constant as const
 
 __author__ = '__L1n__w@tch'
 

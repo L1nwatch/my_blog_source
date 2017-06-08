@@ -26,7 +26,7 @@ from django.conf import settings
 
 # 自己的模块
 from common_module.tests.basic_test import CreateTestData
-from my_constant import const
+import my_constant as const
 
 DEFAULT_WAIT = 5
 SCREEN_DUMP_LOCATION = os.path.abspath(

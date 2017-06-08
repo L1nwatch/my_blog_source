@@ -9,7 +9,7 @@
 """
 
 from common_module.tests.basic_test import BasicTest
-from my_constant import const
+import my_constant as const
 
 __author__ = '__L1n__w@tch'
 

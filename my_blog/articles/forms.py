@@ -7,13 +7,15 @@
 2017.02.08 重定义一个基类, 作为 Journal 和 Article 的 Form
 2016.10.07 给搜索按钮添加 form
 """
+# 标准库
 from django import forms
-from .models import SearchModel
-from my_constant import const
-
 from django.utils.safestring import mark_safe
 from django.utils.html import format_html
 from django.utils.encoding import force_text
+
+# 自己的模块
+from .models import SearchModel
+import my_constant as const
 
 __author__ = '__L1n__w@tch'
 

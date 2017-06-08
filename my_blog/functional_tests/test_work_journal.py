@@ -15,7 +15,7 @@ import datetime
 
 # 自己的库
 from .base import FunctionalTest
-from my_constant import const
+import my_constant as const
 
 __author__ = '__L1n__w@tch'
 

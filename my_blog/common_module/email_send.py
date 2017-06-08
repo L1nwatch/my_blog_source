@@ -12,13 +12,11 @@
 """
 # 自己的模块
 from common_module.models import VisitedIP
-from common_module.ip_deal import locate_using_ip_address
-from my_constant import const
+import my_constant as const
 
 # 标准库
 from django.core.mail import send_mail
 from django.db.utils import OperationalError
-import threading
 import time
 
 __author__ = '__L1n__w@tch'

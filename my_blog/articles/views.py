@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.08 更改 tag/category 采用和 archives 一样的界面
 2017.06.06 实现基于 tag 的搜索
 2017.06.04 更新笔记时现在会添加 Tag 了
 2017.05.21 实现搜索结果按照点击次数排序的相关视图代码
@@ -43,7 +44,7 @@ from common_module.common_help_function import (clean_form_data, search_keyword_
                                                 form_is_valid_and_ignore_exist_error, log_wrapper, sort_search_result,
                                                 extract_tag_name_from_path)
 from gitbook_notes.views import do_gitbooks_search
-from my_constant import const
+import my_constant as const
 from work_journal.views import do_journals_search
 
 LAST_UPDATE_TIME = None
@@ -148,7 +149,7 @@ def search_category_view(request, category):
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, 'tag_category.html', get_context_data(request, "articles", {'post_list': post_list}))
+    return render(request, const.CATEGORY_TEMPLATE, get_context_data(request, "articles", {'post_list': post_list}))
 
 
 @log_wrapper(str_format="进行了 Tag 搜索", logger=logger)
@@ -159,7 +160,7 @@ def search_tag_view(request, tag_name):
     except Article.DoesNotExist:
         raise Http404
 
-    return render(request, 'tag_category.html', get_context_data(request, "articles", {'post_list': post_list}))
+    return render(request, const.TAG_TEMPLATE, get_context_data(request, "articles", {'post_list': post_list}))
 
 
 def _parse_markdown_file(markdown_content):

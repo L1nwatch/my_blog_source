@@ -19,8 +19,8 @@ import unittest
 from django.test import override_settings
 
 from articles.views import get_right_content_from_file
-from common_module.tests.basic_test import BasicTest, journal_display_url
-from my_constant import const
+from common_module.tests.basic_test import BasicTest
+import my_constant as const
 from work_journal.forms import JournalForm
 from work_journal.models import Journal
 from work_journal.views import is_valid_update_md_file, extract_date_from_md_file
@@ -101,7 +101,7 @@ class JournalHomeViewTest(BaseCommonTest):
 
 
 class JournalDisplayViewTest(BaseCommonTest):
-    unique_url = journal_display_url
+    unique_url = const.JOURNAL_DISPLAY_URL
 
     def test_use_right_template(self):
         """

@@ -6,10 +6,12 @@
 2017.03.15 要提供搜索选项的功能, 需要重构一下搜索的 Form, 甚至连对应的 Model 都要修改
 """
 
+# 标准库
 from django.db import models
 from django.core.urlresolvers import reverse
 
-from my_constant import const
+# 自己的模块
+import my_constant as const
 
 
 class SearchModel(models.Model):

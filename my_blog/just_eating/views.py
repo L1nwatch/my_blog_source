@@ -13,7 +13,7 @@ from django.http import Http404
 from django.shortcuts import render
 
 from common_module.common_help_function import log_wrapper
-from my_constant import const
+import my_constant as const
 
 logger = logging.getLogger("my_blog.just_eating.views")
 

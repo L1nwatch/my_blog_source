@@ -12,6 +12,7 @@
 2017.03.07 新增 form data 的清理工作
 2017.03.05 开始编写 GitBook 这个 APP
 """
+# 标准库
 import logging
 import os
 import re
@@ -19,11 +20,12 @@ import urllib.parse
 
 from django.shortcuts import redirect
 
+# 自己的模块
 from articles.forms import BaseSearchForm
 from common_module.common_help_function import (get_ip_from_django_request, create_search_result, search_keyword_in_model,
                                                 clean_form_data, get_context_data, log_wrapper, is_valid_git_address)
 from gitbook_notes.models import GitBook
-from my_constant import const
+import my_constant as const
 
 logger = logging.getLogger("my_blog.gitbooks.views")
 

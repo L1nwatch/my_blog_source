@@ -17,7 +17,7 @@
 from common_module.common_help_function import (clean_form_data, sort_search_result, locate_using_ip_address,
                                                 data_check, is_valid_git_address, background_deal, model_dict,
                                                 extract_tag_name_from_path)
-from my_constant import const
+import my_constant as const
 from .basic_test import BasicTest
 
 # 标准库

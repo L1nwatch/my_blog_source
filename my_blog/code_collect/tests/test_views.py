@@ -14,7 +14,7 @@ from code_collect.models import CodeCollect
 from code_collect.views import (code_collect, get_all_code_type_in_note, parse_query,
                                 get_note_type, get_all_code_area, search_code_keyword_in_note)
 from common_module.tests.basic_test import BasicTest
-from my_constant import const
+import my_constant as const
 
 __author__ = '__L1n__w@tch'
 

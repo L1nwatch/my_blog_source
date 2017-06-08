@@ -6,15 +6,16 @@
 2017.06.06 将有关 category/tag 视图函数的测试都抽出来放到了这个脚本之中
 """
 # 自己的模块
-from common_module.tests.basic_test import BasicTest, category_search_url, tag_search_url
+from common_module.tests.basic_test import BasicTest
 from articles.forms import ArticleForm
 from articles.models import Tag
+import my_constant as const
 
 __author__ = '__L1n__w@tch'
 
 
 class SearchCategoryViewTest(BasicTest):
-    unique_url = category_search_url
+    unique_url = const.CATEGORY_SEARCH_URL
 
     def test_can_get_same_category(self):
         test_category_name = "test_category"
@@ -24,7 +25,7 @@ class SearchCategoryViewTest(BasicTest):
 
         # 查找同一分类下的所有文章
         response = self.client.get(self.unique_url.format(test_category_name))
-        self.assertTemplateUsed(response, "tag_category.html")
+        self.assertTemplateUsed(response, const.CATEGORY_TEMPLATE)
 
         # 不属于这个分类的都不会找到
         self.assertContains(response, article_1.title)
@@ -40,7 +41,7 @@ class SearchCategoryViewTest(BasicTest):
 
 
 class SearchTagViewTest(BasicTest):
-    unique_url = tag_search_url
+    unique_url = const.TAG_SEARCH_URL
 
     def test_can_get_same_tag(self):
         """
@@ -55,7 +56,7 @@ class SearchTagViewTest(BasicTest):
 
         # 查找同一分类下的所有文章
         response = self.client.get(self.unique_url.format(test_tag_name))
-        self.assertTemplateUsed(response, "tag_category.html")
+        self.assertTemplateUsed(response, const.TAG_TEMPLATE)
 
         # 不属于这个分类的都不会找到
         self.assertContains(response, article_1.title)

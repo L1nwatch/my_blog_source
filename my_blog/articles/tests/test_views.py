@@ -37,8 +37,8 @@ from articles.forms import BaseSearchForm, ArticleForm
 from articles.models import Article, Tag
 from articles.templatetags.custom_filter import custom_markdown
 from articles.views import _parse_markdown_file, get_right_content_from_file, _get_id_from_markdown_html
-from common_module.tests.basic_test import BasicTest, search_url, article_display_url, article_update_url
-from my_constant import const
+from common_module.tests.basic_test import BasicTest
+import my_constant as const
 
 __author__ = '__L1n__w@tch'
 
@@ -76,7 +76,7 @@ class HomeViewTest(BasicTest):
 
 
 class ArticleDisplayViewTest(BasicTest):
-    unique_url = article_display_url
+    unique_url = const.ARTICLE_DISPLAY_URL
 
     def setUp(self):
         self.create_markdown_article()
@@ -200,7 +200,7 @@ class ArchivesViewTest(BasicTest):
 @override_settings(UPDATE_TIME_LIMIT=0.1)
 @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
 class UpdateNotesViewTest(BasicTest):
-    unique_url = article_update_url
+    unique_url = const.ARTICLE_UPDATE_URL
 
     def __update_test_md_file_and_git_push(self, test_content):
         """
@@ -365,7 +365,7 @@ class UpdateNotesViewTest(BasicTest):
 
 
 class ArticlesSearchViewTest(BasicTest):
-    unique_url = search_url
+    unique_url = const.SEARCH_URL
 
     def test_for_invalid_input_passes_form_to_template(self):
         response = self.client.post(self.unique_url, data={"search_content": "",
@@ -565,7 +565,7 @@ class ArticlesSearchViewTest(BasicTest):
 
 
 class BaseSearchViewTest(BasicTest):
-    unique_url = search_url
+    unique_url = const.SEARCH_URL
 
     def test_for_valid_input_passes_form_to_template(self):
         """

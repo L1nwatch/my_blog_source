@@ -10,7 +10,7 @@ from .base import FunctionalTest
 from selenium.common.exceptions import NoSuchElementException, NoAlertPresentException, UnexpectedAlertPresentException
 from django.conf import settings
 from django.test.utils import override_settings
-from my_constant import const
+import my_constant as const
 
 import time
 import shutil

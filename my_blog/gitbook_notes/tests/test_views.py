@@ -22,12 +22,12 @@ import unittest
 
 from django.test import override_settings
 
-from common_module.tests.basic_test import BasicTest, gitbook_display_url
+from common_module.tests.basic_test import BasicTest
 from functional_tests.base import FunctionalTest
 from gitbook_notes.models import GitBook
 from gitbook_notes.views import (get_title_list_from_summary, get_title_and_md_file_name,
                                  get_right_href, format_title)
-from my_constant import const
+import my_constant as const
 
 __author__ = '__L1n__w@tch'
 
@@ -195,7 +195,7 @@ class GitBookSearchViewTest(BaseCommonTest):
 
 
 class GitBookPageDisplayTest(BaseCommonTest):
-    unique_url = gitbook_display_url
+    unique_url = const.GITBOOK_DISPLAY_URL
 
     def test_display_href_redirect(self):
         """

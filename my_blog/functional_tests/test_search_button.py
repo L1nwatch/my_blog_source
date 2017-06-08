@@ -32,7 +32,7 @@ from .base import FunctionalTest
 from articles.models import Article, Tag
 from work_journal.models import Journal
 from code_collect.views import code_collect
-from my_constant import const
+import my_constant as const
 
 __author__ = '__L1n__w@tch'
 

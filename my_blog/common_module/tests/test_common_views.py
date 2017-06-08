@@ -7,7 +7,8 @@
 2017.05.21 重构, 将通用的 view 测试放到这个文件里面
 """
 # 自己写的代码模块导入
-from .basic_test import BasicTest, search_url
+from .basic_test import BasicTest
+import my_constant as const
 
 __author__ = '__L1n__w@tch'
 
@@ -28,7 +29,7 @@ class TestSearch(BasicTest):
             test_note2 = create_func(content="test", click_times=3)
             test_note3 = create_func(content="test + test", click_times=1)
 
-            response = self.client.post(search_url, data={"search_content": "test", "search_choice": types})
+            response = self.client.post(const.SEARCH_URL, data={"search_content": "test", "search_choice": types})
 
             response_text = response.content.decode("utf8")
             note1_index = response_text.index(test_note1.title)

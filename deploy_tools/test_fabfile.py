@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.08 由于重构了常量脚本, 因此重构对应测试
 2017.05.28 补充更新配置文件的测试代码
 2017.05.28 改成 unittest.TC 了, 因为 django.test 没法测试到这边的。。。
 2017.05.27 补充 ConfigInteractive 的相关测试
@@ -24,7 +25,6 @@ import subprocess
 from collections import namedtuple
 
 from django.conf import settings
-from importlib import reload
 
 __author__ = '__L1n__w@tch'
 
@@ -207,7 +207,7 @@ class TestUpdateConfigFile(BaseFabfileTest):
         self.test_gitbook_conf_format_is_right()
 
         # 并且是位于 const.GITBOOK_CODES_REPOSITORY 的花括号之间
-        pattern = "const.GITBOOK_CODES_REPOSITORY = (\{.*\})"
+        pattern = "const.GITBOOK_CODES_REPOSITORY = (\{.*?\})"
         re_result = re.findall(pattern, my_constant_py_new_content, flags=re.IGNORECASE | re.DOTALL)[0]
         self.assertEqual(re_result, conf_data)
 
@@ -215,12 +215,15 @@ class TestUpdateConfigFile(BaseFabfileTest):
         """
         测试 gitbook_conf 文件的格式是正确的
         """
-        reload(my_constant)
-        my_answer = my_constant.const.GITBOOK_CODES_REPOSITORY
+        global my_constant
+        del my_constant
+        import my_constant
+        # reload(my_constant._Const)
+        my_answer = my_constant.GITBOOK_CODES_REPOSITORY
 
         for each_book in my_answer:
             # 首先得是个命名元组
-            self.assertIsInstance(my_answer[each_book], my_constant.const.GITBOOK_INFO)
+            self.assertIsInstance(my_answer[each_book], my_constant.GITBOOK_INFO)
 
             # 然后包含有 git_address 属性, 之后要符合 git 的格式
             self.assertIsNotNone(my_answer[each_book].git_address)

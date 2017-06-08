@@ -9,7 +9,7 @@
 """
 from .base import FunctionalTest, DEFAULT_WAIT
 from gitbook_notes.models import GitBook
-from my_constant import const
+import my_constant as const
 
 import unittest
 

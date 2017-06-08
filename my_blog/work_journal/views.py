@@ -8,7 +8,7 @@
 2017.03.10 将记录日记的装饰器装饰到对应视图上
 2017.03.08 开始进行部分重构工作
 """
-
+# 标准库
 import datetime
 import logging
 import os
@@ -16,9 +16,10 @@ import re
 
 from django.shortcuts import render
 
+# 自己的模块
 from common_module.common_help_function import (get_context_data, get_right_content_from_file, search_keyword_in_model,
                                                 create_search_result, clean_form_data, log_wrapper)
-from my_constant import const
+import my_constant as const
 from .forms import JournalForm
 from .models import Journal
 

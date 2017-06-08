@@ -12,7 +12,7 @@ from django.test import TestCase
 import bleach
 
 # 自己的模块
-from my_constant import const
+import my_constant as const
 from articles.templatetags.custom_filter import (remove_code_tag_in_h_tags, add_em_tag, special_bleach_clean,
                                                  menu_format, unescape_tag_in_code, )
 

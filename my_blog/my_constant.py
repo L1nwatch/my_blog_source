@@ -1,8 +1,9 @@
 #!/bin/env python3
 # -*- coding: utf-8 -*-
 # version: Python3.X
-""" 定义定义常量类以及整个工程的各个 const 变量
+""" 定义定义常量类以及整个工程的各个 my_constant 变量
 
+2017.06.08 由于之前的方式会导致 PyCharm 无法识别本脚本中的常量名, 因此重构了一下, 现在可以识别的, 不过本脚本会有警告
 2017.06.04 添加控制是否进行功能测试的选项
 2017.04.30 更新 gitbook 格式
 2017.03.15 更新有关搜索框的常量信息
@@ -10,6 +11,7 @@
 2017.01.28 把要传给模板的命名数组作为一个常量放进来了
 """
 import os
+import sys
 
 from django.conf import settings
 from collections import namedtuple
@@ -26,14 +28,17 @@ class _Const:
 
     def __setattr__(self, name, value):
         if name in self.__dict__:
-            raise self.ConstError("Can't change const.{}".format(name))
+            raise self.ConstError("Can't change my_constant.{}".format(name))
         if not name.isupper():
-            raise self.ConstCaseError("const name {} is not all uppercase".format(name))
+            raise self.ConstCaseError("my_constant name {} is not all uppercase".format(name))
         self.__dict__[name] = value
 
 
-# sys.modules[__name__] = _Const()
-const = _Const()
+sys.modules[__name__] = _Const()
+
+import my_constant as const
+
+# const = _Const()
 const.EMPTY_ARTICLE_ERROR = "没有相关文章题目"
 const.KEYWORD_IN_TITLE = "关键词仅出现标题中"
 const.KEYWORD_IN_HREF = "关键词出现在 url 链接中"
@@ -81,6 +86,20 @@ const.GITBOOK_INFO = namedtuple("gitbook_info", ["git_address", "book_name"])
 const.GITBOOK_CODES_REPOSITORY = {
     "pythonweb": const.GITBOOK_INFO("https://git.oschina.net/w4tch/PythonWeb.git", "《PythonWeb 开发: 测试驱动方法》"),
 }
+
+# URL 相关
+const.SEARCH_URL = "/search/"
+const.ARTICLE_DISPLAY_URL = "/articles/{}/"
+const.JOURNAL_DISPLAY_URL = "/work_journal/{}/"
+const.GITBOOK_DISPLAY_URL = "/gitbook_notes/{}/"
+const.ARTICLE_UPDATE_URL = "/articles/update_notes/"
+const.CATEGORY_SEARCH_URL = "/articles/category{}/"
+const.TAG_SEARCH_URL = "/articles/tag{}/"
+
+# 模板相关
+const.ARCHIVE_TEMPLATE = "archives.html"
+const.TAG_TEMPLATE = "archives.html"
+const.CATEGORY_TEMPLATE = "archives.html"
 
 if __name__ == "__main__":
     pass

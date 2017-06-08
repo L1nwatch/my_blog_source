@@ -10,17 +10,19 @@
 2017.03.29 新增 do_code_search 视图函数, 不过还没编写对应的测试, 先把 code_collect 的测试通过了再说吧
 2017.03.28 新增一个 code_collect 视图函数, 用于更新数据库信息
 """
+# 标准库
 import logging
 import re
 
 from django.shortcuts import redirect
 
+# 自己的模块
 from articles.forms import BaseSearchForm
 from articles.models import Article, BaseModel
 from code_collect.models import CodeCollect
 from common_module.common_help_function import (log_wrapper, clean_form_data, get_context_data)
 from gitbook_notes.models import GitBook
-from my_constant import const
+import my_constant as const
 from work_journal.models import Journal
 
 logger = logging.getLogger("my_blog.code_collect.views")

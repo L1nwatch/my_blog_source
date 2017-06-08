@@ -14,7 +14,7 @@
 2016.10.03 编写功能测试, 第一个编写的功能测试测试首页各个按钮, 包括主页,about 按钮,github 按钮,archive 按钮,email 按钮
 """
 from .base import FunctionalTest
-from my_constant import const
+import my_constant as const
 from selenium.common.exceptions import NoSuchElementException
 
 import unittest

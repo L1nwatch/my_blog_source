@@ -22,17 +22,17 @@ from articles.views import get_right_content_from_file
 from work_journal.models import Journal
 from gitbook_notes.models import GitBook
 from code_collect.models import CodeCollect
-from my_constant import const
+import my_constant as const
 
 __author__ = '__L1n__w@tch'
 
-search_url = "/search/"
-article_display_url = "/articles/{}/"
-journal_display_url = "/work_journal/{}/"
-gitbook_display_url = "/gitbook_notes/{}/"
-article_update_url = "/articles/update_notes/"
-category_search_url = "/articles/category{}/"
-tag_search_url = "/articles/tag{}/"
+# URL 相关
+
+
+# 模板相关
+
+
+
 
 
 class CreateTestData:
@@ -233,9 +233,9 @@ class BasicTest(CreateTestData, TestCase):
         :return: str, 比如 "/articles/{}/"
         """
         return {
-            "articles": article_display_url,
-            "journals": journal_display_url,
-            "gitbooks": gitbook_display_url,
+            "articles": const.ARTICLE_DISPLAY_URL,
+            "journals": const.JOURNAL_DISPLAY_URL,
+            "gitbooks": const.GITBOOK_DISPLAY_URL,
         }[types]
 
 

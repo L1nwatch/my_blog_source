@@ -24,7 +24,7 @@
 2017.02.09 把视图分离在两个 APP 的时候出现嵌套导入了, 所以只好弄一个 common 文件来存放了
 """
 # 自己的模块
-from my_constant import const
+import my_constant as const
 from articles.forms import ArticleForm, BaseSearchForm
 from articles.models import Article, BaseModel
 from work_journal.models import Journal
