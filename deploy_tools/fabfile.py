@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 使用 Fabric 进行自动化部署
 
+2017.06.08 尝试在本地进行部署, 根据错误修改部署代码
 2017.06.07 修正域名部署, 现在要同时支持 www/non-www 的访问 + 删除 nginx 默认欢迎界面
 2017.05.28 继续完善发送邮件的配置代码
 2017.05.27 尝试重构部署代码
@@ -38,7 +39,6 @@ __author__ = '__L1n__w@tch'
 REPO_URL = "https://github.com/L1nwatch/my_blog_source.git"
 USER_PASS_CONF = "user_pass.conf"
 GITBOOKS_CONF = "gitbooks_git.conf"
-SMTP_LOGIN_PASSWORD = str()
 
 
 class ConfigInteractive:
@@ -88,8 +88,6 @@ class ConfigInteractive:
         """
         判断一下 conf 文件是否存在指定内容, 如果是第一次运行的话得把 git 帐号密码保存进来
         """
-        global SMTP_LOGIN_PASSWORD
-
         # 确保配置文件存在
         self._create_config_file()
 
@@ -107,11 +105,15 @@ class ConfigInteractive:
                     user_input = sys.stdin.readline().strip()
                     cp.set(x.section, x.option, user_input)
 
+            # 对端口号进行特殊处理
+            port = cp.get("email_info", "smtp_server_port")
+            if not port.isnumeric():
+                cp.set("email_info", "smtp_server_port", 465)
+
             # 保存到配置文件中
             with open(self.config_file_name, "w") as f:
                 cp.write(f)
 
-        SMTP_LOGIN_PASSWORD = cp.get("email_info", "smtp_password")
         print("[*] 成功读取文件 {} 的用户名和密码信息".format(self.config_file_name))
 
 
@@ -211,8 +213,6 @@ class UpdateConfigFile:
         :param user_config_path: str(), user_pass.conf 文件的路径, 该文件保存用户部署时交互输入的信息
         :return: None
         """
-        global SMTP_LOGIN_PASSWORD
-
         # Fabric 提供的 sed 函数, 类似于 sed 命令
         sed(settings_py_path, "DEBUG = True", "DEBUG = False")  # 关闭调试模式
         sed(settings_py_path, 'DOMAIN = "localhost"', 'DOMAIN = "{0}"'.format(self.host_name))
