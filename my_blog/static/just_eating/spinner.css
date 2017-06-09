@@ -1,11 +1,5 @@
 /* 下拉按钮样式 */
 .dropbtn {
-    /*background-color: #4CAF50;*/
-    /*color: white;*/
-    /*padding: 16px;*/
-    /*font-size: 16px;*/
-    /*border: none;*/
-    /*cursor: pointer;*/
     font-size: 3em;
     font-weight: 300;
     line-height: 1em;
@@ -47,7 +41,34 @@
     display: block;
 }
 
-/* 当下拉内容显示后修改下拉按钮的背景颜色 */
-/*.dropdown:hover .dropbtn {*/
-/*background-color: #3e8e41;*/
-/*}*/
+/*
+ * 针对 iPhone5s 设备进行样式设置
+ */
+@media (min-device-width: 320px) and (max-device-width: 768px) {
+    #id_spin_me {
+        font-size: 100px;
+    }
+
+    .spinner {
+        width: 900px;
+        height: 900px;
+    }
+
+    .dropbtn {
+        font-size: 8em;
+    }
+
+    #id_home_page, #id_home_eating {
+        z-index: 999999;
+    }
+
+    .dropdown-content a {
+        padding: 50px 16px;
+        font-size: 50px;
+    }
+
+    .spinner .choice:after {
+        font-size: 40px;
+    }
+}
+
