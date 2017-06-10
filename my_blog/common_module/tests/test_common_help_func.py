@@ -246,7 +246,7 @@ class TestCommonHelpFunc(BasicTest):
         self.assertEqual(len(http_info), 5)
         for each_field in http_info:
             each_field = each_field.split(" -> ")[0]
-            self.assertIn(each_field, const.LOG_HTTP_HEADERS)
+            self.assertIn(each_field, const.LOG_HTTP_HEADERS_WHITE_LIST)
 
 
 if __name__ == "__main__":

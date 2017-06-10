@@ -270,7 +270,7 @@ def get_http_header_from_request(request):
     """
     result = list()
     for each_key, each_value in request.META.items():
-        if each_key in const.LOG_HTTP_HEADERS:
+        if each_key in const.LOG_HTTP_HEADERS_WHITE_LIST:
             result.append("{} -> {}".format(bleach.clean(each_key), bleach.clean(each_value)))
 
     return "\n".join(result)
@@ -289,9 +289,10 @@ def background_deal(*, logger, level, request, func_kwargs, str_format, ip_addre
     location = locate_using_ip_address(ip_address)
     http_header = get_http_header_from_request(request)
 
-    log_data = ("[*] {} 的IP {} 于 {} " + str_format + "\nHTTP 头部为: {}").format(location, ip_address, now, http_header)
+    log_data = ("[*] {} 的IP {} 于 {} " + str_format).format(location, ip_address, now)
     if len(func_kwargs) > 0:
-        log_data += ", 相关参数为: {}".format(func_kwargs)
+        log_data += ", 相关参数为: {}\n".format(func_kwargs)
+    log_data += "HTTP 头部为: {}".format(http_header)
 
     email_sender.send_email(message=log_data, ip_address=ip_address, logger=logger, location=location,
                             send_email_check=email_check)

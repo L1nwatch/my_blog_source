@@ -105,9 +105,10 @@ const.TAG_TEMPLATE = "archives.html"
 const.CATEGORY_TEMPLATE = "archives.html"
 
 # 记录日志希望记录的 HTTP 字段
-const.LOG_HTTP_HEADERS = ["CONTENT_LENGTH", "CONTENT_TYPE", "HTTP_ACCEPT", "HTTP_ACCEPT_ENCODING",
-                          "HTTP_ACCEPT_LANGUAGE", "HTTP_HOST", "HTTP_REFERER", "HTTP_USER_AGENT", "QUERY_STRING",
-                          "REMOTE_ADDR", "REMOTE_HOST", "REMOTE_USER", "REQUEST_METHOD", "SERVER_NAME", "SERVER_PORT"]
+const.LOG_HTTP_HEADERS_WHITE_LIST = ["CONTENT_LENGTH", "CONTENT_TYPE", "HTTP_ACCEPT", "HTTP_ACCEPT_ENCODING",
+                                     "HTTP_ACCEPT_LANGUAGE", "HTTP_HOST", "HTTP_REFERER", "HTTP_USER_AGENT",
+                                     "QUERY_STRING", "REMOTE_ADDR", "REMOTE_HOST", "REMOTE_USER", "REQUEST_METHOD",
+                                     "SERVER_NAME", "SERVER_PORT", "HTTP_CONNECTION"]
 
 if __name__ == "__main__":
     pass
