@@ -3,7 +3,7 @@
 # version: Python3.X
 """
 
-2017.06.10 添加记录日志时获取指定的 HTTP 头信息
+2017.06.10 添加记录日志时获取指定的 HTTP 头信息 + 解决 request.META.items() 在遍历时会被修改的问题
 2017.06.04 重构搜索结果数据结构 + 新增一个解析 tag 的函数
 2017.06.03 修正笔记数的获取方式, 换了一个好像更高效的方法来统计
 2017.06.03 继续重写代码逻辑, 避免数据库锁定以及发邮件卡顿的问题
@@ -43,6 +43,7 @@ import re
 import threading
 import bleach
 import datetime
+import copy
 
 from functools import wraps
 
@@ -269,7 +270,8 @@ def get_http_header_from_request(request):
     :return: dict(), 为 http 头部信息
     """
     result = list()
-    for each_key, each_value in request.META.items():
+    http_headers = copy.deepcopy(request.META)
+    for each_key, each_value in http_headers.items():
         if each_key in const.LOG_HTTP_HEADERS_WHITE_LIST:
             result.append("{} -> {}".format(bleach.clean(each_key), bleach.clean(each_value)))
 
