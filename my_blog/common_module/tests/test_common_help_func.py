@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.10 添加日志记录的字段, 现在还会添加 UserAgent 等 HTTP 头的信息了
 2017.06.04 重构搜索结果数据结构, 因此更改对应测试代码 + 添加一个测试解析 tag 的函数
 2017.06.03 修正笔记数的获取方式, 换了一个好像更高效的方法来统计
 2017.06.03 继续重写代码逻辑, 避免数据库锁定以及发邮件卡顿的问题, 于是修改对应测试代码
@@ -16,7 +17,7 @@
 # 自己的模块
 from common_module.common_help_function import (clean_form_data, sort_search_result, locate_using_ip_address,
                                                 data_check, is_valid_git_address, background_deal, model_dict,
-                                                extract_tag_name_from_path)
+                                                extract_tag_name_from_path, get_http_header_from_request)
 import my_constant as const
 from .basic_test import BasicTest
 
@@ -25,6 +26,7 @@ import random
 import string
 import unittest.mock
 import re
+
 from django.test.client import RequestFactory
 
 __author__ = '__L1n__w@tch'
@@ -116,7 +118,7 @@ class TestCommonHelpFunc(BasicTest):
 
     def test_can_log_data(self):
         """
-        测试日志记录, 有发送邮件的记录, 还有 IP 以及时间的记录
+        测试日志记录, 有发送邮件的记录, 还有 IP 地址、时间、HTTP 头的记录
         :return:
         """
         rf = RequestFactory()
@@ -135,9 +137,13 @@ class TestCommonHelpFunc(BasicTest):
             ))
 
             # 有 IP 以及时间信息
-            message_re = re.compile("\[\*\].*IP \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} 于 \d{4}-\d{2}-\d{2}",
+            ip_time_re = re.compile("\[\*\].*IP \d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} 于 \d{4}-\d{2}-\d{2}",
                                     flags=re.IGNORECASE)
-            self.assertTrue(any([message_re.match(x[1][0]) for x in method_calls]))
+
+            self.assertTrue(any([ip_time_re.match(x[1][0]) for x in method_calls]))
+
+            # HTTP 头的记录
+            self.assertTrue(any("QUERY_STRING" in x[1][0] for x in method_calls))
 
     def test_will_send_email_when_new_ip_visit(self):
         """
@@ -155,6 +161,7 @@ class TestCommonHelpFunc(BasicTest):
             self.assertTrue(send_check.called)
             self.assertTrue(send_email.called)
 
+    @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 忽略部分耗时测试")
     def test_locate_using_ip_address(self):
         """
         测试通过 IP 定位地理信息是否正确
@@ -211,6 +218,18 @@ class TestCommonHelpFunc(BasicTest):
         right_answer = ["aa"]
         my_answer = extract_tag_name_from_path(*test_data)
         self.assertEqual(right_answer, my_answer)
+
+    def test_get_http_header_from_request(self):
+        """
+        测试从 request 中获取 http 头部信息正常
+        """
+        rf = RequestFactory()
+        get_request = rf.get("/")
+
+        http_info = get_http_header_from_request(request=get_request)
+
+        # 仅仅测试 QUERY_STRING 字段, 由于 request 是伪造的, 所以其他 HTTP 字段不存在
+        self.assertIn("QUERY_STRING", http_info)
 
 
 if __name__ == "__main__":

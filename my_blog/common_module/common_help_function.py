@@ -40,6 +40,7 @@ import copy
 import string
 import re
 import threading
+import bleach
 import datetime
 
 from functools import wraps
@@ -260,6 +261,16 @@ def decorator_with_args(decorator_to_enhance):
     return decorator_maker
 
 
+def get_http_header_from_request(request):
+    """
+    从 django request 中获取对应的 http 头部信息
+    :param request: django request 对象
+    :return: dict(), 为 http 头部信息
+    """
+    return "\n".join("{} -> {}".format(bleach.clean(each_key), bleach.clean(each_value)) for each_key, each_value in
+                     request.META.items())
+
+
 def background_deal(*, logger, level, request, func_kwargs, str_format, ip_address, email_check):
     """
     记录日志 + 发送邮件
@@ -271,8 +282,9 @@ def background_deal(*, logger, level, request, func_kwargs, str_format, ip_addre
     logger_func = getattr(logger, level)
 
     location = locate_using_ip_address(ip_address)
+    http_header = get_http_header_from_request(request)
 
-    log_data = ("[*] {} 的IP {} 于 {} " + str_format).format(location, ip_address, now)
+    log_data = ("[*] {} 的IP {} 于 {} " + str_format + "\nHTTP 头部为: {}").format(location, ip_address, now, http_header)
     if len(func_kwargs) > 0:
         log_data += ", 相关参数为: {}".format(func_kwargs)
 

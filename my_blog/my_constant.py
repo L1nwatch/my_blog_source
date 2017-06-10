@@ -20,6 +20,8 @@ __author__ = '__L1n__w@tch'
 
 
 class _Const:
+    TEMP = "为啥添加了这个变量之后 IDE 就能查找到变量引用了?"
+
     class ConstError(TypeError):
         pass
 
