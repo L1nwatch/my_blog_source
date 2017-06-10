@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.06.10 添加记录日志时获取指定的 HTTP 头信息
 2017.06.04 重构搜索结果数据结构 + 新增一个解析 tag 的函数
 2017.06.03 修正笔记数的获取方式, 换了一个好像更高效的方法来统计
 2017.06.03 继续重写代码逻辑, 避免数据库锁定以及发邮件卡顿的问题
@@ -267,8 +268,12 @@ def get_http_header_from_request(request):
     :param request: django request 对象
     :return: dict(), 为 http 头部信息
     """
-    return "\n".join("{} -> {}".format(bleach.clean(each_key), bleach.clean(each_value)) for each_key, each_value in
-                     request.META.items())
+    result = list()
+    for each_key, each_value in request.META.items():
+        if each_key in const.LOG_HTTP_HEADERS:
+            result.append("{} -> {}".format(bleach.clean(each_key), bleach.clean(each_value)))
+
+    return "\n".join(result)
 
 
 def background_deal(*, logger, level, request, func_kwargs, str_format, ip_address, email_check):

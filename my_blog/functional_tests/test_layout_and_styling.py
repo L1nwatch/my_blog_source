@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.10 由于吃饭菜单样式的更改, 现修改对应样式测试
 2017.06.06 重构, 将有关 archive 的测试分离出来
 2017.06.04 重构基类测试, 修改对应代码
 2017.03.31 发现 journal 的页面没有 sidebar 了, 补充对应测试
@@ -55,8 +56,8 @@ class JustEatingLayoutStylingTest(FunctionalTest):
 
         # Y 看到吃饭的标题被放置在页面偏上正中间的位置
         title = self.browser.find_element_by_id("id_eating_place_name")
-        self.assertAlmostEqual(title.location["x"], 483, delta=5)
-        self.assertAlmostEqual(title.location["y"], 22, delta=5)
+        self.assertAlmostEqual(title.location["x"], 535, delta=5)
+        self.assertAlmostEqual(title.location["y"], 14, delta=5)
 
 
 class ArticleDisplayTest(FunctionalTest):

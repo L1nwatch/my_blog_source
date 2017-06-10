@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
-2017.06.10 添加日志记录的字段, 现在还会添加 UserAgent 等 HTTP 头的信息了
+2017.06.10 添加日志记录的字段, 现在还会添加 UserAgent 等 HTTP 头的信息了 + 只获取指定的 HTTP 头字段
 2017.06.04 重构搜索结果数据结构, 因此更改对应测试代码 + 添加一个测试解析 tag 的函数
 2017.06.03 修正笔记数的获取方式, 换了一个好像更高效的方法来统计
 2017.06.03 继续重写代码逻辑, 避免数据库锁定以及发邮件卡顿的问题, 于是修改对应测试代码
@@ -224,12 +224,29 @@ class TestCommonHelpFunc(BasicTest):
         测试从 request 中获取 http 头部信息正常
         """
         rf = RequestFactory()
-        get_request = rf.get("/")
+        get_request = rf.get("/", HTTP_USER_AGENT="Mozilla")
 
         http_info = get_http_header_from_request(request=get_request)
 
         # 仅仅测试 QUERY_STRING 字段, 由于 request 是伪造的, 所以其他 HTTP 字段不存在
         self.assertIn("QUERY_STRING", http_info)
+        self.assertIn("HTTP_USER_AGENT", http_info)
+
+    def test_get_http_header_from_request_only_return_pointed_field(self):
+        """
+        测试只获取 HTTP 头中指定的字段, 其他字段不获取
+        """
+        rf = RequestFactory()
+        get_request = rf.get("/")
+
+        http_info = get_http_header_from_request(request=get_request)
+
+        # 只希望获取到指定的 5 个字段, 包括 QUERY_STRING/SERVER_PORT/REQUEST_METHOD/SERVER_NAME/REMOTE_ADDR
+        http_info = http_info.splitlines()
+        self.assertEqual(len(http_info), 5)
+        for each_field in http_info:
+            each_field = each_field.split(" -> ")[0]
+            self.assertIn(each_field, const.LOG_HTTP_HEADERS)
 
 
 if __name__ == "__main__":

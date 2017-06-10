@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 my_constant 变量
 
+2017.06.10 修正一下 PyCharm 无法找到该文件变量应用的问题 + 添加一个控制记录的 HTTP 字段的变量
 2017.06.08 由于之前的方式会导致 PyCharm 无法识别本脚本中的常量名, 因此重构了一下, 现在可以识别的, 不过本脚本会有警告
 2017.06.04 添加控制是否进行功能测试的选项
 2017.04.30 更新 gitbook 格式
@@ -102,6 +103,11 @@ const.TAG_SEARCH_URL = "/articles/tag{}/"
 const.ARCHIVE_TEMPLATE = "archives.html"
 const.TAG_TEMPLATE = "archives.html"
 const.CATEGORY_TEMPLATE = "archives.html"
+
+# 记录日志希望记录的 HTTP 字段
+const.LOG_HTTP_HEADERS = ["CONTENT_LENGTH", "CONTENT_TYPE", "HTTP_ACCEPT", "HTTP_ACCEPT_ENCODING",
+                          "HTTP_ACCEPT_LANGUAGE", "HTTP_HOST", "HTTP_REFERER", "HTTP_USER_AGENT", "QUERY_STRING",
+                          "REMOTE_ADDR", "REMOTE_HOST", "REMOTE_USER", "REQUEST_METHOD", "SERVER_NAME", "SERVER_PORT"]
 
 if __name__ == "__main__":
     pass
