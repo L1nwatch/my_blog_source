@@ -145,6 +145,17 @@ class TestCommonHelpFunc(BasicTest):
             # HTTP 头的记录
             self.assertTrue(any("QUERY_STRING" in x[1][0] for x in method_calls))
 
+    def test_can_log_data_while_visit_home(self):
+        """
+        测试通过客户端访问首页会记录日志
+        """
+        with unittest.mock.patch("common_module.email_send.email_sender.send_email") as send_email_mock:
+            # 通过客户端访问首页
+            self.client.get("/")
+
+            # 日志记录中的发邮件函数被触发
+            self.assertTrue(send_email_mock.called)
+
     def test_will_send_email_when_new_ip_visit(self):
         """
         测试当有新 IP 访问时会执行发送邮件的操作
