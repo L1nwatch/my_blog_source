@@ -12,9 +12,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="w@tch web site">
 
-    {% block head_title %}
-    {% endblock %}
-
     {% load static %}
     <link rel="stylesheet" href="{% static "my_pure-min.css" %}">
     <link rel="stylesheet" href="{% static "my_grids-responsive-min.css" %}">
@@ -23,6 +20,10 @@
     <link rel="stylesheet" href="{% static "my_main.css" %}">
     <link rel="stylesheet" href="{% static "font-awesome/css/font-awesome.min.css" %}">
     <link rel="shortcut icon" href="{% static "favicon.ico" %}">
+
+    {% block head_title %}
+    {% endblock %}
+
 </head>
 <body>
 <div id="layout" class="pure-g">

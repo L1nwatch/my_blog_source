@@ -7,14 +7,21 @@
         Update: {{ post.update_time |date:'Y 年 m 月 d 号 H 时' }}
     </label>&nbsp&nbsp
 
+    <br/>
+
     <label class="post-description">Category: </label>
     <a class="post-category post-category-js" id="id_category" href=
             "{% url 'search_category' category=post.category %}">{{ post.category }}
     </a>&nbsp&nbsp
 
     <label class="post-description">Tag: </label>
-    {% for tag in post.tag.all %}
-        <a id="id_tags" class="post-category post-category-design"
-           href="{% url "search_tag" tag_name=tag %}">{{ tag }}</a>
-    {% endfor %}
+    {% if post.tag.all %}
+        {% for tag in post.tag.all %}
+            <a id="id_tags" class="post-category post-category-design"
+               href="{% url "search_tag" tag_name=tag %}">{{ tag }}</a>
+        {% endfor %}
+    {% else %}
+        无
+    {% endif %}
+
 </p>
