@@ -2,21 +2,36 @@
  * Created by L1n on 17/5/22.
  */
 
+/*
+ 该函数处理 span, 即加号、减号的点击操作
+ */
 function add_current_for_show(show_button) {
-    // 为 li 添加 current 方便显示下一级标题
-    $($(show_button).parent().parent()).toggleClass("current");
-    // 为 a 添加 current 方便样式改变
+    // 为 父级-li 添加 current 方便显示下一级标题
     $($(show_button).parent()).toggleClass("current");
 
-    // 将当前的 + 号改为减号
-    $($(show_button)).toggleClass("fa-plus-square-o");
-    $($(show_button)).toggleClass("fa-minus-square-o");
+    // 如果当前为 + 号, 点击之后变 - 号, 确保确保同级 a 标签有 current
+    if ($(show_button).hasClass("fa-plus-square-o")) {
+        $(show_button).removeClass("fa-plus-square-o");
+        $(show_button).addClass("fa-minus-square-o");
+        $(show_button.siblings("a")).addClass("current")
+    }
+
+    // 如果当前为 - 号, 点击之后变 + 号, 确保同级 a 标签没有 current
+    else if ($(show_button).hasClass("fa-minus-square-o")) {
+        $(show_button).removeClass("fa-minus-square-o");
+        $(show_button).addClass("fa-plus-square-o");
+        $(show_button.siblings("a")).removeClass("current")
+    }
+
 }
 
+/*
+ 该函数处理 a 标签被点击时的情况
+ */
 function add_current_for_a_show(class_name, a_show) {
-    // 为 a 添加 current 方便显示跳转效果
+    // 确保被点击时, 除了该 a 标签以外的所有 a 标签都不会有 current
     $(class_name).removeClass("current");
-    $($(a_show)).toggleClass("current");
+    $(a_show).addClass("current");
 }
 
 $(document).ready(function () {

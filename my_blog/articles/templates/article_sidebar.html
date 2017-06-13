@@ -2,39 +2,32 @@
     {% if toc %}
         {% for l1 in toc %}
             <li class="toctree-l1">
-                <a href="#{{ l1.id }}">
-                    {% if l1.child %}
-                        <span class="toctree-expand fa fa-plus-square-o show-button1"></span>{{ l1.title }}
-                        <ul>
-                            {% for l2 in l1.child %}
-                                <li class="toctree-l2">
-                                    <a class="a-show1" href="#{{ l2.id }}">
-                                        {% if l2.child %}
-                                            <span class="toctree-expand fa fa-plus-square-o show-button2"></span>
-                                            {{ l2.title }}
-                                            <ul>
-                                                {% for l3 in l2.child %}
-                                                    {% if l3 %}
-                                                        <li class="toctree-l3">
-                                                            <a class="a-show2" href="#{{ l3.id }}">
-                                                                {{ l3.title }}
-                                                            </a>
-                                                        </li>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </ul>
-                                        {% else %}
-                                            {{ l2.title }}
-                                        {% endif %}
-                                    </a>
-                                </li>
+                <a class="toctree-a" href="#{{ l1.id }}">{{ l1.title }}</a>
+                {% if l1.child %}
+                    <span class="toctree-expand fa fa-plus-square-o show-button1"></span>
+                    <ul>
+                        {% for l2 in l1.child %}
+                            <li class="toctree-l2">
+                                <a class="a-show1 toctree-a" href="#{{ l2.id }}">{{ l2.title }}</a>
+                                    {% if l2.child %}
+                                        <span class="toctree-expand fa fa-plus-square-o show-button2"></span>
+                                        <ul>
+                                            {% for l3 in l2.child %}
+                                                {% if l3 %}
+                                                    <li class="toctree-l3">
+                                                        <a class="a-show2 toctree-a" href="#{{ l3.id }}">
+                                                            {{ l3.title }}
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                            </li>
 
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        {{ l1.title }}
-                    {% endif %}
-                </a>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </li>
 
         {% endfor %}

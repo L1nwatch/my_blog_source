@@ -240,7 +240,7 @@ h3 {
 }
 
 .markdown-body p, .markdown-body blockquote, .markdown-body ul, .markdown-body ol, .markdown-body dl, .markdown-body table, .markdown-body pre {
-    margin-top: 0;
+    margin-top: 16px;
     margin-bottom: 16px
 }
 
@@ -353,7 +353,7 @@ h3 {
 }
 
 .markdown-body li > p {
-    margin-top: 16px
+    margin: 0
 }
 
 .markdown-body li + li {
@@ -556,7 +556,7 @@ h3 {
 }
 
 .markdown-body .highlight pre, .markdown-body pre {
-    padding: 10px 16px 0 16px;
+    padding: 0 16px 0 16px;
     overflow: auto;
     font-size: 85%;
     line-height: 1.45;
@@ -688,7 +688,7 @@ h3 {
 
 .sidebar-search-menu .a-show1.current {
     color: greenyellow;
-    background: #4b5d7d;
+    /*background: #4b5d7d;*/
 }
 
 .sidebar {
@@ -696,10 +696,13 @@ h3 {
     overflow-x: hidden;
 }
 
+.sidebar-search-menu {
+    font-family: "Lato", "proxima-nova", "Helvetica Neue", Arial, sans-serif;
+}
+
 .sidebar-search-menu ul {
     padding: 0;
     margin: 0;
-    font-family: "Lato", "proxima-nova", "Helvetica Neue", Arial, sans-serif;
     font-weight: normal;
     color: #404040;
     min-height: 100%;
@@ -714,17 +717,22 @@ h3 {
     font-size: 90%;
 }
 
-.sidebar-search-menu li > a {
+.sidebar-search-menu .toctree-a {
     color: #e6f9ff;
-    font-family: "Lato", "proxima-nova", "Helvetica Neue", Arial, sans-serif;
     font-weight: normal;
     text-decoration: none /* 鼠标移上去不会显示下划线 */
 }
 
-.sidebar-search-menu li span.toctree-expand {
+/* 变为减号后可以跟标题对齐 */
+.sidebar-search-menu span.toctree-expand.fa.fa-minus-square-o {
+    line-height: 2em;
+}
+
+.sidebar-search-menu li .toctree-expand {
+    color: #e6f9ff;
     float: left;
     margin-left: -1.2em;
-    line-height: 1.6em;
+    line-height: 1.8em;
     display: block;
     font-size: 0.8em;
 }
