@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.06.14 完善邮件发送的消息格式
 2017.06.11 修复一下日志记录 deepcopy 导致的问题
 2017.06.10 添加记录日志时获取指定的 HTTP 头信息 + 解决 request.META.items() 在遍历时会被修改的问题
 2017.06.04 重构搜索结果数据结构 + 新增一个解析 tag 的函数
@@ -291,10 +292,10 @@ def background_deal(*, logger, level, request, func_kwargs, str_format, ip_addre
     location = locate_using_ip_address(ip_address)
     http_header = get_http_header_from_request(request)
 
-    log_data = ("[*] {} 的IP {} 于 {} " + str_format).format(location, ip_address, now)
+    log_data = ("[*] {} 的IP {} 于 {}\n" + str_format).format(location, ip_address, now)
     if len(func_kwargs) > 0:
         log_data += ", 相关参数为: {}\n".format(func_kwargs)
-    log_data += "HTTP 头部为: {}".format(http_header)
+    log_data += "\n{sep} HTTP-HEADER {sep}\n{}".format(http_header, sep="=" * 30)
 
     email_sender.send_email(message=log_data, ip_address=ip_address, logger=logger, location=location,
                             send_email_check=email_check)
