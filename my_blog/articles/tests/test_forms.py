@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.14 给 Input 标签添加 class 属性
 2017.03.17 设置所有页面都不显示 select_choice, 于是新编 form 测试
 2017.03.15 要提供搜索选项的功能, 需要重构一下搜索的 Form, 于是修改测试
 2017.02.08 重定义一个基类, 作为 Journal 和 Article 的 Form
@@ -24,6 +25,7 @@ class BaseSearchFormTest(TestCase):
         base_search_form = BaseSearchForm()
         self.assertIn('placeholder="{}"'.format(const.PLACE_HOLDER), base_search_form.as_p())
         self.assertIn('id="id_search"', base_search_form.as_p(), "id 属性没有设置?还是说设置错了?")
+        self.assertIn('class="pure-input-2-3"', base_search_form.as_p(), "class 属性没有设置?还是说设置错了?")
 
     def test_form_validation_for_blank_input(self):
         form = BaseSearchForm(data={"search_content": ""})

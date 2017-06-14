@@ -64,6 +64,7 @@ class BaseSearchForm(forms.models.ModelForm):
             "search_content": forms.fields.TextInput(attrs={
                 "id": "id_search",
                 "placeholder": const.PLACE_HOLDER,
+                "class": "pure-input-2-3",
             })
         }
 

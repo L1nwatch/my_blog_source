@@ -1,3 +1,8 @@
+/* 控制日记界面的链接 */
+#id_journal {
+    color: greenyellow;
+}
+
 .mod-panel {
     width: 100%;
     max-width: 960px;
@@ -130,6 +135,32 @@
     text-align: center;
     color: #fff;
     *zoom: 1;
+}
+
+/*
+ * 针对 iPhone5s 设备进行样式设置
+ */
+@media (min-device-width: 320px) and (max-device-width: 767px) {
+    .mod-calendar .info {
+        float: none;
+        width: 100%;
+    }
+}
+
+/*
+ * 针对 iPad 设备进行样式设置
+ */
+@media (min-device-width: 768px)and (max-device-width: 1023px) {
+    .mod-calendar .info {
+        float: none;
+        width: 83%;
+    }
+}
+
+/*
+ * 针对 mac 设备进行样式设置
+ */
+@media (min-device-width: 1024px) {
 }
 
 .mod-calendar .info p {
