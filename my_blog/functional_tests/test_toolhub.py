@@ -3,19 +3,27 @@
 # version: Python3.X
 """ 给 toolhub 的各个工具编写相关测试代码
 
+2017.06.15 增加有关访问 html 文件的相关功能测试
+2017.06.14 新增有关 AB 测试中打开正态函数分数表的功能测试
 2017.04.04 新增超链接到凯撒密码工具的相关测试
 2017.03.24 开始编写 toolhub, 先给 GitHub 图片地址转换器编写相关测试代码
 """
+# 标准库
+import os
 import unittest
+import requests
+import html
 
+# 自己的模块
 from functional_tests.base import FunctionalTest
+from common_module.common_help_function import is_static_file_exist
 import my_constant as const
 
 __author__ = '__L1n__w@tch'
 
 
 class TestEncoding(FunctionalTest):
-    unique_url = "/tool_hub/"
+    unique_url = const.TOOLHUB_HOME_URL
 
     def setUp(self):
         self.toolhub_home = "{host}{path}".format(host=self.server_url, path=self.unique_url)
@@ -51,7 +59,7 @@ class TestEncoding(FunctionalTest):
 
 
 class TestCipher(FunctionalTest):
-    unique_url = "/tool_hub/"
+    unique_url = const.TOOLHUB_HOME_URL
 
     def setUp(self):
         self.toolhub_home = "{host}{path}".format(host=self.server_url, path=self.unique_url)
@@ -79,6 +87,115 @@ class TestCipher(FunctionalTest):
         self.browser.back()
         home_view = self.browser.find_element_by_id("id_home_page")
         home_view.click()
+
+
+class TestABTesting(FunctionalTest):
+    """
+    测试有关 AB 测试选项卡的相关功能
+    """
+    unique_url = const.TOOLHUB_HOME_URL
+
+    def setUp(self):
+        self.toolhub_home = "{host}{path}".format(host=self.server_url, path=self.unique_url)
+        super().setUp()
+
+    def test_ab_testing_has_z_value_table_link(self):
+        """
+        测试 AB 测试界面含有 z 值表的链接
+        """
+        # Y 打开了 ToolHub 首页, 看到了 TestTool 这么一个选项卡
+        self.browser.get(self.toolhub_home)
+        home_url = self.browser.current_url
+        for each_option in const.TOOLHUB_LEVEL_ONE_OPTIONS:  # const.LEVEL_ONE_OPTIONS 中有 TestTool
+            self.assertIn(html.escape(each_option), self.browser.page_source, "\n[-] 不存在 {} 这个选项卡\n".format(each_option))
+
+        # 在其中发现了 ABTesting 这个子选项卡, 还发现了正态函数分布 Z 值表的选项卡, 于是想点击看看
+        for each_option in const.TOOLHUB_LEVEL_TWO_OPTIONS:
+            self.assertIn(each_option, self.browser.page_source, "\n[-] 不存在 {} 这个选项卡\n".format(each_option))
+        self.browser.execute_script('document.getElementById("id_ab_testing_z_value_table").click()')
+
+        # 发现点击完之后页面跳转了, 出现了个大标题是正态函数分布 Z 值表, 然后还有各种表格
+        self.assertNotEqual(home_url, self.browser.current_url)  # 点击完之后 URL 变化了
+        self.assertIn("标准正态分布 Z 值表", self.browser.page_source)
+        self.assertIn("<table>", self.browser.page_source)
+
+
+class TestStaticHTML(FunctionalTest):
+    """
+    测试有关读取静态 HTML 页面
+    """
+    unique_url = const.TOOLHUB_STATIC_HTML_URL
+
+    def setUp(self):
+        self.static_file_uri = "{host}{path}".format(host=self.server_url, path=self.unique_url)
+        super().setUp()
+
+    def test_return_404_while_html_not_exist(self):
+        """
+        测试当访问不存在的 html 文件时返回 404
+        """
+        # Y 知道某个页面不存在于服务器之中
+        test_file_name = "{}.html".format(self.get_random_string(10))
+        self.assertFalse(is_static_file_exist(test_file_name))
+
+        # 但是 Y 还是想访问看看, 看下访问不存在的 html 时会出现什么情况
+        self.browser.get(self.static_file_uri.format(test_file_name))
+        response = requests.get(self.static_file_uri.format(test_file_name))
+
+        # 返回了 404
+        self.assertEqual(response.status_code, 404)
+
+    def test_return_404_while_not_visit_html(self):
+        """
+        测试访问非 html 文件时返回 404
+        :return:
+        """
+        # Y 知道某个文件存在, 但它不是 html 文件, 想试试看能不能通过这个接口访问该文件
+        test_file_name = "{}".format(self.get_random_string(10))
+        test_file_path = os.path.join(const.STATIC_HTMLS_PATH, test_file_name)
+        try:
+            # Y 确保想要访问的文件是存在的
+            with open(test_file_path, "w") as f:
+                f.write("a")
+            self.assertTrue(is_static_file_exist(test_file_name))
+
+            # 接着 Y 开始试图访问这个文件了
+            self.browser.get(self.static_file_uri.format(test_file_name))
+            response = requests.get(self.static_file_uri.format(test_file_name))
+
+            # 返回了 404
+            self.assertEqual(response.status_code, 404)
+        finally:
+            # Y 好心的删除了测试文件, 防止被管理员发现
+            if os.path.exists(test_file_path):
+                os.remove(test_file_path)
+
+    def test_visit_html_file_using_cut_char(self):
+        """
+        测试通过截断符访问 html 是否能成功
+        """
+
+        # Y 最近刚学了点 Web 渗透, 想试试通过包含截断符看能否成功访问
+        test_string = self.get_random_string(10)
+        test_file_name = "{}%00.html".format(test_string)
+        right_file_name = "{}.html".format(test_string)
+        right_file_path = os.path.join(const.STATIC_HTMLS_PATH, right_file_name)
+        try:
+            # Y 创建了这个文件, 即 xxx.html
+            with open(right_file_path, "w") as f:
+                f.write("a")
+            self.assertTrue(is_static_file_exist(right_file_name))
+
+            # 然后 Y 通过截断符访问了 xxx%00.html, 看会咋样
+            self.browser.get(self.static_file_uri.format(test_file_name))
+            response = requests.get(self.static_file_uri.format(test_file_name))
+
+            # Y 发现网页返回了 500, 服务器错误
+            self.assertEqual(response.status_code, 500)
+        finally:
+            # 删除创建的测试文件
+            if os.path.exists(right_file_path):
+                os.remove(right_file_path)
 
 
 if __name__ == "__main__":

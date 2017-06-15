@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 作为测试基类
 
+2017.06.14 删除多余注释
 2017.06.04 继续重构创建测试数据的基类, 给创建 Article 添加 Tag 创建的相关代码实现
 2017.05.21 为 Article 构造函数添加字段 click_times
 2017.04.03 重构一下创建测试数据的代码, 将其分离出来单独作为一个基类了
@@ -25,14 +26,6 @@ from code_collect.models import CodeCollect
 import my_constant as const
 
 __author__ = '__L1n__w@tch'
-
-# URL 相关
-
-
-# 模板相关
-
-
-
 
 
 class CreateTestData:

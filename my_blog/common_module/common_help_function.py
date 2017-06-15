@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.06.15 添加一个验证 html 文件存在的函数
 2017.06.14 完善邮件发送的消息格式
 2017.06.11 修复一下日志记录 deepcopy 导致的问题
 2017.06.10 添加记录日志时获取指定的 HTTP 头信息 + 解决 request.META.items() 在遍历时会被修改的问题
@@ -44,6 +45,7 @@ import re
 import threading
 import bleach
 import datetime
+import os
 import copy
 
 from functools import wraps
@@ -345,6 +347,16 @@ def extract_tag_name_from_path(root_path, file_path):
     """
     return file_path[len(root_path):].split("/")[1:-1]
 
+
+def is_static_file_exist(file_name):
+    """
+    验证文件是否存在
+    :param file_name: str(), 比如 "标准正态分布 Z 值表.html"
+    :return: True or False
+    """
+    test_file_name = file_name
+    test_file_path = os.path.join(const.STATIC_HTMLS_PATH, test_file_name)
+    return os.path.exists(test_file_path)
 
 if __name__ == "__main__":
     pass

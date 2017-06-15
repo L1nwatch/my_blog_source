@@ -3,6 +3,8 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 my_constant 变量
 
+2017.06.15 增加一系列跟 ToolHub 有关的变量
+2017.06.14 新增有关 toolhub 返回静态 HTML 的变量以及其他用在 ToolHub 代码中的常量
 2017.06.10 修正一下 PyCharm 无法找到该文件变量应用的问题 + 添加一个控制记录的 HTTP 字段的变量
 2017.06.08 由于之前的方式会导致 PyCharm 无法识别本脚本中的常量名, 因此重构了一下, 现在可以识别的, 不过本脚本会有警告
 2017.06.04 添加控制是否进行功能测试的选项
@@ -90,14 +92,32 @@ const.GITBOOK_CODES_REPOSITORY = {
     "pythonweb": const.GITBOOK_INFO("https://git.oschina.net/w4tch/PythonWeb.git", "《PythonWeb 开发: 测试驱动方法》"),
 }
 
+# ToolHub 相关
+# 一级选项卡
+const.TOOLHUB_LEVEL_ONE_OPTIONS = ["Encoding&Cipher", "TestTool"]
+const.TOOLHUB_LEVEL_TWO_OPTIONS = ["Encoding", "Cipher", "ABTesting"]
+
+# STATIC 文件路径
+const.TEMPLATES_PATH = os.path.join(settings.BASE_DIR, "toolhub", "templates")
+const.STATIC_HTMLS_PATH = os.path.join(const.TEMPLATES_PATH, "static_htmls")
+
 # URL 相关
-const.SEARCH_URL = "/search/"
+# URL - ARTICLE
 const.ARTICLE_DISPLAY_URL = "/articles/{}/"
-const.JOURNAL_DISPLAY_URL = "/work_journal/{}/"
-const.GITBOOK_DISPLAY_URL = "/gitbook_notes/{}/"
 const.ARTICLE_UPDATE_URL = "/articles/update_notes/"
 const.CATEGORY_SEARCH_URL = "/articles/category{}/"
 const.TAG_SEARCH_URL = "/articles/tag{}/"
+
+const.SEARCH_URL = "/search/"
+
+const.JOURNAL_DISPLAY_URL = "/work_journal/{}/"
+const.GITBOOK_DISPLAY_URL = "/gitbook_notes/{}/"
+
+# URL - TOOLHUB
+const.TOOLHUB_HOME_URL = "/tool_hub/"
+const.TOOLHUB_STATIC_HTML_URL = const.TOOLHUB_HOME_URL + "html{}"
+const.TOOLHUB_GITHUB_PICTURE_TRANSLATE_URL = const.TOOLHUB_HOME_URL + "github_picture_translate/"
+const.TOOLHUB_GITHUB_PICTURE_TRANSLATE_DATA_URL = const.TOOLHUB_GITHUB_PICTURE_TRANSLATE_URL + "data"
 
 # 模板相关
 const.ARCHIVE_TEMPLATE = "archives.html"
