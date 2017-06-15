@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 测试有关 Article 归档页的一切
 
+2017.06.15 由于统一了 category 搜索的界面, 对应的测试也得更改, 话说原本由于 PyCharm 无法识别该测试失败, 现在换了一种可以识别的方式
 2017.06.06 将所有有关 Archive 都合并到了这个脚本之中, 另外补充有关 Tag 搜索的测试
 """
 # 标准库
@@ -82,10 +83,10 @@ class TestArchiveDisplay(FunctionalTest):
         self.browser.find_element_by_id("id_category").click()
 
         # 出现了一个新页面, 页面上显示了每篇文章的发布时间
-        publish_time_label_content = ("发布：{} 年 {} 月 {} 号 {} 时"
+        publish_time_label_content = ("Creatae: {} 年 {} 月 {} 号 {} 时"
                                       .format(self.test_time.year, str(self.test_time.month).zfill(2),
                                               str(self.test_time.day).zfill(2), str(self.test_time.hour).zfill(2)))
-        self.assertIn(publish_time_label_content, self.browser.page_source)
+        self.assertTrue(publish_time_label_content in self.browser.page_source)
 
     def test_display_article_tag(self):
         """
