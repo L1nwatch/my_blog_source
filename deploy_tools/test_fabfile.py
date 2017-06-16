@@ -3,7 +3,7 @@
 # version: Python3.X
 """
 
-2017.06.16 需要给 GitBook 添加 Tag 标签, 因此更改 conf 的测试代码
+2017.06.16 需要给 GitBook 添加 Tag 标签, 因此更改 conf 的测试代码 + 完善测试 gitbook conf 的代码
 2017.06.08 由于重构了常量脚本, 因此重构对应测试 + 根据部署脚本的更改修改对应测试
 2017.05.28 补充更新配置文件的测试代码
 2017.05.28 改成 unittest.TC 了, 因为 django.test 没法测试到这边的。。。
@@ -218,6 +218,7 @@ class TestUpdateConfigFile(BaseFabfileTest):
         测试 gitbook_conf 文件的格式是正确的
         """
         global my_constant
+        del sys.modules["my_constant"]
         del my_constant
         import my_constant
         my_answer = my_constant.GITBOOK_CODES_REPOSITORY
