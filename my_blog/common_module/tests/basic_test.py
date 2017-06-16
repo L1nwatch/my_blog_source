@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 作为测试基类
 
+2017.06.16 补充 GitBook 的 Tag 创建
 2017.06.14 删除多余注释
 2017.06.04 继续重构创建测试数据的基类, 给创建 Article 添加 Tag 创建的相关代码实现
 2017.05.21 为 Article 构造函数添加字段 click_times
@@ -74,7 +75,8 @@ class CreateTestData:
         return Journal.objects.create(title=title, date=date, content=content, category=category,
                                       click_times=click_times)
 
-    def create_gitbook(self, book_name=None, href=None, md_file_name=None, title=None, content=None, click_times=None):
+    def create_gitbook(self, book_name=None, href=None, md_file_name=None, title=None, content=None, click_times=None,
+                       gitbook_tag=None):
         if not book_name:
             book_name = "test_book_name"
         if not href:
@@ -96,6 +98,8 @@ class CreateTestData:
             content=content,
             click_times=click_times,
         )
+        if gitbook_tag:
+            gitbook.tag = gitbook_tag
 
         return gitbook
 

@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.06.16 新增搜索结果显示 GitBook Tag 的相关测试
 2017.06.07 补充搜索界面中对 Tag 进行搜索的测试
 2017.06.04 重构基类测试, 修改对应代码 + 添加有关搜索结果页面显示 Tag 的测试代码
 2017.05.21 新增两个关于搜索结果按照点击次数排序的测试
@@ -281,6 +282,19 @@ class TestSearchDisplay(BasicSearch):
 
         self.assertTrue(any(
             ["Others2" == x.text for x in tag_result]
+        ))
+
+    def test_gitbook_will_show_tag(self):
+        """
+        本案例测试的是搜索结果的显示中, GitBook 也会显示对应的 Tag 信息
+        """
+        # Y 知道某份 GitBook 是有关 test 的, 而且 Y 知道可以通过 xxx 搜索到这份 GitBook 笔记, 于是 Y 输入了 xxx 进行搜索
+        self.do_gitbook_search("test")
+
+        # 搜索结果出来了, Y 发现这份 GitBook 的笔记含有 Tag-test
+        tag_results = self.browser.find_elements_by_id("id_article_tag")
+        self.assertTrue(any(
+            ["test" == x.text for x in tag_results]
         ))
 
     def test_search_result_tag_can_search(self):

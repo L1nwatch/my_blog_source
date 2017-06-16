@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.06.16 完善手动更新按钮的测试代码
 2017.05.01 开始实现 ajax 验证用户点击更新是否频繁的相关代码, 修正一下错误的测试代码
 2016.10.05 想要实现的功能, 自动获取 git 仓库上最新的笔记, 然后更新到数据库中
 """
@@ -20,7 +21,7 @@ import os
 __author__ = '__L1n__w@tch'
 
 
-@override_settings(UPDATE_TIME_LIMIT=20)
+@override_settings(UPDATE_TIME_LIMIT=30)
 @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
 class AutoUpdateDatabaseTest(FunctionalTest):
     def setUp(self):
@@ -63,13 +64,17 @@ class AutoUpdateDatabaseTest(FunctionalTest):
         防止恶意点击更新数据库导致后台一直运行, 相邻两次点击之间存在时间间隔
         """
         # Y 想当一个坏人, 试图利用更新数据库的按钮就进行 dos 攻击
-        # Y 连续点击了 10 次更新数据库按钮
+        update_note_button = self.browser.find_element_by_id("id_update_notes")
+        update_note_button.click()
+
+        # Y 连续点击了 10 次更新数据库按钮, 想通过不断更新消耗服务器 CPU
         with self.assertRaises(UnexpectedAlertPresentException) as e:
             for i in range(10):
                 update_note_button = self.browser.find_element_by_id("id_update_notes")
                 update_note_button.click()
 
         self.assertIn("text: [-] 操作频繁, 现在无法执行更新操作", str(e.exception))
+        self.browser.switch_to_alert().accept() # 关闭弹出窗口
 
         # Y 等待 UPDATE_TIME_LIMIT s 后再次点击, 发现没有弹出窗口了
         time.sleep(settings.UPDATE_TIME_LIMIT + 5)

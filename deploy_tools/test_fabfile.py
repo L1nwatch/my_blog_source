@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+
+2017.06.16 需要给 GitBook 添加 Tag 标签, 因此更改 conf 的测试代码
 2017.06.08 由于重构了常量脚本, 因此重构对应测试 + 根据部署脚本的更改修改对应测试
 2017.05.28 补充更新配置文件的测试代码
 2017.05.28 改成 unittest.TC 了, 因为 django.test 没法测试到这边的。。。
@@ -218,7 +220,6 @@ class TestUpdateConfigFile(BaseFabfileTest):
         global my_constant
         del my_constant
         import my_constant
-        # reload(my_constant._Const)
         my_answer = my_constant.GITBOOK_CODES_REPOSITORY
 
         for each_book in my_answer:
@@ -232,6 +233,9 @@ class TestUpdateConfigFile(BaseFabfileTest):
             # 以及包含有 book_name 属性, 书名用 《》 括起来
             self.assertIsNotNone(my_answer[each_book].book_name)
             self.assertRegex(my_answer[each_book].book_name, "^《.+》$")
+
+            # 还要有 Tag 属性, 可以为空列表, 或者多个标签等
+            self.assertIsInstance(my_answer[each_book].tag_names, list)
 
     def test_update_const_config(self):
         """

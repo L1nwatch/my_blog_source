@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.16 新增更新 GitBook 时会更新 Tag 的代码实现
 2017.05.21 添加按点击次数排序的相关代码
 2017.04.30 由于 gitbook 格式更改, 代码也做相应修改
 2017.03.30 给更新函数添加记日记功能
@@ -22,7 +23,9 @@ from django.shortcuts import redirect
 
 # 自己的模块
 from articles.forms import BaseSearchForm
-from common_module.common_help_function import (get_ip_from_django_request, create_search_result, search_keyword_in_model,
+from articles.models import Tag
+from common_module.common_help_function import (get_ip_from_django_request, create_search_result,
+                                                search_keyword_in_model,
                                                 clean_form_data, get_context_data, log_wrapper, is_valid_git_address)
 from gitbook_notes.models import GitBook
 import my_constant as const
@@ -138,19 +141,20 @@ def get_title_and_md_file_name(title, display_book_name):
     return title_save_to_db, md_file_name
 
 
-def sync_database(title, gitbook_name, display_book_name):
+def sync_database(title, gitbook_name, gitbook_info):
     """
     进行同步数据库的操作, 即会保存最新内容, 如果是不存在的则会进行创建操作
     :param title: str(), 要放进数据库的每一章的路径, 比如 "'PythonWeb开发: 测试驱动方法/readme.md'"
     :param gitbook_name: str(), gitbook 的名字
-    :param display_book_name: str(), 显示用的 GitBook 名字, 比如 "《PythonWeb 开发:测试驱动开发》"
+    :param gitbook_info: namedtuple(), 保存 GitBook 的相关信息
     :return: str(), 所操作的 title
     """
     root_path = "{}/{}".format(const.GITBOOK_CODES_PATH, gitbook_name)
 
-    title_save_to_db, md_file_name = get_title_and_md_file_name(title, display_book_name)
+    title_save_to_db, md_file_name = get_title_and_md_file_name(title, gitbook_info.book_name)
 
     right_href = get_right_href(gitbook_name, title)
+    gitbook_tags = [Tag.objects.get_or_create(tag_name=x)[0] for x in gitbook_info.tag_names]
     with open("{}/{}".format(root_path, title), "r") as f:
         gitbook_content = f.read()
 
@@ -166,12 +170,16 @@ def sync_database(title, gitbook_name, display_book_name):
         # title 变化了
         if title_save_to_db != gitbook.title:
             gitbook.title = title_save_to_db
-        gitbook.save()
     except GitBook.DoesNotExist:
         # 不存在
-        GitBook.objects.create(title=title_save_to_db, content=gitbook_content,
-                               md_file_name=md_file_name, book_name=gitbook_name,
-                               href=right_href)
+        gitbook = GitBook.objects.create(title=title_save_to_db, content=gitbook_content,
+                                         md_file_name=md_file_name, book_name=gitbook_name,
+                                         href=right_href)
+
+    # 同步最新的 Tag
+    if gitbook_tags != gitbook.tag:
+        gitbook.tag = gitbook_tags
+    gitbook.save()
 
     return title_save_to_db
 
@@ -207,11 +215,11 @@ def get_summary_path(gitbook_name):
     raise RuntimeError
 
 
-def update_gitbook_db(gitbook_name, display_book_name):
+def update_gitbook_db(gitbook_name, gitbook_info):
     """
     更新 gitbook 数据到数据库中
     :param gitbook_name: str(), gitbook 的名字, 比如 "PythonWeb"
-    :param display_book_name: str(), 显示用的 GitBook 名字, 比如 "《PythonWeb 开发:测试驱动开发》"
+    :param gitbook_info: namedtuple(), 保存 GitBook 的相关信息
     :return: set(), 包含存进数据库的每一章笔记
     """
     notes_in_git = set()
@@ -222,7 +230,7 @@ def update_gitbook_db(gitbook_name, display_book_name):
     title_list = get_title_list_from_summary(summary_path)
     for each_title in title_list:
         # 进行同步数据库的操作
-        title = sync_database(each_title, gitbook_name, display_book_name)
+        title = sync_database(each_title, gitbook_name, gitbook_info)
         notes_in_git.add(title)
 
     return notes_in_git
@@ -242,7 +250,7 @@ def update_gitbook_codes(request=None):
             get_latest_gitbooks(gitbook_name, gitbook_info.git_address)
 
             # 更新到数据库中
-            notes_in_git = update_gitbook_db(gitbook_name, gitbook_info.book_name)
+            notes_in_git = update_gitbook_db(gitbook_name, gitbook_info)
 
             for each_note_in_db in GitBook.objects.filter(book_name=gitbook_name):
                 if each_note_in_db.title not in notes_in_git:

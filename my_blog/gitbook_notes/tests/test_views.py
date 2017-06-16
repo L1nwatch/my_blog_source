@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 测试 gitbook_notes 这个 app 下的视图函数
 
+2017.06.16 新增有关 GitBook 更新时会更新 Tag 的测试
 2017.06.04 重构基类测试, 修改对应代码
 2017.05.21 修改 common_module 路径
 2017.04.30 修正大小写导致判定失误的问题, 补充完善有关 GitBook 书名的测试代码
@@ -15,6 +16,7 @@
 2017.01.28 增加了测试完毕之后删除测试文件夹的代码
 2016.10.30 对更新笔记的视图函数进行测试
 """
+# 标准库
 import os
 import random
 import shutil
@@ -22,6 +24,8 @@ import unittest
 
 from django.test import override_settings
 
+# 自己的模块
+from articles.models import Tag
 from common_module.tests.basic_test import BasicTest
 from functional_tests.base import FunctionalTest
 from gitbook_notes.models import GitBook
@@ -42,7 +46,7 @@ class BaseCommonTest(BasicTest):
 @override_settings(UPDATE_TIME_LIMIT=0.1)
 @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
 class UpdateGitBookCodesViewTest(BaseCommonTest):
-    unique_url = "/gitbook_notes/update_gitbook_codes/"
+    unique_url = const.GITBOOK_UPDATE_URL
 
     def setUp(self):
         """
@@ -147,9 +151,20 @@ class UpdateGitBookCodesViewTest(BaseCommonTest):
         self.assertIn("PythonWeb开发: 测试驱动方法/附录/readme.md", title_list)
         self.assertIn("PythonWeb开发: 测试驱动方法/附录/附录 D 测试数据库迁移/readme.md", title_list)
 
+    def test_can_save_right_tag(self):
+        """
+        测试更新的时候可以正确保存 tag 字段
+        """
+        test_tag_name = "Python"
+        test_tag, created = Tag.objects.get_or_create(tag_name=test_tag_name)
+        gitbooks = GitBook.objects.filter(tag=test_tag)
+
+        # 存在至少一篇笔记
+        self.assertTrue(len(gitbooks) > 0)
+
 
 class GitBookSearchViewTest(BaseCommonTest):
-    unique_url = "/search/"
+    unique_url = const.SEARCH_URL
 
     def test_use_right_template_to_show_search_result(self):
         """

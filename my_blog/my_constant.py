@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 my_constant 变量
 
+2017.06.16 增加一系列跟 GitBook 有关的变量
 2017.06.15 增加一系列跟 ToolHub 有关的变量
 2017.06.14 新增有关 toolhub 返回静态 HTML 的变量以及其他用在 ToolHub 代码中的常量
 2017.06.10 修正一下 PyCharm 无法找到该文件变量应用的问题 + 添加一个控制记录的 HTTP 字段的变量
@@ -61,7 +62,7 @@ const.EATING_MENU_STRUCTURE = namedtuple("eating_menu", ["day_time", "morning", 
 
 # 调试选项
 # git 提交前需要改为 False or True, 要不然网站会跑失败的...
-const.SLOW_CONNECT_DEBUG = False  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
+const.SLOW_CONNECT_DEBUG = True  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
 const.FUNCTION_TEST = True  # True if input("是否进行功能测试?(yes/no)") == "yes" else False
 
 # 发送邮件
@@ -83,14 +84,26 @@ const.JOURNALS_PATH_NAME = "journals"
 const.JOURNALS_GIT_REPOSITORY = "https://git.oschina.net/w4tch/sxf_notes_set.git"
 const.JOURNALS_GIT_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.JOURNALS_PATH_NAME)
 
+# ====================================================================================================================
+
+# GitBook 相关
+
+# GitBook-URL
+
+const.GITBOOK_HOME_URL = "/gitbook_notes/"
+const.GITBOOK_UPDATE_URL = const.GITBOOK_HOME_URL + "update_gitbook_codes/"
+
 # 用来形成 GitBook 的各个仓库
 const.GITBOOK_PATH_NAME = "gitbooks"
 const.GITBOOK_CODES_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.GITBOOK_PATH_NAME)
 const.GITBOOK_USER_NAME = "l1nwatch"
-const.GITBOOK_INFO = namedtuple("gitbook_info", ["git_address", "book_name"])
+const.GITBOOK_INFO = namedtuple("gitbook_info", ["git_address", "book_name", "tag_names"])
 const.GITBOOK_CODES_REPOSITORY = {
-    "pythonweb": const.GITBOOK_INFO("https://git.oschina.net/w4tch/PythonWeb.git", "《PythonWeb 开发: 测试驱动方法》"),
+    "pythonweb": const.GITBOOK_INFO("https://git.oschina.net/w4tch/PythonWeb.git", "《PythonWeb 开发: 测试驱动方法》",
+                                    ["Python"]),
 }
+
+# ====================================================================================================================
 
 # ToolHub 相关
 # 一级选项卡
@@ -102,13 +115,13 @@ const.TEMPLATES_PATH = os.path.join(settings.BASE_DIR, "toolhub", "templates")
 const.STATIC_HTMLS_PATH = os.path.join(const.TEMPLATES_PATH, "static_htmls")
 
 # URL 相关
+const.SEARCH_URL = "/search/"
+
 # URL - ARTICLE
 const.ARTICLE_DISPLAY_URL = "/articles/{}/"
 const.ARTICLE_UPDATE_URL = "/articles/update_notes/"
 const.CATEGORY_SEARCH_URL = "/articles/category{}/"
 const.TAG_SEARCH_URL = "/articles/tag{}/"
-
-const.SEARCH_URL = "/search/"
 
 const.JOURNAL_DISPLAY_URL = "/work_journal/{}/"
 const.GITBOOK_DISPLAY_URL = "/gitbook_notes/{}/"

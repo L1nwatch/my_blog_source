@@ -83,7 +83,7 @@ class TestArchiveDisplay(FunctionalTest):
         self.browser.find_element_by_id("id_category").click()
 
         # 出现了一个新页面, 页面上显示了每篇文章的发布时间
-        publish_time_label_content = ("Creatae: {} 年 {} 月 {} 号 {} 时"
+        publish_time_label_content = ("Create: {} 年 {} 月 {} 号 {} 时"
                                       .format(self.test_time.year, str(self.test_time.month).zfill(2),
                                               str(self.test_time.day).zfill(2), str(self.test_time.hour).zfill(2)))
         self.assertTrue(publish_time_label_content in self.browser.page_source)

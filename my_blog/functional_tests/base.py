@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 各个功能测试的基类
 
+2017.06.16 完善 GitBook 创建代码, 增加 Tag 信息
 2017.06.04 重构基类测试, 修改对应代码 + 添加控制是否进行功能测试的相关代码
 2017.04.30 把创建 gitbook 测试数据返回给调用者
 2017.04.04 新增 proxy 设置
@@ -26,6 +27,7 @@ from django.conf import settings
 
 # 自己的模块
 from common_module.tests.basic_test import CreateTestData
+from articles.models import Tag
 import my_constant as const
 
 DEFAULT_WAIT = 5
@@ -202,17 +204,21 @@ while True:
         return journal
 
     def create_gitbook_test_db_data(self):
+        test_tag = Tag.objects.get_or_create(tag_name="test")[0]
+
         gitbook1 = self.create_gitbook(
             book_name="test_book_name",
             href="http://{}/{}.html".format("test_book_name", "test"),
             md_file_name="test.md",
             title="《test_book_name》-test",
             content="test content",
+            gitbook_tag=[test_tag],
         )
 
         # 下面这份为真实存在的数据
         with open(os.path.join(settings.BASE_DIR, "gitbook_notes", "tests", "super与init方法.md"), "r") as f:
             content = f.read()
+        test_tag = Tag.objects.get_or_create(tag_name="Python")[0]
         gitbook2 = self.create_gitbook(
             book_name="interview_exercise",
             href=("https://l1nwatch.gitbooks.io/interview_exercise/content/"
@@ -220,6 +226,7 @@ while True:
             md_file_name="super与init方法.md",
             title="《stackoverflow-about-Python》-super与init方法",
             content=content,
+            gitbook_tag=[test_tag],
         )
         return gitbook1, gitbook2
 
