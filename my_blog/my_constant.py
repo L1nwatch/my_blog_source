@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 my_constant 变量
 
+2017.06.17 扩展搜索 Tag 函数, 于是修改对应常量
 2017.06.16 增加一系列跟 GitBook 有关的变量
 2017.06.15 增加一系列跟 ToolHub 有关的变量
 2017.06.14 新增有关 toolhub 返回静态 HTML 的变量以及其他用在 ToolHub 代码中的常量
@@ -14,11 +15,12 @@
 2017.03.06 更新一堆常量信息
 2017.01.28 把要传给模板的命名数组作为一个常量放进来了
 """
+# 标准库
 import os
 import sys
+from collections import namedtuple
 
 from django.conf import settings
-from collections import namedtuple
 
 __author__ = '__L1n__w@tch'
 
@@ -62,7 +64,7 @@ const.EATING_MENU_STRUCTURE = namedtuple("eating_menu", ["day_time", "morning", 
 
 # 调试选项
 # git 提交前需要改为 False or True, 要不然网站会跑失败的...
-const.SLOW_CONNECT_DEBUG = True  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
+const.SLOW_CONNECT_DEBUG = False  # True if input("是否要访问被墙网站?(yes/no)") == "yes" else False
 const.FUNCTION_TEST = True  # True if input("是否进行功能测试?(yes/no)") == "yes" else False
 
 # 发送邮件
@@ -121,7 +123,7 @@ const.SEARCH_URL = "/search/"
 const.ARTICLE_DISPLAY_URL = "/articles/{}/"
 const.ARTICLE_UPDATE_URL = "/articles/update_notes/"
 const.CATEGORY_SEARCH_URL = "/articles/category{}/"
-const.TAG_SEARCH_URL = "/articles/tag{}/"
+const.TAG_SEARCH_URL = "/{}/tag{}/"
 
 const.JOURNAL_DISPLAY_URL = "/work_journal/{}/"
 const.GITBOOK_DISPLAY_URL = "/gitbook_notes/{}/"

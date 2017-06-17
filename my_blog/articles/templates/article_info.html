@@ -18,7 +18,7 @@
     {% if post.tag.all %}
         {% for tag in post.tag.all %}
             <a id="id_tags" class="post-category post-category-design"
-               href="{% url "search_tag" tag_name=tag %}">{{ tag }}</a>
+               href="{% url "search_tag" tag_name=tag search_type=current_type %}">{{ tag }}</a>
         {% endfor %}
     {% else %}
         无

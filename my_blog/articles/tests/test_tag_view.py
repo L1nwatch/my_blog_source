@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 测试有关 category/tag 的视图函数
 
+2017.06.17 扩展了 Taq 搜索函数, 于是修改对应测试
 2017.06.06 将有关 category/tag 视图函数的测试都抽出来放到了这个脚本之中
 """
 # 自己的模块
@@ -55,7 +56,7 @@ class SearchTagViewTest(BasicTest):
         article_3 = self.create_article()
 
         # 查找同一分类下的所有文章
-        response = self.client.get(self.unique_url.format(test_tag_name))
+        response = self.client.get(self.unique_url.format("articles", test_tag_name))
         self.assertTemplateUsed(response, const.TAG_TEMPLATE)
 
         # 不属于这个分类的都不会找到

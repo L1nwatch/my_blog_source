@@ -27,7 +27,7 @@
 
                             {% for tag in post.note.tag.all %}
                                 <a id="id_article_tag" class="post-category post-category-design"
-                                   href="{% url "search_tag" tag_name=tag %}">{{ tag }}</a>
+                                   href="{% url "search_tag" tag_name=tag search_type=current_type %}">{{ tag }}</a>
                             {% endfor %}
                         </form>
 

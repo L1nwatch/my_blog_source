@@ -15,15 +15,20 @@ Including another URL conf
 
 
 # 更新
+2017.06.17 新增一个用于支持 Tag 搜索的 URL
 2017.06.07 补充 google 认证网页
 2017.03.28 新增 code_collect 这个 APP
 2017.03.24 新增 tool hub 这个 APP
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
 """
+# 标准库
 from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
+
+# 自己的模块
 import articles.views
+import common_module.view_map
 
 urlpatterns = [
     url(r'^everything_is_happening_in_the_best_way/', admin.site.urls),
@@ -31,6 +36,7 @@ urlpatterns = [
     url(r"^gitbook_notes/", include("gitbook_notes.urls")),
     url(r"^work_journal/", include("work_journal.urls")),
     url(r"^just_eating/", include("just_eating.urls")),
+    url(r'^(?P<search_type>[^/]+)/tag(?P<tag_name>[^/]+)/$', common_module.view_map.search_tag_view, name='search_tag'),
     url(r'^$', articles.views.home_view, name='home'),
     url(r'^googlef0b96351a9e6fd45\.html$', articles.views.google_verify, name='google_verify'),
     url(r"^search/$", articles.views.blog_search, name="search"),

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.17 将搜索 Tag 的视图函数进行扩展, 使其能够支持 GitBook 的 Tag 搜索
 2017.06.08 更改 tag/category 采用和 archives 一样的界面
 2017.06.06 实现基于 tag 的搜索
 2017.06.04 更新笔记时现在会添加 Tag 了
@@ -150,17 +151,6 @@ def search_category_view(request, category):
         raise Http404
 
     return render(request, const.CATEGORY_TEMPLATE, get_context_data(request, "articles", {'post_list': post_list}))
-
-
-@log_wrapper(str_format="进行了 Tag 搜索", logger=logger)
-def search_tag_view(request, tag_name):
-    try:
-        search_tag = Tag.objects.get(tag_name=tag_name)
-        post_list = Article.objects.filter(tag=search_tag)
-    except Article.DoesNotExist:
-        raise Http404
-
-    return render(request, const.TAG_TEMPLATE, get_context_data(request, "articles", {'post_list': post_list}))
 
 
 def _parse_markdown_file(markdown_content):

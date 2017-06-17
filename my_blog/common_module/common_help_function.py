@@ -52,6 +52,7 @@ from functools import wraps
 
 __author__ = '__L1n__w@tch'
 
+# 字符串与 Model 映射关系
 model_dict = {"articles": Article,
               "journals": Journal, "work_journal": Journal,
               "all": BaseModel,
@@ -357,6 +358,7 @@ def is_static_file_exist(file_name):
     test_file_name = file_name
     test_file_path = os.path.join(const.STATIC_HTMLS_PATH, test_file_name)
     return os.path.exists(test_file_path)
+
 
 if __name__ == "__main__":
     pass

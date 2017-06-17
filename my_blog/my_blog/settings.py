@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 
 更新日志:
+2017.06.17 新增一个 common_module 的 logger
 2017.06.07 修正域名部署, 现在要同时支持 www/non-www 的访问
 2017.05.25 增加发送邮件的配置信息
 2017.03.28 新增 code_collect 这个 APP 及相应的 logger 信息
@@ -140,7 +141,6 @@ USE_TZ = False
 STATIC_ROOT = os.path.join(BASE_DIR, "../static")
 STATIC_URL = "/static/"
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -218,6 +218,12 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True
         },
+        'my_blog.common_module.views': {
+            'handlers': ['default', 'error', "info"],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+
         'my_blog.toolhub.views': {
             'handlers': ['default', 'error', "info"],
             'level': 'DEBUG',
@@ -230,6 +236,7 @@ LOGGING = {
         },
     }
 }
+
 UPDATE_TIME_LIMIT = 30
 
 CRON_CLASSES = [
