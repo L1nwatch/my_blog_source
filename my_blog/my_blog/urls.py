@@ -15,6 +15,7 @@ Including another URL conf
 
 
 # 更新
+2017.06.21 新增一个自定义的 404 页面
 2017.06.17 新增一个用于支持 Tag 搜索的 URL
 2017.06.07 补充 google 认证网页
 2017.03.28 新增 code_collect 这个 APP
@@ -28,7 +29,7 @@ from django.conf import settings
 
 # 自己的模块
 import articles.views
-import common_module.view_map
+import common_module.common_view
 
 urlpatterns = [
     url(r'^everything_is_happening_in_the_best_way/', admin.site.urls),
@@ -36,13 +37,17 @@ urlpatterns = [
     url(r"^gitbook_notes/", include("gitbook_notes.urls")),
     url(r"^work_journal/", include("work_journal.urls")),
     url(r"^just_eating/", include("just_eating.urls")),
-    url(r'^(?P<search_type>[^/]+)/tag(?P<tag_name>[^/]+)/$', common_module.view_map.search_tag_view, name='search_tag'),
+    url(r'^(?P<search_type>[^/]+)/tag(?P<tag_name>[^/]+)/$', common_module.common_view.search_tag_view,
+        name='search_tag'),
     url(r'^$', articles.views.home_view, name='home'),
     url(r'^googlef0b96351a9e6fd45\.html$', articles.views.google_verify, name='google_verify'),
     url(r"^search/$", articles.views.blog_search, name="search"),
     url(r"^tool_hub/", include("toolhub.urls")),
     url(r"^code_collect/", include("code_collect.urls")),
 ]
+
+handler404 = 'common_module.common_view.handler404'
+handler400 = 'common_module.common_view.handler404'
 
 if settings.DEBUG:
     import debug_toolbar

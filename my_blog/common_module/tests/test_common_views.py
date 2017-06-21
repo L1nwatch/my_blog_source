@@ -4,9 +4,14 @@
 """ 进行共通的测试
 很多测试得在 Article、Journal、GitBook 分别做, 所以干脆合在一起测试好了
 
+2017.06.21 新增自定义 404 页面的测试
 2017.06.17 添加有关 GitBook、Articles Tag 搜索的测试
 2017.05.21 重构, 将通用的 view 测试放到这个文件里面
 """
+# 标准库
+from django.test import override_settings
+import requests
+
 # 自己写的代码模块导入
 from .basic_test import BasicTest
 from articles.models import Tag
@@ -80,6 +85,30 @@ class TestSearch(BasicTest):
 
             for each_note in model.objects.filter(tag=test_tag[0]):
                 self.assertContains(response, each_note.title, msg_prefix="[-] {} 下存在未找到的笔记".format(each_search_type))
+
+
+@override_settings(DEBUG=False)
+class TestErrorPages(BasicTest):
+    """
+    测试比如 404、400 等页面的情况
+    """
+
+    def test_custom_404_pages(self):
+        """
+        Y 的任务是测试当访问不存在的 URL 时会跳转到 404 页面中
+        """
+
+        # Y 知道某个 url 不存在, 于是 Y 访问了该 URL
+        response = self.client.get("/aaa")
+        # Y 发现服务返回了 404 码
+        self.assertTrue(response.status_code == 404)
+        # 而且该 404 页面用的是自定义的模板页面
+        self.assertTemplateUsed(response, "common_404.html")
+
+        # Y 在想是不是所有页面访问都会得到 404, 于是它试着访问了一下首页
+        response = self.client.get("/")
+        # 发现首页并不是返回 404, 说明这是在访问不存在页面时才会返回 404 码
+        self.assertFalse(response.status_code == 404)
 
 
 if __name__ == "__main__":
