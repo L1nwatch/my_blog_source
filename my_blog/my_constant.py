@@ -3,9 +3,11 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 my_constant 变量
 
+2017.06.22 补充 ToolHub 选项卡的常量
 2017.06.17 扩展搜索 Tag 函数, 于是修改对应常量
 2017.06.16 增加一系列跟 GitBook 有关的变量
-2017.06.15 增加一系列跟 ToolHub 有关的变量
+2017.06.15 增加一系列跟 ToolHub 有关的
+变量
 2017.06.14 新增有关 toolhub 返回静态 HTML 的变量以及其他用在 ToolHub 代码中的常量
 2017.06.10 修正一下 PyCharm 无法找到该文件变量应用的问题 + 添加一个控制记录的 HTTP 字段的变量
 2017.06.08 由于之前的方式会导致 PyCharm 无法识别本脚本中的常量名, 因此重构了一下, 现在可以识别的, 不过本脚本会有警告
@@ -111,6 +113,7 @@ const.GITBOOK_CODES_REPOSITORY = {
 # 一级选项卡
 const.TOOLHUB_LEVEL_ONE_OPTIONS = ["Encoding&Cipher", "TestTool"]
 const.TOOLHUB_LEVEL_TWO_OPTIONS = ["Encoding", "Cipher", "ABTesting"]
+const.TOOLHUB_LEVEL_THREE_OPTIONS = ["正态函数分布 Z 值表"]
 
 # STATIC 文件路径
 const.TEMPLATES_PATH = os.path.join(settings.BASE_DIR, "toolhub", "templates")

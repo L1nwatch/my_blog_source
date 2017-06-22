@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 给 toolhub 的各个工具编写相关测试代码
 
+2017.06.22 补充 ToolHub 选项卡的测试
 2017.06.15 增加有关访问 html 文件的相关功能测试
 2017.06.14 新增有关 AB 测试中打开正态函数分数表的功能测试
 2017.04.04 新增超链接到凯撒密码工具的相关测试
@@ -107,10 +108,15 @@ class TestABTesting(FunctionalTest):
         self.browser.get(self.toolhub_home)
         home_url = self.browser.current_url
         for each_option in const.TOOLHUB_LEVEL_ONE_OPTIONS:  # const.LEVEL_ONE_OPTIONS 中有 TestTool
-            self.assertIn(html.escape(each_option), self.browser.page_source, "\n[-] 不存在 {} 这个选项卡\n".format(each_option))
+            self.assertIn(html.escape(each_option), self.browser.page_source,
+                          "\n[-] 不存在 {} 这个选项卡\n".format(each_option))
 
-        # 在其中发现了 ABTesting 这个子选项卡, 还发现了正态函数分布 Z 值表的选项卡, 于是想点击看看
+        # 在其中发现了 ABTesting 这个子选项卡
         for each_option in const.TOOLHUB_LEVEL_TWO_OPTIONS:
+            self.assertIn(each_option, self.browser.page_source, "\n[-] 不存在 {} 这个选项卡\n".format(each_option))
+
+        # 在 ABTesting 中还发现了正态函数分布 Z 值表的选项卡, 于是想点击看看
+        for each_option in const.TOOLHUB_LEVEL_THREE_OPTIONS:
             self.assertIn(each_option, self.browser.page_source, "\n[-] 不存在 {} 这个选项卡\n".format(each_option))
         self.browser.execute_script('document.getElementById("id_ab_testing_z_value_table").click()')
 
