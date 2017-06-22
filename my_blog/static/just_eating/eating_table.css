@@ -1,7 +1,7 @@
 /*
  * 针对 iPhone5s 设备进行样式设置
  */
-@media (min-device-width: 320px) {
+@media (min-device-width: 320px) and (max-device-width: 767px) {
     h1 {
         font-size: 70px;
     }
@@ -24,34 +24,9 @@
 }
 
 /*
- * 针对 iPad 设备进行样式设置
+ * 针对 iPad/mac 设备进行样式设置
  */
 @media (min-device-width: 768px) {
-    h1 {
-        font-size: 50px;
-    }
-
-    .container {
-        width: 80%;
-        font-size: 15px;
-    }
-
-    .container thead th {
-        padding-bottom: 2%;
-        padding-top: 2%;
-    }
-
-    .container td, .container th {
-        padding-bottom: 3%;
-        padding-top: 3%;
-        padding-left: 4%;
-    }
-}
-
-/*
- * 针对 mac 设备进行样式设置
- */
-@media (min-device-width: 1024px) {
     h1 {
         font-size: 30px;
     }
@@ -72,6 +47,7 @@
         padding-left: 4%;
     }
 }
+
 
 
 
