@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 my_constant 变量
 
+2017.06.23 继续补充 ToolHub 中 A/B Testing 选项卡的常量
 2017.06.22 补充 ToolHub 选项卡的常量
 2017.06.17 扩展搜索 Tag 函数, 于是修改对应常量
 2017.06.16 增加一系列跟 GitBook 有关的变量
@@ -109,10 +110,11 @@ const.GITBOOK_CODES_REPOSITORY = {
 # ====================================================================================================================
 
 # ToolHub 相关
-# 一级选项卡
+# 一/二/三级选项卡
 const.TOOLHUB_LEVEL_ONE_OPTIONS = ["Encoding&Cipher", "TestTool"]
 const.TOOLHUB_LEVEL_TWO_OPTIONS = ["Encoding", "Cipher", "ABTesting"]
-const.TOOLHUB_LEVEL_THREE_OPTIONS = ["正态函数分布 Z 值表"]
+const.TOOLHUB_LEVEL_THREE_OPTIONS = ["正态函数分布 Z 值表", "实验样本数计算工具"]
+const.TOOLHUB_AB_TESTING_SAMPLE_SIZE_URL = "http://www.evanmiller.org/ab-testing/sample-size.html"
 
 # STATIC 文件路径
 const.TEMPLATES_PATH = os.path.join(settings.BASE_DIR, "toolhub", "templates")

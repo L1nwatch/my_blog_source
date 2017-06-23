@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 给 toolhub 的各个工具编写相关测试代码
 
+2017.06.23 新增一个跳转到实验规模计算的选项卡
 2017.06.22 补充 ToolHub 选项卡的测试
 2017.06.15 增加有关访问 html 文件的相关功能测试
 2017.06.14 新增有关 AB 测试中打开正态函数分数表的功能测试
@@ -100,30 +101,51 @@ class TestABTesting(FunctionalTest):
         self.toolhub_home = "{host}{path}".format(host=self.server_url, path=self.unique_url)
         super().setUp()
 
+    def test_options_exist(self):
+        """
+        测试 toolhub 的各个选项卡存在
+        """
+        # Y 打开了 ToolHub 首页, 想看看描述中的每一个选项卡是不是都在这个页面中
+        self.browser.get(self.toolhub_home)
+
+        # 它先查看了所有一级选项卡
+        for each_option in const.TOOLHUB_LEVEL_ONE_OPTIONS:
+            self.assertIn(html.escape(each_option), self.browser.page_source,
+                          "\n[-] 不存在 {} 这个选项卡\n".format(each_option))
+
+        # 然后查看了所有二级选项卡
+        for each_option in const.TOOLHUB_LEVEL_TWO_OPTIONS:
+            self.assertIn(each_option, self.browser.page_source, "\n[-] 不存在 {} 这个选项卡\n".format(each_option))
+
+        # 最后又查看了所有三级选项卡
+        for each_option in const.TOOLHUB_LEVEL_THREE_OPTIONS:
+            self.assertIn(each_option, self.browser.page_source, "\n[-] 不存在 {} 这个选项卡\n".format(each_option))
+
     def test_ab_testing_has_z_value_table_link(self):
         """
         测试 AB 测试界面含有 z 值表的链接
         """
-        # Y 打开了 ToolHub 首页, 看到了 TestTool 这么一个选项卡
+        # Y 打开了 ToolHub 首页, 它知道有 "正态函数分布 Z 值表" 这么一个选项卡, 于是想访问看看
         self.browser.get(self.toolhub_home)
         home_url = self.browser.current_url
-        for each_option in const.TOOLHUB_LEVEL_ONE_OPTIONS:  # const.LEVEL_ONE_OPTIONS 中有 TestTool
-            self.assertIn(html.escape(each_option), self.browser.page_source,
-                          "\n[-] 不存在 {} 这个选项卡\n".format(each_option))
 
-        # 在其中发现了 ABTesting 这个子选项卡
-        for each_option in const.TOOLHUB_LEVEL_TWO_OPTIONS:
-            self.assertIn(each_option, self.browser.page_source, "\n[-] 不存在 {} 这个选项卡\n".format(each_option))
-
-        # 在 ABTesting 中还发现了正态函数分布 Z 值表的选项卡, 于是想点击看看
-        for each_option in const.TOOLHUB_LEVEL_THREE_OPTIONS:
-            self.assertIn(each_option, self.browser.page_source, "\n[-] 不存在 {} 这个选项卡\n".format(each_option))
         self.browser.execute_script('document.getElementById("id_ab_testing_z_value_table").click()')
 
         # 发现点击完之后页面跳转了, 出现了个大标题是正态函数分布 Z 值表, 然后还有各种表格
         self.assertNotEqual(home_url, self.browser.current_url)  # 点击完之后 URL 变化了
         self.assertIn("标准正态分布 Z 值表", self.browser.page_source)
         self.assertIn("<table>", self.browser.page_source)
+
+    def test_ab_testing_sample_size_calculator_link(self):
+        """
+        测试能够通过选项卡跳转到实验规模计算工具上
+        """
+        # Y 打开了 ToolHub 首页, 它知道这个页面上有个选项卡叫做 xxxx, 于是直接去访问这个选项卡
+        self.browser.get(self.toolhub_home)
+        self.browser.execute_script('document.getElementById("ib_ab_testing_sample_size").click()')
+
+        # 发现 URL 变化了, 网页跳转到了这个在线计算工具的页面上
+        self.assertEqual(self.browser.current_url, const.TOOLHUB_AB_TESTING_SAMPLE_SIZE_URL)
 
 
 class TestStaticHTML(FunctionalTest):
