@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 my_constant 变量
 
+2017.06.24 补充 just_eating 的常量
 2017.06.23 继续补充 ToolHub 中 A/B Testing 选项卡的常量
 2017.06.22 补充 ToolHub 选项卡的常量
 2017.06.17 扩展搜索 Tag 函数, 于是修改对应常量
@@ -61,8 +62,15 @@ const.MARKDOWN_TREE_STRUCTURE = namedtuple("toc_tree", ["title", "id", "child"])
 # 日记页面
 const.JOURNAL_NOT_FOUND = "(●￣(ｴ)￣●)那天居然没写日记(O_o)??"
 
+# ====================================================================================================================
+
 # 吃货页面
 const.EATING_MENU_STRUCTURE = namedtuple("eating_menu", ["day_time", "morning", "noon", "night"])
+const.JUST_EATING_HOME_URL = "/just_eating/"
+const.JUST_EATING_SCHOOL_MENU_URL = const.JUST_EATING_HOME_URL + "school"
+const.JUST_EATING_SANGFOR_MENU_URL = const.JUST_EATING_HOME_URL + "sangfor"
+
+# ====================================================================================================================
 
 # 调试选项
 # git 提交前需要改为 False or True, 要不然网站会跑失败的...

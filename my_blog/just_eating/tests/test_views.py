@@ -2,18 +2,23 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.24 新增 sangfor 菜单测试, 将硬编码的 URL 改成常量
 2017.05.15 新增有关转盘页面选择地点功能的相关测试
 2017.03.22 新增有关转盘的相关测试
 2017.02.05 测试视图函数
 """
-from just_eating.views import school_lunch_backup_list, school_dinner_backup_list
+# 标准库
 from django.test import TestCase
+
+# 自己的模块
+from just_eating.views import school_lunch_backup_list, school_dinner_backup_list
+import my_constant as const
 
 __author__ = '__L1n__w@tch'
 
 
 class TestHomeView(TestCase):
-    unique_url = "/just_eating/"
+    unique_url = const.JUST_EATING_HOME_URL
 
     def setUp(self):
         super().setUp()
@@ -61,34 +66,35 @@ class TestHomeView(TestCase):
         response = self.client.get(self.unique_url)
         self.assertContains(response, "<title>吃啥</title>")
 
-    def test_href_to_school_eating(self):
+    def test_href_to_each_place_eating(self):
         """
-        首页应该有链接到学校吃饭计划表的按钮
+        测试首页有链接到各个地方吃饭计划表的按钮
         """
-        response = self.client.get(self.unique_url)
-        self.assertContains(response, "{}{}".format(self.unique_url, "home"))
-
-    def test_href_to_home_eating(self):
-        """
-        首页应该有链接到在家吃饭计划表的按钮
-        """
-        response = self.client.get(self.unique_url)
-        self.assertContains(response, "{}{}".format(self.unique_url, "home"))
+        for each_place in ("home", "school", "sangfor"):
+            response = self.client.get(self.unique_url)
+            self.assertContains(response, "{}{}".format(self.unique_url, each_place),
+                                msg_prefix="[-] 缺少指向 {} 的链接".format(each_place))
 
 
-class TestSchoolEatingView(TestCase):
-    unique_url = "/just_eating/school"
+class TestEatingView(TestCase):
+    """
+    测试 sangfor/school 的菜单显示
+    """
+    unique_urls = [const.JUST_EATING_SCHOOL_MENU_URL, const.JUST_EATING_SANGFOR_MENU_URL]
 
     def test_school_eating_template(self):
-        response = self.client.get(self.unique_url)
-        self.assertTemplateUsed(response, "just_eating_base.html")
+        for each_url in self.unique_urls:
+            response = self.client.get(each_url)
+            self.assertTemplateUsed(response, "just_eating_base.html",
+                                    msg_prefix="[-] URL {} 没有使用指定模板".format(each_url))
 
     def test_display_school_eating_plan(self):
         """
-        测试是否显示了 School 的吃饭计划
+        测试是否显示了 School/Sangfor 的吃饭计划
         """
-        response = self.client.get(self.unique_url)
-        self.assertContains(response, "School")
+        for each_url, each_title in zip(self.unique_urls, ["School", "Sangfor"]):
+            response = self.client.get(each_url)
+            self.assertContains(response, each_title, msg_prefix="[-] 缺少地点 {} 的吃饭计划".format(each_title))
 
 
 class TestRandomEatingView(TestCase):
