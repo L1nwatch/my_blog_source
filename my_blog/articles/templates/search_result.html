@@ -25,6 +25,10 @@
                             <a id="id_search_result_title" href="#"
                                onclick="this.parentNode.submit()">{{ post.note.title }}</a>
 
+                            {% if post.note.title|length > 64 %}
+                                <br/>
+                            {% endif %}
+
                             {% for tag in post.note.tag.all %}
                                 <a id="id_article_tag" class="post-category post-category-design"
                                    href="{% url "search_tag" tag_name=tag search_type=current_type %}">{{ tag }}</a>
