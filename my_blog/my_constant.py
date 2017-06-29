@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 my_constant 变量
 
+2017.06.29 新增 timeline 相关变量
 2017.06.24 补充 just_eating 的常量
 2017.06.23 继续补充 ToolHub 中 A/B Testing 选项卡的常量
 2017.06.22 补充 ToolHub 选项卡的常量
@@ -156,6 +157,14 @@ const.LOG_HTTP_HEADERS_WHITE_LIST = ["CONTENT_LENGTH", "CONTENT_TYPE", "HTTP_ACC
                                      "HTTP_ACCEPT_LANGUAGE", "HTTP_HOST", "HTTP_REFERER", "HTTP_USER_AGENT",
                                      "QUERY_STRING", "REMOTE_ADDR", "REMOTE_HOST", "REMOTE_USER", "REQUEST_METHOD",
                                      "SERVER_NAME", "SERVER_PORT", "HTTP_CONNECTION"]
+
+# ====================================================================================================================
+
+# Timeline App
+
+# -Travel Event Timeline
+const.TRAVEL_EVENT_TIMELINE_URL = "/timeline_app/"
+const.TRAVEL_EVENT_TIMELINE_TEMPLATE = "travel_event_timeline.html"
 
 if __name__ == "__main__":
     pass

@@ -25,12 +25,18 @@
 
 ![2017-03-23-日记首页](https://github.com/L1nwatch/my_blog_source/blob/master/2017-03-23-%E6%97%A5%E8%AE%B0%E9%A6%96%E9%A1%B5.jpg?raw=true)
 
+（2017-06-29 版本）的时间线界面如图所示：
+
+![2017-06-29-时间线首页](https://github.com/L1nwatch/my_blog_source/blob/master/.jpg?raw=true)
+
 
 ### 更新情况
 
 ```shell
 # Update
 #	============================== 2017 June ==============================
+2017.06.29
+    新增一个 timeline APP, 专门用于记录出行事件的
 2017.06.27
     新增搜索界面中, 当标题太长的时候会让 Tag 换一行显示
 2017.06.24

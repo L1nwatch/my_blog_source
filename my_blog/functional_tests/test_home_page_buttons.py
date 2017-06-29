@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.06.29 给首页新增一个 timeline 的按钮
 2017.06.06 重构, 将有关 archive 的测试分离出来
 2017.06.04 重构基类测试, 修改对应代码
 2017.03.28 修改 about me 的测试
@@ -147,6 +148,28 @@ class TestHomePageButtons(FunctionalTest):
         self.assertIn("GitHub 图片地址转换", self.browser.page_source)
 
         # Y 知道这个 APP 是干啥的了, 于是点击返回首页按钮回到首页了
+        home_button = self.browser.find_element_by_id("id_home_page")
+        home_button.click()
+        self.assertEqual(self.browser.current_url, home_url)
+
+    def test_timeline_button(self):
+        """
+        测试首页上的 timeline 按钮
+        """
+        # Y 打开首页, 发现右下角多出了一个 timeline 的按钮, 图标是一个 clock
+        home_url = self.browser.current_url
+        timeline_button = self.browser.find_element_by_id("id_timeline")
+
+        # Y 想看一下这个按钮会显示啥东西, 于是点击了一下
+        timeline_button.click()
+
+        # Y 发现界面的 URL 发生了变化, 而且界面上出现了一堆时间信息, 比如 2017.06.28
+        self.assertNotEqual(self.browser.current_url, home_url)
+        self.assertTrue(r'<span class="day">28</span>' in self.browser.page_source)
+        self.assertTrue(r'<div class="year"><h2>2017</h2>' in self.browser.page_source)
+        self.assertTrue(r'<span class="month">July</span>' in self.browser.page_source)
+
+        # Y 看完了所有时间事件, 于是点击返回回到了首页
         home_button = self.browser.find_element_by_id("id_home_page")
         home_button.click()
         self.assertEqual(self.browser.current_url, home_url)

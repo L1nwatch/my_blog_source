@@ -7,7 +7,10 @@
 2017.06.06 添加有关 tag 的 url
 2017.05.01 完善一下验证更新时间的前台交互代码, 使用 update_notes 下的 path 提供交互信息
 """
+# 标准库
 from django.conf.urls import url
+
+# 自己的模块
 import articles.views
 
 __author__ = '__L1n__w@tch'

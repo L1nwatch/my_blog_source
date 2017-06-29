@@ -1,0 +1,133 @@
+.wrap {
+    margin: 0px auto;
+    width: 800px;
+}
+
+#id_home_page {
+    color: inherit;
+    text-decoration: none;
+}
+
+#dataYear {
+    position: absolute;
+    background: #ED473B;
+    left: 60%;
+    top: 0px;
+    color: white;
+    padding: 0px 10px;
+}
+
+.header {
+    min-width: 400px;
+    width: 90%;
+    position: fixed;
+    top: 0px;
+    margin: 0px auto;
+    background: #fff;
+    z-index: 1;
+    padding-left: 15%;
+    padding-right: 15%;
+    font-size: 35px;
+    color: #c9c9c9;
+    box-shadow: 0 0 5px 0px #ccc;
+}
+
+.timeline {
+    width: 100%;
+    margin: 10px 0px 300px 0px;
+    padding-top: 50px;
+    position: relative;
+    overflow: auto;
+    border-bottom: 2px solid #f1f1f1;
+
+}
+
+.timeline:before {
+    content: '';
+    display: block;
+    position: absolute;
+    left: 49.5%;
+    top: 120px;
+    width: 3px;
+    height: 92%;
+    background: #666;
+}
+
+.year {
+    -webkit-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+
+    width: 100%;
+    margin-bottom: 50px;
+    position: relative;
+    overflow: auto;
+}
+
+.evt {
+    min-height: 100px;
+    width: 100%;
+    margin-bottom: 20px;
+    position: relative;
+
+}
+
+.evt:nth-child(even) .in {
+    float: left;
+}
+
+.evt:nth-child(odd) .in {
+    float: right;
+}
+
+p {
+    padding: 10px;
+    margin: 0;
+    font-size: 14px;
+    background: #f1f1f1;
+    color: #656565;
+}
+
+h2 {
+    padding: 15px;
+    margin: 0;
+    color: #333;
+    font-size: 20px;
+    letter-spacing: -1px;
+    position: relative;
+}
+
+.in h2 {
+    border-radius: 5px 5px 0 0;
+    background: #c1c1c1;
+
+}
+
+.date {
+    -webkit-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    display: block;
+    width: 8%;
+    position: absolute;
+    top: 10px;
+    left: 45.7%;
+    line-height: 60px;
+    border-radius: 100%;
+    font-size: 16px;
+    background: #fff;
+    color: #333;
+    font-weight: 900;
+    text-align: center;
+    border: 2px solid #fff;
+}
+
+.in {
+    width: 40%;
+    float: left;
+    margin: 5px 0 0 0;
+}
+
+.activeYear {
+    background: #ED473B;
+    color: #fff;
+    border-color: #fff;
+}
