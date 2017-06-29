@@ -27,7 +27,7 @@
 
 （2017-06-29 版本）的时间线界面如图所示：
 
-![2017-06-29-时间线首页](https://github.com/L1nwatch/my_blog_source/blob/master/.jpg?raw=true)
+![2017-06-29-时间线首页](https://github.com/L1nwatch/my_blog_source/blob/master/2017-06-29-%E6%97%B6%E9%97%B4%E7%BA%BF%E9%A6%96%E9%A1%B5.jpg?raw=true)
 
 
 ### 更新情况
