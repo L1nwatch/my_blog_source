@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 
 更新日志:
+2017.06.30 新增 app_life_summary 这个 APP
 2017.06.29 新增 timeline 这个 APP
 2017.06.17 新增一个 common_module 的 logger
 2017.06.07 修正域名部署, 现在要同时支持 www/non-www 的访问
@@ -59,6 +60,7 @@ INSTALLED_APPS = [
     "common_module",
     "log_file_deal",
     "app_timeline",
+    "app_life_summary",
     "debug_toolbar",
 ]
 

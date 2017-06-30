@@ -174,6 +174,27 @@ class TestHomePageButtons(FunctionalTest):
         home_button.click()
         self.assertEqual(self.browser.current_url, home_url)
 
+    def test_life_summary_button(self):
+        """
+        测试首页上的 life_summary 按钮
+        """
+        # Y 打开首页, 发现右下角多出了一个 life_summary 的按钮, 图标是一个 Note
+        home_url = self.browser.current_url
+        timeline_button = self.browser.find_element_by_id("id_life_summary")
+
+        # Y 想看一下这个按钮会显示啥东西, 于是点击了一下
+        timeline_button.click()
+
+        # Y 发现界面的 URL 发生了变化, 而且界面上出现了个人经历, 比如 xxxx
+        self.assertNotEqual(self.browser.current_url, home_url)
+        self.assertTrue(r'<div>洗漱用品</div>' in self.browser.page_source)
+        self.assertTrue(r'<div>生活习惯</div>' in self.browser.page_source)
+
+        # Y 看完了所有时间事件, 于是点击返回回到了首页
+        home_button = self.browser.find_element_by_id("id_home_page")
+        home_button.click()
+        self.assertEqual(self.browser.current_url, home_url)
+
 
 if __name__ == "__main__":
     pass

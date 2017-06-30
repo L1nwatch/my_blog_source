@@ -164,6 +164,8 @@
                 <li><a id="id_gitbook" href="https://www.gitbook.com/@l1nwatch"><span class="fa fa-book"></span></a>
                 </li>
                 <li><a id="id_email" href="mailto:watch1602@gmail.com"><span class="fa fa-envelope"></span></a></li>
+                <li><a id="id_life_summary" href="{% url "life_summary" %}"><span class="fa fa-pencil-square-o"></span></a>
+                </li>
                 <li><a id="id_timeline" href="{% url "travel_event_timeline" %}"><span class="fa fa-clock-o"></span></a>
                 </li>
                 <li><a id="id_about_me" href="{% url "about_me" %}"><span class="fa fa-user"></span></a></li>
@@ -179,8 +181,7 @@
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script type="text/javascript" src="{% static "new_style/js/bootstrap.js" %}"></script>
 
-<!-- Javascripts
-================================================== -->
+<!-- JavaScripts ================================================== -->
 <script type="text/javascript" src="{% static "new_style/js/main.js" %}"></script>
 <script src="{% static "new_style/js/search_bar.js" %}"></script>
 </body>

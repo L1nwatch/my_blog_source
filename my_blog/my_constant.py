@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 my_constant 变量
 
+2017.06.30 新增 life_summary 相关变量
 2017.06.29 新增 timeline 相关变量
 2017.06.24 补充 just_eating 的常量
 2017.06.23 继续补充 ToolHub 中 A/B Testing 选项卡的常量
@@ -165,6 +166,17 @@ const.LOG_HTTP_HEADERS_WHITE_LIST = ["CONTENT_LENGTH", "CONTENT_TYPE", "HTTP_ACC
 # -Travel Event Timeline
 const.TRAVEL_EVENT_TIMELINE_URL = "/timeline_app/"
 const.TRAVEL_EVENT_TIMELINE_TEMPLATE = "travel_event_timeline.html"
+
+# ====================================================================================================================
+
+# app_life_summary App
+
+# life_summary
+const.LIFE_SUMMARY_URL = "/life_summary_app/"
+const.LIFE_SUMMARY_TEMPLATE = "life_summary.html"
+
+# ====================================================================================================================
+
 
 if __name__ == "__main__":
     pass

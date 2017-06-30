@@ -12478,7 +12478,6 @@ fieldset[disabled] .form-control + .input-icon,
 }
 
 .todo li {
-    /*background: #34495e url(/static/todo/todo-da7b386667013ab5224ad73e2d2b2738.png) 92% center no-repeat;*/
     background-size: 20px 20px;
     cursor: pointer;
     font-size: 14px;
@@ -12581,15 +12580,6 @@ input.todo-search-field.placeholder {
     margin: 1px 0 3px;
 }
 
-/*@media only screen and (-webkit-min-device-pixel-ratio: 2), only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (-moz-min-device-pixel-ratio: 2), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (-o-min-device-pixel-ratio: 2/1), only screen and (-moz-min-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 1.5), only screen and (min-device-pixel-ratio: 2) {*/
-/*.todo li {*/
-/*background-image: url(/static/todo/todo-2x-34906b8c6be55bd9af7e5f9f6a8e9d67.png);*/
-/*}*/
-
-/*.todo li.todo-done {*/
-/*background-image: url(/static/todo/done-2x-04c2f7a35889c3704c4053cc6a92e145.png);*/
-/*}*/
-/*}*/
 
 .video-js {
     background-color: transparent;

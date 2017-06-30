@@ -1,0 +1,136 @@
+@import url(https://fonts.googleapis.com/css?family=Quicksand:400,300);
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300);
+
+*, *:before, *:after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    color: white;
+    font-size: 18px;
+    font-weight: 400;
+    font-family: 'Quicksand', 'Open Sans', 'Helvetica Neue', 'Helvetica', sans-serif;
+    background: -webkit-radial-gradient(bottom left ellipse, rgba(104, 128, 138, 0.4) 10%, rgba(138, 114, 76, 0) 40%), -webkit-linear-gradient(top, rgba(57, 173, 219, 0.25), rgba(42, 60, 87, 0.4)), -webkit-linear-gradient(315deg, #670d10, #092756);
+    background: radial-gradient(ellipse at bottom left, rgba(104, 128, 138, 0.4) 10%, rgba(138, 114, 76, 0) 40%), linear-gradient(to bottom, rgba(57, 173, 219, 0.25), rgba(42, 60, 87, 0.4)), linear-gradient(135deg, #670d10, #092756);
+}
+
+nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3.5rem;
+    height: 100%;
+    background: #2680F3;
+    -webkit-transition: all 300ms ease;
+    transition: all 300ms ease;
+    overflow: hidden;
+    z-index: 1;
+    box-shadow: 0px 0px 10px #333;
+}
+
+nav:hover {
+    width: 14rem;
+}
+
+nav * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+nav > ul {
+    display: table;
+    width: 14rem;
+}
+
+nav > ul > li {
+    display: table-row;
+    background: #0c66da;
+    cursor: pointer;
+}
+
+nav > ul > li:hover {
+    background: #569cf6;
+}
+
+nav > ul > li:active {
+    background: #87b9f8;
+}
+
+nav > ul > li > div {
+    height: 3.5rem;
+    line-height: 3.5rem;
+    display: table-cell;
+}
+
+nav > ul > li > div:nth-child(1) {
+    width: 3.5rem;
+    text-align: center;
+}
+
+nav > ul > li > div:nth-child(2) {
+    width: 10.5rem;
+    text-align: left;
+    padding-left: 0.7rem;
+}
+
+.desktop {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    padding: 1rem 1rem 1rem 4.5rem;
+    -webkit-transition: all 500ms ease;
+    transition: all 500ms ease;
+    overflow: auto;
+}
+
+.desktop h1 {
+    margin: 1rem 0;
+    font-weight: 300;
+}
+
+.desktop h1:nth-child(1) {
+    margin-top: 0;
+}
+
+.desktop p {
+    font-weight: 300;
+    text-align: justify;
+    margin: 0 0 1rem 0;
+}
+
+#one {
+    background: -webkit-radial-gradient(bottom left ellipse, rgba(104, 128, 138, 0.4) 10%, rgba(138, 114, 76, 0) 40%), -webkit-linear-gradient(top, rgba(57, 173, 219, 0.25), rgba(42, 60, 87, 0.4)), -webkit-linear-gradient(315deg, #670d10, #092756);
+    background: radial-gradient(ellipse at bottom left, rgba(104, 128, 138, 0.4) 10%, rgba(138, 114, 76, 0) 40%), linear-gradient(to bottom, rgba(57, 173, 219, 0.25), rgba(42, 60, 87, 0.4)), linear-gradient(135deg, #670d10, #092756);
+}
+
+#two {
+    background: -webkit-linear-gradient(315deg, #723362, #9d223c);
+    background: linear-gradient(135deg, #723362, #9d223c);
+}
+
+#three {
+    background: -webkit-linear-gradient(315deg, #2c539e, #63967d);
+    background: linear-gradient(135deg, #2c539e, #63967d);
+}
+
+#four {
+    background: -webkit-linear-gradient(315deg, rgba(244, 226, 156, 0) 0%, #3b293a 100%), -webkit-linear-gradient(left, #f4e29c 0%, #826057 100%);
+    background: linear-gradient(135deg, rgba(244, 226, 156, 0) 0%, #3b293a 100%), linear-gradient(to right, #f4e29c 0%, #826057 100%);
+}
+
+#five {
+    background: -webkit-linear-gradient(45deg, rgba(194, 233, 221, 0.5) 1%, rgba(104, 119, 132, 0.5) 100%), -webkit-linear-gradient(135deg, #494d71 0%, rgba(217, 230, 185, 0.5) 80%);
+    background: linear-gradient(45deg, rgba(194, 233, 221, 0.5) 1%, rgba(104, 119, 132, 0.5) 100%), linear-gradient(-45deg, #494d71 0%, rgba(217, 230, 185, 0.5) 80%);
+}
+
+.desktop ul {
+    margin-left: 50px;
+}
