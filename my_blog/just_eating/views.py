@@ -67,7 +67,7 @@ def create_sangfor_menu():
     wednesday = const.EATING_MENU_STRUCTURE("周三", "公司吃早饭", "公司吃午饭", "公司吃晚饭")
     thursday = const.EATING_MENU_STRUCTURE("周四", "公司吃早饭", "公司吃午饭", "公司吃晚饭")
     friday = const.EATING_MENU_STRUCTURE("周五", "公司吃早饭", "公司吃午饭", "公司吃晚饭")
-    saturday = const.EATING_MENU_STRUCTURE("周六", "公司不提供早餐", "不知道去哪吃", "不知道去哪吃")
+    saturday = const.EATING_MENU_STRUCTURE("周六", "公司不提供早餐", "不知道去哪吃", "湘和木桶饭")
     sunday = const.EATING_MENU_STRUCTURE("周日", "公司不提供早餐", "不知道去哪吃", "不知道去哪吃")
 
     for each_day in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]:
