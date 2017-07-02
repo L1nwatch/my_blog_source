@@ -15,12 +15,47 @@
     <ul>
         {% for each_item in post_items %}
             <li id="{{ each_item.li_id }}">
-                <div>{{ each_item.div_number }}</div>
+                <div>{{ forloop.counter0 }}</div>
                 <div>{{ each_item.div_name }}</div>
             </li>
         {% endfor %}
     </ul>
 </nav>
+{% for each_summary in summarys %}
+    <div class="desktop" id="{{ each_summary.div_id }}">
+        <h1>{{ each_summary.title }}</h1>
+        {% for each_field in each_summary.fields %}
+            <p>{{ each_field.title }}</p>
+            <ul>
+                {% for each_note in each_field.notes %}
+                    {# TODO: 这里是不是可以弄成 enumerate? #}
+                    {% if each_note.style == 0 %}
+                        {# 风格 1: 只需要直接添加 li 即可 #}
+                        <li>each_note.content</li>
+                    {% elif each_note.style == 1 %}
+                        {# 风格 2: li 有标题, 其下带着 ul/li 等一系列子标题 #}
+                        <li>each_note.content
+                            <ul>
+                                {% for sub_title in each_note.sub_titles %}
+                                    <li>{{ sub_title }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% elif each_note.style == 2 %}
+                        {# 风格 3: li 无标题, 需要特殊的 style 设置 #}
+                        <li style="list-style-type:none">
+                            <ul>
+                                {% for sub_title in each_note.sub_titles %}
+                                    <li>{{ sub_title }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    </div>
+{% endfor %}
 <div class="desktop" id="one">
     <h1>洗漱用品</h1>
     <p>洗发水</p>
