@@ -13,34 +13,12 @@
 
 <nav>
     <ul>
-        <li id="id_home_page">
-            <div>0</div>
-            <div>主页</div>
-        </li>
-        <li id="link-one">
-            <div>1</div>
-            <div>洗漱用品</div>
-        </li>
-        <li id="link-two">
-            <div>2</div>
-            <div>租房</div>
-        </li>
-        <li id="link-three">
-            <div>3</div>
-            <div>服装</div>
-        </li>
-        <li id="link-four">
-            <div>4</div>
-            <div>电子装备</div>
-        </li>
-        <li id="link-five">
-            <div>5</div>
-            <div>生活习惯</div>
-        </li>
-        <li id="link-six">
-            <div>6</div>
-            <div>生活用品</div>
-        </li>
+        {% for each_item in post_items %}
+            <li id="{{ each_item.li_id }}">
+                <div>{{ each_item.div_number }}</div>
+                <div>{{ each_item.div_name }}</div>
+            </li>
+        {% endfor %}
     </ul>
 </nav>
 <div class="desktop" id="one">

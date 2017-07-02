@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 负责测试 life_summary 这个 APP 下的视图函数
 
+2017.07.02 重构视图, 不硬编码 HTML 而是自动生成
 2017.06.30 新增有关 life_summary 首页的视图测试
 """
 # 标准库
@@ -25,6 +26,29 @@ class TestLifeSummary(BasicTest):
         response = self.client.get(self.unique_url)
         self.assertContains(response, "洗漱用品")
         self.assertContains(response, "生活习惯")
+
+    def test_create_sidebar_right(self):
+        """
+        测试能够正确地创建页面左边的菜单栏
+        """
+        response = self.client.get(self.unique_url)
+
+        test_ids = const.LIFE_SUMMARY_SIDEBAR_IDS
+        test_names = const.LIFE_SUMMARY_SIDEBAR_NAMES
+
+        for right_id, right_number, right_name in zip(test_ids, range(7), test_names):
+            self.assertContains(response, '<li id="{}">'.format(right_id))
+            self.assertContains(response, '<div>{}</div>'.format(right_number))
+            self.assertContains(response, '<div>{}</div>'.format(right_name))
+
+    def test_create_summary_right(self):
+        """
+        测试能够正确地创建页面的总结笔记
+        """
+        response = self.client.get(self.unique_url)
+
+        # 正常情况
+        self.assertContains(response, '<h1>洗漱用品</h1>')
 
 
 if __name__ == "__main__":
