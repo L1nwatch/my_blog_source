@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 my_constant 变量
 
+2017.07.07 新增 event timeline 结构体, 方便生成 html
 2017.06.30 新增 life_summary 相关变量
 2017.06.29 新增 timeline 相关变量
 2017.06.24 补充 just_eating 的常量
@@ -166,6 +167,8 @@ const.LOG_HTTP_HEADERS_WHITE_LIST = ["CONTENT_LENGTH", "CONTENT_TYPE", "HTTP_ACC
 # -Travel Event Timeline
 const.TRAVEL_EVENT_TIMELINE_URL = "/timeline_app/"
 const.TRAVEL_EVENT_TIMELINE_TEMPLATE = "travel_event_timeline.html"
+
+const.TRAVEL_EVENT_STRUCTURE = namedtuple("travel_event_structure", ["day", "month", "title", "data"])
 
 # ====================================================================================================================
 
