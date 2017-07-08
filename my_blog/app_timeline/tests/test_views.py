@@ -39,13 +39,13 @@ class TestTravelEventTimeline(BasicTest):
         """
         response = self.client.get(self.unique_url)
 
-        html_parse = BeautifulSoup(response.content)
-        events = html_parse.find_all("div", {"class": "evt"})
+        html_parse = BeautifulSoup(response.content)  # 传入 html 源码
+        events = html_parse.find_all("div", {"class": "evt"})  # 查找指定 tag, 指定要求有 class 属性
         self.assertTrue(len(events) > 0)
 
-        for each_evt in events:
+        for each_evt in events:  # 遍历所有查找结果
             # evt 下一个 div 应该是 in, 且只有一个
-            in_div = each_evt.find_all("div", {"class": "in"})
+            in_div = each_evt.find_all("div", {"class": "in"})  # 在该节点中继续寻找指定 tag
             self.assertIsNotNone(in_div)
             self.assertTrue(len(in_div) == 1)
 
@@ -54,7 +54,7 @@ class TestTravelEventTimeline(BasicTest):
             self.assertTrue("date" in span_tag.attrs["class"])
             child_span_tags = span_tag.find_all("span")
             self.assertTrue(any(
-                ["day" in each_span.attrs["class"] for each_span in child_span_tags]
+                ["day" in each_span.attrs["class"] for each_span in child_span_tags]  # 获取 class 属性
             ))
             self.assertTrue(any(
                 ["month" in each_span.attrs["class"] for each_span in child_span_tags]
