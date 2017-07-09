@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 my_constant 变量
 
+2017.07.09 新增 summary 结构体, 方便生成 html
 2017.07.07 新增 event timeline 结构体, 方便生成 html
 2017.06.30 新增 life_summary 相关变量
 2017.06.29 新增 timeline 相关变量
@@ -182,6 +183,10 @@ const.LIFE_SUMMARY_SIDEBAR_IDS = ["id_home_page", "link-one", "link-two", "link-
                                   "link-six"]
 const.LIFE_SUMMARY_SIDEBAR_NAMES = ["主页", "洗漱用品", "租房", "服装", "电子装备", "生活习惯", "生活用品"]
 const.LIFE_SUMMARY_SIDEBAR_ITEMS = namedtuple("life_summary_sidebar_items", ["li_id", "div_number", "div_name"])
+
+const.SUMMARY_STRUCTURE = namedtuple("summary_structure", ["div_id", "title", "fields"])
+const.SUMMARY_FIELD_STRUCTURE = namedtuple("summary_field_structure", ["title", "notes"])
+const.SUMMARY_FIELD_NOTES_STRUCTURE = namedtuple("summary_field_notes_structure", ["style", "content", "sub_notes"])
 
 # ====================================================================================================================
 
