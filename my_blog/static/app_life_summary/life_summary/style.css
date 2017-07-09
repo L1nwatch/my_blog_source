@@ -37,7 +37,7 @@ nav:hover {
 }
 
 nav:hover ~ .desktop {
-    margin-left: 14rem;
+    margin-left: 12rem;
 }
 
 nav * {
