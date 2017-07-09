@@ -36,6 +36,10 @@ nav:hover {
     width: 14rem;
 }
 
+nav:hover ~ .desktop {
+    margin-left: 14rem;
+}
+
 nav * {
     -webkit-user-select: none;
     -moz-user-select: none;
