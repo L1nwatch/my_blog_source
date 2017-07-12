@@ -106,6 +106,7 @@ def create_summary_4():
     :return: const.SUMMARY_STRUCTURE
     """
     field_note_1 = [const.SUMMARY_FIELD_NOTES_STRUCTURE(0, "录音手环绝对不买 JNN 家的，太坑了，BUG 一大堆，下次电子产品还是买知名厂家的吧", ""),
+                    const.SUMMARY_FIELD_NOTES_STRUCTURE(0, "以后买手环，手表之类的，不要买带子是扣子扣的那种，容易掉，要买类似于手表的那种，有个小针穿过去的。或者看看iwatch 是怎么设计的", ""),
                     ]
 
     field_note_2 = [const.SUMMARY_FIELD_NOTES_STRUCTURE(0, "耳机盒子 8 cm 左右差不多", ""),
