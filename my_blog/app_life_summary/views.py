@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.07.13 新增 log 操作
 2017.07.09 重构一下视图, 现在 summary 的内容也是由代码生成而不是硬编码的了
 2017.07.02 重构一下视图, 现在菜单栏是由代码生成的而不是硬编码的了
 2017.06.30 新增 life_summary 视图函数
@@ -8,9 +9,13 @@
 
 # 标准库
 from django.shortcuts import render
+import logging
 
 # 自己的模块
 import my_constant as const
+from common_module.common_help_function import log_wrapper
+
+logger = logging.getLogger("my_blog.app_timeline.views")
 
 
 def create_sidebar_items():
@@ -190,6 +195,7 @@ def create_summarys():
     return result
 
 
+@log_wrapper(str_format="访问了生活经历", level="info", logger=logger)
 def life_summary(request):
     items = create_sidebar_items()
     summarys = create_summarys()

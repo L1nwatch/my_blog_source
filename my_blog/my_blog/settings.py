@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 
 更新日志:
+2017.07.13 为 timeline 以及 summary 添加 log
 2017.06.30 新增 app_life_summary 这个 APP
 2017.06.29 新增 timeline 这个 APP
 2017.06.17 新增一个 common_module 的 logger
@@ -234,6 +235,16 @@ LOGGING = {
             'propagate': True
         },
         'my_blog.code_collect.views': {
+            'handlers': ['default', 'error', "info"],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'my_blog.app_timeline.views': {
+            'handlers': ['default', 'error', "info"],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'my_blog.app_life_summary.views': {
             'handlers': ['default', 'error', "info"],
             'level': 'DEBUG',
             'propagate': True

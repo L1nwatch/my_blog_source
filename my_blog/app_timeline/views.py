@@ -3,15 +3,22 @@
 # version: Python3.X
 """ 给 timeline app 设置 url 用的
 
+2017.07.13 新增 log 操作
 2017.07.07 重构一下 event timeline 生成 html 的 方式
 """
 # 标准库
 from django.shortcuts import render
+import logging
 
 # 自己的模块
 import my_constant as const
+from common_module.common_help_function import log_wrapper
 
 
+logger = logging.getLogger("my_blog.app_timeline.views")
+
+
+@log_wrapper(str_format="访问了时间线", level="info", logger=logger)
 def travel_event_timeline(request):
     """
     负责记录 travel 时间的 timeline 视图函数
