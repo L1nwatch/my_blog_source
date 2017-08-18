@@ -180,8 +180,8 @@ const.LIFE_SUMMARY_URL = "/life_summary_app/"
 const.LIFE_SUMMARY_TEMPLATE = "life_summary.html"
 
 const.LIFE_SUMMARY_SIDEBAR_IDS = ["id_home_page", "link-one", "link-two", "link-three", "link-four", "link-five",
-                                  "link-six"]
-const.LIFE_SUMMARY_SIDEBAR_NAMES = ["主页", "洗漱用品", "租房", "服装", "电子装备", "生活习惯", "生活用品"]
+                                  "link-six", "link-seven"]
+const.LIFE_SUMMARY_SIDEBAR_NAMES = ["主页", "洗漱用品", "租房", "服装", "电子装备", "生活习惯", "生活用品", "饮食"]
 const.LIFE_SUMMARY_SIDEBAR_ITEMS = namedtuple("life_summary_sidebar_items", ["li_id", "div_number", "div_name"])
 
 const.SUMMARY_STRUCTURE = namedtuple("summary_structure", ["div_id", "title", "fields"])

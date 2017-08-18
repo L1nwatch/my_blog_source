@@ -49,4 +49,9 @@ document.getElementById('link-six').addEventListener('click', function () {
     show(document.getElementById('six'));
 }, false);
 
+document.getElementById('link-seven').addEventListener('click', function () {
+    hideAll();
+    show(document.getElementById('seven'));
+}, false);
+
 show(document.getElementById('one'));

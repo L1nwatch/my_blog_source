@@ -24,7 +24,8 @@ def create_sidebar_items():
     """
     items = list()
 
-    for each_id, each_number, each_name in zip(const.LIFE_SUMMARY_SIDEBAR_IDS, range(7),
+    for each_id, each_number, each_name in zip(const.LIFE_SUMMARY_SIDEBAR_IDS,
+                                               range(len(const.LIFE_SUMMARY_SIDEBAR_NAMES)),
                                                const.LIFE_SUMMARY_SIDEBAR_NAMES):
         items.append(const.LIFE_SUMMARY_SIDEBAR_ITEMS(each_id, each_number, each_name))
 
@@ -111,7 +112,9 @@ def create_summary_4():
     :return: const.SUMMARY_STRUCTURE
     """
     field_note_1 = [const.SUMMARY_FIELD_NOTES_STRUCTURE(0, "录音手环绝对不买 JNN 家的，太坑了，BUG 一大堆，下次电子产品还是买知名厂家的吧", ""),
-                    const.SUMMARY_FIELD_NOTES_STRUCTURE(0, "以后买手环，手表之类的，不要买带子是扣子扣的那种，容易掉，要买类似于手表的那种，有个小针穿过去的。或者看看iwatch 是怎么设计的", ""),
+                    const.SUMMARY_FIELD_NOTES_STRUCTURE(0,
+                                                        "以后买手环，手表之类的，不要买带子是扣子扣的那种，容易掉，要买类似于手表的那种，有个小针穿过去的。或者看看iwatch 是怎么设计的",
+                                                        ""),
                     ]
 
     field_note_2 = [const.SUMMARY_FIELD_NOTES_STRUCTURE(0, "耳机盒子 8 cm 左右差不多", ""),
@@ -181,6 +184,22 @@ def create_summary_6():
     return const.SUMMARY_STRUCTURE("six", "生活用品", fields)
 
 
+def create_summary_7():
+    """
+    笔记有点多,分开来创建吧
+    :return: const.SUMMARY_STRUCTURE
+    """
+    field_note_1 = [const.SUMMARY_FIELD_NOTES_STRUCTURE(1, "吃桃子要不要削皮?",
+                                                        ["小桃子: 没毛, 洗完可以直接吃",
+                                                         "大桃子：有毛, 对毛敏感的最好削皮吃"]),
+                    ]
+
+    fields = [const.SUMMARY_FIELD_STRUCTURE("水果", field_note_1),
+              ]
+
+    return const.SUMMARY_STRUCTURE("seven", "饮食", fields)
+
+
 def create_summarys():
     """
     为笔记内容创建 summarys, 方便传给视图显示
@@ -189,7 +208,7 @@ def create_summarys():
     result = list()
 
     for x in [create_summary_1(), create_summary_2(), create_summary_3(), create_summary_4(),
-              create_summary_5(),create_summary_6()]:
+              create_summary_5(), create_summary_6(), create_summary_7()]:
         result.append(x)
 
     return result
