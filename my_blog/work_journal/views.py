@@ -13,12 +13,13 @@ import datetime
 import logging
 import os
 import re
-
+from django.http import HttpResponse
 from django.shortcuts import render
 
 # 自己的模块
 from common_module.common_help_function import (get_context_data, get_right_content_from_file, search_keyword_in_model,
-                                                create_search_result, clean_form_data, log_wrapper)
+                                                create_search_result, clean_form_data, log_wrapper,
+                                                get_ip_from_django_request)
 import my_constant as const
 from .forms import JournalForm
 from .models import Journal
@@ -28,6 +29,9 @@ logger = logging.getLogger("my_blog.work_journal.views")
 
 @log_wrapper(str_format="访问日记主页", logger=logger)
 def work_journal_home_view(request):
+    if get_ip_from_django_request(request) not in ["127.0.0.1"]:
+        return HttpResponse("[-] 访问权限不足")
+
     journal_list = Journal.objects.all()  # 获取全部的 Journal 对象
     return render(request, 'journal_home.html', get_context_data(request, "journals", {"post_list": journal_list}))
 
@@ -38,6 +42,9 @@ def journal_display(request, journal_id):
     :param request: 发送给视图函数的请求
     :param journal_id: 请求的日记 id
     """
+    if get_ip_from_django_request(request) not in ["127.0.0.1"]:
+        return HttpResponse("[-] 访问权限不足")
+
     journal = Journal.objects.get(id=journal_id)
 
     if request.method == "POST" and request.POST["visited"] == "True":
@@ -54,6 +61,9 @@ def redirect_journal(request, journal_date):
     :param request: 发送给视图函数的请求
     :param journal_date: 日期, 形如 2017-02-14
     """
+    if get_ip_from_django_request(request) not in ["127.0.0.1"]:
+        return HttpResponse("[-] 访问权限不足")
+
     year, month, day = journal_date.split("-")
     year, month, day = int(year), int(month), int(day)
     request_date = datetime.datetime(year, month, day)

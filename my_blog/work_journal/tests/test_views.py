@@ -58,6 +58,13 @@ class JournalHomeViewTest(BaseCommonTest):
         response = self.client.get(self.unique_url)
         self.assertIsInstance(response.context["form"], JournalForm)
 
+    def test_only_pointed_ip_can_visit(self):
+        """
+        测试只有指定 IP 地址可以访问
+        :return:
+        """
+        self.fail("还没写,只要 mock 一下获取 IP 地址的函数就可以写这个测试了")
+
     def test_use_right_template(self):
         """
         测试使用了正确的模板文件

@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.08.26 新增一个 ip 限制的装饰器, 但是好像函数没什么用
 2017.06.15 添加一个验证 html 文件存在的函数
 2017.06.14 完善邮件发送的消息格式
 2017.06.11 修复一下日志记录 deepcopy 导致的问题
@@ -37,6 +38,7 @@ from gitbook_notes.models import GitBook
 from code_collect.models import CodeCollect
 from common_module.email_send import email_sender
 from common_module.ip_deal import locate_using_ip_address, get_ip_from_django_request
+from django.http import HttpResponse
 
 # 标准库
 import chardet
@@ -335,6 +337,32 @@ def log_wrapper(func, *, str_format="", level="info", logger=None):
             make_a_log.start()
 
         return func(request, *func_args, **func_kwargs)
+
+    return wrapper
+
+
+@decorator_with_args
+def ip_limit(func, *, ip_list=None):
+    """
+    限定 IP 访问
+    :param func:
+    :param ip_list: list(), 仅允许列表中的 IP 地址进行访问
+    :return:
+    """
+    if not ip_list:
+        ip_list = ["127.0.0.1"]
+
+    @wraps(func)
+    def wrapper(request=None, *func_args, **func_kwargs):
+        if request is not None:
+            # 检查访问者的 IP 地址
+            visitor_ip = get_ip_from_django_request(request)
+
+            # 如果是允许访问的 IP
+            if visitor_ip in ip_list:
+                return func(request, *func_args, **func_kwargs)
+
+        return HttpResponse("[-] 访问权限不足")
 
     return wrapper
 
