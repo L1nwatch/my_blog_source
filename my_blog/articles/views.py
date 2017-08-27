@@ -250,7 +250,7 @@ def blog_search(request):
                 context_data["post_list"] = context_data.get("post_list", list()) + article_search_result["post_list"]
 
             # 仅限本地访问
-            if get_ip_from_django_request(request) in ["127.0.0.1"]:
+            if get_ip_from_django_request(request) in const.IP_LIMIT:
                 journal_search_result = do_journals_search(request)
                 if journal_search_result is not None:
                     context_data["total_numbers"] += journal_search_result["journals_numbers"]

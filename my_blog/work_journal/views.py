@@ -29,7 +29,7 @@ logger = logging.getLogger("my_blog.work_journal.views")
 
 @log_wrapper(str_format="访问日记主页", logger=logger)
 def work_journal_home_view(request):
-    if get_ip_from_django_request(request) not in ["127.0.0.1"]:
+    if get_ip_from_django_request(request) not in const.IP_LIMIT:
         return HttpResponse("[-] 访问权限不足")
 
     journal_list = Journal.objects.all()  # 获取全部的 Journal 对象
@@ -42,7 +42,7 @@ def journal_display(request, journal_id):
     :param request: 发送给视图函数的请求
     :param journal_id: 请求的日记 id
     """
-    if get_ip_from_django_request(request) not in ["127.0.0.1"]:
+    if get_ip_from_django_request(request) not in const.IP_LIMIT:
         return HttpResponse("[-] 访问权限不足")
 
     journal = Journal.objects.get(id=journal_id)
@@ -61,7 +61,7 @@ def redirect_journal(request, journal_date):
     :param request: 发送给视图函数的请求
     :param journal_date: 日期, 形如 2017-02-14
     """
-    if get_ip_from_django_request(request) not in ["127.0.0.1"]:
+    if get_ip_from_django_request(request) not in const.IP_LIMIT:
         return HttpResponse("[-] 访问权限不足")
 
     year, month, day = journal_date.split("-")
