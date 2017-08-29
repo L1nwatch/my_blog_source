@@ -268,7 +268,8 @@ def blog_search(request):
         elif request.POST["search_choice"] == "articles":
             context_data = do_articles_search(request)
         elif request.POST["search_choice"] == "journals":
-            context_data = do_journals_search(request)
+            if get_ip_from_django_request(request) in const.IP_LIMIT:
+                context_data = do_journals_search(request)
         elif request.POST["search_choice"] == "gitbooks":
             context_data = do_gitbooks_search(request)
         elif request.POST["search_choice"] == "code":
