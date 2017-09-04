@@ -136,9 +136,13 @@ def create_summary_5():
                     const.SUMMARY_FIELD_NOTES_STRUCTURE(0, "目前的计划是，只清理耳朵外围的，一旦出现听力衰减等情况就去医院处理", ""),
                     ]
 
-    field_note_2 = [const.SUMMARY_FIELD_NOTES_STRUCTURE(0, "可以查看历史价格，没必要等 0 点抢券啥的，平时想买直接领券，有好券直接买，不用等时间了", ""),
-                    const.SUMMARY_FIELD_NOTES_STRUCTURE(0, "使用 Apple Pay 一律京东闪付", ""),
-                    const.SUMMARY_FIELD_NOTES_STRUCTURE(0, "其余情况看哪家支付有优惠就用哪家，比如招商银行提示有优惠就用招商银行", ""),
+    field_note_2 = [const.SUMMARY_FIELD_NOTES_STRUCTURE(1, "购物顺序",
+                                                        ["非高质量: 折800 -> 什么值得买领券后去买",
+                                                         "高质量: 网易严选 -> 亚马逊 -> 网易考拉海购",
+                                                         "随便逛逛: 慢慢买(白菜价)"]),
+                    const.SUMMARY_FIELD_NOTES_STRUCTURE(1, "付款顺序",
+                                                        ["微信付款 -无优惠-> ApplePay(京东闪付-1天/次) -无优惠-> 招商银行"]),
+                    const.SUMMARY_FIELD_NOTES_STRUCTURE(0, "可以查看历史价格，没必要等 0 点抢券啥的，平时想买直接领券，有好券直接买，不用等时间了", ""),
                     const.SUMMARY_FIELD_NOTES_STRUCTURE(0, "要买到比实际卖价更便宜的产品，自己去度娘下载一些获取内部优惠券的插件，比如店侦探，查淘客，淘客助手等等", ""),
                     const.SUMMARY_FIELD_NOTES_STRUCTURE(0,
                                                         "当你想到购买某件刚需性，并且淡旺季很明显的产品时，往前推2个月，是买那件东西最便宜的时候，比如电风扇，5月份天气热了，3月份-4月份是买电风扇是最便宜的",
