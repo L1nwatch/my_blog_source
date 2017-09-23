@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 给 timeline app 设置 url 用的
 
+2017.09.23 新增笔记
 2017.07.13 新增 log 操作
 2017.07.07 重构一下 event timeline 生成 html 的 方式
 """
@@ -26,6 +27,7 @@ def travel_event_timeline(request):
     :return: 渲染过后的 html
     """
     events = list()
+    events.append(const.TRAVEL_EVENT_STRUCTURE("22", "September", "公司到汕头", ["6.2* 左右从公司出发，到深圳北18.46左右，等车等到19.06出发，坐19.21的高铁回潮汕，d2336","到达潮汕站21.21分，北出口，21.49大巴发车，到达明珠广场 22.36分左右点，走到家是22.55分，每隔15分钟有辆大巴，末班车是22.05"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("13", "July", "华里到公司", ["7.50 左右出门，出门左转的公交站，刚来就坐上 43 路，8.16 到南方科技大学，8.34 在六楼吃完早饭"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("08", "July", "华里出发去民治公寓", ["12分在塘朗站，16分在深圳北，18分到民治，25分到公寓"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("06", "July", "华里出发去 C3 栋", ["关于地铁的问题: 从酒店去公司，对门进出。从公司回来，同门进出，确定了。","大概 8.15 到达公司，吃完饭约 8.30，到部门逛了逛大概 8.50 左右到 c3 栋阶梯教室（中间绕了远路）。"]))
