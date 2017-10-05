@@ -27,6 +27,10 @@ def travel_event_timeline(request):
     :return: 渲染过后的 html
     """
     events = list()
+    events.append(const.TRAVEL_EVENT_STRUCTURE("3", "Oct", "西丽到民治天鸿公寓", ["10.17 上车,10.33 下车,对门进出"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("2", "Oct", "华茂苑到民治天鸿公寓", ["13.11 上车, 4 号线,清湖方向,到深圳北 13.19 点, 同门进出","13.30 深圳北上车,去民治,对门进出,到民治 13.33 到", "民治 503 房间"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("2", "Oct", "西丽到华茂苑", ["11.10 从西丽地铁站出发,到深圳北 11.23 分, 同门进出","11.31 上车 4 号线,福田方向,到上梅林下,a 口出,11.39 下车,同门进出"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("1", "Oct", "西丽到民治天鸿公寓", ["B 出口"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("24", "Sept", "西丽到世界之窗到公司", ["在西丽大概 14：15 左右出发，14：53 到世界之窗","16.00 到宝安中心，坐地铁去公司，16.22 到塘朗，对门进出"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("24", "Sept", "深圳北+西丽+公司地铁", ["从深圳北去西丽是 同门下车","从公司去深圳北是对门下车"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("24", "Sept", "汕头到深圳", ["8.16 在等 39 路，8.21 上公交，出发到客运中心站 8.30 点且买完票在等车了，8.58 上大巴，坐 9 点的大巴，没下雨，坐在右边，9.02 开车，右边不会晒太阳，左边晒到了，然后路上堵车了，去帝豪的路上堵了，9.24还堵在帝豪，到高铁站 10.23 ，直接进站过安检，10.33 上车","D2327，10.45点发车，13.00点到深圳北站，13.02 上地铁，回到西丽 13.16 分,13.29吃牛肉汤河粉，12块是俩丸子+肉，还不错"]))
