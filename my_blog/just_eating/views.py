@@ -62,11 +62,11 @@ def create_school_menu():
 def create_sangfor_menu():
     sangfor_menu = list()
 
-    monday = const.EATING_MENU_STRUCTURE("周一", "公司\n炒米粉 + 牛奶", "公司\n6 楼粿条", "公司\n4 楼快餐")
-    tuesday = const.EATING_MENU_STRUCTURE("周二", "公司\n2 个面包 + 豆浆", "公司\n8 楼", "公司\n2 楼快餐")
-    wednesday = const.EATING_MENU_STRUCTURE("周三", "公司\n粥 + 鸡蛋", "公司\n2 楼牛肉饭", "公司\n1 楼金百合")
-    thursday = const.EATING_MENU_STRUCTURE("周四", "公司\n炒面 + 牛奶", "公司\n8 楼", "公司\n6 楼快餐")
-    friday = const.EATING_MENU_STRUCTURE("周五", "公司\n2 个面包 + 豆浆", "公司\n6 楼粿条", "公司\n4 楼快餐")
+    monday = const.EATING_MENU_STRUCTURE("周一", "公司\n炒米粉 + 牛奶", "公司\n2 楼牛肉饭", "公司\n8 楼")
+    tuesday = const.EATING_MENU_STRUCTURE("周二", "公司\n2 个面包 + 豆浆", "公司\n4 楼冒菜", "公司\n6 楼快餐")
+    wednesday = const.EATING_MENU_STRUCTURE("周三", "公司\n粥 + 鸡蛋", "公司\n6 楼粿条", "公司\n4 楼快餐")
+    thursday = const.EATING_MENU_STRUCTURE("周四", "公司\n炒面 + 牛奶", "公司\n8 楼", "公司\n2 楼快餐")
+    friday = const.EATING_MENU_STRUCTURE("周五", "公司\n2 个面包 + 豆浆", "公司\n6 楼粿条", "公司\n-1 楼金百合")
     saturday = const.EATING_MENU_STRUCTURE("周六", "西丽\n双蛋肠粉", "公司\n不知道去哪吃", "不知道去哪吃")
     sunday = const.EATING_MENU_STRUCTURE("周日", "西丽\n烧卖+红糖馒头+豆浆", "公司\n订外卖 | 饺子", "不知道去哪吃")
 
