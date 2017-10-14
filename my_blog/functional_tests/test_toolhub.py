@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 给 toolhub 的各个工具编写相关测试代码
 
+2017.10.14 新增凯撒密码的相关测试
 2017.06.23 新增一个跳转到实验规模计算的选项卡
 2017.06.22 补充 ToolHub 选项卡的测试
 2017.06.15 增加有关访问 html 文件的相关功能测试
@@ -72,15 +73,11 @@ class TestCipher(FunctionalTest):
         """
         测试凯撒密码的超链接正常
         """
-        # Y 打开 toolhub 首页, 发现凯撒密码
+        # Y 打开 toolhub 首页,
         self.browser.get(self.toolhub_home)
         home_url = self.browser.current_url
 
         # 点击一下, 发现链接跳转了
-        self.browser.execute_script('document.getElementById("id_caesar_cipher").click()')
-        self.assertNotEqual(home_url, self.browser.current_url)
-        self.assertEqual(self.browser.current_url,
-                         "http://www.cryptool-online.org/index.php?option=com_cto&view=tool&Itemid=96&lang=en")
 
         # 界面上出现了凯撒密码对应的加密解密操作
         self.assertIn("Caesar Cipher", self.browser.page_source)
@@ -90,6 +87,33 @@ class TestCipher(FunctionalTest):
         home_view = self.browser.find_element_by_id("id_home_page")
         home_view.click()
 
+    def test_caesar_cipher_decrypt_right(self):
+        """
+        测试转换功能正常使用
+        """
+        # Y 打开了 toolhub 的首页, 发现凯撒密码
+        self.browser.get(self.toolhub_home)
+        home_url = self.browser.current_url
+
+        # 它点击了一下这个工具的链接, 发现页面上出现了一个输入框, 还有一个转换按钮
+        self.browser.execute_script('document.getElementById("id_caesar_cipher").click()')
+        self.assertNotEqual(home_url, self.browser.current_url)
+
+        input_box = self.browser.find_element_by_id("id_input_box")
+        translate_button = self.browser.find_element_by_id("id_caesar_decrypt_button")
+
+        # Y 在输入框里面输入了一堆内容, 再点击了一下转换按钮
+        input_box.send_keys("zobD*ooC")
+        translate_button.click()
+
+        # 它发现输出框显示出了转换之后的结果
+        output_box = self.browser.find_element_by_id("id_output_box")
+        right_answer = "shU6*hh5"
+        self.assertEqual(output_box.get_attribute("value"), right_answer)
+
+        # Y 很满意, 点击首页想看看其他内容
+        home_view = self.browser.find_element_by_id("id_home_page")
+        home_view.click()
 
 class TestABTesting(FunctionalTest):
     """

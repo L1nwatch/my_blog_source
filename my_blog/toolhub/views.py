@@ -19,8 +19,9 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render
 
 # 自己的模块
+from toolhub.cryptography.caesar_cipher import Caesar
 from common_module.common_help_function import log_wrapper, is_static_file_exist
-from toolhub.forms import TextareaForm
+from toolhub.forms import GitHubTranslateTextareaForm, CaesarCipherTextareaForm
 
 __author__ = '__L1n__w@tch'
 
@@ -30,8 +31,10 @@ tools_name_list = ["GitHub 图片地址转换"]
 
 
 @log_wrapper(str_format="使用了凯撒加密", level="info", logger=logger)
-def view_caesar_encrypt(request):
-    return HttpResponse("ok")
+def view_caesar_cipher(request):
+    form = CaesarCipherTextareaForm(auto_id=False)
+    return render(request, "caesar_cipher/caesar_cipher.html",
+                  {"textarea_form": form})
 
 
 @log_wrapper(str_format="访问了 ToolHub 首页", level="info", logger=logger)
@@ -41,7 +44,7 @@ def toolhub_home_view(request):
 
 @log_wrapper(str_format="访问了 GitHub 图片地址转换工具", level="info", logger=logger)
 def github_picture_translate_tool_view(request):
-    form = TextareaForm(auto_id=False)
+    form = GitHubTranslateTextareaForm(auto_id=False)
     return render(request, "github_picture_translate_tool/github_picture_translate_tool.html",
                   {"textarea_form": form})
 
@@ -51,6 +54,15 @@ def github_picture_translate(request):
     if request.method == "POST":
         raw_data = request.POST["raw_data"]
         return HttpResponse(quote(raw_data))
+    return HttpResponse("test")
+
+
+@log_wrapper(str_format="凯撒解密工具", level="info", logger=logger)
+def caesar_cipher_decrypt(request):
+    if request.method == "POST":
+        raw_data = request.POST["raw_data"]
+        caesar = Caesar()
+        return HttpResponse(caesar.decrypt(raw_data, 7))
     return HttpResponse("test")
 
 

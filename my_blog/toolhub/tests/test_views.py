@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 对 toolhub 这个 APP 进行相关的视图测试
 
+2017.10.14 补充 caesar 的测试
 2017.06.14 新增有关返回静态 HTML 的视图函数测试
 2017.03.25 新增有关 form 的测试
 2017.03.24 编写有关视图首页的测试
@@ -15,7 +16,7 @@ from django.test import override_settings
 from common_module.tests.basic_test import BasicTest
 from common_module.common_help_function import is_static_file_exist
 from toolhub.views import tools_name_list
-from toolhub.forms import TextareaForm
+from toolhub.forms import GitHubTranslateTextareaForm,CaesarCipherTextareaForm
 import my_constant as const
 
 __author__ = '__L1n__w@tch'
@@ -56,7 +57,25 @@ class GitHubPictureTranslateViewTest(BasicTest):
 
     def test_use_form(self):
         response = self.client.get(self.unique_url)
-        self.assertIsInstance(response.context["textarea_form"], TextareaForm)
+        self.assertIsInstance(response.context["textarea_form"], GitHubTranslateTextareaForm)
+
+
+class CaesarCipherViewTest(BasicTest):
+    unique_url = const.TOOLHUB_CAESAR_CIPHER_URL
+    data_url = const.TOOLHUB_CAESAR_CIPHER_DATA_URL
+
+    def test_use_right_template(self):
+        response = self.client.get(self.unique_url)
+        self.assertTemplateUsed(response, "caesar_cipher/caesar_cipher.html")
+
+    def test_translate_right(self):
+        response = self.client.post(self.data_url, {"raw_data": "zobD*ooC"})
+        right_answer = "shU6*hh5"
+        self.assertEqual(response.content.decode("utf8"), right_answer)
+
+    def test_use_form(self):
+        response = self.client.get(self.unique_url)
+        self.assertIsInstance(response.context["textarea_form"], CaesarCipherTextareaForm)
 
 
 @override_settings(DEBUG=False)  # 必须将 DEBUG 调成 False, 要不然会导致 debug_toolbar 出错
