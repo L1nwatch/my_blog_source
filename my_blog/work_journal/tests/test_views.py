@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 负责 work_journal 的 view 测试
 
+2017.10.14 新增一个 IP 访问限制的测试
 2017.05.21 修改 common_module 路径
 2017.04.04 重构有关创建测试数据的代码
 2017.03.23 重构了部分搜索实现, 删除了通过 URL 来区分搜索类型的相关代码
@@ -11,13 +12,16 @@
 2017.02.07 添加更新的时候判断文件名的合法性的单元测试
 2017.02.03 开始写这个 APP, 需要新建单元测试
 """
+# 标准库
 import datetime
 import os
 import shutil
 import unittest
+from unittest import mock
 
 from django.test import override_settings
 
+# 自己的模块
 from articles.views import get_right_content_from_file
 from common_module.tests.basic_test import BasicTest
 import my_constant as const
@@ -63,7 +67,21 @@ class JournalHomeViewTest(BaseCommonTest):
         测试只有指定 IP 地址可以访问
         :return:
         """
-        self.fail("还没写,只要 mock 一下获取 IP 地址的函数就可以写这个测试了")
+        with mock.patch("work_journal.views.get_ip_from_django_request") as my_mock:
+            test_ip = "127.0.0.2"
+            my_mock.return_value = test_ip
+            self.assertNotIn(test_ip, const.IP_LIMIT)
+
+            response = self.client.get(self.unique_url)
+            self.assertTrue(my_mock.called)
+            self.assertContains(response, "访问权限不足")
+
+            test_ip = "127.0.0.1"
+            my_mock.return_value = test_ip
+            self.assertIn(test_ip, const.IP_LIMIT)
+            response = self.client.get(self.unique_url)
+            self.assertTrue(my_mock.called)
+            self.assertNotContains(response, "访问权限不足")
 
     def test_use_right_template(self):
         """

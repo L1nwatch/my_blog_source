@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.10.14 新增凯撒加密的工具, 不过还没提供到前台
 2017.06.15 新增一个 html 文件的判断函数
 2017.06.14 新增一个有关静态 HTML 映射的视图函数
 2017.05.21 修改 common_module 路径
@@ -18,7 +19,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render
 
 # 自己的模块
-from common_module.common_help_function import log_wrapper,is_static_file_exist
+from common_module.common_help_function import log_wrapper, is_static_file_exist
 from toolhub.forms import TextareaForm
 
 __author__ = '__L1n__w@tch'
@@ -26,6 +27,11 @@ __author__ = '__L1n__w@tch'
 logger = logging.getLogger("my_blog.gitbooks.views")
 
 tools_name_list = ["GitHub 图片地址转换"]
+
+
+@log_wrapper(str_format="使用了凯撒加密", level="info", logger=logger)
+def view_caesar_encrypt(request):
+    return HttpResponse("ok")
 
 
 @log_wrapper(str_format="访问了 ToolHub 首页", level="info", logger=logger)
