@@ -27,6 +27,19 @@ __author__ = '__L1n__w@tch'
 register = template.Library()  # 自定义filter时必须加上
 
 
+def translate_keyword(keyword):
+    """
+    转义函数, 例如把 ( 转义成 \(, 防止编译正则失败
+    :param keyword:
+    :return:
+    """
+    string = r"""\()[]{}><"?'$%"""
+    for each_str in string:
+        keyword = keyword.replace(each_str, r"\{}".format(each_str))
+
+    return keyword
+
+
 @register.filter(is_safe=True)  # 注册template filter
 @stringfilter  # 希望字符串作为参数
 def add_em_tag(keyword, raw_content):
@@ -42,6 +55,8 @@ def add_em_tag(keyword, raw_content):
         return "{}{}{}".format(pre, raw_keyword, html.escape(suffix))
 
     if keyword != "":
+        keyword = translate_keyword(keyword)
+
         # 处理每个关键词的转义
         keyword_deal_re = re.compile("(?P<pre>[\s\S]*?)(?P<keyword>{})".format(keyword),
                                      flags=re.IGNORECASE)

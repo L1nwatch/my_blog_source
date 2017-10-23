@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.10.23 补充一个转义函数
 2017.06.05 补充一个在 code 内不进行转义的函数测试
 2017.03.10 重构一下添加 em 标签的函数
 2017.02.26 添加关于菜单格式化的代码测试
@@ -14,7 +15,7 @@ import bleach
 # 自己的模块
 import my_constant as const
 from articles.templatetags.custom_filter import (remove_code_tag_in_h_tags, add_em_tag, special_bleach_clean,
-                                                 menu_format, unescape_tag_in_code, )
+                                                 menu_format, unescape_tag_in_code, translate_keyword)
 
 __author__ = '__L1n__w@tch'
 
@@ -61,8 +62,6 @@ class TestCustomMarkdown(TestCase):
         self.assertEqual(right_answer, my_answer)
 
 
-
-
 class TestCustomFilter(TestCase):
     def test_add_em_tag(self):
         """
@@ -95,6 +94,11 @@ class TestCustomFilter(TestCase):
 
         test_data = 'gh', 'right_answer = "<h1>aaabbb</h1>"'
         right_answer = 'ri<em>gh</em>t_answer = &quot;&lt;h1&gt;aaabbb&lt;/h1&gt;&quot;'
+        my_answer = add_em_tag(*test_data)
+        self.assertEqual(right_answer, my_answer)
+
+        test_data = 'next(', 'rinext(t_answer = "<h1>aaabbb</h1>"'
+        right_answer = 'ri<em>next(</em>t_answer = &quot;&lt;h1&gt;aaabbb&lt;/h1&gt;&quot;'
         my_answer = add_em_tag(*test_data)
         self.assertEqual(right_answer, my_answer)
 
@@ -158,6 +162,32 @@ class TestCustomFilter(TestCase):
         right_answer = "<code>&lt;script&gt;</code><code>&lt;script&gt;</code>"
         my_answer = unescape_tag_in_code(test_string)
         self.assertEqual(right_answer, my_answer)
+
+    def test_translate_keyword(self):
+        test_data = r"next("
+        right_answer = r"next\("
+        my_answer = translate_keyword(test_data)
+        self.assertEqual(right_answer, my_answer)
+
+        test_data = "next)"
+        right_answer = "next\\)"
+        my_answer = translate_keyword(test_data)
+        self.assertEqual(right_answer, my_answer)
+
+        test_data = "(]next[)"
+        right_answer = "\\(\\]next\\[\\)"
+        my_answer = translate_keyword(test_data)
+        self.assertEqual(right_answer, my_answer)
+
+        test_data = "{[(next)]}"
+        right_answer = "\\{\\[\\(next\\)\\]\\}"
+        my_answer = translate_keyword(test_data)
+        self.assertEqual(right_answer, my_answer)
+
+        # test_data = r"next\)"
+        # right_answer = r"next\\)"
+        # my_answer = translate_keyword(test_data)
+        # self.assertEqual(right_answer, my_answer)
 
 
 if __name__ == "__main__":
