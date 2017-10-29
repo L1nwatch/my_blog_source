@@ -197,8 +197,27 @@ def create_summary_7():
                                                         ["小桃子: 没毛, 洗完可以直接吃",
                                                          "大桃子：有毛, 对毛敏感的最好削皮吃"]),
                     ]
+    field_note_2 = [const.SUMMARY_FIELD_NOTES_STRUCTURE(1, "聚餐买法",
+                                                        ["买套餐 + 自己单点划算",
+                                                         "没套餐的话, 看优惠吧"]),
+                    ]
+    field_note_3 = [const.SUMMARY_FIELD_NOTES_STRUCTURE(1, "推荐吃的",
+                                                        ["买套餐 + 自己单点划算",
+                                                         "没套餐的话, 看优惠吧"]),
+                    const.SUMMARY_FIELD_NOTES_STRUCTURE(1, "绿/黄灯",
+                                                        ["腐竹",
+                                                         "花生",
+                                                         "皮蛋瘦肉粥",]),
+                    const.SUMMARY_FIELD_NOTES_STRUCTURE(1, "黄/红灯",
+                                                        ["烧麦",
+                                                         "奶黄包",
+                                                         "布丁",
+                                                         "牛腩"]),
+                    ]
 
     fields = [const.SUMMARY_FIELD_STRUCTURE("水果", field_note_1),
+              const.SUMMARY_FIELD_STRUCTURE("消费", field_note_2),
+              const.SUMMARY_FIELD_STRUCTURE("饮食顺序", field_note_3),
               ]
 
     return const.SUMMARY_STRUCTURE("seven", "饮食", fields)
