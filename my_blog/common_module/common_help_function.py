@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.11.26 硬编码允许访问的 IP
 2017.08.26 新增一个 ip 限制的装饰器, 但是好像函数没什么用
 2017.06.15 添加一个验证 html 文件存在的函数
 2017.06.14 完善邮件发送的消息格式
@@ -350,7 +351,7 @@ def ip_limit(func, *, ip_list=None):
     :return:
     """
     if not ip_list:
-        ip_list = ["127.0.0.1"]
+        ip_list = ["127.0.0.1", "45.77.245.106"]
 
     @wraps(func)
     def wrapper(request=None, *func_args, **func_kwargs):
