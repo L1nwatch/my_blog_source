@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.11.27 添加了硬编码 IP 还是没用,需要日志定位一下原因了
 2017.11.26 硬编码允许访问的 IP
 2017.08.26 新增一个 ip 限制的装饰器, 但是好像函数没什么用
 2017.06.15 添加一个验证 html 文件存在的函数
@@ -42,6 +43,7 @@ from common_module.ip_deal import locate_using_ip_address, get_ip_from_django_re
 from django.http import HttpResponse
 
 # 标准库
+import logging
 import chardet
 import string
 import re
@@ -52,6 +54,8 @@ import os
 import copy
 
 from functools import wraps
+
+logger = logging.getLogger("my_blog.common_module.views")
 
 __author__ = '__L1n__w@tch'
 
@@ -355,13 +359,17 @@ def ip_limit(func, *, ip_list=None):
 
     @wraps(func)
     def wrapper(request=None, *func_args, **func_kwargs):
+        logger.debug("[*] 判断是否允许 IP 访问")
         if request is not None:
             # 检查访问者的 IP 地址
             visitor_ip = get_ip_from_django_request(request)
+            logger.debug("[*] 访问者 IP 是 {}".format(visitor_ip))
 
             # 如果是允许访问的 IP
             if visitor_ip in ip_list:
                 return func(request, *func_args, **func_kwargs)
+            else:
+                logger.info("[!] 访问者 {} 不允许访问".format(visitor_ip))
 
         return HttpResponse("[-] 访问权限不足")
 
