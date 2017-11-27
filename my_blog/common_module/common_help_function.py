@@ -3,7 +3,7 @@
 # version: Python3.X
 """
 
-2017.11.27 添加了硬编码 IP 还是没用,需要日志定位一下原因了
+2017.11.27 添加了硬编码 IP 还是没用,需要日志定位一下原因了, 好吧, 原来是硬编码错地方了
 2017.11.26 硬编码允许访问的 IP
 2017.08.26 新增一个 ip 限制的装饰器, 但是好像函数没什么用
 2017.06.15 添加一个验证 html 文件存在的函数
@@ -355,7 +355,7 @@ def ip_limit(func, *, ip_list=None):
     :return:
     """
     if not ip_list:
-        ip_list = ["127.0.0.1", "45.77.245.106"]
+        ip_list = ["127.0.0.1"]
 
     @wraps(func)
     def wrapper(request=None, *func_args, **func_kwargs):
@@ -367,6 +367,7 @@ def ip_limit(func, *, ip_list=None):
 
             # 如果是允许访问的 IP
             if visitor_ip in ip_list:
+                logger.debug("[!] 访问者 {} 允许访问".format(visitor_ip))
                 return func(request, *func_args, **func_kwargs)
             else:
                 logger.info("[!] 访问者 {} 不允许访问".format(visitor_ip))
