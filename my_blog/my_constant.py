@@ -62,7 +62,7 @@ const.HOME_PAGE_ARTICLES_NUMBERS = 2
 const.NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
 const.ARTICLE_STRUCTURE = namedtuple("article_post", ["note", "content", "type"])
 const.MARKDOWN_TREE_STRUCTURE = namedtuple("toc_tree", ["title", "id", "child"])
-const.IP_LIMIT = ["127.0.0.1", "45.77.245.106"]
+const.IP_LIMIT = ["127.0.0.1", "45.32.23.56"]
 
 # 日记页面
 const.JOURNAL_NOT_FOUND = "(●￣(ｴ)￣●)那天居然没写日记(O_o)??"
