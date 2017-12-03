@@ -495,7 +495,3 @@ class RedirectViewTest(BaseCommonTest):
         """
         response = self.client.get(self.unique_url.format("1994-04-06"))
         self.assertIsInstance(response.context["form"], JournalForm)
-
-
-if __name__ == "__main__":
-    pass

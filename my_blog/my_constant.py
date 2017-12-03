@@ -192,7 +192,3 @@ const.SUMMARY_FIELD_STRUCTURE = namedtuple("summary_field_structure", ["title", 
 const.SUMMARY_FIELD_NOTES_STRUCTURE = namedtuple("summary_field_notes_structure", ["style", "content", "sub_notes"])
 
 # ====================================================================================================================
-
-
-if __name__ == "__main__":
-    pass

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.12.03 修正更新 selenium 后跑不起来自动化的问题
 2017.06.04 继续完善笔记数显示代码
 2017.06.02 完善左下角显示日记数的测试代码
 2017.02.16 手测发现搜索页面左下角居然显示的是文章数?什么情况...
@@ -149,7 +150,8 @@ class TestWorkJournalSearch(FunctionalTest):
 
         # Y 知道日记所在行内容为 <# Test pyThon>
         # 于是 Y 搜索 markdown1, 看是否显示这篇文章及结果出来
-        search_button.send_keys("python\n")
+        search_button.send_keys("python")
+        search_button.submit()
 
         # 搜索结果出来了, Y 看到了自己搜索的关键词
         search_keyword = self.browser.find_element_by_id("id_search_work_journal").get_attribute("value")

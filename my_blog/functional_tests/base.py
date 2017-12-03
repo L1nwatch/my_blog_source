@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 各个功能测试的基类
 
+2017.12.03 解决 chrome 自动化测试的 BUG
 2017.06.16 完善 GitBook 创建代码, 增加 Tag 信息
 2017.06.04 重构基类测试, 修改对应代码 + 添加控制是否进行功能测试的相关代码
 2017.04.30 把创建 gitbook 测试数据返回给调用者
@@ -21,6 +22,7 @@ from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.proxy import Proxy, ProxyType
+from selenium.webdriver.common.action_chains import ActionChains
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.conf import settings
@@ -75,17 +77,24 @@ class FunctionalTest(CreateTestData, StaticLiveServerTestCase):
         # if self.against_staging:
         #     reset_database(self.server_host)
 
-        my_proxy = "localhost:8118"
+        my_proxy = "127.0.0.1:8118"
 
-        proxy = Proxy({
-            'proxyType': ProxyType.MANUAL,
-            'httpProxy': my_proxy,
-            'ftpProxy': my_proxy,
-            'sslProxy': my_proxy,
-            'noProxy': 'localhost'  # set this value as desired
-        })
+        # proxy = Proxy({
+        #     'proxyType': ProxyType.MANUAL,
+        #     'httpProxy': my_proxy,
+        #     'ftpProxy': my_proxy,
+        #     'sslProxy': my_proxy,
+        #     'noProxy': '127.0.0.1'  # set this value as desired
+        # })
+        # self.browser = webdriver.Firefox(proxy=proxy)
 
-        self.browser = webdriver.Firefox(proxy=proxy)
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--proxy-server={}'.format(my_proxy))
+        self.browser = webdriver.Chrome(
+            "/Users/L1n/Desktop/Code/Python/my_blog_source/virtual/selenium/webdriver/chromedriver",
+            # chrome_options=chrome_options
+        )
+
         self.browser.implicitly_wait(DEFAULT_WAIT)  # 等待 DEFAULT_WAIT 秒钟
 
     def tearDown(self):
@@ -229,6 +238,16 @@ while True:
             gitbook_tag=[test_tag],
         )
         return gitbook1, gitbook2
+
+    def move_and_click(self, element):
+        """
+        利用 action 移动 + 点击
+        :param element:
+        :return:
+        """
+        action = ActionChains(self.browser)
+        action.move_to_element(element).perform()
+        element.click()
 
 
 if __name__ == "__main__":

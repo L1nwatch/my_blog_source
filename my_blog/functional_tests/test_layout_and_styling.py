@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.12.03 解决 chrome 自动化测试的 BUG
 2017.06.10 由于吃饭菜单样式的更改, 现修改对应样式测试
 2017.06.06 重构, 将有关 archive 的测试分离出来
 2017.06.04 重构基类测试, 修改对应代码
@@ -34,7 +35,7 @@ class HomePageLayoutStylingTest(FunctionalTest):
 
         # 看到首页按钮被放置在右上角第一个位置
         home_page_button = self.browser.find_element_by_id("id_home_page")
-        self.assertAlmostEqual(home_page_button.location["x"], 632, delta=25)
+        self.assertAlmostEqual(home_page_button.location["x"], 594, delta=25)
         self.assertAlmostEqual(home_page_button.location["y"], 13, delta=5)
 
         # Y 调整了一下窗口大小
@@ -56,8 +57,8 @@ class JustEatingLayoutStylingTest(FunctionalTest):
 
         # Y 看到吃饭的标题被放置在页面偏上正中间的位置
         title = self.browser.find_element_by_id("id_eating_place_name")
-        self.assertAlmostEqual(title.location["x"], 535, delta=5)
-        self.assertAlmostEqual(title.location["y"], 14, delta=5)
+        self.assertAlmostEqual(title.location["x"], 497, delta=15)
+        self.assertAlmostEqual(title.location["y"], 20, delta=15)
 
 
 class ArticleDisplayTest(FunctionalTest):

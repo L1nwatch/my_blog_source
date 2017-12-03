@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.12.03 解决点击失败的问题
 2017.06.29 给首页新增一个 timeline 的按钮
 2017.06.06 重构, 将有关 archive 的测试分离出来
 2017.06.04 重构基类测试, 修改对应代码
@@ -14,12 +15,16 @@
 2016.10.26 添加 gitbook 链接的按钮
 2016.10.03 编写功能测试, 第一个编写的功能测试测试首页各个按钮, 包括主页,about 按钮,github 按钮,archive 按钮,email 按钮
 """
-from .base import FunctionalTest
-import my_constant as const
+# 标准库
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.action_chains import ActionChains
 
 import unittest
 import datetime
+
+# 自己的
+from .base import FunctionalTest
+import my_constant as const
 
 __author__ = '__L1n__w@tch'
 
@@ -38,17 +43,23 @@ class TestHomePageButtons(FunctionalTest):
         home_page_url = self.browser.current_url
         home_page_source = self.browser.page_source
 
-        # 看到左边第一个按钮, 主页按钮, 点击进去, 没什么反应, 发现自己原来已经在首页了
-        home_page_button = self.browser.find_element_by_id("id_home_page")
-        home_page_button.click()
-        # url 没变化
-        self.assertEqual(self.browser.current_url, home_page_url)
+        # 发现页面有个 about_me 按钮,试着点一下
+        about_me_button = self.browser.find_element_by_id("id_about_me")
+        self.move_and_click(about_me_button)
 
-        # 点击另一个按钮, about_me 按钮, 发现界面已经变化了, 然后再点击主页按钮, 发现确实可以回到首页
-        self.browser.find_element_by_id("id_about_me").click()
-        # url 变化了, 页面内容也变化了
+        # 发现 url 变化了, 页面内容也变化了
         self.assertNotEqual(self.browser.current_url, home_page_url)
         self.assertNotEqual(self.browser.page_source, home_page_source)
+
+        # 回到首页, 想试试其他按钮
+        self.browser.back()
+
+        # 看到左边第一个按钮, 主页按钮, 点击进去, 没什么反应, 发现自己原来已经在首页了
+        home_page_button = self.browser.find_element_by_id("id_home_page")
+        self.move_and_click(home_page_button)
+
+        # url 没变化
+        self.assertEqual(self.browser.current_url, home_page_url)
 
     def test_about_me_button(self):
         """
@@ -57,7 +68,8 @@ class TestHomePageButtons(FunctionalTest):
         home_page_source = self.browser.page_source
 
         # 看到 about_me 按钮, 点击, 发现界面有所变化, 看上去像是一份简历, 由 Pages 生成的
-        self.browser.find_element_by_id("id_about_me").click()
+        about_me_button = self.browser.find_element_by_id("id_about_me")
+        self.move_and_click(about_me_button)
         self.assertNotEqual(self.browser.page_source, home_page_source)
 
     @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
@@ -161,7 +173,7 @@ class TestHomePageButtons(FunctionalTest):
         timeline_button = self.browser.find_element_by_id("id_timeline")
 
         # Y 想看一下这个按钮会显示啥东西, 于是点击了一下
-        timeline_button.click()
+        self.move_and_click(timeline_button)
 
         # Y 发现界面的 URL 发生了变化, 而且界面上出现了一堆时间信息, 比如 2017.06.28
         self.assertNotEqual(self.browser.current_url, home_url)
@@ -180,22 +192,22 @@ class TestHomePageButtons(FunctionalTest):
         """
         # Y 打开首页, 发现右下角多出了一个 life_summary 的按钮, 图标是一个 Note
         home_url = self.browser.current_url
+        # timeline_button = self.browser.find_element_by_id("id_life_summary")
+        action = ActionChains(self.browser)
         timeline_button = self.browser.find_element_by_id("id_life_summary")
 
         # Y 想看一下这个按钮会显示啥东西, 于是点击了一下
-        timeline_button.click()
+        action.move_to_element(timeline_button).click(timeline_button).perform()
 
         # Y 发现界面的 URL 发生了变化, 而且界面上出现了个人经历, 比如 xxxx
         self.assertNotEqual(self.browser.current_url, home_url)
         self.assertTrue(r'<div>洗漱用品</div>' in self.browser.page_source)
         self.assertTrue(r'<div>生活习惯</div>' in self.browser.page_source)
 
-        # Y 看完了所有时间事件, 于是点击返回回到了首页
+        # Y 看完了, 于是点击返回回到了首页
         home_button = self.browser.find_element_by_id("id_home_page")
+        action = ActionChains(self.browser)
+        action.move_to_element(home_button)
         home_button.click()
 
         self.assertEqual(self.browser.current_url, home_url)
-
-
-if __name__ == "__main__":
-    pass

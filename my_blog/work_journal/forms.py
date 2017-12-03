@@ -22,6 +22,3 @@ class JournalForm(BaseSearchForm):
         })
 
         # self.initial['search_choice'] = 'journals'
-
-if __name__ == "__main__":
-    pass

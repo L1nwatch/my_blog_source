@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 给 toolhub 的各个工具编写相关测试代码
 
+2017.12.03 解决 chrome 自动化测试的 BUG
 2017.10.14 新增凯撒密码的相关测试
 2017.06.23 新增一个跳转到实验规模计算的选项卡
 2017.06.22 补充 ToolHub 选项卡的测试
@@ -239,7 +240,10 @@ class TestStaticHTML(FunctionalTest):
             self.assertTrue(is_static_file_exist(right_file_name))
 
             # 然后 Y 通过截断符访问了 xxx%00.html, 看会咋样
-            self.browser.get(self.static_file_uri.format(test_file_name))
+            with self.assertRaises(Exception):
+                self.browser.get(self.static_file_uri.format(test_file_name))
+
+            # 用 requests 库访问结果也是一样的
             response = requests.get(self.static_file_uri.format(test_file_name))
 
             # Y 发现网页返回了 500, 服务器错误
