@@ -105,7 +105,9 @@ class TestWorkJournalSearch(FunctionalTest):
     def test_can_search_by_content(self):
         # Y 怀疑是不是只能搜索日期不能靠内容来搜索, 于是搜索指定内容
         search_button = self.browser.find_element_by_id("id_search_work_journal")
-        search_button.send_keys("python\n")
+        search_button.send_keys("python")
+        search_button.submit()
+
 
         # 发现了有文章被搜索出来, 搜索结果标题里面没有刚才搜索的内容
         self.assertNotIn("python", self.browser.find_element_by_id(const.ID_SEARCH_RESULT_TITLE).text.lower())
@@ -117,7 +119,8 @@ class TestWorkJournalSearch(FunctionalTest):
     def test_can_search_without_case(self):
         # Y 知道有篇文章提到了 Python, 但是 Y 故意输入大小写混乱的 pYthOn 想看下能否搜出来
         search_button = self.browser.find_element_by_id("id_search_work_journal")
-        search_button.send_keys("pYthOn\n")
+        search_button.send_keys("pYthOn")
+        search_button.submit()
 
         # 发现确实能搜索出来, 而且打开文章内容, python 确实存在
         self.browser.find_element_by_id(const.ID_SEARCH_RESULT_TITLE).click()
@@ -126,7 +129,8 @@ class TestWorkJournalSearch(FunctionalTest):
     def test_can_search_multi_keyword(self):
         # Y 想知道这个支不支持多个关键词搜索, 于是搜索了 python test
         search_button = self.browser.find_element_by_id("id_search_work_journal")
-        search_button.send_keys("python test\n")
+        search_button.send_keys("python test")
+        search_button.submit()
 
         # 发现有结果出来
         self.browser.find_element_by_id(const.ID_SEARCH_RESULT_TITLE).click()
@@ -165,7 +169,8 @@ class TestWorkJournalSearch(FunctionalTest):
         self.create_articles_test_db_data()
         # Y 知道某篇文章及某篇日记都有 python 这个关键词, 于是 Y 打算试试搜索结果是否都能搜索出来
         search_button = self.browser.find_element_by_id("id_search_work_journal")
-        search_button.send_keys("python\n")
+        search_button.send_keys("python")
+        search_button.submit()
 
         # Y 知道存在这个关键字的日记所在行内容为 <# Test pyThon>, 日记标题为 <2017-02-08 任务情况总结>
         # Y 也知道存在这个关键字的文章标题为 <article_with_python>, 所在行内容为 <I am `Python`>
@@ -223,7 +228,8 @@ class Test404Page(FunctionalTest):
         search_button = self.browser.find_element_by_id("id_search_work_journal")
 
         # Y 知道站长今天肯定有写日记, 而且日记内容包含 "今天"
-        search_button.send_keys("今天\n")
+        search_button.send_keys("今天")
+        search_button.submit()
 
         # 可以看到 url 变化了
         self.assertNotRegex(self.browser.current_url, self.unique_url)

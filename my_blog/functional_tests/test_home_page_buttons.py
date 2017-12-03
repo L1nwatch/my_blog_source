@@ -193,6 +193,7 @@ class TestHomePageButtons(FunctionalTest):
         # Y 看完了所有时间事件, 于是点击返回回到了首页
         home_button = self.browser.find_element_by_id("id_home_page")
         home_button.click()
+
         self.assertEqual(self.browser.current_url, home_url)
 
 

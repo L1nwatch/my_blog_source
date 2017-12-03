@@ -27,6 +27,8 @@ def travel_event_timeline(request):
     :return: 渲染过后的 html
     """
     events = list()
+    events.append(const.TRAVEL_EVENT_STRUCTURE("12", "Nov", "公司去明治", ["同门进出"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("28", "Oct", "公司去灵芝", ["同门进出"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("3", "Oct", "西丽到民治天鸿公寓", ["10.17 上车,10.33 下车,对门进出"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("2", "Oct", "华茂苑到民治天鸿公寓", ["13.11 上车, 4 号线,清湖方向,到深圳北 13.19 点, 同门进出","13.30 深圳北上车,去民治,对门进出,到民治 13.33 到", "民治 503 房间"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("2", "Oct", "西丽到华茂苑", ["11.10 从西丽地铁站出发,到深圳北 11.23 分, 同门进出","11.31 上车 4 号线,福田方向,到上梅林下,a 口出,11.39 下车,同门进出"]))

@@ -63,7 +63,8 @@ class BasicSearch(FunctionalTest):
         current_search_choice = self.browser.find_element_by_id("id_current_search_choice")
         self.assertEqual(current_search_choice.text, pointed_choice)
 
-        search_button.send_keys("{}\n".format(search_content))
+        search_button.send_keys("{}".format(search_content))
+        search_button.submit()
 
     def do_gitbook_search(self, search_content):
         """
@@ -111,7 +112,8 @@ class BasicSearch(FunctionalTest):
         search_button = self.browser.find_element_by_id("id_search")
 
         # Y 搜索对应内容
-        search_button.send_keys("{}\n".format(search_content))
+        search_button.send_keys("{}".format(search_content))
+        search_button.submit()
 
     @staticmethod
     def create_multiple_articles_with_or_without_code():
@@ -262,7 +264,10 @@ class TestSearchDisplay(BasicSearch):
         # Y 再次搜索 created, 它知道笔记 <super与init方法> 中 created 应该在第 12 行
         search_button = self.browser.find_element_by_id("id_search")
         search_button.clear()
-        search_button.send_keys("{}\n".format("created"))
+
+        search_button.send_keys("{}".format("created"))
+        search_button.submit()
+
         result_table = self.browser.find_element_by_class_name("search-result-box-table-td")
         self.assertIn("12", result_table.text)
 
@@ -367,7 +372,8 @@ class TestSearchButton(BasicSearch):
         search_button = self.browser.find_element_by_id("id_search")
 
         # Y 记得以前看过的某篇文章中有 time.sleep 方法的示例, 但是不记得文章标题了, 于是搜索这个关键词
-        search_button.send_keys("time.sleep\n")
+        search_button.send_keys("time.sleep")
+        search_button.submit()
 
         # Y 发现搜出来了文章, 随便打开一篇文章, 可以看到确实是有 time.sleep 的存在
         articles_after_search = self.browser.find_element_by_id(const.ID_SEARCH_RESULT_TITLE)
@@ -378,7 +384,9 @@ class TestSearchButton(BasicSearch):
         search_button = self.browser.find_element_by_id("id_search")
 
         # Y 搜索了这么一个关键词: and I, 发现确实搜出来结果了, 而且随便打开一片文章里面可以找到 and 和 I, 而且不是连在一起的
-        search_button.send_keys("and I\n")
+        search_button.send_keys("and I")
+        search_button.submit()
+
         articles_after_search = self.browser.find_element_by_id(const.ID_SEARCH_RESULT_TITLE)
         articles_after_search.click()
         body_text = self.browser.find_element_by_tag_name('body').text
@@ -388,7 +396,8 @@ class TestSearchButton(BasicSearch):
 
         # Y 尝试随便输入一些东西, 看是不是能搜出什么
         search_button = self.browser.find_element_by_id("id_search")
-        search_button.send_keys("随便输入了一些什么啊肯定是搜索不到的\n")
+        search_button.send_keys("随便输入了一些什么啊肯定是搜索不到的")
+        search_button.submit()
 
         # 果然关键词打得太随意了, 啥都没有啊
         articles_after_search = self.browser.find_elements_by_id(const.ID_SEARCH_RESULT_TITLE)
@@ -447,7 +456,8 @@ class TestSearchButton(BasicSearch):
         self.assertEqual(search_choice.text, "All")
 
         # Y 知道 Articles、GitBooks、Journals 中均有某篇笔记包含内容 <test>, 于是 Y 搜索 test
-        search_button.send_keys("{}\n".format("test"))
+        search_button.send_keys("{}".format("test"))
+        search_button.submit()
 
         # 搜索结果出来了, 发现果然 Articles、GitBooks、Journals 中含有 test 的笔记都被搜索出来了
         search_results = self.browser.find_elements_by_class_name("search-result")
@@ -531,7 +541,8 @@ class TestSearchButton(BasicSearch):
         search_button = self.browser.find_element_by_id("id_search")
 
         # 它想试试这个搜索框是不是有漏洞, 于是输入一个特殊字符
-        search_button.send_keys("(\n")
+        search_button.send_keys("(")
+        search_button.submit()
 
         # Y 发现点击搜索之后, 又是回到了首页, 而且搜索框的内容被清空了
         search_button = self.browser.find_element_by_id("id_search")
@@ -539,7 +550,9 @@ class TestSearchButton(BasicSearch):
         self.assertEqual(self.browser.current_url, home_url)
 
         # Y 怀疑是不是不能输入单个字符, 于是输入多个, 发现结果一样
-        search_button.send_keys("%^&*(\n")
+        search_button.send_keys("%^&*(")
+        search_button.submit()
+
         search_button = self.browser.find_element_by_id("id_search")
         self.assertEqual(search_button.get_attribute("value"), "")
         self.assertEqual(self.browser.current_url, home_url)

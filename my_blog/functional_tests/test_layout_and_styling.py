@@ -17,7 +17,7 @@ from .base import FunctionalTest
 from articles.models import Article
 from django.conf import settings
 
-import datetime
+import time
 import os
 
 __author__ = '__L1n__w@tch'
@@ -172,7 +172,9 @@ class WorkJournalDisplayTest(FunctionalTest):
         # 打开首页, 访问某份日记
         self.browser.get(self.server_url)
         search_button = self.browser.find_element_by_id("id_search")
-        search_button.send_keys("{}\n".format(journal.title))
+        search_button.send_keys("{}".format(journal.title))
+        search_button.submit()
+
         journal_link = self.browser.find_element_by_id("id_search_result_title")
         journal_link.click()
 
