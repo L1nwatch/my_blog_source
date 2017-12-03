@@ -31,6 +31,3 @@ class JournalModelTest(BasicTest):
         journal_date = new_journal.date
         self.assertEqual(journal_date, right_date)
 
-
-if __name__ == "__main__":
-    pass

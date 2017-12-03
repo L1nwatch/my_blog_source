@@ -93,5 +93,3 @@ class EmailSend:
 
 email_sender = EmailSend(want_send_email=const.WANT_SEND_EMAIL)
 
-if __name__ == "__main__":
-    pass

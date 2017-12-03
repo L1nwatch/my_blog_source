@@ -87,7 +87,3 @@ class ArticleModelTest(BasicTest):
         """
         new_article = self.create_article()
         self.assertEqual(new_article.click_times, 0)
-
-
-if __name__ == "__main__":
-    pass

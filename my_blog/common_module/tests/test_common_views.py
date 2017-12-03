@@ -110,6 +110,3 @@ class TestErrorPages(BasicTest):
         # 发现首页并不是返回 404, 说明这是在访问不存在页面时才会返回 404 码
         self.assertFalse(response.status_code == 404)
 
-
-if __name__ == "__main__":
-    pass

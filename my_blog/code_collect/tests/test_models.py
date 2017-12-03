@@ -51,6 +51,3 @@ class TestCodeCollect(BasicTest):
 
         self.assertEqual(cc.code_type, code_type.lower())
 
-
-if __name__ == "__main__":
-    pass

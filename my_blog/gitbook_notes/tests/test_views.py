@@ -323,6 +323,3 @@ class GitBookPageDisplayTest(BaseCommonTest):
         my_answer = get_right_href(*test_data)
         self.assertEqual(right_href, my_answer)
 
-
-if __name__ == "__main__":
-    pass

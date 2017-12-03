@@ -27,6 +27,3 @@ urlpatterns = [
     url(r"^html(?P<html_file_name>.*\.html)$".format(const.TOOLHUB_STATIC_HTML_URL),
         toolhub.views.static_html_map, name="static_html_map"),
 ]
-
-if __name__ == "__main__":
-    pass

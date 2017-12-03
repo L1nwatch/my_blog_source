@@ -49,6 +49,3 @@ class ArticleFormTest(TestCase):
         article_form = ArticleForm()
         self.assertIn('class="pure-input-2-3"', article_form.as_p(), "class 属性没有设置?还是说设置错了?")
 
-
-if __name__ == "__main__":
-    pass

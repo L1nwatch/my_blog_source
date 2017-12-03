@@ -134,6 +134,3 @@ class TestArchiveDisplay(FunctionalTest):
                 [each_article.title == x.text for x in all_display_articles]
             ))
 
-
-if __name__ == "__main__":
-    pass

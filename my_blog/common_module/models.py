@@ -18,5 +18,3 @@ class VisitedIP(models.Model):
         return self.ip_address
 
 
-if __name__ == "__main__":
-    pass

@@ -15,6 +15,3 @@ urlpatterns = [
     url(r"^update_gitbook_codes/$", gitbook_notes.views.update_gitbook_codes, name="update_gitbook_codes"),
     url(r"^(?P<gitbook_id>\d+)/$", gitbook_notes.views.gitbook_display, name="gitbook_display"),
 ]
-
-if __name__ == "__main__":
-    pass

@@ -660,5 +660,3 @@ print("Hello Journal")
             self.assertRegex(title, "《.+》-.+")
 
 
-if __name__ == "__main__":
-    pass

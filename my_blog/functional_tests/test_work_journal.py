@@ -244,6 +244,3 @@ class Test404Page(FunctionalTest):
         journal_title = self.browser.find_element_by_id("id_search_result_title")
         self.assertRegex(journal_title.text, "{}-\d?{}-\d?{}".format(today.year, today.month, today.day))
 
-
-if __name__ == "__main__":
-    pass

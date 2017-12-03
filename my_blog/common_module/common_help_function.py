@@ -398,5 +398,3 @@ def is_static_file_exist(file_name):
     return os.path.exists(test_file_path)
 
 
-if __name__ == "__main__":
-    pass

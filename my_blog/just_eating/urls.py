@@ -14,6 +14,3 @@ urlpatterns = [
     url(r"^(?P<eating_place>[^/]*)$", just_eating.views.just_eating_home_view, name="just_eating"),
     url(r"^random_eating/(?P<eating_place>.*)$", just_eating.views.random_eating, name="random_eating"),
 ]
-
-if __name__ == "__main__":
-    pass

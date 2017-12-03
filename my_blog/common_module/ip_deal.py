@@ -49,5 +49,3 @@ def get_ip_from_django_request(request):
     return get_ip(request)
 
 
-if __name__ == "__main__":
-    pass

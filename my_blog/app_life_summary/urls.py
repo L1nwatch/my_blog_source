@@ -16,6 +16,3 @@ __author__ = '__L1n__w@tch'
 urlpatterns = [
     url(r"^$", app_life_summary.views.life_summary, name="life_summary"),
 ]
-
-if __name__ == "__main__":
-    pass

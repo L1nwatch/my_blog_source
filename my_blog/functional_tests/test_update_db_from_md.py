@@ -93,6 +93,3 @@ class AutoUpdateDatabaseTest(FunctionalTest):
         if os.path.exists(const.NOTES_GIT_PATH):
             shutil.rmtree(const.NOTES_GIT_PATH)
 
-
-if __name__ == "__main__":
-    pass

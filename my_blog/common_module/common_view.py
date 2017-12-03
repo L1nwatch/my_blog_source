@@ -53,5 +53,3 @@ def handler404(request):
     return response
 
 
-if __name__ == "__main__":
-    pass

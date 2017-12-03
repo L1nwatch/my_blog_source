@@ -235,6 +235,3 @@ class BasicTest(CreateTestData, TestCase):
             "gitbooks": const.GITBOOK_DISPLAY_URL,
         }[types]
 
-
-if __name__ == "__main__":
-    pass

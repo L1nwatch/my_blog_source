@@ -254,5 +254,3 @@ class TestStaticHTML(FunctionalTest):
                 os.remove(right_file_path)
 
 
-if __name__ == "__main__":
-    pass

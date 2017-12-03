@@ -21,5 +21,3 @@ class VisitedIPAdmin(admin.ModelAdmin):
 
 admin.site.register(VisitedIP, VisitedIPAdmin)
 
-if __name__ == "__main__":
-    pass

@@ -46,6 +46,3 @@ class Test404Pages(FunctionalTest):
         search_input = self.browser.find_element_by_id("id_search")
         self.assertIsNotNone(search_input)
 
-
-if __name__ == "__main__":
-    pass

@@ -92,7 +92,3 @@ class ArticleForm(BaseSearchForm):
         })
 
         # self.initial['search_choice'] = 'articles'
-
-
-if __name__ == "__main__":
-    pass

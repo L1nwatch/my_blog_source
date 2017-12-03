@@ -467,6 +467,3 @@ class CodeSearchTest(BasicFunction):
         my_answer = search_code_keyword_in_note(article, keyword_set, all_code_area)
         self.assertEqual(right_answer, my_answer)
 
-
-if __name__ == "__main__":
-    pass

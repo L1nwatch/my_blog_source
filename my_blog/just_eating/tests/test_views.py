@@ -131,7 +131,3 @@ class TestRandomEatingView(TestCase):
         # 学校晚饭的菜单
         response = self.client.get(self.unique_url.format("school_dinner"))
         self.assertContains(response, label.format("学校晚饭"))
-
-
-if __name__ == "__main__":
-    pass

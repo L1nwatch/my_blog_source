@@ -16,6 +16,3 @@ __author__ = '__L1n__w@tch'
 urlpatterns = [
     url(r"^$", app_timeline.views.travel_event_timeline, name="travel_event_timeline"),
 ]
-
-if __name__ == "__main__":
-    pass

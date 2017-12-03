@@ -36,7 +36,3 @@ class GitHubTranslateTextareaForm(forms.Form):
             "placeholder": "请输入你要转换的数据",
             "spellcheck": False
         })
-
-
-if __name__ == "__main__":
-    pass

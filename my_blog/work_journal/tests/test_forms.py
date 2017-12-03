@@ -28,6 +28,3 @@ class JournalFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors["search_content"], [const.EMPTY_ARTICLE_ERROR])
 
-
-if __name__ == "__main__":
-    pass

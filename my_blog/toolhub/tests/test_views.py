@@ -134,6 +134,3 @@ class StaticHTMLViewTest(BasicTest):
             if os.path.exists(test_file_path):
                 os.remove(test_file_path)
 
-
-if __name__ == "__main__":
-    pass

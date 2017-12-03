@@ -64,6 +64,3 @@ class SearchTagViewTest(BasicTest):
         self.assertContains(response, article_2.title)
         self.assertNotContains(response, article_3.title)
 
-
-if __name__ == "__main__":
-    pass

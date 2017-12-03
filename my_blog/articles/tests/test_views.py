@@ -697,7 +697,3 @@ class BaseSearchViewTest(BasicTest):
             response = self.client.post(self.unique_url, data={"search_content": invalid_input,
                                                                "search_choice": "all"})
             self.assertRedirects(response, "/")
-
-
-if __name__ == "__main__":
-    pass

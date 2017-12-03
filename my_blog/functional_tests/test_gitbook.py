@@ -54,5 +54,3 @@ class GitBookSearchTest(FunctionalTest):
         self.assertIn(const.EMPTY_ARTICLE_ERROR, self.browser.page_source)
 
 
-if __name__ == "__main__":
-    pass

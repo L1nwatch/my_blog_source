@@ -67,7 +67,3 @@ class TestTravelEventTimeline(BasicTest):
             # in_div 下有若干个 p, 作为 data 显示的 element
             data_tags = in_div[0].find_all("p", {"class": "data"})
             self.assertTrue(len(data_tags) >= 0)
-
-
-if __name__ == "__main__":
-    pass

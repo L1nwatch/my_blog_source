@@ -131,5 +131,3 @@ class JustEatingHomeViewTest(FunctionalTest):
         ))
 
 
-if __name__ == "__main__":
-    pass

@@ -41,7 +41,3 @@ class LogPacker:
                     my_zip.write(file_path, each_file, compress_type=zipfile.ZIP_DEFLATED)
                     with open(file_path, "w") as f:
                         pass
-
-
-if __name__ == "__main__":
-    pass

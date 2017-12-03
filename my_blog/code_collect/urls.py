@@ -16,6 +16,3 @@ urlpatterns = [
     url(r"^code_collect/$", code_collect.views.code_collect),
     url(r"^do_code_search/$", code_collect.views.do_code_search),
 ]
-
-if __name__ == "__main__":
-    pass

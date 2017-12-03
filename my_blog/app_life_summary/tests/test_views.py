@@ -203,7 +203,3 @@ class TestLifeSummary(BasicTest):
                                  self._summary_style_2(next_tag),
                                  self._summary_style_3(next_tag)]]
                 ), msg="[-] {} 不符合风格要求".format(next_tag))
-
-
-if __name__ == "__main__":
-    pass

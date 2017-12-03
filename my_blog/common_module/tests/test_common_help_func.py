@@ -259,6 +259,3 @@ class TestCommonHelpFunc(BasicTest):
             each_field = each_field.split(" -> ")[0]
             self.assertIn(each_field, const.LOG_HTTP_HEADERS_WHITE_LIST)
 
-
-if __name__ == "__main__":
-    pass

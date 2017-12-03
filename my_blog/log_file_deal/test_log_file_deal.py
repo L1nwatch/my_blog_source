@@ -82,6 +82,3 @@ class TestLogPacker(TestCase):
             with open("{}.log".format(file_name), "r") as f:
                 self.assertEqual("{}".format(file_name * 30), f.read())
 
-
-if __name__ == "__main__":
-    pass

@@ -23,6 +23,3 @@ urlpatterns = [
     url(r'^update_notes/$', articles.views.update_notes, name='update_notes'),
     url(r'^update_notes/data$', articles.views.update_note_check_view, name='update_notes_check'),
 ]
-
-if __name__ == "__main__":
-    pass

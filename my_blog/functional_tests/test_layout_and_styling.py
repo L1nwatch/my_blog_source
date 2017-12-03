@@ -186,5 +186,3 @@ class WorkJournalDisplayTest(FunctionalTest):
         self.browser.find_element_by_id("id_sidebar")
 
 
-if __name__ == "__main__":
-    pass

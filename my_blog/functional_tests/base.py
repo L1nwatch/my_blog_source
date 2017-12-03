@@ -249,6 +249,3 @@ while True:
         action.move_to_element(element).perform()
         element.click()
 
-
-if __name__ == "__main__":
-    pass
