@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.12.03 优化判断合法 IP 的方式
 2017.05.21 新增搜索结果点击次数排序的功能实现
 2017.03.30 给更新函数添加记日记功能
 2017.03.26 重构一下搜索代码, form data 合法性在上层做过了, 这里就不做了
@@ -19,7 +20,7 @@ from django.shortcuts import render
 # 自己的模块
 from common_module.common_help_function import (get_context_data, get_right_content_from_file, search_keyword_in_model,
                                                 create_search_result, clean_form_data, log_wrapper,
-                                                get_ip_from_django_request)
+                                                get_ip_from_django_request, is_valid_ip)
 import my_constant as const
 from .forms import JournalForm
 from .models import Journal
@@ -29,7 +30,7 @@ logger = logging.getLogger("my_blog.work_journal.views")
 
 @log_wrapper(str_format="访问日记主页", logger=logger)
 def work_journal_home_view(request):
-    if get_ip_from_django_request(request) not in const.IP_LIMIT:
+    if not is_valid_ip(get_ip_from_django_request(request)):
         return HttpResponse("[-] 访问权限不足")
 
     journal_list = Journal.objects.all()  # 获取全部的 Journal 对象
@@ -42,7 +43,7 @@ def journal_display(request, journal_id):
     :param request: 发送给视图函数的请求
     :param journal_id: 请求的日记 id
     """
-    if get_ip_from_django_request(request) not in const.IP_LIMIT:
+    if not is_valid_ip(get_ip_from_django_request(request)):
         return HttpResponse("[-] 访问权限不足")
 
     journal = Journal.objects.get(id=journal_id)
@@ -61,7 +62,7 @@ def redirect_journal(request, journal_date):
     :param request: 发送给视图函数的请求
     :param journal_date: 日期, 形如 2017-02-14
     """
-    if get_ip_from_django_request(request) not in const.IP_LIMIT:
+    if not is_valid_ip(get_ip_from_django_request(request)):
         return HttpResponse("[-] 访问权限不足")
 
     year, month, day = journal_date.split("-")

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.12.03 优化判断合法 IP 的方式
 2017.08.26 给日记加上 IP 访问限制
 2017.06.17 将搜索 Tag 的视图函数进行扩展, 使其能够支持 GitBook 的 Tag 搜索
 2017.06.08 更改 tag/category 采用和 archives 一样的界面
@@ -44,7 +45,7 @@ from code_collect.views import do_code_search
 from common_module.common_help_function import (clean_form_data, search_keyword_in_model,
                                                 create_search_result, get_right_content_from_file, get_context_data,
                                                 form_is_valid_and_ignore_exist_error, log_wrapper, sort_search_result,
-                                                extract_tag_name_from_path, get_ip_from_django_request)
+                                                extract_tag_name_from_path, get_ip_from_django_request, is_valid_ip)
 from gitbook_notes.views import do_gitbooks_search
 import my_constant as const
 from work_journal.views import do_journals_search
@@ -250,7 +251,7 @@ def blog_search(request):
                 context_data["post_list"] = context_data.get("post_list", list()) + article_search_result["post_list"]
 
             # 仅限本地访问
-            if get_ip_from_django_request(request) in const.IP_LIMIT:
+            if is_valid_ip(get_ip_from_django_request(request)):
                 journal_search_result = do_journals_search(request)
                 if journal_search_result is not None:
                     context_data["total_numbers"] += journal_search_result["journals_numbers"]
@@ -267,9 +268,8 @@ def blog_search(request):
 
         elif request.POST["search_choice"] == "articles":
             context_data = do_articles_search(request)
-        elif request.POST["search_choice"] == "journals":
-            if get_ip_from_django_request(request) in const.IP_LIMIT:
-                context_data = do_journals_search(request)
+        elif request.POST["search_choice"] == "journals" and is_valid_ip(get_ip_from_django_request(request)):
+            context_data = do_journals_search(request)
         elif request.POST["search_choice"] == "gitbooks":
             context_data = do_gitbooks_search(request)
         elif request.POST["search_choice"] == "code":

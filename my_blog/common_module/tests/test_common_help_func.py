@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2017.12.03 为新增的一个判断合法 IP 的函数作测试
 2017.06.10 添加日志记录的字段, 现在还会添加 UserAgent 等 HTTP 头的信息了 + 只获取指定的 HTTP 头字段
 2017.06.04 重构搜索结果数据结构, 因此更改对应测试代码 + 添加一个测试解析 tag 的函数
 2017.06.03 修正笔记数的获取方式, 换了一个好像更高效的方法来统计
@@ -17,7 +18,7 @@
 # 自己的模块
 from common_module.common_help_function import (clean_form_data, sort_search_result, locate_using_ip_address,
                                                 data_check, is_valid_git_address, background_deal, model_dict,
-                                                extract_tag_name_from_path, get_http_header_from_request)
+                                                extract_tag_name_from_path, get_http_header_from_request, is_valid_ip)
 import my_constant as const
 from .basic_test import BasicTest
 
@@ -259,3 +260,14 @@ class TestCommonHelpFunc(BasicTest):
             each_field = each_field.split(" -> ")[0]
             self.assertIn(each_field, const.LOG_HTTP_HEADERS_WHITE_LIST)
 
+    def test_is_valid_ip(self):
+        """
+        判断是否合法 IP 成功
+        :return:
+        """
+        # 测试默认值
+        self.assertTrue(is_valid_ip("127.0.0.1"))
+
+        # 测试解析
+        self.assertTrue(is_valid_ip("127.0.0.1", ip_list=["localhost"]))
+        self.assertTrue(is_valid_ip("45.77.127.195", ip_list=["watch0.top"]))

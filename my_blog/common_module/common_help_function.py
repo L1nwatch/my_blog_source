@@ -3,6 +3,7 @@
 # version: Python3.X
 """
 
+2017.12.03 新增一个域名解析操作
 2017.11.27 添加了硬编码 IP 还是没用,需要日志定位一下原因了, 好吧, 原来是硬编码错地方了
 2017.11.26 硬编码允许访问的 IP
 2017.08.26 新增一个 ip 限制的装饰器, 但是好像函数没什么用
@@ -43,6 +44,8 @@ from common_module.ip_deal import locate_using_ip_address, get_ip_from_django_re
 from django.http import HttpResponse
 
 # 标准库
+import ipaddress
+import socket
 import logging
 import chardet
 import string
@@ -346,6 +349,28 @@ def log_wrapper(func, *, str_format="", level="info", logger=None):
     return wrapper
 
 
+def is_valid_ip(ip_address, *, ip_list=None):
+    """
+    判断是否为合法的 IP 地址
+    :param ip_address: str(), 访问者的 IP, 比如 "127.0.0.1"
+    :param ip_list: list(), 允许访问的 IP 列表, 可以是域名, 比如 ["127.0.0.1", "watch0.top"]
+    :return: True or False
+    """
+    if not ip_list:
+        ip_list = const.IP_LIMIT
+
+    true_ip_list = list()
+
+    for each in ip_list:
+        try:
+            each = ipaddress.ip_address(each)
+        except ValueError:
+            each = ipaddress.ip_address(socket.gethostbyname(each))
+        true_ip_list.append(each)
+
+    return ipaddress.ip_address(ip_address) in true_ip_list
+
+
 @decorator_with_args
 def ip_limit(func, *, ip_list=None):
     """
@@ -366,7 +391,7 @@ def ip_limit(func, *, ip_list=None):
             logger.debug("[*] 访问者 IP 是 {}".format(visitor_ip))
 
             # 如果是允许访问的 IP
-            if visitor_ip in ip_list:
+            if is_valid_ip(visitor_ip, ip_list=ip_list):
                 logger.debug("[!] 访问者 {} 允许访问".format(visitor_ip))
                 return func(request, *func_args, **func_kwargs)
             else:
@@ -396,5 +421,3 @@ def is_static_file_exist(file_name):
     test_file_name = file_name
     test_file_path = os.path.join(const.STATIC_HTMLS_PATH, test_file_name)
     return os.path.exists(test_file_path)
-
-
