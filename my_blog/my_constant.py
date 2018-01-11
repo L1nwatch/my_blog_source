@@ -127,7 +127,7 @@ const.GITBOOK_CODES_REPOSITORY = {
 const.TOOLHUB_LEVEL_ONE_OPTIONS = ["Encoding&Cipher", "TestTool"]
 const.TOOLHUB_LEVEL_TWO_OPTIONS = ["Encoding", "Cipher", "ABTesting"]
 const.TOOLHUB_LEVEL_THREE_OPTIONS = ["正态函数分布 Z 值表", "实验样本数计算工具"]
-const.TOOLHUB_AB_TESTING_SAMPLE_SIZE_URL = "http://www.evanmiller.org/ab-testing/sample-size.html"
+const.TOOLHUB_AB_TESTING_SAMPLE_SIZE_URL = "http://www.evanmiller.org/ab-testing/"
 
 # STATIC 文件路径
 const.TEMPLATES_PATH = os.path.join(settings.BASE_DIR, "toolhub", "templates")
