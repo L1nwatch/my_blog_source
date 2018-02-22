@@ -28,6 +28,7 @@
             {% csrf_token %}
         </form>
         <div class="button-group">
+            <button id="id_caesar_encrypt_button">加密</button>
             <button id="id_caesar_decrypt_button">解密</button>
             <button onclick="clearField(&quot;id_input_box&quot;);">Clear Input</button>
             <button id="id_copy_button" data-clipboard-target="#id_output_box">Copy Output</button>

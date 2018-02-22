@@ -85,6 +85,19 @@ $(document).ready(function () {
             }
         });
     });
+    $("#id_caesar_encrypt_button").click(function () {
+        $.ajax({
+            type: "post",
+            url: "encrypt_data",
+            data: {
+                "raw_data": $("#id_input_box").val(),
+                "csrfmiddlewaretoken": csrftoken
+            },
+            success: function (result) {
+                $("#id_output_box").val(result);
+            }
+        });
+    });
 });
 
 // 复制到剪切板的代码

@@ -66,6 +66,15 @@ def caesar_cipher_decrypt(request):
     return HttpResponse("test")
 
 
+@log_wrapper(str_format="凯撒加密工具", level="info", logger=logger)
+def caesar_cipher_encrypt(request):
+    if request.method == "POST":
+        raw_data = request.POST["raw_data"]
+        caesar = Caesar()
+        return HttpResponse(caesar.encrypt(raw_data, 7))
+    return HttpResponse("test")
+
+
 @log_wrapper(str_format="访问了静态 HTML 文件", level="info", logger=logger)
 def static_html_map(request, html_file_name):
     if not str(html_file_name).endswith(".html"):

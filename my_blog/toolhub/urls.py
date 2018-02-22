@@ -24,6 +24,7 @@ urlpatterns = [
         name="caesar_cipher"),
     url(r"^github_picture_translate/data$", toolhub.views.github_picture_translate),
     url(r"^caesar_cipher/data$", toolhub.views.caesar_cipher_decrypt),
+    url(r"^caesar_cipher/encrypt_data", toolhub.views.caesar_cipher_encrypt),
     url(r"^html(?P<html_file_name>.*\.html)$".format(const.TOOLHUB_STATIC_HTML_URL),
         toolhub.views.static_html_map, name="static_html_map"),
 ]

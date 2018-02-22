@@ -116,6 +116,35 @@ class TestCipher(FunctionalTest):
         home_view = self.browser.find_element_by_id("id_home_page")
         home_view.click()
 
+    def test_caesar_cipher_encrypt_right(self):
+        """
+        测试转换功能正常使用
+        """
+        # Y 打开了 toolhub 的首页, 发现凯撒密码
+        self.browser.get(self.toolhub_home)
+        home_url = self.browser.current_url
+
+        # 它点击了一下这个工具的链接, 发现页面上出现了一个输入框, 还有一个转换按钮
+        self.browser.execute_script('document.getElementById("id_caesar_cipher").click()')
+        self.assertNotEqual(home_url, self.browser.current_url)
+
+        input_box = self.browser.find_element_by_id("id_input_box")
+        translate_button = self.browser.find_element_by_id("id_caesar_encrypt_button")
+
+        # Y 在输入框里面输入了一堆内容, 再点击了一下转换按钮
+        input_box.send_keys("shU6*hh5")
+        translate_button.click()
+
+        # 它发现输出框显示出了转换之后的结果
+        output_box = self.browser.find_element_by_id("id_output_box")
+        right_answer = "zobD*ooC"
+        self.assertEqual(output_box.get_attribute("value"), right_answer)
+
+        # Y 很满意, 点击首页想看看其他内容
+        home_view = self.browser.find_element_by_id("id_home_page")
+        home_view.click()
+
+
 class TestABTesting(FunctionalTest):
     """
     测试有关 AB 测试选项卡的相关功能
@@ -252,5 +281,3 @@ class TestStaticHTML(FunctionalTest):
             # 删除创建的测试文件
             if os.path.exists(right_file_path):
                 os.remove(right_file_path)
-
-

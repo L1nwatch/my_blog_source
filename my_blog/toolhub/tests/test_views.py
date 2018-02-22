@@ -63,6 +63,7 @@ class GitHubPictureTranslateViewTest(BasicTest):
 class CaesarCipherViewTest(BasicTest):
     unique_url = const.TOOLHUB_CAESAR_CIPHER_URL
     data_url = const.TOOLHUB_CAESAR_CIPHER_DATA_URL
+    encrypt_data_url = const.TOOLHUB_CAESAR_CIPHER_ENCRYPT_DATA_URL
 
     def test_use_right_template(self):
         response = self.client.get(self.unique_url)
@@ -71,6 +72,11 @@ class CaesarCipherViewTest(BasicTest):
     def test_translate_right(self):
         response = self.client.post(self.data_url, {"raw_data": "zobD*ooC"})
         right_answer = "shU6*hh5"
+        self.assertEqual(response.content.decode("utf8"), right_answer)
+
+    def test_encrypt_right(self):
+        response = self.client.post(self.encrypt_data_url, {"raw_data": "shU6*hh5"})
+        right_answer = "zobD*ooC"
         self.assertEqual(response.content.decode("utf8"), right_answer)
 
     def test_use_form(self):
