@@ -27,6 +27,7 @@ def travel_event_timeline(request):
     :return: 渲染过后的 html
     """
     events = list()
+    events.append(const.TRAVEL_EVENT_STRUCTURE("14", "April", "西丽去大学城", ["同门进出"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("5", "April", "民治去西丽", ["对门进出"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("4", "April", "布吉去民治", ["同门下车"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("3", "April", "爱联到布吉", ["同门下车"]))
