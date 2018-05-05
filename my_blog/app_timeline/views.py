@@ -25,6 +25,18 @@ def return_2018_events():
     """
     events = list()
 
+    events.append(const.TRAVEL_EVENT_STRUCTURE("2", "May", "前海湾去西丽", ["对门下车"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("2", "May", "后海去前海湾", ["同门进出"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("2", "May", "前海湾去后海", ["同门进出"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("2", "May", "塘朗去前海湾", ["同门进出"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("1", "May", "深圳北去太安", ["同门进出"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("1", "May", "白石龙去深圳北", ["同门进出"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("1", "May", "龙胜去白石龙", ["同门进出"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("1", "May", "深圳北去龙胜", ["同门进出"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("1", "May", "桃源村去西丽", ["同门下车"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("1", "May", "太安去桃源村", ["同门下车"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("1", "May", "车公庙去西丽", ["对门下车"]))
+    events.append(const.TRAVEL_EVENT_STRUCTURE("1", "May", "西丽去车公庙", ["同门下车"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("15", "April", "塘朗去留仙洞", ["同门进出"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("14", "April", "大学城去西丽", ["对门下车"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("14", "April", "西丽去大学城", ["同门进出"]))
