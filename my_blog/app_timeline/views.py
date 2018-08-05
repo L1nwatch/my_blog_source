@@ -25,6 +25,7 @@ def return_2018_events():
     """
     events = list()
 
+    events.append(const.TRAVEL_EVENT_STRUCTURE("5", "Aug", "西丽湖去西丽", ["对门下车"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("10", "May", "西丽去皇岗口岸", ["同门下车"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("3", "May", "塘朗去兴东", ["同门下车"]))
     events.append(const.TRAVEL_EVENT_STRUCTURE("2", "May", "前海湾去西丽", ["对门下车"]))
