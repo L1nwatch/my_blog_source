@@ -31,8 +31,8 @@ def create_home_menu():
     wednesday = const.EATING_MENU_STRUCTURE("周三", "流沙包+白馒头+五谷杂粮", "-", "-")
     thursday = const.EATING_MENU_STRUCTURE("周四", "烤冷面+豆浆", "-", "-")
     friday = const.EATING_MENU_STRUCTURE("周五", "鸡蛋卷饼+五谷杂粮", "-", "-")
-    saturday = const.EATING_MENU_STRUCTURE("周六", "卤肉卷+豆浆", "-", "-")
-    sunday = const.EATING_MENU_STRUCTURE("周日", "-", "-", "-")
+    saturday = const.EATING_MENU_STRUCTURE("周六", "卤肉卷+牛奶", "-", "-")
+    sunday = const.EATING_MENU_STRUCTURE("周日", "港式茶点+豆浆", "-", "-")
 
     for each_day in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]:
         home_menu.append(each_day)
