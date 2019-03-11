@@ -26,13 +26,13 @@ school_dinner_backup_list = ["海棠-瓦罐汤", "暂无其他晚饭列表", "�
 def create_home_menu():
     home_menu = list()
 
-    monday = const.EATING_MENU_STRUCTURE("周一", "香麦馒头+奶黄包+五谷杂粮", "白菜炒腐竹", "青椒炒牛肉")
-    tuesday = const.EATING_MENU_STRUCTURE("周二", "手抓饼+豆浆", "-", "-")
-    wednesday = const.EATING_MENU_STRUCTURE("周三", "流沙包+白馒头+五谷杂粮", "-", "-")
-    thursday = const.EATING_MENU_STRUCTURE("周四", "烤冷面+豆浆", "-", "-")
-    friday = const.EATING_MENU_STRUCTURE("周五", "鸡蛋卷饼+五谷杂粮", "-", "-")
-    saturday = const.EATING_MENU_STRUCTURE("周六", "卤肉卷+牛奶", "-", "-")
-    sunday = const.EATING_MENU_STRUCTURE("周日", "港式茶点+豆浆", "-", "-")
+    monday = const.EATING_MENU_STRUCTURE("周一", "香麦馒头+奶黄包+五谷杂粮", "白菜炒香菇", "青椒炒牛肉")
+    tuesday = const.EATING_MENU_STRUCTURE("周二", "流沙包+白馒头+五谷杂粮", "火锅-牛肉丸粿条", "-")
+    wednesday = const.EATING_MENU_STRUCTURE("周三", "-", "-", "-")
+    thursday = const.EATING_MENU_STRUCTURE("周四", "-", "-", "-")
+    friday = const.EATING_MENU_STRUCTURE("周五", "-", "-", "-")
+    saturday = const.EATING_MENU_STRUCTURE("周六", "-", "-", "-")
+    sunday = const.EATING_MENU_STRUCTURE("周日", "-", "-", "-")
 
     for each_day in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]:
         home_menu.append(each_day)
