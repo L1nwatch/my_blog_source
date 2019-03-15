@@ -19,6 +19,8 @@ import requests
 import html
 
 # 自己的模块
+import time
+
 from functional_tests.base import FunctionalTest
 from common_module.common_help_function import is_static_file_exist
 import my_constant as const
@@ -55,7 +57,8 @@ class TestEncoding(FunctionalTest):
         # 它发现输出框显示出了转换之后的结果
         output_box = self.browser.find_element_by_id("id_output_box")
         right_answer = "2017-03-17%E9%A6%96%E9%A1%B5%E6%88%AA%E5%9B%BE.jpg"
-        self.assertEqual(output_box.get_attribute("value"), right_answer)
+        self.wait_for(lambda:self.assertEqual(output_box.get_attribute("value"), right_answer),timeout=3)
+
 
         # Y 很满意, 点击首页想看看其他内容
         home_view = self.browser.find_element_by_id("id_home_page")
@@ -138,7 +141,7 @@ class TestCipher(FunctionalTest):
         # 它发现输出框显示出了转换之后的结果
         output_box = self.browser.find_element_by_id("id_output_box")
         right_answer = "zobD*ooC"
-        self.assertEqual(output_box.get_attribute("value"), right_answer)
+        self.wait_for(lambda: self.assertEqual(output_box.get_attribute("value"), right_answer), timeout=3)
 
         # Y 很满意, 点击首页想看看其他内容
         home_view = self.browser.find_element_by_id("id_home_page")
