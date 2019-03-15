@@ -27,8 +27,8 @@ def create_home_menu():
     home_menu = list()
 
     monday = const.EATING_MENU_STRUCTURE("周一", "香麦馒头+奶黄包+五谷杂粮", "白菜炒香菇", "青椒炒牛肉")
-    tuesday = const.EATING_MENU_STRUCTURE("周二", "流沙包+白馒头+五谷杂粮", "火锅-牛肉丸粿条", "-")
-    wednesday = const.EATING_MENU_STRUCTURE("周三", "-", "-", "-")
+    tuesday = const.EATING_MENU_STRUCTURE("周二", "流沙包+白馒头+五谷杂粮", "火锅-牛肉丸粿条", "家常炒河粉")
+    wednesday = const.EATING_MENU_STRUCTURE("周三", "手抓饼+豆浆", "-", "-")
     thursday = const.EATING_MENU_STRUCTURE("周四", "-", "-", "-")
     friday = const.EATING_MENU_STRUCTURE("周五", "-", "-", "-")
     saturday = const.EATING_MENU_STRUCTURE("周六", "-", "-", "-")
