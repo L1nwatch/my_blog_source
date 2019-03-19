@@ -33,10 +33,30 @@ def create_home_menu():
                                            "青椒炒牛肉\n")
                                           )  # 牛肉
     wednesday = const.EATING_MENU_STRUCTURE("周三", "手抓饼+豆浆", "青椒鸡蛋", "蚝油生菜")  # 纯素
-    thursday = const.EATING_MENU_STRUCTURE("周四", "卤肉卷", "包菜肉、腐竹肉、香干肉、香菇肉片、杏鲍菇炒肉", "糖醋里脊、椒盐里脊、酸汤丸子+酥肉")  # 猪肉
+    thursday = const.EATING_MENU_STRUCTURE("周四", "卤肉卷",
+                                           ("包菜肉\n"
+                                            "腐竹肉\n"
+                                            "香干肉\n"
+                                            "香菇肉片\n"
+                                            "杏鲍菇炒肉\n"),
+                                           ("糖醋里脊\n"
+                                            "椒盐里脊\n"
+                                            "酸汤丸子+酥肉\n")
+                                           )  # 猪肉
     friday = const.EATING_MENU_STRUCTURE("周五", "鸡蛋灌饼/鸡蛋卷饼/照烧鸡腿", "千叶豆腐", "家常炒河粉")  # 纯素
-    saturday = const.EATING_MENU_STRUCTURE("周六", "肉夹馍", "鸡块、炸鸡腿、宫保鸡丁、猪肚鸡", "香菇滑鸡、脆皮鸡、黄焖鸡")  # 鸡肉
-    sunday = const.EATING_MENU_STRUCTURE("周日", "肠粉", "当归牛腩", "奥尔良烤肉、虾条")  # 新奇
+    saturday = const.EATING_MENU_STRUCTURE("周六", "肉夹馍",
+                                           ("鸡块\n"
+                                            "炸鸡腿\n"
+                                            "宫保鸡丁\n"
+                                            "猪肚鸡\n"),
+                                           ("香菇滑鸡\n"
+                                            "脆皮鸡\n"
+                                            "黄焖鸡\n")
+                                           )  # 鸡肉
+    sunday = const.EATING_MENU_STRUCTURE("周日", "肠粉", "当归牛腩",
+                                         ("奥尔良烤肉\n"
+                                          "虾条\n")
+                                         )  # 新奇
 
     for each_day in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]:
         home_menu.append(each_day)
