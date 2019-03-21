@@ -25,6 +25,7 @@ def check_signature(signature, timestamp, nonce):
 @log_wrapper(str_format="服务器首次交互", level="info", logger=logger)
 def check_signature_from_server(this_request):
     if this_request.method == "GET":
-        print(this_request.GET)
+        with open("/opt/temp_weixin","w") as f:
+            f.write(str(this_request.GET))
         return HttpResponse("OK")
     return HttpResponse("Need GET")
