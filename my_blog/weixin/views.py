@@ -21,10 +21,11 @@ def check_signature(signature, timestamp, nonce):
     # s = L[0] + L[1] + L[2]
     # hash_code = hashlib.sha1(s).hexdigest()
     # return hash_code == signature
-    hash_list = ["490772448", timestamp, nonce]
+    hash_list = ["wx1", timestamp, nonce]
     hash_list.sort()
-    hash_str = "".join([x for x in hash_list])
-    hash_result = hashlib.sha1(hash_str).hexdigest()
+    sha1 = hashlib.sha1()
+    map(sha1.update,hash_list)
+    hash_result = sha1.hexdigest()
     if hash_result == signature:
         return True
     else:
@@ -33,18 +34,11 @@ def check_signature(signature, timestamp, nonce):
 
 @log_wrapper(str_format="服务器首次交互", level="info", logger=logger)
 def check_signature_from_server(this_request):
-    print("[*] 有人访问")
     if this_request.method == "GET":
         signature = this_request.GET.get("signature")
         echostr = this_request.GET.get("echostr")
         timestamp = this_request.GET.get("timestamp")
         nonce = this_request.GET.get("nonce")
-        if check_signature(signature, timestamp, nonce):
-            # logger.info("[!] 微信服务器校验成功")
-            print("[!] 微信服务器校验成功")
-            return echostr
-        else:
-            # logger.error("[-] 微信服务器校验失败")
-            print("[-] 微信服务器校验失败")
-            raise Http404
+        # check_signature(signature, timestamp, nonce)
+        return echostr
     raise Http404
