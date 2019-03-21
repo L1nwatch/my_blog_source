@@ -249,6 +249,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True
         },
+        'my_blog.weixin.views': {
+            'handlers': ['default', 'error', "info"],
+            'level': 'DEBUG',
+            'propagate': True
+        },
     }
 }
 

@@ -15,6 +15,7 @@ Including another URL conf
 
 
 # 更新
+2019.03.21 新增 weixin 这个 APP
 2017.06.30 新增 app_life_summary 这个 APP
 2017.06.29 新增 timeline 这个 app
 2017.06.21 新增一个自定义的 404 页面
@@ -48,6 +49,7 @@ urlpatterns = [
     url(r"^code_collect/", include("code_collect.urls")),
     url(r"^timeline_app/", include("app_timeline.urls")),
     url(r"^life_summary_app/", include("app_life_summary.urls")),
+    url(r"^weixin/", include("weixin.urls")),
 ]
 
 handler404 = 'common_module.common_view.handler404'
