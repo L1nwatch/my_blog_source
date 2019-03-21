@@ -28,6 +28,9 @@ def locate_using_ip_address(ip_address):
         return "内网 IP"
 
     response = requests.get("http://ip.taobao.com/service/getIpInfo.php?ip={ip_address}".format(ip_address=ip_address))
+    if response.status_code == 502:
+        # 遇到不知名的错误
+        return "中国"
     result = json.loads(response.content.decode("utf8"))
     country = result["data"]["country"]
 

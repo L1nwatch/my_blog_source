@@ -14,5 +14,5 @@ import weixin.views
 __author__ = '__L1n__w@tch'
 
 urlpatterns = [
-    url(r"^$", weixin.views.check_signature, name="check_signature"),
+    url(r"^$", weixin.views.check_signature_from_server, name="check_signature_from_server"),
 ]
