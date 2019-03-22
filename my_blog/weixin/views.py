@@ -19,6 +19,16 @@ from common_module.common_help_function import log_wrapper
 logger = logging.getLogger("my_blog.weixin.views")
 
 
+def get_stock_info():
+    """
+    推送股票专用
+    :return:
+    """
+    with open("/home/watch/stock/stock_deal/stock_log/test", encoding="utf8") as f:
+        data = f.read()
+    return data
+
+
 @csrf_exempt
 @log_wrapper(str_format="服务器首次交互", level="info", logger=logger)
 def check_signature_from_server(this_request):
@@ -38,5 +48,9 @@ def check_signature_from_server(this_request):
         if msg_type == "text":
             content = xml.content
             reply = create_reply(content, xml)
+            if content == "股票":
+                reply.content = get_stock_info()
             return HttpResponse(reply.render(), content_type="application/xml")
+        else:
+            return HttpResponse(create_reply("别乱搞, 只发文字", xml).render(), content_type="application/xml")
     raise Http404
