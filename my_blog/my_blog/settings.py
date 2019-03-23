@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "log_file_deal",
     "app_timeline",
     "app_life_summary",
+    "weixin",
     "debug_toolbar",
 ]
 
