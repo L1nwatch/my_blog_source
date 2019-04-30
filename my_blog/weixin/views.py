@@ -6,12 +6,13 @@
 
 # 标准库
 import logging
-
+import json
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import Http404, HttpResponse
 from wechatpy.utils import check_signature
 from wechatpy.exceptions import InvalidSignatureException
 from wechatpy import parse_message, create_reply
+from wechatpy.replies import ImageReply
 
 # 自己的模块
 from common_module.common_help_function import log_wrapper
@@ -27,6 +28,19 @@ def get_stock_info():
     with open("/home/watch/stock/stock_deal/stock_log/test", encoding="utf8") as f:
         data = f.read()
     return data
+
+
+def get_image_reply(xml):
+    """
+    生成图片回复内容
+    :return:
+    """
+    with open("/home/watch/stock/stock_deal/stock_log/test", encoding="utf8") as f:
+        json_data = json.load(f)
+
+    reply = ImageReply(message=xml)
+    reply.media_id = json_data["media_id"]
+    return reply
 
 
 @csrf_exempt
@@ -47,10 +61,12 @@ def check_signature_from_server(this_request):
         msg_type = xml.type
         if msg_type == "text":
             content = xml.content
-            reply = create_reply(content, xml)
             if content == "股票":
-                reply.content = get_stock_info()
-            return HttpResponse(reply.render(), content_type="application/xml")
+                reply = get_image_reply(xml)
+                return HttpResponse(reply.render(), content_type="application/xml")
+            else:
+                reply = create_reply(content, xml)
+                return HttpResponse(reply.render(), content_type="application/xml")
         else:
             return HttpResponse(create_reply("别乱搞, 只发文字", xml).render(), content_type="application/xml")
     raise Http404
