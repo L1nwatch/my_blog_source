@@ -36,10 +36,10 @@ def get_image_reply(xml):
     :return:
     """
     with open("/home/watch/stock/stock_deal/stock_log/test", encoding="utf8") as f:
-        json_data = json.load(f)
+        media_id = f.read().strip()
 
     reply = ImageReply(message=xml)
-    reply.media_id = json_data["media_id"]
+    reply.media_id = media_id
     return reply
 
 
