@@ -71,7 +71,7 @@ class WeiXinViewTest(BasicTest):
         test_content = b'<xml><ToUserName><![CDATA[gh_a636453a97c2]]></ToUserName>\n<FromUserName><![CDATA[oqjYJ53uuUhJTGPtpy3CaexoQ7Sk]]></FromUserName>\n<CreateTime>1553309157</CreateTime>\n<MsgType><![CDATA[text]]></MsgType>\n<Content><![CDATA[' + test_string.encode(
             "utf8") + b']]></Content>\n<MsgId>22238041993306123</MsgId>\n</xml>'
 
-        with unittest.mock.patch("weixin.views.get_stock_info") as mock_get_stock_info:
+        with unittest.mock.patch("weixin.views.get_image_reply") as mock_get_stock_info:
             self.assertFalse(mock_get_stock_info.called)
             response = self.client.post(self.unique_url, data=test_content, content_type="text/xml")
             self.assertTrue(response.status_code == 200)
