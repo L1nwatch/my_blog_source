@@ -182,6 +182,21 @@ class AboutMeViewTest(BasicTest):
         self.assertIsInstance(response.context["form"], BaseSearchForm)
 
 
+class AboutMeEnViewTest(BasicTest):
+    unique_url = "/articles/about_me_en/"
+
+    def test_use_about_me_template(self):
+        response = self.client.get(self.unique_url)
+        self.assertTemplateUsed(response, "about_me_en.html")
+
+    def test_view_passes_form_to_template(self):
+        """
+        测试是否有将 form 传递给模板
+        """
+        response = self.client.get(self.unique_url)
+        self.assertIsInstance(response.context["form"], BaseSearchForm)
+
+
 class ArchivesViewTest(BasicTest):
     unique_url = "/articles/archives/"
 

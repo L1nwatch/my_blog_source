@@ -145,6 +145,11 @@ def about_me_view(request):
     return render(request, 'about_me.html', get_context_data(request, "all"))
 
 
+@log_wrapper(str_format="查看 About Me 英文版", logger=logger)
+def about_me_en_view(request):
+    return render(request, 'about_me_en.html', get_context_data(request, "all"))
+
+
 @log_wrapper(str_format="进行了 Category 搜索", logger=logger)
 def search_category_view(request, category):
     try:

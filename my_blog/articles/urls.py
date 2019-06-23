@@ -19,6 +19,7 @@ urlpatterns = [
     url(r"^(?P<article_id>\d+)/$", articles.views.article_display, name="detail"),
     url(r'^archives/$', articles.views.archives_view, name='archives'),
     url(r'^about_me/$', articles.views.about_me_view, name='about_me'),
+    url(r'^about_me_en/$', articles.views.about_me_en_view, name='about_me_en'),
     url(r'^category(?P<category>\w+)/$', articles.views.search_category_view, name='search_category'),
     url(r'^update_notes/$', articles.views.update_notes, name='update_notes'),
     url(r'^update_notes/data$', articles.views.update_note_check_view, name='update_notes_check'),
