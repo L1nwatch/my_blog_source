@@ -18,6 +18,7 @@ import logging
 import os
 import re
 import urllib.parse
+import pypinyin
 
 from django.shortcuts import redirect
 
@@ -78,16 +79,23 @@ def get_right_href(gitbook_name, title):
     :return: str(), 正确的 gitbook href
     """
     user_name = const.GITBOOK_USER_NAME
-    title = title[:-len(".md")]
+    result_title = title[:-len(".md")].lower()
 
-    if title.lower() == "readme":
-        href_format = "https://{username}.gitbooks.io/{gitbook_name}/content/index.html"
+    if result_title == "readme":
+        href_format = "https://{username}.gitbook.io/{gitbook_name}/"
     else:
-        href_format = "https://{username}.gitbooks.io/{gitbook_name}/content/{title}.html"
+        if result_title.endswith("readme"):
+            result_title = result_title[:-len("readme")]
+        result_title = result_title.replace(":", "").replace(" ", "").replace("_", "")
+        temp_title = list()
+        for each_split in result_title.split("/"):
+            temp_title.append("-".join(pypinyin.lazy_pinyin(each_split)))
+        result_title = "/".join(temp_title)
+        href_format = "https://{username}.gitbook.io/{gitbook_name}/{result_title}"
 
     return href_format.format(username=user_name,
                               gitbook_name=urllib.parse.quote(gitbook_name).lower(),
-                              title=urllib.parse.quote(title))
+                              result_title=result_title)
 
 
 def format_title(title, book_name):

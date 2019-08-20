@@ -83,27 +83,20 @@ class UpdateGitBookCodesViewTest(BaseCommonTest):
         """
         # 测试 href1
         gitbook = GitBook.objects.get(title="《PythonWeb 开发: 测试驱动方法》-准备工作和应具备的知识")
-        right_href = ("https://l1nwatch.gitbooks.io/pythonweb/content/"
-                      "PythonWeb%E5%BC%80%E5%8F%91%3A%20%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E6%96%B9%E6%B3%95/"
-                      "%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E5%92%8C%E5%BA%94%E5%85%B7%E5%A4%87%E7%9A%84%E7%9F"
-                      "%A5%E8%AF%86/readme.html")
+        right_href = ("https://l1nwatch.gitbook.io/pythonweb/pythonweb-kai-fa-ce-shi-qu-dong-fang-fa/"
+                      "zhun-bei-gong-zuo-he-ying-ju-bei-de-zhi-shi")
         self.assertEqual(gitbook.href, right_href)
 
         # 测试 href2
         gitbook = GitBook.objects.get(title="《PythonWeb 开发: 测试驱动方法》-第一部分 tdd 和 django 基础/第 1 章 使用功能测试协助安装 django")
-        right_href = ("https://l1nwatch.gitbooks.io/pythonweb/content/PythonWeb"
-                      "%E5%BC%80%E5%8F%91%3A%20%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E6%96%B9%E6%B3%95/"
-                      "%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%20TDD%20%E5%92%8C%20Django"
-                      "%20%E5%9F%BA%E7%A1%80/%E7%AC%AC%201%20%E7%AB%A0%20%E4%BD%BF%E7%94%A8%E5%8A%9F%E8%83%BD%E6"
-                      "%B5%8B%E8%AF%95%E5%8D%8F%E5%8A%A9%E5%AE%89%E8%A3%85%20Django/readme.html")
+        right_href = ("https://l1nwatch.gitbook.io/pythonweb/pythonweb-kai-fa-ce-shi-qu-dong-fang-fa/"
+                      "di-yi-bu-fen-tdd-he-django-ji-chu/di-1-zhang-shi-yong-gong-neng-ce-shi-xie-zhu-an-zhuang-django")
         self.assertEqual(gitbook.href, right_href)
 
         # 测试 href3
         gitbook = GitBook.objects.get(title="《PythonWeb 开发: 测试驱动方法》-第二部分 web 开发要素/第 14 章 部署新代码")
-        right_href = ("https://l1nwatch.gitbooks.io/pythonweb/content/PythonWeb"
-                      "%E5%BC%80%E5%8F%91%3A%20%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E6%96%B9%E6%B3%95/"
-                      "%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%20Web%20%E5%BC%80%E5%8F%91%E8%A6%81%E7%B4%A0/"
-                      "%E7%AC%AC%2014%20%E7%AB%A0%20%E9%83%A8%E7%BD%B2%E6%96%B0%E4%BB%A3%E7%A0%81/readme.html")
+        right_href = ("https://l1nwatch.gitbook.io/pythonweb/pythonweb-kai-fa-ce-shi-qu-dong-fang-fa/"
+                      "di-er-bu-fen-web-kai-fa-yao-su/di-14-zhang-bu-shu-xin-dai-ma")
         self.assertEqual(gitbook.href, right_href)
 
     def test_can_save_right_title(self):
@@ -284,42 +277,36 @@ class GitBookPageDisplayTest(BaseCommonTest):
         """
         # 1、含有 readme 的一级
         test_data = ("interview_exercise", "README.md")
-        right_href = "https://l1nwatch.gitbooks.io/interview_exercise/content/index.html"
+        right_href = "https://l1nwatch.gitbook.io/interview_exercise/"
         my_answer = get_right_href(*test_data)
         self.assertEqual(right_href, my_answer)
 
         # 2、含有 readme 的多级
         test_data = ("interview_exercise",
                      "计算机知识/readme.md")
-        right_href = ("https://l1nwatch.gitbooks.io/interview_exercise/content/"
-                      "%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%9F%A5%E8%AF%86/readme.html")
+        right_href = "https://l1nwatch.gitbook.io/interview_exercise/ji-suan-ji-zhi-shi/"
         my_answer = get_right_href(*test_data)
         self.assertEqual(right_href, my_answer)
 
         # 3、含有 readme 的多级 2
         test_data = ("PythonWeb",
                      "PythonWeb开发: 测试驱动方法/准备工作和应具备的知识/readme.md")
-        right_href = ("https://l1nwatch.gitbooks.io/pythonweb/content/"
-                      "PythonWeb%E5%BC%80%E5%8F%91%3A%20%E6%B5%8B%E8%AF%95%E9%A9%B1%E5%8A%A8%E6%96%B9%E6%B3%95/"
-                      "%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C%E5%92%8C%E5%BA%94%E5%85%B7%E5%A4%87%E7%9A%84%E7%9F"
-                      "%A5%E8%AF%86/readme.html")
+        right_href = ("https://l1nwatch.gitbook.io/pythonweb/pythonweb-kai-fa-ce-shi-qu-dong-fang-fa/"
+                      "zhun-bei-gong-zuo-he-ying-ju-bei-de-zhi-shi/")
         my_answer = get_right_href(*test_data)
         self.assertEqual(right_href, my_answer)
 
         # 4、不含 readme 的一级
         test_data = ("interview_exercise",
                      "C_问答题汇总.md")
-        right_href = ("https://l1nwatch.gitbooks.io/interview_exercise/content/"
-                      "C_%E9%97%AE%E7%AD%94%E9%A2%98%E6%B1%87%E6%80%BB.html")
+        right_href = "https://l1nwatch.gitbook.io/interview_exercise/c-wen-da-ti-hui-zong"
         my_answer = get_right_href(*test_data)
         self.assertEqual(right_href, my_answer)
 
         # 5、不含 readme 的多级
         test_data = ("interview_exercise",
                      "stackoverflow-about-Python/Python中如何在一个函数中加入多个装饰器.md")
-        right_href = ("https://l1nwatch.gitbooks.io/interview_exercise/content/stackoverflow-about-Python/"
-                      "Python%E4%B8%AD%E5%A6%82%E4%BD%95%E5%9C%A8%E4%B8%80%E4%B8%AA%E5%87%BD%E6%95%B0%E4%B8"
-                      "%AD%E5%8A%A0%E5%85%A5%E5%A4%9A%E4%B8%AA%E8%A3%85%E9%A5%B0%E5%99%A8.html")
+        right_href = ("https://l1nwatch.gitbook.io/interview_exercise/stackoverflow-about-python/"
+                      "python-zhong-ru-he-zai-yi-ge-han-shu-zhong-jia-ru-duo-ge-zhuang-shi-qi")
         my_answer = get_right_href(*test_data)
         self.assertEqual(right_href, my_answer)
-

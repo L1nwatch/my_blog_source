@@ -230,8 +230,7 @@ class Test404Page(FunctionalTest):
         search_button = self.browser.find_element_by_id("id_search_work_journal")
 
         # Y 知道站长今天肯定有写日记, 而且日记内容包含 "今天"
-        search_button.send_keys("今天")
-        search_button.submit()
+        search_button.send_keys("今天\n")
 
         # 可以看到 url 变化了
         self.assertNotRegex(self.browser.current_url, self.unique_url)
