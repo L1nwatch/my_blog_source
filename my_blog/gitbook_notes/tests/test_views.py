@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 测试 gitbook_notes 这个 app 下的视图函数
 
+2019.08.22 gitbook 链接更新了，这边也得兼容一下
 2017.06.16 新增有关 GitBook 更新时会更新 Tag 的测试
 2017.06.04 重构基类测试, 修改对应代码
 2017.05.21 修改 common_module 路径
@@ -22,6 +23,7 @@ import random
 import shutil
 import unittest
 
+from django.db import transaction
 from django.test import override_settings
 
 # 自己的模块
@@ -84,19 +86,19 @@ class UpdateGitBookCodesViewTest(BaseCommonTest):
         # 测试 href1
         gitbook = GitBook.objects.get(title="《PythonWeb 开发: 测试驱动方法》-准备工作和应具备的知识")
         right_href = ("https://l1nwatch.gitbook.io/pythonweb/pythonweb-kai-fa-ce-shi-qu-dong-fang-fa/"
-                      "zhun-bei-gong-zuo-he-ying-ju-bei-de-zhi-shi")
+                      "zhun-bei-gong-zuo-he-ying-ju-bei-de-zhi-shi/")
         self.assertEqual(gitbook.href, right_href)
 
         # 测试 href2
         gitbook = GitBook.objects.get(title="《PythonWeb 开发: 测试驱动方法》-第一部分 tdd 和 django 基础/第 1 章 使用功能测试协助安装 django")
         right_href = ("https://l1nwatch.gitbook.io/pythonweb/pythonweb-kai-fa-ce-shi-qu-dong-fang-fa/"
-                      "di-yi-bu-fen-tdd-he-django-ji-chu/di-1-zhang-shi-yong-gong-neng-ce-shi-xie-zhu-an-zhuang-django")
+                      "di-yi-bu-fen-tdd-he-django-ji-chu/di-1-zhang-shi-yong-gong-neng-ce-shi-xie-zhu-an-zhuang-django/")
         self.assertEqual(gitbook.href, right_href)
 
         # 测试 href3
         gitbook = GitBook.objects.get(title="《PythonWeb 开发: 测试驱动方法》-第二部分 web 开发要素/第 14 章 部署新代码")
         right_href = ("https://l1nwatch.gitbook.io/pythonweb/pythonweb-kai-fa-ce-shi-qu-dong-fang-fa/"
-                      "di-er-bu-fen-web-kai-fa-yao-su/di-14-zhang-bu-shu-xin-dai-ma")
+                      "di-er-bu-fen-web-kai-fa-yao-su/di-14-zhang-bu-shu-xin-dai-ma/")
         self.assertEqual(gitbook.href, right_href)
 
     def test_can_save_right_title(self):
