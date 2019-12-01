@@ -372,7 +372,3 @@ def update_notes(request=None):
             each_note_in_db.delete()
 
     return archives_view(request) if request is not None else None
-
-
-if __name__ == "__main__":
-    update_notes()

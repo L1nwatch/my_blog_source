@@ -49,3 +49,8 @@ class AutoUpdateNotes(CronJobBase):
             process.join()
 
         print("[*] [{}] {separator} 进行定时更新 {separator}".format(now, separator="*" * 30))
+
+
+if __name__ == "__main__":
+    print("[*] 开始调试笔记更新")
+    update_notes()
