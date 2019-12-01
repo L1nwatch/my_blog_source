@@ -26,7 +26,7 @@ from log_file_deal.log_packer import LogPacker
 
 
 class AutoUpdateNotes(CronJobBase):
-    RUN_EVERY_MINS = 1  # every 2 hours
+    RUN_EVERY_MINS = 120  # every 2 hours
 
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = 'django_cron.AutoUpdateNotes'  # a unique code
