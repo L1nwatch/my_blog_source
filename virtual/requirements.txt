@@ -30,7 +30,7 @@ selenium==3.8.0
 six==1.10.0
 sqlparse==0.2.3
 typing==3.7.4
-urllib3==1.21.1
+urllib3==1.24.2
 webkit2png==0.8.2
 wechatpy==1.8.0
 xmltodict==0.12.0
