@@ -18,7 +18,7 @@ Markdown==2.6.8
 markdown2==2.3.2
 md2py==0.0.1
 optionaldict==0.1.1
-paramiko==1.17.2
+paramiko==2.0.9
 peewee==3.10.0
 pycrypto==2.6.1
 Pygments==2.1.3
