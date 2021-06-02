@@ -15,7 +15,7 @@ gunicorn==19.6.0
 html5lib==0.9999999
 idna==2.8
 Markdown==2.6.8
-markdown2==2.3.2
+markdown2==2.4.0
 md2py==0.0.1
 optionaldict==0.1.1
 paramiko==1.17.2
