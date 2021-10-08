@@ -15,6 +15,7 @@ Including another URL conf
 
 
 # 更新
+2021.10.08 新增 homepage 首页这个 APP
 2019.03.21 新增 weixin 这个 APP
 2017.06.30 新增 app_life_summary 这个 APP
 2017.06.29 新增 timeline 这个 app
@@ -32,6 +33,7 @@ from django.conf import settings
 
 # 自己的模块
 import articles.views
+import homepage.views
 import common_module.common_view
 
 urlpatterns = [
@@ -42,7 +44,8 @@ urlpatterns = [
     url(r"^just_eating/", include("just_eating.urls")),
     url(r'^(?P<search_type>[^/]+)/tag(?P<tag_name>[^/]+)/$', common_module.common_view.search_tag_view,
         name='search_tag'),
-    url(r'^$', articles.views.home_view, name='home'),
+    url(r'^articles', articles.views.home_view, name='home'),
+    url(r'^$', homepage.views.index_view, name='index'),
     url(r'^googlef0b96351a9e6fd45\.html$', articles.views.google_verify, name='google_verify'),
     url(r"^search/$", articles.views.blog_search, name="search"),
     url(r"^tool_hub/", include("toolhub.urls")),

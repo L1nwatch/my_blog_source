@@ -204,6 +204,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'my_blog.homepage.views': {
+            'handlers': ['default', 'error', "info"],
+            'level': 'DEBUG',
+            'propagate': True
+        },
         'my_blog.articles.views': {
             'handlers': ['default', 'error', "info"],
             'level': 'DEBUG',
