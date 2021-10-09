@@ -12,7 +12,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.4.10, 3.7, 3.8, 3.9]
+        python-version: [3.4.10]
 
     steps:
     - uses: actions/checkout@v2
@@ -26,37 +26,37 @@ jobs:
         pip install -r virtual/requirements.txt
     - name: Run Tests - app_life_summary
       run: |
-        python manage.py test app_life_summary
+        python my_blog/manage.py test app_life_summary
     - name: Run Tests - app_timeline
       run: |
-        python manage.py test app_timeline
+        python my_blog/manage.py test app_timeline
     - name: Run Tests - weixin
       run: |
-        python manage.py test weixin
+        python my_blog/manage.py test weixin
     - name: Run Tests - log_file_deal
       run: |
-        python manage.py test log_file_deal
+        python my_blog/manage.py test log_file_deal
     - name: Run Tests - articles
       run: |
-        python manage.py test articles
+        python my_blog/manage.py test articles
     - name: Run Tests - code_collect
       run: |
-        python manage.py test code_collect
+        python my_blog/manage.py test code_collect
     - name: Run Tests - toolhub
       run: |
-        python manage.py test toolhub
+        python my_blog/manage.py test toolhub
     - name: Run Tests - common_module
       run: |
-        python manage.py test common_module
+        python my_blog/manage.py test common_module
     - name: Run Tests - functional_tests
       run: |
-        python manage.py test functional_tests
+        python my_blog/manage.py test functional_tests
     - name: Run Tests - gitbook_notes
       run: |
-        python manage.py test gitbook_notes
+        python my_blog/manage.py test gitbook_notes
     - name: Run Tests - work_journal
       run: |
-        python manage.py test work_journal
+        python my_blog/manage.py test work_journal
     - name: Run Tests - just_eating
       run: |
-        python manage.py test just_eating
+        python my_blog/manage.py test just_eating
