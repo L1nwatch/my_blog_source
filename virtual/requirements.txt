@@ -13,7 +13,7 @@ ecdsa==0.13
 Fabric3==1.12.post1
 gunicorn==19.6.0
 html5lib==0.9999999
-idna==2.8
+idna==2.5
 Markdown==2.6.8
 markdown2==2.3.2
 md2py==0.0.1
