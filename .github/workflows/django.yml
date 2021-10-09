@@ -24,6 +24,10 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r virtual/requirements.txt
+    - name: Prepare Databases
+      run: |
+        python my_blog/manage.py makemigrations --noinput
+        python my_blog/manage.py migrate --noinput
     - name: Run Tests - app_life_summary
       run: |
         python my_blog/manage.py test app_life_summary
