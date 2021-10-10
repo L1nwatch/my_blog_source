@@ -270,4 +270,4 @@ class TestCommonHelpFunc(BasicTest):
 
         # 测试解析
         self.assertTrue(is_valid_ip("127.0.0.1", ip_list=["localhost"]))
-        self.assertTrue(is_valid_ip("199.19.107.219", ip_list=["ss.watch0.top"]))
+        self.assertTrue(is_valid_ip("144.34.165.111", ip_list=["ss.watch0.top"]))

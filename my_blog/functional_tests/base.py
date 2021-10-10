@@ -77,7 +77,7 @@ class FunctionalTest(CreateTestData, StaticLiveServerTestCase):
         # if self.against_staging:
         #     reset_database(self.server_host)
 
-        my_proxy = "127.0.0.1:8118"
+        my_proxy = "socks5://127.0.0.1:1081"
 
         # proxy = Proxy({
         #     'proxyType': ProxyType.MANUAL,
