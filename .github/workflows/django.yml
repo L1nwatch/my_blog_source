@@ -61,3 +61,6 @@ jobs:
     - name: Run Tests - just_eating
       run: |
         python my_blog/manage.py test just_eating
+    - name: Run Tests - homepage
+      run: |
+        python my_blog/manage.py test homepage

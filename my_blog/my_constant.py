@@ -180,6 +180,14 @@ const.TRAVEL_EVENT_STRUCTURE = namedtuple("travel_event_structure", ["day", "mon
 
 # ====================================================================================================================
 
+# HomePage App
+
+const.HOMEPAGE_URL = "/"
+const.HOMEPAGE_TEMPLATE = "index_home.html"
+
+
+# ====================================================================================================================
+
 # app_life_summary App
 
 # life_summary
