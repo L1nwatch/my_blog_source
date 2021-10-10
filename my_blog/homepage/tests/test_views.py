@@ -18,3 +18,41 @@ class TestHomePage(BasicTest):
     def test_homepage_use_right_template(self):
         response = self.client.get(self.unique_url)
         self.assertTemplateUsed(response, const.HOMEPAGE_TEMPLATE)
+
+    def test_homepage_include_github_link(self):
+        response = self.client.get(self.unique_url)
+        self.assertContains(response, "github")
+        self.assertContains(response, "https://github.com/L1nwatch")
+
+    def test_homepage_include_gitee_link(self):
+        response = self.client.get(self.unique_url)
+        self.assertContains(response, "gitee")
+        self.assertContains(response, "https://gitee.com/w4tch")
+
+    def test_homepage_include_linkedin_link(self):
+        response = self.client.get(self.unique_url)
+        self.assertContains(response, "linkedin")
+        self.assertContains(response, "https://www.linkedin.com/in/%E4%B8%B0-%E6%9E%97-ba4495102/")
+
+    def test_homepage_include_we_chall_link(self):
+        response = self.client.get(self.unique_url)
+        self.assertContains(response, "WeChall")
+        self.assertContains(response, "http://www.wechall.net/profile/WATCH")
+
+    def test_homepage_include_jira_link(self):
+        response = self.client.get(self.unique_url)
+        self.assertContains(response, "jira")
+        self.assertContains(response, "https://w4tch.atlassian.net/jira")
+
+    def test_homepage_include_confluence_link(self):
+        response = self.client.get(self.unique_url)
+        self.assertContains(response, "confluence")
+        self.assertContains(response, "https://w4tch.atlassian.net/wiki")
+
+    def test_homepage_include_mailto_link(self):
+        response = self.client.get(self.unique_url)
+        self.assertContains(response, "mailto:watch1602@gmail.com")
+
+    def test_homepage_include_blog_link(self):
+        response = self.client.get(self.unique_url)
+        self.assertContains(response, "watch0.top/articles")
