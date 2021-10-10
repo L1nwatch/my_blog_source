@@ -52,9 +52,6 @@ jobs:
     - name: Run Tests - common_module
       run: |
         python my_blog/manage.py test common_module
-    - name: Run Tests - functional_tests
-      run: |
-        python my_blog/manage.py test functional_tests
     - name: Run Tests - gitbook_notes
       run: |
         python my_blog/manage.py test gitbook_notes
