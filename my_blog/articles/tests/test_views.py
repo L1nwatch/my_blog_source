@@ -49,7 +49,7 @@ class HomeViewTest(BasicTest):
         测试是否使用了首页的模板
         :return:
         """
-        response = self.client.get("/")
+        response = self.client.get("/articles")
         self.assertTemplateUsed(response, "new_home.html")
 
     def test_only_display_part_articles(self):
@@ -60,7 +60,7 @@ class HomeViewTest(BasicTest):
         error_message = "显示了超过 {} 篇文章在首页了".format(const.HOME_PAGE_ARTICLES_NUMBERS)
         self.create_multiple_articles(const.HOME_PAGE_ARTICLES_NUMBERS + 10)
 
-        response = self.client.get("/")
+        response = self.client.get("/articles")
         counts = 0
         for article in Article.objects.all():
             article_url = "/articles/{}/".format(article.id)
@@ -69,7 +69,7 @@ class HomeViewTest(BasicTest):
             self.assertFalse(counts > const.HOME_PAGE_ARTICLES_NUMBERS, error_message)
 
     def test_home_page_uses_article_form(self):
-        response = self.client.get("/")
+        response = self.client.get("/articles")
         # 使用 assertIsInstance 确认视图使用的是正确的表单类
         self.assertIsInstance(response.context["form"], BaseSearchForm)
         self.assertContains(response, 'name="search_content"')
@@ -386,7 +386,7 @@ class ArticlesSearchViewTest(BasicTest):
         response = self.client.post(self.unique_url, data={"search_content": "",
                                                            "search_choice": "articles"})
         # 此时应该是重定向到首页了
-        self.assertRedirects(response, "/")
+        self.assertRedirects(response, "/articles")
 
     def test_for_valid_input_passes_form_to_template(self):
         response = self.client.post(self.unique_url, data={"search_content": "不应该有这篇文章的",
@@ -403,7 +403,7 @@ class ArticlesSearchViewTest(BasicTest):
         """
         response = self.client.get(self.unique_url)
         # GET 请求, 重定向到首页, 应该是 BaseForm
-        self.assertRedirects(response, "/")
+        self.assertRedirects(response, "/articles")
 
     def test_valid_input_will_get_response_using_right_template(self):
         test_article = self.create_article(title="test_article")
@@ -700,7 +700,7 @@ class BaseSearchViewTest(BasicTest):
         for each_invalid in string.punctuation:
             response = self.client.post(self.unique_url, data={"search_content": each_invalid,
                                                                "search_choice": "all"})
-            self.assertRedirects(response, "/")
+            self.assertRedirects(response, "/articles")
 
     def test_only_special_input_will_redirect_home(self):
         """
@@ -711,4 +711,4 @@ class BaseSearchViewTest(BasicTest):
             invalid_input = "".join([random.choice(string.punctuation) for j in range(random.randint(2, 100))])
             response = self.client.post(self.unique_url, data={"search_content": invalid_input,
                                                                "search_choice": "all"})
-            self.assertRedirects(response, "/")
+            self.assertRedirects(response, "/articles")
