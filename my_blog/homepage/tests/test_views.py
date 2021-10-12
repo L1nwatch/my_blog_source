@@ -23,31 +23,37 @@ class TestHomePage(BasicTest):
         response = self.client.get(self.unique_url)
         self.assertContains(response, "github")
         self.assertContains(response, "https://github.com/L1nwatch")
+        self.assertContains(response, "icon-social-github")
 
     def test_homepage_include_gitee_link(self):
         response = self.client.get(self.unique_url)
         self.assertContains(response, "gitee")
         self.assertContains(response, "https://gitee.com/w4tch")
+        self.assertContains(response, "icon-social-github")
 
     def test_homepage_include_linkedin_link(self):
         response = self.client.get(self.unique_url)
         self.assertContains(response, "linkedin")
         self.assertContains(response, "https://www.linkedin.com/in/%E4%B8%B0-%E6%9E%97-ba4495102/")
+        self.assertContains(response, "icon-social-linkedin")
 
     def test_homepage_include_we_chall_link(self):
         response = self.client.get(self.unique_url)
         self.assertContains(response, "WeChall")
         self.assertContains(response, "http://www.wechall.net/profile/WATCH")
+        self.assertContains(response, "icon-game-controller")
 
     def test_homepage_include_jira_link(self):
         response = self.client.get(self.unique_url)
         self.assertContains(response, "jira")
         self.assertContains(response, "https://w4tch.atlassian.net/jira")
+        self.assertContains(response, "icon-key")
 
     def test_homepage_include_confluence_link(self):
         response = self.client.get(self.unique_url)
         self.assertContains(response, "confluence")
         self.assertContains(response, "https://w4tch.atlassian.net/wiki")
+        self.assertContains(response, "icon-docs")
 
     def test_homepage_include_mailto_link(self):
         response = self.client.get(self.unique_url)
@@ -56,3 +62,4 @@ class TestHomePage(BasicTest):
     def test_homepage_include_blog_link(self):
         response = self.client.get(self.unique_url)
         self.assertContains(response, "watch0.top/articles")
+        self.assertContains(response, "icon-note")
