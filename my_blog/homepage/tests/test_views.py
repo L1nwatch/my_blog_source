@@ -63,3 +63,8 @@ class TestHomePage(BasicTest):
         response = self.client.get(self.unique_url)
         self.assertContains(response, "watch0.top/articles")
         self.assertContains(response, "icon-note")
+
+    def test_homepage_include_fei_su_link(self):
+        response = self.client.get(self.unique_url)
+        self.assertContains(response, "https://drxsfuqrht.feishu.cn/sheets/shtcnWVRIvNaaRjrECipxsPLP0c")
+        self.assertContains(response, "icon-grid")
