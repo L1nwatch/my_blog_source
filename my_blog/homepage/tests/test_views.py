@@ -66,5 +66,12 @@ class TestHomePage(BasicTest):
 
     def test_homepage_include_fei_su_link(self):
         response = self.client.get(self.unique_url)
+        self.assertContains(response, "FeiSu")
         self.assertContains(response, "https://drxsfuqrht.feishu.cn/sheets/shtcnWVRIvNaaRjrECipxsPLP0c")
+        self.assertContains(response, "icon-grid")
+
+    def test_homepage_include_google_docs_link(self):
+        response = self.client.get(self.unique_url)
+        self.assertContains(response, "GgDocs")
+        self.assertContains(response, "https://docs.google.com/spreadsheets/u/0/")
         self.assertContains(response, "icon-grid")
