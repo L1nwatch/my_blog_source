@@ -10,18 +10,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Install SSH Key
-      uses: shimataro/ssh-key-action@v2
-      with:
-        key: ${{ secrets.SERVER_SSH_PRIV_KEY }}
-        known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
-    - name: deploy
-      run:
-#        eval $(ssh-agent -s)
-#        echo "${{secrets.SERVER_SSH_PRIV_KEY}}" > deploy.key
-#        mkdir -p ~/.ssh
-#        chmod 0600 deploy.key
-#        ssh-add deploy.key
-#        echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-#        ssh-add -l
-        ssh watch@${{secrets.SERVER_IP}} "cd /home/watch/sites && bash update_sites.sh"
+      - uses: actions/checkout@v3
+      - name: Setup key
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_SSH_PRIV_KEY }}
+      - name: deploy
+          run:
+            ssh watch@${{secrets.SERVER_IP}} "cd /home/watch/sites && bash update_sites.sh"
