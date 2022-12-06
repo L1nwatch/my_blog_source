@@ -47,6 +47,7 @@ urlpatterns = [
     url(r'^articles', articles.views.home_view, name='home'),
     url(r'^$', homepage.views.index_view, name='index'),
     url(r'^googlef0b96351a9e6fd45\.html$', articles.views.google_verify, name='google_verify'),
+    url(r'^resume$', articles.views.resume, name='resume'),
     url(r"^search/$", articles.views.blog_search, name="search"),
     url(r"^tool_hub/", include("toolhub.urls")),
     url(r"^code_collect/", include("code_collect.urls")),

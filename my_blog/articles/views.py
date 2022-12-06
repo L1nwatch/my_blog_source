@@ -88,6 +88,10 @@ def home_view(request):
 def google_verify(request):
     return render(request, "googlef0b96351a9e6fd45.html")
 
+@log_wrapper(str_format="visit your resume", logger=logger)
+def resume(request):
+    return render(request, "resume.html")
+
 
 @log_wrapper(str_format="查看文章", logger=logger)
 def article_display(request, article_id):
