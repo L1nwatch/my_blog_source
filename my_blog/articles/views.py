@@ -36,6 +36,7 @@ import md2py
 from django.conf import settings
 from django.http import Http404
 from django.shortcuts import render, redirect, HttpResponse
+from django.templatetags.static import static
 
 # 自己的模块
 from articles.forms import ArticleForm, BaseSearchForm
@@ -88,9 +89,10 @@ def home_view(request):
 def google_verify(request):
     return render(request, "googlef0b96351a9e6fd45.html")
 
+
 @log_wrapper(str_format="visit your resume", logger=logger)
 def resume(request):
-    return render(request, "resume.html")
+    return redirect(static("resume/20221206.pdf"))
 
 
 @log_wrapper(str_format="查看文章", logger=logger)
