@@ -17,5 +17,6 @@ jobs:
         mkdir -p ~/.ssh
         chmod 0600 deploy.key
         ssh-add deploy.key
+        ssh-add -l
         echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
-        ssh watch@${{secrets.SERVER_IP}} "cd /home/watch/sites && bash update_sites.sh"
+        ssh watch@watch0.top "cd /home/watch/sites && bash update_sites.sh"
