@@ -10,9 +10,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup key
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.SERVER_SSH_PRIV_KEY }}
-      - run: ssh watch@${{secrets.SERVER_IP}} "cd /home/watch/sites && bash update_sites.sh"
+    - name: init ssh, deploy
+      run: |
+        eval $(ssh-agent -s)
+        echo "${{secrets.SERVER_SSH_PRIV_KEY}}" > deploy.key
+        mkdir -p ~/.ssh
+        chmod 0600 deploy.key
+        ssh-add deploy.key
+        echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+        ssh watch@${{secrets.SERVER_IP}} "cd /home/watch/sites && bash update_sites.sh"
