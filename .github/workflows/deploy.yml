@@ -16,5 +16,5 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SERVER_SSH_PRIV_KEY }}
       - name: deploy
-          run: |
-            ssh watch@${{secrets.SERVER_IP}} "cd /home/watch/sites && bash update_sites.sh"
+      - run: |
+          ssh watch@${{secrets.SERVER_IP}} "cd /home/watch/sites && bash update_sites.sh"
