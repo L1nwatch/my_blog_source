@@ -15,5 +15,4 @@ jobs:
         uses: webfactory/ssh-agent@v0.7.0
         with:
           ssh-private-key: ${{ secrets.SERVER_SSH_PRIV_KEY }}
-      - name: deploy
       - run: ssh watch@${{secrets.SERVER_IP}} "cd /home/watch/sites && bash update_sites.sh"
