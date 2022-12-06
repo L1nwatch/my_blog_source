@@ -14,6 +14,7 @@ jobs:
       run: |
         eval $(ssh-agent -s)
         echo "${{secrets.SERVER_SSH_PRIV_KEY}}" > deploy.key
+        rm -rf ~/.ssh/*
         mkdir -p ~/.ssh
         chmod 0600 deploy.key
         ssh-add deploy.key
