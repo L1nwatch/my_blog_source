@@ -18,4 +18,4 @@ jobs:
         mkdir -p ~/.ssh
         chmod 0600 deploy.key
         ssh-add deploy.key
-        ssh watch@${{secrets.SERVER_IP}} "cd /home/watch/sites && bash update_sites.sh"
+        ssh -o StrictHostKeyChecking=no watch@${{secrets.SERVER_IP}} "cd /home/watch/sites && bash update_sites.sh"
