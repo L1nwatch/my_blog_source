@@ -92,7 +92,7 @@ def google_verify(request):
 
 @log_wrapper(str_format="visit your resume", logger=logger)
 def resume(request):
-    return redirect(static("resume/20221206.pdf"))
+    return redirect(static("resume/FengLin_SDET_5years_13128928843.pdf"))
 
 
 @log_wrapper(str_format="查看文章", logger=logger)
