@@ -96,7 +96,7 @@ def resume(request):
 
 
 @log_wrapper(str_format="visit your cv", logger=logger)
-def resume(request):
+def cv(request):
     return redirect(static("cv/FengLin_SDET_5years_13128928843.pdf"))
 
 
