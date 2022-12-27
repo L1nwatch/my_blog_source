@@ -95,6 +95,11 @@ def resume(request):
     return redirect(static("resume/FengLin_SDET_5years_13128928843.pdf"))
 
 
+@log_wrapper(str_format="visit your cv", logger=logger)
+def resume(request):
+    return redirect(static("cv/FengLin_SDET_5years_13128928843.pdf"))
+
+
 @log_wrapper(str_format="查看文章", logger=logger)
 def article_display(request, article_id):
     """
