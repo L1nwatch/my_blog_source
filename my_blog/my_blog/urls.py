@@ -36,6 +36,9 @@ import articles.views
 import homepage.views
 import common_module.common_view
 
+handler404 = 'common_module.common_view.handler404'
+handler400 = 'common_module.common_view.handler404'
+
 urlpatterns = [
     url(r'^everything_is_happening_in_the_best_way/', admin.site.urls),
     url(r"^articles/", include("articles.urls")),
@@ -56,9 +59,6 @@ urlpatterns = [
     url(r"^life_summary_app/", include("app_life_summary.urls")),
     url(r"^weixin/", include("weixin.urls")),
 ]
-
-handler404 = 'common_module.common_view.handler404'
-handler400 = 'common_module.common_view.handler404'
 
 if settings.DEBUG:
     import debug_toolbar

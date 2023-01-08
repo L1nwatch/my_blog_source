@@ -8,7 +8,7 @@
 
 # 标准库
 from django.db import models
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 # 自己的模块
 import my_constant as const

@@ -47,9 +47,7 @@ def search_tag_view(request, search_type, tag_name):
     return render(request, const.TAG_TEMPLATE, get_context_data(request, "articles", {'post_list': post_list}))
 
 
-def handler404(request):
+def handler404(request, exception, template_name='common_404.html'):
     response = render(request, 'common_404.html')
     response.status_code = 404
     return response
-
-
