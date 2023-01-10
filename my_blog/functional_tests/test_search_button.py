@@ -47,7 +47,7 @@ class BasicSearch(FunctionalTest):
         :return: None
         """
         # Y 打开首页, 发现了搜索框, 看到了默认搜索选项 All, 点击一看, 发现了 GitBooks 选项
-        self.browser.get(self.server_url)
+        self.browser.get(self.app_articels_url)
         search_button = self.browser.find_element_by_id("id_search")
         self.browser.find_element_by_id("id_current_search_choice").click()
         search_choices = self.browser.find_elements_by_id("id_search_choices")
@@ -108,7 +108,7 @@ class BasicSearch(FunctionalTest):
         # self.do_choose_search("All", search_content)
 
         # Y 打开首页, 看到了搜索按钮
-        self.browser.get(self.server_url)
+        self.browser.get(self.app_articels_url)
         search_button = self.browser.find_element_by_id("id_search")
 
         # Y 搜索对应内容
@@ -345,7 +345,7 @@ class TestSearchButton(BasicSearch):
         :return:
         """
         # Y 打开首页, 看到了搜索按钮
-        self.browser.get(self.server_url)
+        self.browser.get(self.app_articels_url)
         search_button = self.browser.find_element_by_id("id_search")
 
         # Y 知道某篇已经存在的文章, 随便打了一个进去, 然后按下回车键
@@ -368,7 +368,7 @@ class TestSearchButton(BasicSearch):
         :return:
         """
         # Y 打开首页, 看到了搜索按钮
-        self.browser.get(self.server_url)
+        self.browser.get(self.app_articels_url)
         search_button = self.browser.find_element_by_id("id_search")
 
         # Y 记得以前看过的某篇文章中有 time.sleep 方法的示例, 但是不记得文章标题了, 于是搜索这个关键词
@@ -408,7 +408,7 @@ class TestSearchButton(BasicSearch):
         测试主页的搜索既能搜索文章又能搜索日记还能搜索 gitbooks
         """
         # Y 打开首页, 看到了搜索按钮
-        self.browser.get(self.server_url)
+        self.browser.get(self.app_articels_url)
         search_button = self.browser.find_element_by_id("id_search")
 
         # Y 知道 test 这个关键词在文章和日记中都用到了, 于是搜索这个关键词
@@ -427,13 +427,13 @@ class TestSearchButton(BasicSearch):
         正确的情况应该两次都是 all 才对
         """
         # Y 打开首页, 看到了搜索按钮
-        self.browser.get(self.server_url)
+        self.browser.get(self.app_articels_url)
         search_button = self.browser.find_element_by_id("id_search")
 
         # Y 随便打了个关键词, 发现页面跳转了
         search_button.send_keys("随便打了什么肯定式不会搜索到的才对的啊\n")
         search_url = self.browser.current_url
-        self.assertNotEqual(search_url, self.server_url)
+        self.assertNotEqual(search_url, self.app_articels_url)
 
         # Y 再次进行搜索, 这回输入了一个文章和日记里面都有的关键词
         search_button = self.browser.find_element_by_id("id_search")
@@ -450,7 +450,7 @@ class TestSearchButton(BasicSearch):
         测试搜索选项, 选择 All 的时候可以搜索包括 Articles、GitBooks、Journal 的内容
         """
         # Y 打开首页, 发现了搜索框的默认按钮, 是 All 选项
-        self.browser.get(self.server_url)
+        self.browser.get(self.app_articels_url)
         search_button = self.browser.find_element_by_id("id_search")
         search_choice = self.browser.find_element_by_id("id_current_search_choice")
         self.assertEqual(search_choice.text, "All")
@@ -536,7 +536,7 @@ class TestSearchButton(BasicSearch):
         测试搜索非法字符
         """
         # Y 打开首页, 看到了一个搜索框
-        self.browser.get(self.server_url)
+        self.browser.get(self.app_articels_url)
         home_url = self.browser.current_url
         search_button = self.browser.find_element_by_id("id_search")
 

@@ -31,7 +31,7 @@ class HomePageLayoutStylingTest(FunctionalTest):
         :return:
         """
         # Y 访问首页
-        self.browser.get(self.server_url)
+        self.browser.get(self.app_articels_url)
 
         # 看到首页按钮被放置在右上角第一个位置
         home_page_button = self.browser.find_element_by_id("id_home_page")
@@ -53,7 +53,7 @@ class JustEatingLayoutStylingTest(FunctionalTest):
         吃饭的标题, 比如说 "Home", "School" 应该在正中间
         """
         # Y 访问吃饭首页
-        self.browser.get("{}/{}".format(self.server_url, "just_eating"))
+        self.browser.get("{}/{}".format(self.app_articels_url, "just_eating"))
 
         # Y 看到吃饭的标题被放置在页面偏上正中间的位置
         title = self.browser.find_element_by_id("id_eating_place_name")
@@ -66,7 +66,7 @@ class ArticleDisplayTest(FunctionalTest):
         super().setUp()
         self.test_markdown_file_path = os.path.join(settings.BASE_DIR, "articles", "tests", "markdown_file_for_test.md")
         self.create_markdown_test_article()
-        self.test_url = "{host}/{path}".format(host=self.server_url, path="articles/archives/")
+        self.test_url = "{host}/{path}".format(host=self.app_articels_url, path="articles/archives/")
 
         # Y 访问归档页
         self.browser.get(self.test_url)
@@ -171,7 +171,7 @@ class WorkJournalDisplayTest(FunctionalTest):
         journal = self.create_work_journal_test_db_data()
 
         # 打开首页, 访问某份日记
-        self.browser.get(self.server_url)
+        self.browser.get(self.app_articels_url)
         search_button = self.browser.find_element_by_id("id_search")
         search_button.send_keys("{}".format(journal.title))
         search_button.submit()

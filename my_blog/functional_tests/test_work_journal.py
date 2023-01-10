@@ -35,7 +35,7 @@ class TestWorkJournalHomePage(FunctionalTest):
         测试左下角显示的数字
         """
         # Y 打开了 work_journal 首页
-        self.browser.get("{host}{path}".format(host=self.server_url, path=self.unique_url))
+        self.browser.get("{host}{path}".format(host=self.app_articels_url, path=self.unique_url))
 
         # Y 发现左下角有个日记数, 且日记数不为 0, 说明站长是有记日记的
         self.assertIn("日记数", self.browser.page_source)
@@ -46,7 +46,7 @@ class TestWorkJournalHomePage(FunctionalTest):
         测试万年历相关的显示
         """
         # Y 打开了 work_journal 首页
-        self.browser.get("{host}{path}".format(host=self.server_url, path=self.unique_url))
+        self.browser.get("{host}{path}".format(host=self.app_articels_url, path=self.unique_url))
 
         # Y 打开首页后没有看到一堆乱七八糟的日期标题
         self.assertNotRegex(self.browser.page_source, "2017-02-08.*")
@@ -66,7 +66,7 @@ class TestWorkJournalHomePage(FunctionalTest):
         today = datetime.datetime.today()
 
         # Y 打开了 work_journal 首页
-        self.browser.get("{host}{path}".format(host=self.server_url, path=self.unique_url))
+        self.browser.get("{host}{path}".format(host=self.app_articels_url, path=self.unique_url))
 
         # Y 知道站长今天已经写日记了
         self.create_work_journal_test_db_data()
@@ -87,7 +87,7 @@ class TestWorkJournalSearch(FunctionalTest):
 
     def setUp(self):
         super().setUp()
-        self.work_journal_home = "{host}{path}".format(host=self.server_url, path=self.unique_url)
+        self.work_journal_home = "{host}{path}".format(host=self.app_articels_url, path=self.unique_url)
         self.create_work_journal_test_db_data()
 
         # Y 打开日记的首页
@@ -224,7 +224,7 @@ class Test404Page(FunctionalTest):
         self.create_work_journal_test_db_data()
 
         # Y 进入了 404 页面
-        self.browser.get("{host}{path}".format(host=self.server_url, path=self.unique_url))
+        self.browser.get("{host}{path}".format(host=self.app_articels_url, path=self.unique_url))
 
         # Y 看到了搜索框, 于是进行搜索
         search_button = self.browser.find_element_by_id("id_search_work_journal")

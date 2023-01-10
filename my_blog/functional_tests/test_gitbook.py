@@ -9,6 +9,7 @@
 """
 from .base import FunctionalTest, DEFAULT_WAIT
 from gitbook_notes.models import GitBook
+from selenium.webdriver.common.by import By
 import my_constant as const
 
 import unittest
@@ -27,10 +28,10 @@ class GitBookSearchTest(FunctionalTest):
         测试进行 All 搜索时能搜索到 GitBook
         """
         # Y 打开首页
-        self.browser.get(self.server_url)
+        self.browser.get(self.app_articels_url)
 
         # Y 知道某本 GitBook 里面含有关键词 "避免直接使用父类的名字", 于是搜索它
-        search_button = self.browser.find_element_by_id("id_search")
+        search_button = self.browser.find_element(By.ID, "id_search")
         search_button.send_keys("{}\n".format("避免直接使用父类的名字"))
 
         # Y 看到搜索结果中确实显示了某个 GitBook 以及对应行的内容
@@ -43,14 +44,12 @@ class GitBookSearchTest(FunctionalTest):
         测试进行 All 搜索时, 如果不存在对应的关键词会显示搜索结果为空
         """
         # Y 打开首页
-        self.browser.get(self.server_url)
+        self.browser.get(self.app_articels_url)
 
         # 它知道不管是 GitBook 还是 Articles 还是 journals 都没有含关键词 "not_exist_key_word" 的文章
         # 于是它故意搜索这个关键词, 看能显示出什么
-        search_button = self.browser.find_element_by_id("id_search")
+        search_button = self.browser.find_element(By.ID, "id_search")
         search_button.send_keys("{}\n".format("not_exist_key_word"))
 
         # 结果发现搜索页面提示搜索结果为空
         self.assertIn(const.EMPTY_ARTICLE_ERROR, self.browser.page_source)
-
-

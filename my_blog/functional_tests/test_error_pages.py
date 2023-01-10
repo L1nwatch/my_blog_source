@@ -7,6 +7,7 @@
 """
 # 标准库
 from django.test import override_settings
+from selenium.webdriver.common.by import By
 import requests
 
 # 自己的模块
@@ -22,9 +23,10 @@ class Test404Pages(FunctionalTest):
     """
 
     def setUp(self):
-        self.not_exist_url = "{}/aaa".format(self.server_url)
+        self.not_exist_url = "{}/aaa".format(self.index_url)
         super().setUp()
 
+    # TODO: visit watch0.top/articles/aaa still working
     def test_show_404_pages_when_visit_not_exist_url(self):
         """
         测试访问不存在的 URL 时会显示 404 页面
@@ -39,10 +41,10 @@ class Test404Pages(FunctionalTest):
         self.assertTrue("The page you requested cannot be found right meow." in self.browser.page_source)
 
         # Y 在想是不是所有页面访问都会得到 404, 于是它试着访问了一下首页
-        response = requests.get(self.server_url)
+        response = requests.get(self.app_articels_url)
         # 发现首页能够正常访问, 并不是返回 404 码, 首页存在标志性的搜索框
         self.assertFalse(response.status_code == 404)
-        self.browser.get(self.server_url)
-        search_input = self.browser.find_element_by_id("id_search")
+        self.browser.get(self.app_articels_url)
+        search_input = self.browser.find_element(By.ID, "id_search")
         self.assertIsNotNone(search_input)
 

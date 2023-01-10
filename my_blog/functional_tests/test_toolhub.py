@@ -32,7 +32,7 @@ class TestEncoding(FunctionalTest):
     unique_url = const.TOOLHUB_HOME_URL
 
     def setUp(self):
-        self.toolhub_home = "{host}{path}".format(host=self.server_url, path=self.unique_url)
+        self.toolhub_home = "{host}{path}".format(host=self.app_articels_url, path=self.unique_url)
         super().setUp()
 
     def test_translate_right(self):
@@ -69,7 +69,7 @@ class TestCipher(FunctionalTest):
     unique_url = const.TOOLHUB_HOME_URL
 
     def setUp(self):
-        self.toolhub_home = "{host}{path}".format(host=self.server_url, path=self.unique_url)
+        self.toolhub_home = "{host}{path}".format(host=self.app_articels_url, path=self.unique_url)
         super().setUp()
 
     @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
@@ -155,7 +155,7 @@ class TestABTesting(FunctionalTest):
     unique_url = const.TOOLHUB_HOME_URL
 
     def setUp(self):
-        self.toolhub_home = "{host}{path}".format(host=self.server_url, path=self.unique_url)
+        self.toolhub_home = "{host}{path}".format(host=self.app_articels_url, path=self.unique_url)
         super().setUp()
 
     def test_options_exist(self):
@@ -212,7 +212,7 @@ class TestStaticHTML(FunctionalTest):
     unique_url = const.TOOLHUB_STATIC_HTML_URL
 
     def setUp(self):
-        self.static_file_uri = "{host}{path}".format(host=self.server_url, path=self.unique_url)
+        self.static_file_uri = "{host}{path}".format(host=self.app_articels_url, path=self.unique_url)
         super().setUp()
 
     def test_return_404_while_html_not_exist(self):

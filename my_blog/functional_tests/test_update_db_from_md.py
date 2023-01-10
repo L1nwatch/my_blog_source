@@ -30,7 +30,7 @@ class AutoUpdateDatabaseTest(FunctionalTest):
         self.test_url = "{host}/{path}"
 
         # Y 访问归档页
-        self.browser.get(self.test_url.format(host=self.server_url, path="articles/archives/"))
+        self.browser.get(self.test_url.format(host=self.app_articels_url, path="articles/archives/"))
 
     def test_update_notes_button(self):
         """
@@ -44,7 +44,7 @@ class AutoUpdateDatabaseTest(FunctionalTest):
             # Y 发现博主的仓库中存在笔记
             if self.__git_repo_has_notes():
                 # 同时 Y 发现了一个更新数据库 url, 访问它
-                self.browser.get(self.test_url.format(host=self.server_url, path="articles/update_notes/"))
+                self.browser.get(self.test_url.format(host=self.app_articels_url, path="articles/update_notes/"))
 
                 # 归档页上终于能看到文章了
                 try:

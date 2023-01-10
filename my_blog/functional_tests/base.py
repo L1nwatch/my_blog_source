@@ -55,12 +55,14 @@ class FunctionalTest(CreateTestData, StaticLiveServerTestCase):
                 # 如果找到了，就让测试类跳过常规的 setUpClass 方法，把过渡服务器的 URL 赋值给 server_url 变量
                 cls.server_host = arg.split("=")[1]
                 # 如果检测到命令行参数中有 liveserver, 就不仅存储 cls.server_url 属性，还存储 server_host 和 against_staging 属性
-                cls.server_url = "http://" + cls.server_host
+                cls.index_url = "http://" + cls.server_host
+                cls.app_articels_url = cls.index_url + "/articles/"
                 cls.against_staging = True
                 return
         super().setUpClass()
         cls.against_staging = False
-        cls.server_url = cls.live_server_url
+        cls.index_url = cls.live_server_url
+        cls.app_articels_url = cls.index_url + "/articles"
 
     @classmethod
     def tearDownClass(cls):
@@ -91,7 +93,7 @@ class FunctionalTest(CreateTestData, StaticLiveServerTestCase):
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--proxy-server={}'.format(my_proxy))
         self.browser = webdriver.Chrome(
-            "/Users/L1n/Desktop/Code/Python/my_blog_source/virtual/selenium/webdriver/chromedriver",
+            "/Users/watch/PycharmProjects/my_blog_source/virtual/chromedriver",
             # chrome_options=chrome_options
         )
 
@@ -193,13 +195,13 @@ while True:
 
         # 创建文章二, 有分类, 有标签, 有内容
         new_article = self.create_article(title="article_with_python", category="Python", content="I am `Python`")
-        new_article.tag = (tag_python,)
+        new_article.tag.set((tag_python,))
 
         # 创建三篇文章, 带标签 Others/Others2, 以及分类 Test_Category
         for i in range(3):
             new_article = self.create_article(title="article_with_same_category{}".format(i + 1),
                                               category="Test_Category", content="Same category {}".format(i + 1))
-            new_article.tag = (tag_others, tag_others2)
+            new_article.tag.set((tag_others, tag_others2))
 
     def create_work_journal_test_db_data(self):
         self.create_journal(title="2017-02-07 任务情况总结", content="测试笔记, 应该记录 2017/02/07 的工作内容", date=datetime(2017, 2, 7))
@@ -248,4 +250,3 @@ while True:
         action = ActionChains(self.browser)
         action.move_to_element(element).perform()
         element.click()
-

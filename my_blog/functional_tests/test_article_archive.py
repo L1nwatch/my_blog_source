@@ -9,6 +9,7 @@
 # 标准库
 import datetime
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 
 # 自己的模块
 from .base import FunctionalTest
@@ -26,12 +27,12 @@ class TestHomeArchiveButton(FunctionalTest):
         self.create_articles_test_db_data()
 
         # 访问首页
-        self.browser.get(self.server_url)
+        self.browser.get(self.app_articels_url)
         home_page_source = self.browser.page_source
         home_page_url = self.browser.current_url
 
         # 看到了归档按钮, 不知道有什么用, 点击看看
-        self.browser.find_element_by_id("id_archives").click()
+        self.browser.find_element(By.ID, "id_archives").click()
 
         # 发现 URL 变了
         self.assertNotEqual(self.browser.current_url, home_page_url)
@@ -42,7 +43,7 @@ class TestHomeArchiveButton(FunctionalTest):
         # 而且不显示文章内容
         with self.assertRaises(NoSuchElementException):
             # 如果找不到会抛出 NoSuchElementException 异常
-            self.browser.find_element_by_id("id_article_content")
+            self.browser.find_element(By.ID, "id_article_content")
 
 
 class TestArchiveDisplay(FunctionalTest):
@@ -54,14 +55,14 @@ class TestArchiveDisplay(FunctionalTest):
         super().setUp()
         self.create_articles_test_db_data()
         self.test_time = datetime.datetime.now()
-        self.test_url = "{host}/{path}".format(host=self.server_url, path="articles/archives/")
+        self.test_url = "{}archives/".format(self.app_articels_url)
 
         # Y 访问归档页
         self.browser.get(self.test_url)
 
     def test_has_article_create_time(self):
         # 发现存在创建时间的字样, 而且能看到格式是: "Y 年 m 月 d 号 H 时"
-        self.browser.find_element_by_id("id_create_time")
+        self.browser.find_element(By.ID, "id_create_time")
         create_time_label_content = ("Create: {} 年 {} 月 {} 号 {} 时"
                                      .format(self.test_time.year, str(self.test_time.month).zfill(2),
                                              str(self.test_time.day).zfill(2), str(self.test_time.hour).zfill(2)))
@@ -69,7 +70,7 @@ class TestArchiveDisplay(FunctionalTest):
 
     def test_has_article_update_time(self):
         # 发现存在更新时间的字样, 而且能看到格式是: "Y 年 m 月 d 号 H 时"
-        self.browser.find_element_by_id("id_update_time")
+        self.browser.find_element(By.ID, "id_update_time")
         update_time_label_content = ("Update: {} 年 {} 月 {} 号 {} 时"
                                      .format(self.test_time.year, str(self.test_time.month).zfill(2),
                                              str(self.test_time.day).zfill(2), str(self.test_time.hour).zfill(2)))
@@ -80,7 +81,7 @@ class TestArchiveDisplay(FunctionalTest):
         测试 tag.html 显示的时间是正确的
         """
         # 发现分类包含个超链接, 点击进去看看
-        self.browser.find_element_by_id("id_category").click()
+        self.browser.find_element(By.ID, "id_category").click()
 
         # 出现了一个新页面, 页面上显示了每篇文章的发布时间
         publish_time_label_content = ("Create: {} 年 {} 月 {} 号 {} 时"
@@ -113,7 +114,7 @@ class TestArchiveDisplay(FunctionalTest):
         test_tag = Tag.objects.get(tag_name=test_tag_name)
         archive_url = self.browser.current_url
 
-        tags = self.browser.find_elements_by_id("id_tags")
+        tags = self.browser.find_elements(By.ID, "id_tags")
         # Y 发现 Others 这个 tag 了, 于是点击一下, 看是否能显示出所有包含 Others 这个 Tag 的文章
         for each_tag in tags:
             if each_tag.text == test_tag_name:
@@ -125,7 +126,7 @@ class TestArchiveDisplay(FunctionalTest):
 
         # Y 知道总共有 x 篇文章包含有 Others 这个 Tag, 而且界面上刚好就显示了 x 篇文章
         test_articles = Article.objects.filter(tag=test_tag)
-        all_display_articles = self.browser.find_elements_by_id("id_article_title")
+        all_display_articles = self.browser.find_elements(By.ID, "id_article_title")
         self.assertEqual(len(all_display_articles), len(test_articles))
 
         # Y 一一对应标题, 发现所有包含 Others Tag 的文章都显示在了界面上
@@ -133,4 +134,3 @@ class TestArchiveDisplay(FunctionalTest):
             self.assertTrue(any(
                 [each_article.title == x.text for x in all_display_articles]
             ))
-

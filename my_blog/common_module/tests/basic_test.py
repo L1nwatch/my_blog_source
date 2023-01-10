@@ -57,7 +57,7 @@ class CreateTestData:
         article = Article.objects.create(title=title, content=content, category=category, click_times=click_times)
 
         if article_tag:
-            article.tag = article_tag
+            article.tag.set(article_tag)
 
         return article
 
@@ -99,7 +99,7 @@ class CreateTestData:
             click_times=click_times,
         )
         if gitbook_tag:
-            gitbook.tag = gitbook_tag
+            gitbook.tag.set(gitbook_tag)
 
         return gitbook
 
