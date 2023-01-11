@@ -157,6 +157,7 @@ class TestCommonHelpFunc(BasicTest):
             # 日志记录中的发邮件函数被触发
             self.assertTrue(send_email_mock.called)
 
+    @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 忽略部分耗时测试")
     def test_will_send_email_when_new_ip_visit(self):
         """
         测试当有新 IP 访问时会执行发送邮件的操作
