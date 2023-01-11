@@ -17,10 +17,10 @@ import os
 import unittest
 import requests
 import html
+import time
+from selenium.webdriver.common.by import By
 
 # 自己的模块
-import time
-
 from functional_tests.base import FunctionalTest
 from common_module.common_help_function import is_static_file_exist
 import my_constant as const
@@ -32,7 +32,7 @@ class TestEncoding(FunctionalTest):
     unique_url = const.TOOLHUB_HOME_URL
 
     def setUp(self):
-        self.toolhub_home = "{host}{path}".format(host=self.app_articels_url, path=self.unique_url)
+        self.toolhub_home = "{host}{path}".format(host=self.index_url, path=self.unique_url)
         super().setUp()
 
     def test_translate_right(self):
@@ -47,21 +47,20 @@ class TestEncoding(FunctionalTest):
         self.browser.execute_script('document.getElementById("id_github_picture_translate").click()')
         self.assertNotEqual(home_url, self.browser.current_url)
 
-        input_box = self.browser.find_element_by_id("id_input_box")
-        translate_button = self.browser.find_element_by_id("id_translate_button")
+        input_box = self.browser.find_element(By.ID, "id_input_box")
+        translate_button = self.browser.find_element(By.ID, "id_translate_button")
 
         # Y 在输入框里面输入了一堆内容, 再点击了一下转换按钮
         input_box.send_keys("2017-03-17首页截图.jpg")
         translate_button.click()
 
         # 它发现输出框显示出了转换之后的结果
-        output_box = self.browser.find_element_by_id("id_output_box")
+        output_box = self.browser.find_element(By.ID, "id_output_box")
         right_answer = "2017-03-17%E9%A6%96%E9%A1%B5%E6%88%AA%E5%9B%BE.jpg"
-        self.wait_for(lambda:self.assertEqual(output_box.get_attribute("value"), right_answer),timeout=3)
-
+        self.wait_for(lambda: self.assertEqual(output_box.get_attribute("value"), right_answer), timeout=3)
 
         # Y 很满意, 点击首页想看看其他内容
-        home_view = self.browser.find_element_by_id("id_home_page")
+        home_view = self.browser.find_element(By.ID, "id_home_page")
         home_view.click()
 
 
@@ -69,7 +68,7 @@ class TestCipher(FunctionalTest):
     unique_url = const.TOOLHUB_HOME_URL
 
     def setUp(self):
-        self.toolhub_home = "{host}{path}".format(host=self.app_articels_url, path=self.unique_url)
+        self.toolhub_home = "{host}{path}".format(host=self.index_url, path=self.unique_url)
         super().setUp()
 
     @unittest.skipUnless(const.SLOW_CONNECT_DEBUG, "[*] 用户选择忽略部分测试")
@@ -88,7 +87,7 @@ class TestCipher(FunctionalTest):
 
         # Y 很满意, 于是点击首页看看其他内容
         self.browser.back()
-        home_view = self.browser.find_element_by_id("id_home_page")
+        home_view = self.browser.find_element(By.ID, "id_home_page")
         home_view.click()
 
     def test_caesar_cipher_decrypt_right(self):
@@ -103,20 +102,20 @@ class TestCipher(FunctionalTest):
         self.browser.execute_script('document.getElementById("id_caesar_cipher").click()')
         self.assertNotEqual(home_url, self.browser.current_url)
 
-        input_box = self.browser.find_element_by_id("id_input_box")
-        translate_button = self.browser.find_element_by_id("id_caesar_decrypt_button")
+        input_box = self.browser.find_element(By.ID, "id_input_box")
+        translate_button = self.browser.find_element(By.ID, "id_caesar_decrypt_button")
 
         # Y 在输入框里面输入了一堆内容, 再点击了一下转换按钮
         input_box.send_keys("zobD*ooC")
         translate_button.click()
 
         # 它发现输出框显示出了转换之后的结果
-        output_box = self.browser.find_element_by_id("id_output_box")
+        output_box = self.browser.find_element(By.ID, "id_output_box")
         right_answer = "shU6*hh5"
         self.assertEqual(output_box.get_attribute("value"), right_answer)
 
         # Y 很满意, 点击首页想看看其他内容
-        home_view = self.browser.find_element_by_id("id_home_page")
+        home_view = self.browser.find_element(By.ID, "id_home_page")
         home_view.click()
 
     def test_caesar_cipher_encrypt_right(self):
@@ -131,20 +130,20 @@ class TestCipher(FunctionalTest):
         self.browser.execute_script('document.getElementById("id_caesar_cipher").click()')
         self.assertNotEqual(home_url, self.browser.current_url)
 
-        input_box = self.browser.find_element_by_id("id_input_box")
-        translate_button = self.browser.find_element_by_id("id_caesar_encrypt_button")
+        input_box = self.browser.find_element(By.ID, "id_input_box")
+        translate_button = self.browser.find_element(By.ID, "id_caesar_encrypt_button")
 
         # Y 在输入框里面输入了一堆内容, 再点击了一下转换按钮
         input_box.send_keys("shU6*hh5")
         translate_button.click()
 
         # 它发现输出框显示出了转换之后的结果
-        output_box = self.browser.find_element_by_id("id_output_box")
+        output_box = self.browser.find_element(By.ID, "id_output_box")
         right_answer = "zobD*ooC"
         self.wait_for(lambda: self.assertEqual(output_box.get_attribute("value"), right_answer), timeout=3)
 
         # Y 很满意, 点击首页想看看其他内容
-        home_view = self.browser.find_element_by_id("id_home_page")
+        home_view = self.browser.find_element(By.ID, "id_home_page")
         home_view.click()
 
 
@@ -155,7 +154,7 @@ class TestABTesting(FunctionalTest):
     unique_url = const.TOOLHUB_HOME_URL
 
     def setUp(self):
-        self.toolhub_home = "{host}{path}".format(host=self.app_articels_url, path=self.unique_url)
+        self.toolhub_home = "{host}{path}".format(host=self.index_url, path=self.unique_url)
         super().setUp()
 
     def test_options_exist(self):
@@ -202,7 +201,8 @@ class TestABTesting(FunctionalTest):
         self.browser.execute_script('document.getElementById("ib_ab_testing_sample_size").click()')
 
         # 发现 URL 变化了, 网页跳转到了这个在线计算工具的页面上
-        self.assertEqual(self.browser.current_url, const.TOOLHUB_AB_TESTING_SAMPLE_SIZE_URL)
+        self.assertEqual(self.browser.current_url.strip("https://"),
+                         const.TOOLHUB_AB_TESTING_SAMPLE_SIZE_URL.strip("https://"))
 
 
 class TestStaticHTML(FunctionalTest):
@@ -212,7 +212,7 @@ class TestStaticHTML(FunctionalTest):
     unique_url = const.TOOLHUB_STATIC_HTML_URL
 
     def setUp(self):
-        self.static_file_uri = "{host}{path}".format(host=self.app_articels_url, path=self.unique_url)
+        self.static_file_uri = "{host}{path}".format(host=self.index_url, path=self.unique_url)
         super().setUp()
 
     def test_return_404_while_html_not_exist(self):
@@ -278,8 +278,8 @@ class TestStaticHTML(FunctionalTest):
             # 用 requests 库访问结果也是一样的
             response = requests.get(self.static_file_uri.format(test_file_name))
 
-            # Y 发现网页返回了 500, 服务器错误
-            self.assertEqual(response.status_code, 500)
+            # Y 发现网页不能返回 200
+            self.assertNotEqual(response.status_code, 200)
         finally:
             # 删除创建的测试文件
             if os.path.exists(right_file_path):

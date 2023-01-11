@@ -55,7 +55,7 @@ class TestArchiveDisplay(FunctionalTest):
         super().setUp()
         self.create_articles_test_db_data()
         self.test_time = datetime.datetime.now()
-        self.test_url = "{}archives/".format(self.app_articels_url)
+        self.test_url = "{}/archives/".format(self.app_articels_url)
 
         # Y 访问归档页
         self.browser.get(self.test_url)

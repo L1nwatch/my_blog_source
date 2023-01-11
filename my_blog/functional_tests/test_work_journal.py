@@ -13,6 +13,7 @@
 """
 # 标准库
 import datetime
+from selenium.webdriver.common.by import By
 
 # 自己的库
 from .base import FunctionalTest
@@ -35,7 +36,7 @@ class TestWorkJournalHomePage(FunctionalTest):
         测试左下角显示的数字
         """
         # Y 打开了 work_journal 首页
-        self.browser.get("{host}{path}".format(host=self.app_articels_url, path=self.unique_url))
+        self.browser.get("{host}{path}".format(host=self.index_url, path=self.unique_url))
 
         # Y 发现左下角有个日记数, 且日记数不为 0, 说明站长是有记日记的
         self.assertIn("日记数", self.browser.page_source)
@@ -46,7 +47,7 @@ class TestWorkJournalHomePage(FunctionalTest):
         测试万年历相关的显示
         """
         # Y 打开了 work_journal 首页
-        self.browser.get("{host}{path}".format(host=self.app_articels_url, path=self.unique_url))
+        self.browser.get("{host}{path}".format(host=self.index_url, path=self.unique_url))
 
         # Y 打开首页后没有看到一堆乱七八糟的日期标题
         self.assertNotRegex(self.browser.page_source, "2017-02-08.*")
@@ -66,13 +67,13 @@ class TestWorkJournalHomePage(FunctionalTest):
         today = datetime.datetime.today()
 
         # Y 打开了 work_journal 首页
-        self.browser.get("{host}{path}".format(host=self.app_articels_url, path=self.unique_url))
+        self.browser.get("{host}{path}".format(host=self.index_url, path=self.unique_url))
 
         # Y 知道站长今天已经写日记了
         self.create_work_journal_test_db_data()
 
         # 于是 Y 试着点击一下, 想看看今天的日记
-        self.browser.find_element_by_id("id_journal").click()
+        self.browser.find_element(By.ID, "id_journal").click()
 
         # 发现 url 已经变了
         self.assertRegex(self.browser.current_url, self.unique_url + "\d{4}-\d{1,2}-\d{1,2}/")
@@ -87,7 +88,7 @@ class TestWorkJournalSearch(FunctionalTest):
 
     def setUp(self):
         super().setUp()
-        self.work_journal_home = "{host}{path}".format(host=self.app_articels_url, path=self.unique_url)
+        self.work_journal_home = "{host}{path}".format(host=self.index_url, path=self.unique_url)
         self.create_work_journal_test_db_data()
 
         # Y 打开日记的首页
@@ -95,7 +96,7 @@ class TestWorkJournalSearch(FunctionalTest):
 
     def test_can_search_by_date(self):
         # Y 决定试试左边的搜索功能, 搜索指定的日期
-        search_button = self.browser.find_element_by_id("id_search_work_journal")
+        search_button = self.browser.find_element(By.ID, "id_search_work_journal")
         search_button.send_keys("2017-02-08\n")
 
         # Y 发现搜索结果中只有一篇, 而且是刚才自己搜索的日期
@@ -105,36 +106,36 @@ class TestWorkJournalSearch(FunctionalTest):
 
     def test_can_search_by_content(self):
         # Y 怀疑是不是只能搜索日期不能靠内容来搜索, 于是搜索指定内容
-        search_button = self.browser.find_element_by_id("id_search_work_journal")
+        search_button = self.browser.find_element(By.ID, "id_search_work_journal")
         search_button.send_keys("python")
         search_button.submit()
 
 
         # 发现了有文章被搜索出来, 搜索结果标题里面没有刚才搜索的内容
-        self.assertNotIn("python", self.browser.find_element_by_id(const.ID_SEARCH_RESULT_TITLE).text.lower())
+        self.assertNotIn("python", self.browser.find_element(By.ID, const.ID_SEARCH_RESULT_TITLE).text.lower())
 
         # Y 打开搜索出来的文章, 发现自己搜索的内容确实存在于文章之中
-        self.browser.find_element_by_id(const.ID_SEARCH_RESULT_TITLE).click()
+        self.browser.find_element(By.ID, const.ID_SEARCH_RESULT_TITLE).click()
         self.assertIn("python", self.browser.page_source.lower())
 
     def test_can_search_without_case(self):
         # Y 知道有篇文章提到了 Python, 但是 Y 故意输入大小写混乱的 pYthOn 想看下能否搜出来
-        search_button = self.browser.find_element_by_id("id_search_work_journal")
+        search_button = self.browser.find_element(By.ID, "id_search_work_journal")
         search_button.send_keys("pYthOn")
         search_button.submit()
 
         # 发现确实能搜索出来, 而且打开文章内容, python 确实存在
-        self.browser.find_element_by_id(const.ID_SEARCH_RESULT_TITLE).click()
+        self.browser.find_element(By.ID, const.ID_SEARCH_RESULT_TITLE).click()
         self.assertIn("python", self.browser.page_source.lower())
 
     def test_can_search_multi_keyword(self):
         # Y 想知道这个支不支持多个关键词搜索, 于是搜索了 python test
-        search_button = self.browser.find_element_by_id("id_search_work_journal")
+        search_button = self.browser.find_element(By.ID, "id_search_work_journal")
         search_button.send_keys("python test")
         search_button.submit()
 
         # 发现有结果出来
-        self.browser.find_element_by_id(const.ID_SEARCH_RESULT_TITLE).click()
+        self.browser.find_element(By.ID, const.ID_SEARCH_RESULT_TITLE).click()
 
         # 打开日记一看, python 和 test 都存在, 而且这两个关键词并不是连在一起的
         self.assertIn("python", self.browser.page_source.lower())
@@ -146,7 +147,7 @@ class TestWorkJournalSearch(FunctionalTest):
         搜索结果不应该只包含对应的日记标题, 还应该有对应的内容
         """
         # Y 知道某篇日记含有 python 这个关键词, 于是搜索看看
-        search_button = self.browser.find_element_by_id("id_search_work_journal")
+        search_button = self.browser.find_element(By.ID, "id_search_work_journal")
 
         # Y 知道日记所在行内容为 <# Test pyThon>
         # 于是 Y 搜索 markdown1, 看是否显示这篇文章及结果出来
@@ -154,11 +155,11 @@ class TestWorkJournalSearch(FunctionalTest):
         search_button.submit()
 
         # 搜索结果出来了, Y 看到了自己搜索的关键词
-        search_keyword = self.browser.find_element_by_id("id_search_work_journal").get_attribute("value")
+        search_keyword = self.browser.find_element(By.ID, "id_search_work_journal").get_attribute("value")
         self.assertEqual(search_keyword, "python")
 
         # Y 查看搜索结果, 发现其找到对应文章了
-        search_result = self.browser.find_element_by_tag_name("body").text
+        search_result = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn("2017-02-08 任务情况总结", search_result)
 
         # 显示对应搜索结果
@@ -170,7 +171,7 @@ class TestWorkJournalSearch(FunctionalTest):
         """
         self.create_articles_test_db_data()
         # Y 知道某篇文章及某篇日记都有 python 这个关键词, 于是 Y 打算试试搜索结果是否都能搜索出来
-        search_button = self.browser.find_element_by_id("id_search_work_journal")
+        search_button = self.browser.find_element(By.ID, "id_search_work_journal")
         search_button.send_keys("python")
         search_button.submit()
 
@@ -178,12 +179,12 @@ class TestWorkJournalSearch(FunctionalTest):
         # Y 也知道存在这个关键字的文章标题为 <article_with_python>, 所在行内容为 <I am `Python`>
 
         # Y 只看到了日记
-        search_result = self.browser.find_element_by_tag_name("body").text
+        search_result = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertIn("2017-02-08 任务情况总结", search_result)
         self.assertIn("Test pyThon", search_result)
 
         # Y 没看到对应的文章
-        search_result = self.browser.find_element_by_tag_name("body").text
+        search_result = self.browser.find_element(By.TAG_NAME, "body").text
         self.assertNotIn("I am Python", search_result)
         self.assertNotIn("article_with_python", search_result)
 
@@ -194,7 +195,7 @@ class TestWorkJournalSearch(FunctionalTest):
         self.create_articles_test_db_data()
 
         # Y 知道某篇文章及某篇日记都有 python 这个关键词, 于是 Y 打算试试搜索结果是否都能搜索出来
-        search_button = self.browser.find_element_by_id("id_search_work_journal")
+        search_button = self.browser.find_element(By.ID, "id_search_work_journal")
         search_button.send_keys("python\n")
 
         # Y 发现显示的页面中左下角显示的不是文章数了, 而是显示日记数, 而且数字不为 0
@@ -207,7 +208,7 @@ class TestWorkJournalSearch(FunctionalTest):
         tomorrow = today + datetime.timedelta(days=1)
 
         # Y 知道站长明天的日记肯定还没写, 于是搜索这个
-        search_button = self.browser.find_element_by_id("id_search_work_journal")
+        search_button = self.browser.find_element(By.ID, "id_search_work_journal")
         search_button.send_keys("{}-{}-{}\n".format(tomorrow.year, tomorrow.month, tomorrow.day))
 
         # 显示找不到
@@ -224,10 +225,10 @@ class Test404Page(FunctionalTest):
         self.create_work_journal_test_db_data()
 
         # Y 进入了 404 页面
-        self.browser.get("{host}{path}".format(host=self.app_articels_url, path=self.unique_url))
+        self.browser.get("{host}{path}".format(host=self.index_url, path=self.unique_url))
 
         # Y 看到了搜索框, 于是进行搜索
-        search_button = self.browser.find_element_by_id("id_search_work_journal")
+        search_button = self.browser.find_element(By.ID, "id_search_work_journal")
 
         # Y 知道站长今天肯定有写日记, 而且日记内容包含 "今天"
         search_button.send_keys("今天\n")
@@ -240,6 +241,6 @@ class Test404Page(FunctionalTest):
 
         # 可以看到搜索结果的标题日期果然是今天
         today = datetime.datetime.today()
-        journal_title = self.browser.find_element_by_id("id_search_result_title")
+        journal_title = self.browser.find_element(By.ID, "id_search_result_title")
         self.assertRegex(journal_title.text, "{}-\d?{}-\d?{}".format(today.year, today.month, today.day))
 

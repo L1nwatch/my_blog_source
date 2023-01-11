@@ -17,6 +17,7 @@
 from .base import FunctionalTest
 from articles.models import Article
 from django.conf import settings
+from selenium.webdriver.common.by import By
 
 import time
 import os
@@ -34,7 +35,7 @@ class HomePageLayoutStylingTest(FunctionalTest):
         self.browser.get(self.app_articels_url)
 
         # 看到首页按钮被放置在右上角第一个位置
-        home_page_button = self.browser.find_element_by_id("id_home_page")
+        home_page_button = self.browser.find_element(By.ID, "id_home_page")
         self.assertAlmostEqual(home_page_button.location["x"], 594, delta=25)
         self.assertAlmostEqual(home_page_button.location["y"], 13, delta=5)
 
@@ -42,7 +43,7 @@ class HomePageLayoutStylingTest(FunctionalTest):
         self.browser.set_window_size(640, 800)
 
         # 看到首页按钮被隐藏了
-        home_page_button = self.browser.find_element_by_id("id_home_page")
+        home_page_button = self.browser.find_element(By.ID, "id_home_page")
         self.assertAlmostEqual(home_page_button.location["x"], 0, delta=5)
         self.assertAlmostEqual(home_page_button.location["y"], 0, delta=5)
 
@@ -53,10 +54,10 @@ class JustEatingLayoutStylingTest(FunctionalTest):
         吃饭的标题, 比如说 "Home", "School" 应该在正中间
         """
         # Y 访问吃饭首页
-        self.browser.get("{}/{}".format(self.app_articels_url, "just_eating"))
+        self.browser.get("{}/{}".format(self.index_url, "just_eating"))
 
         # Y 看到吃饭的标题被放置在页面偏上正中间的位置
-        title = self.browser.find_element_by_id("id_eating_place_name")
+        title = self.browser.find_element(By.ID, "id_eating_place_name")
         self.assertAlmostEqual(title.location["x"], 497, delta=15)
         self.assertAlmostEqual(title.location["y"], 20, delta=15)
 
@@ -66,7 +67,7 @@ class ArticleDisplayTest(FunctionalTest):
         super().setUp()
         self.test_markdown_file_path = os.path.join(settings.BASE_DIR, "articles", "tests", "markdown_file_for_test.md")
         self.create_markdown_test_article()
-        self.test_url = "{host}/{path}".format(host=self.app_articels_url, path="articles/archives/")
+        self.test_url = "{host}/{path}".format(host=self.index_url, path="articles/archives/")
 
         # Y 访问归档页
         self.browser.get(self.test_url)
@@ -81,8 +82,8 @@ class ArticleDisplayTest(FunctionalTest):
         with open(self.test_markdown_file_path, "r") as f:
             content1 = f.read()
 
-        # 创建一篇 Markdown 文章, 含有测试用的各个内容
-        Article.objects.create(title="code segment with white space", content=content1)
+            # 创建一篇 Markdown 文章, 含有测试用的各个内容
+            Article.objects.create(title="code segment with white space", content=content1, category="Markdown")
 
     def test_white_space_display_correct(self):
         """
@@ -95,11 +96,11 @@ class ArticleDisplayTest(FunctionalTest):
         最后发现是这种写法本身就不标准(以 GitHub 为标准), 所以就不理了
         """
         # Y 记得某篇文章使用了 ```sql lite, 想看看是否能显示正确, 于是找到待测试的那篇文章
-        articles_after_search = self.browser.find_element_by_id("id_article_title")
+        articles_after_search = self.browser.find_element(By.ID, "id_article_title")
         articles_after_search.click()
 
         # sql lite 不应该出现在文章中
-        self.assertNotIn("sql lite", self.browser.find_element_by_tag_name('body').text)
+        self.assertNotIn("sql lite", self.browser.find_element(By.TAG_NAME, 'body').text)
 
     def test_tables_parse_correct(self):
         """
@@ -107,40 +108,40 @@ class ArticleDisplayTest(FunctionalTest):
         :return:
         """
         # Y 记得某篇文章使用了表格, 想看看是否能显示正确, 于是找到待测试的那篇文章
-        articles_after_search = self.browser.find_element_by_id("id_article_title")
+        articles_after_search = self.browser.find_element(By.ID, "id_article_title")
         articles_after_search.click()
 
         # Y 检查 --- 是否出现在文章正文中, 出现了就说明没解析成功
-        self.assertNotIn("---", self.browser.find_element_by_tag_name('body').text)
+        self.assertNotIn("---", self.browser.find_element(By.TAG_NAME, 'body').text)
 
         # Y 记得还有些特殊符号在表格中, 想看下这些特殊符号是否能够显示出来
-        self.assertIn("{:.2f}", self.browser.find_element_by_tag_name('body').text)
+        self.assertIn("{:.2f}", self.browser.find_element(By.TAG_NAME, 'body').text)
 
     def test_sidebar_button_display(self):
         """
         测试打开一篇文章的时候左边的菜单显示
         """
         # Y 随便打开了一篇文章
-        articles_after_search = self.browser.find_element_by_id("id_article_title")
+        articles_after_search = self.browser.find_element(By.ID, "id_article_title")
         articles_after_search.click()
 
         # 发现左边的按钮变化了, 只剩下一个可以链接到首页的作者名以及一个搜索框
-        sidebar = self.browser.find_element_by_id("id_sidebar")
+        sidebar = self.browser.find_element(By.ID, "id_sidebar")
         self.assertIn("w@tch", sidebar.text)
         self.assertNotIn("EMAIL", sidebar.text)
 
-        self.browser.find_element_by_id("id_search")
+        self.browser.find_element(By.ID, "id_search")
 
     def test_sidebar_tree_display(self):
         """
         测试打开一篇文章, 可以看到左边显示了目录树, 跟文章内容一一对应
         :return:
         """
-        articles_after_search = self.browser.find_element_by_id("id_article_title")
+        articles_after_search = self.browser.find_element(By.ID, "id_article_title")
         articles_after_search.click()
 
         # Y 发现左边显示了一堆目录树, 居然是跟右边的文章有一一对应关系的
-        sidebar = self.browser.find_element_by_id("id_sidebar")
+        sidebar = self.browser.find_element(By.ID, "id_sidebar")
 
         # 依次检测几个标题
         self.assertIn("一级标题", sidebar.text)
@@ -155,7 +156,7 @@ class ArticleDisplayTest(FunctionalTest):
         self.assertNotIn("这里是三级标题的内容", sidebar.text)
 
         # Y 发现直接点击目录树, 右边就会跳转到对应的地方进行显示
-        h1 = self.browser.find_element_by_id("_1")
+        h1 = self.browser.find_element(By.ID, "_1")
         self.assertIn("#_1", self.browser.page_source)
         self.assertIn("#_2", self.browser.page_source)
         self.assertIn("#1", self.browser.page_source)
@@ -172,17 +173,15 @@ class WorkJournalDisplayTest(FunctionalTest):
 
         # 打开首页, 访问某份日记
         self.browser.get(self.app_articels_url)
-        search_button = self.browser.find_element_by_id("id_search")
+        search_button = self.browser.find_element(By.ID, "id_search")
         search_button.send_keys("{}".format(journal.title))
         search_button.submit()
 
-        journal_link = self.browser.find_element_by_id("id_search_result_title")
+        journal_link = self.browser.find_element(By.ID, "id_search_result_title")
         journal_link.click()
 
         # 日记标题确实显示出来了
-        self.assertIn(journal.title, self.browser.find_element_by_class_name("post-title").text)
+        self.assertIn(journal.title, self.browser.find_element(By.CLASS_NAME, "post-title").text)
 
         # 侧边栏也显示出来了
-        self.browser.find_element_by_id("id_sidebar")
-
-
+        self.browser.find_element(By.ID, "id_sidebar")
