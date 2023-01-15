@@ -34,6 +34,10 @@
 
 ```shell
 # Update
+#	============================== 2023 Jan ==============================
+2023.01.15
+    更新 Python 版本到 3.9, 同时更新相关依赖库, 修正相关的自动化测试脚本
+    更新部署脚本及部署说明
 #	============================== 2018 Feb ==============================
 2018.02.22
     新增了个凯撒加密到平台中
@@ -226,20 +230,30 @@
 
 ## 自动化部署方法
 
-1. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等，具体步骤：
-   1. `sudo apt-get update`
-   2. `sudo apt-get install nginx`
-   3. `sudo apt-get install supervisor`
-   4. `sudo apt-get install git`
-   5. `sudo apt-get install python3`
-   6. `sudo apt-get install python3-pip`
-   7. `sudo apt-get install fabric`
-   8. `sudo apt-get install python3-dev` 可能还需要安装 gcc，如果装 pycrypto 出错的话
-   9. `sudo pip3 install virtualenv`
-2. 进入 `/home/watch/sites/watch0.top` 目录，进行克隆操作，主要是为了获取 `deploy_tools` 文件夹下的自动化部署脚本【注意这里的 watch0.top，是能够访问到该台主机的域名】
-3. 执行命令，获取仓库中的所有文件，并放在文件夹 `source` 下：`git clone https://github.com/L1nwatch/my_blog_source.git source`
-4. 进入自动化部署脚本目录：`/home/watch/sites/watch0.top/source/deploy_tools`
-5. 执行命令，开始自动化部署操作：`fab deploy:host=watch@watch0.top:端口号 --password=ssh密码 --sudo-password=sudo密码`。如果一切顺利，应该会有 `Done` 这个字样出现。【新版本的 fab 可能不需要 `--sudo-password=sudo密码`了，直接留下一个 `--password` 即可】
+1. 代码下载到服务器
+```shell
+# 创建指定文件夹, /home/用户名/sites/域名, 【注意这里的 watch0.top，是能够访问到该台主机的域名】
+mkdir /home/watch/sites/watch0.top
+# git clone 代码到本地
+git clone https://github.com/L1nwatch/my_blog_source.git source
+```
+2. 安装所需的软件，比如 nginx、git、Python、pip、virtualenv、fabric、supervisor 等
+   * 手动安装：
+```shell
+sudo apt-get update
+sudo apt-get install nginx
+sudo apt-get install supervisor
+sudo apt-get install git
+sudo apt-get install python3.9
+sudo apt-get install python3.9-pip
+sudo apt-get install fabric
+# 可能还需要安装 gcc，如果装 pycrypto 出错的话
+sudo apt-get install python3-dev 
+sudo pip3 install virtualenv
+```
+   * 脚本安装：`bash /home/watch/sites/watch0.top/source/deploy_tools/deploy.sh`
+3. 进入自动化部署脚本目录：`/home/watch/sites/watch0.top/source/deploy_tools`
+4. 执行命令，开始自动化部署操作：`fab deploy:host=watch@watch0.top:端口号 --password=ssh密码 --sudo-password=sudo密码`。如果一切顺利，应该会有 `Done` 这个字样出现。【新版本的 fab 可能不需要 `--sudo-password=sudo密码`了，直接留下一个 `--password` 即可】
 6. 部署期间需要输入用户名密码，这是 `work_journal` APP 需要的帐号密码，不需要使用到这个 APP 的话就随便输入一个吧
 7. 访问首页，看是否正常。如果报出编码错误，则进行编码设置：`sudo vi /etc/default/locale`，这里使用的是：`LANG="zh_CN.utf8"\nLANGUAGE="zh_CN.utf8"\nLC_ALL="zh_CN.utf8"`
 8. 【可选】创建超级管理员，使用命令 `python manage.py createsuperuser` 创建。
