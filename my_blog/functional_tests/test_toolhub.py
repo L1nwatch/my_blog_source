@@ -112,6 +112,7 @@ class TestCipher(FunctionalTest):
         # 它发现输出框显示出了转换之后的结果
         output_box = self.browser.find_element(By.ID, "id_output_box")
         right_answer = "shU6*hh5"
+        time.sleep(2)
         self.assertEqual(output_box.get_attribute("value"), right_answer)
 
         # Y 很满意, 点击首页想看看其他内容
