@@ -13,3 +13,4 @@ sudo apt install python3.9-distutils
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 python3.9 get-pip.py
 sudo python3.9 -m pip install virtualenv
+sudo python3.9 -m pip install Fabric3==1.12.post1

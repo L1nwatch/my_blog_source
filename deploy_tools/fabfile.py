@@ -337,7 +337,6 @@ def _create_directory_structure_if_necessary(site_folder):
         run("mkdir -p {}".format(path))
         if not os.path.exists(path):
             raise Exception("{} folder created fail".format(path))
-    exit()
 
 def _get_latest_source(source_folder):
     """
