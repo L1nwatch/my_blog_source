@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 # Install related software
 sudo apt-get update
 sudo apt-get install nginx
