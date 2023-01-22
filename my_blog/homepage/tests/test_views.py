@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 测试 homepage 这个 app 下的视图函数
 
+2023-01-22 update homepage: https://github.com/L1nwatch/my_blog_source/issues/27
 2021-10-10 first unittest
 """
 # 自己的模块
@@ -75,3 +76,44 @@ class TestHomePage(BasicTest):
         self.assertContains(response, "GgDocs")
         self.assertContains(response, "https://docs.google.com/spreadsheets/u/0/")
         self.assertContains(response, "icon-grid")
+
+    def test_homepage_include_cv_and_resume(self):
+        response = self.client.get(self.unique_url)
+        self.assertContains(response, "Resume")
+        self.assertContains(response, "http://watch0.top/resume")
+        self.assertContains(response, "CV")
+        self.assertContains(response, "http://watch0.top/cv")
+
+        self.assertContains(response, "icon-grid")
+
+    def test_homepage_has_4_types_link(self):
+        response = self.client.get(self.unique_url)
+        self.assertContains(response, "Social Media")  # Social Media(Resume/CV/LinkedIn/QQ/Wechat/GitHub Profile/...)
+        self.assertContains(response, "Useful Platform")  # Useful Platform(Jira/Wiki/Notion/....)
+        self.assertContains(response, "My Tool")  # My Tool(Articles/Menu/....)
+        self.assertContains(response, "Fun Stuff")  # Fun Stuff
+
+    def test_homepage_has_my_tools_from_ole_homepage(self):
+        response = self.client.get(self.unique_url)
+        self.assertContains(response, "Eating")
+        self.assertContains(response, "Journal")
+        self.assertContains(response, "Archives")
+        self.assertContains(response, "ToolHub")
+        self.assertContains(response, "Timeline")
+        self.assertContains(response, "LifeSummary")
+        self.assertContains(response, "GitBook")
+
+    def test_homepage_fulfill_all_Places(self):
+        response = self.client.get(self.unique_url)
+        self.assertContains(response, "https://codepen.io/")
+        self.assertContains(response, "https://to-do.live.com/tasks/today")
+        self.assertContains(response, "https://www.olevod.com/")
+        self.assertContains(response, "https://my.vultr.com/")
+        self.assertContains(response, "https://ping.chinaz.com/")
+        self.assertContains(response, "https://www.west.cn/")
+        self.assertContains(response, "https://www.lastpass.com/")
+        self.assertContains(response, "http://feijisu.icu/")
+        self.assertContains(response, "https://photos.google.com/")
+        self.assertContains(response, "https://stackoverflow.com/")
+        self.assertContains(response, "https://music.youtube.com/")
+        self.assertContains(response, "https://www.zhihu.com/column/testcircle")
