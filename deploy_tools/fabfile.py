@@ -465,7 +465,7 @@ def _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user):
 
     # 修改 nginx 运行用户
     sudo('sed "s/user [^;]\+/user {user}/g" /etc/nginx/nginx.conf'
-         ' | sudo tee /etc/nginx/nginx.conf'
+         ' | tee /etc/nginx/nginx.conf'
          .format(user=user))
 
     # 激活这个文件配置的虚拟主机
