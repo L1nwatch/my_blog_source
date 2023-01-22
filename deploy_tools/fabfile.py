@@ -485,6 +485,11 @@ def _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user):
          ' && supervisorctl update'
          ' && supervisorctl restart gunicorn')
 
+    # 设置 static 文件夹权限
+    sudo('cd {}'
+         '&& chown -R www-data:www-data my_blog/static'
+         .format(source_folder))
+
 
 def _update_setting_to_conf_file(old_content, cron_job):
     """
