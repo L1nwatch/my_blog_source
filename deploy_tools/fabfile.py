@@ -338,6 +338,7 @@ def _create_directory_structure_if_necessary(site_folder):
         if not os.path.exists(path):
             raise Exception("{} folder created fail".format(path))
 
+
 def _get_latest_source(source_folder):
     """
     执行 git 命令获取最新版本的代码
@@ -462,6 +463,11 @@ def _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user):
          ' | tee /etc/nginx/sites-available/{host}'.format(source_folder, host=host_name, user=user)
          )
 
+    # 修改 nginx 运行用户
+    sudo('sed "s/user [^;]\+/user {user}/g" /etc/nginx/nginx.conf'
+         ' | sudo tee /etc/nginx/nginx.conf'
+         .format(user=user))
+
     # 激活这个文件配置的虚拟主机
     sudo('ln -sf /etc/nginx/sites-available/{host} /etc/nginx/sites-enabled/{host}'.format(host=host_name))
 
@@ -487,8 +493,8 @@ def _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user):
 
     # 设置 static 文件夹权限
     sudo('cd {}'
-         '&& chown -R www-data:www-data my_blog/static'
-         .format(source_folder))
+         '&& chown -R {user}:{user} my_blog/static'
+         .format(source_folder, user=user))
 
 
 def _update_setting_to_conf_file(old_content, cron_job):
