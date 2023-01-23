@@ -167,6 +167,7 @@ class ArticleDisplayViewTest(BasicTest):
         right_string2 = """<div class="codehilite"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mf">2</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>\n</pre></div>"""
         self.assertTrue((right_string1 in markdown_html) or (right_string2 in markdown_html))
 
+#dsadsad
 
 class AboutMeViewTest(BasicTest):
     unique_url = "/articles/about_me/"
