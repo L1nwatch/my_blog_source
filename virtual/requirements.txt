@@ -25,7 +25,7 @@ markdown2==2.4.0
 md2py==0.0.1
 optionaldict==0.1.1
 outcome==1.2.0
-paramiko==2.0.9
+paramiko==1.17.2
 peewee==3.10.0
 pycrypto==2.6.1
 Pygments==2.1.3
