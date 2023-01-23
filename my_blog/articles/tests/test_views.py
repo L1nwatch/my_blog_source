@@ -163,8 +163,9 @@ class ArticleDisplayViewTest(BasicTest):
         self.assertIn(html.escape(right_string), markdown_html)
 
         # 测试 code_block_string 是否显示正常
-        right_string = """<div class="codehilite"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mf">2</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>\n</pre></div>"""
-        self.assertIn(right_string, markdown_html)
+        right_string1 = """<div class="codehilite"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mi">2</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>\n</pre></div>"""
+        right_string2 = """<div class="codehilite"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mf">2</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>\n</pre></div>"""
+        self.assertTrue((right_string1 in markdown_html) or (right_string2 in markdown_html))
 
 
 class AboutMeViewTest(BasicTest):
