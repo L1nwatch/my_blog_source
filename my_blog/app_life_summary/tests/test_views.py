@@ -29,6 +29,10 @@ class TestLifeSummary(BasicTest):
         self.assertContains(response, "洗漱用品")
         self.assertContains(response, "生活习惯")
 
+    def test_has_favicon_cio(self):
+        response = self.client.get(self.unique_url)
+        self.assertIn("favicon.ico", response.content.decode("utf8"))
+
     def test_create_sidebar_right(self):
         """
         测试能够正确地创建页面左边的菜单栏
@@ -178,7 +182,7 @@ class TestLifeSummary(BasicTest):
         """
         response = self.client.get(self.unique_url)
 
-        html_parse = BeautifulSoup(response.content)
+        html_parse = BeautifulSoup(response.content, "html5lib")
         divs = html_parse.find_all("div", {"class": "desktop"})
         self.assertTrue(len(divs) > 0)  # 至少有一份总结
 

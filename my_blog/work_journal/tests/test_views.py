@@ -62,6 +62,10 @@ class JournalHomeViewTest(BaseCommonTest):
         response = self.client.get(self.unique_url)
         self.assertIsInstance(response.context["form"], JournalForm)
 
+    def test_has_favicon_cio(self):
+        response = self.client.get(self.unique_url)
+        self.assertIn("favicon.ico", response.content.decode("utf8"))
+
     def test_only_pointed_ip_can_visit(self):
         """
         测试只有指定 IP 地址可以访问
