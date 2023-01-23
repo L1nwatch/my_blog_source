@@ -26,6 +26,10 @@ class Test404Pages(FunctionalTest):
         self.not_exist_url = "{}/aaa".format(self.index_url)
         super().setUp()
 
+    def test_404_pages_has_favicon_ico(self):
+        response = requests.get(self.not_exist_url)
+        self.assertIn("favicon.ico", response.text)
+
     # TODO: visit watch0.top/articles/aaa still working
     def test_show_404_pages_when_visit_not_exist_url(self):
         """
@@ -47,4 +51,3 @@ class Test404Pages(FunctionalTest):
         self.browser.get(self.app_articels_url)
         search_input = self.browser.find_element(By.ID, "id_search")
         self.assertIsNotNone(search_input)
-

@@ -115,6 +115,8 @@ class FunctionalTest(CreateTestData, StaticLiveServerTestCase):
                 self.browser.switch_to.window(handle)
                 self.take_screen_shot()
                 self.dump_html()
+        if "watch0.top" in self.browser.current_url or "localhost" in self.browser.current_url:
+            self.assertIn("favicon.ico", self.browser.page_source)
         self.browser.quit()
         super().tearDown()
 

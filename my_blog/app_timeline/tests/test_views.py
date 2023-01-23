@@ -24,6 +24,10 @@ class TestTravelEventTimeline(BasicTest):
 
         self.assertTemplateUsed(response, const.TRAVEL_EVENT_TIMELINE_TEMPLATE)
 
+    def test_has_favicon_cio(self):
+        response = self.client.get(self.unique_url)
+        self.assertIn("favicon.ico", response.content.decode("utf8"))
+
     def test_travel_event_timeline_display_right_information(self):
         """
         测试会显示日期
@@ -39,7 +43,7 @@ class TestTravelEventTimeline(BasicTest):
         """
         response = self.client.get(self.unique_url)
 
-        html_parse = BeautifulSoup(response.content)  # 传入 html 源码
+        html_parse = BeautifulSoup(response.content, "html5lib")  # 传入 html 源码
         events = html_parse.find_all("div", {"class": "evt"})  # 查找指定 tag, 指定要求有 class 属性
         self.assertTrue(len(events) > 0)
 

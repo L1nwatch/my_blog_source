@@ -16,7 +16,7 @@ from django.test import override_settings
 from common_module.tests.basic_test import BasicTest
 from common_module.common_help_function import is_static_file_exist
 from toolhub.views import tools_name_list
-from toolhub.forms import GitHubTranslateTextareaForm,CaesarCipherTextareaForm
+from toolhub.forms import GitHubTranslateTextareaForm, CaesarCipherTextareaForm
 import my_constant as const
 
 __author__ = '__L1n__w@tch'
@@ -50,6 +50,10 @@ class GitHubPictureTranslateViewTest(BasicTest):
         response = self.client.get(self.unique_url)
         self.assertTemplateUsed(response, "github_picture_translate_tool/github_picture_translate_tool.html")
 
+    def test_has_favicon_cio(self):
+        response = self.client.get(self.unique_url)
+        self.assertIn("favicon.ico", response.content.decode("utf8"))
+
     def test_translate_right(self):
         response = self.client.post(self.data_url, {"raw_data": "2017-03-17首页截图.jpg"})
         right_answer = "2017-03-17%E9%A6%96%E9%A1%B5%E6%88%AA%E5%9B%BE.jpg"
@@ -68,6 +72,10 @@ class CaesarCipherViewTest(BasicTest):
     def test_use_right_template(self):
         response = self.client.get(self.unique_url)
         self.assertTemplateUsed(response, "caesar_cipher/caesar_cipher.html")
+
+    def test_has_favicon_cio(self):
+        response = self.client.get(self.unique_url)
+        self.assertIn("favicon.ico", response.content.decode("utf8"))
 
     def test_translate_right(self):
         response = self.client.post(self.data_url, {"raw_data": "zobD*ooC"})
@@ -139,4 +147,3 @@ class StaticHTMLViewTest(BasicTest):
             # 删除创建的测试文件
             if os.path.exists(test_file_path):
                 os.remove(test_file_path)
-
