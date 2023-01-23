@@ -13,7 +13,7 @@ Django==3.1
 django-common-helpers==0.8.0
 django-debug-toolbar==3.2.1
 django-ipware==1.1.6
-ecdsa==0.13
+ecdsa==0.13.3
 exceptiongroup==1.1.0
 Fabric3==1.12.post1
 gunicorn==19.6.0
