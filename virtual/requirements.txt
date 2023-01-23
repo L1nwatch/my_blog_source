@@ -18,7 +18,7 @@ exceptiongroup==1.1.0
 Fabric3==1.12.post1
 gunicorn==19.6.0
 h11==0.14.0
-html5lib==0.9999999
+html5lib==0.999999999
 idna==2.5
 Markdown==2.6.8
 markdown2==2.4.0
