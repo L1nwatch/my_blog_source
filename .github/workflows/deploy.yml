@@ -3,19 +3,17 @@ name: deploy
 on:
   push:
     branches: [ master ]
-  pull_request:
-    branches: [ master ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: init ssh, deploy
-      run: |
-        eval $(ssh-agent -s)
-        echo "${{secrets.SERVER_SSH_PRIV_KEY}}" > deploy.key
-        rm -rf ~/.ssh/*
-        mkdir -p ~/.ssh
-        chmod 0600 deploy.key
-        ssh-add deploy.key
-        ssh -vT -o StrictHostKeyChecking=no watch@${{secrets.SERVER_IP}} "cd /home/watch/sites && bash update_sites.sh"
+      - name: init ssh, deploy
+        run: |
+          eval $(ssh-agent -s)
+          echo "${{secrets.SERVER_SSH_PRIV_KEY}}" > deploy.key
+          rm -rf ~/.ssh/*
+          mkdir -p ~/.ssh
+          chmod 0600 deploy.key
+          ssh-add deploy.key
+          ssh -vT -o StrictHostKeyChecking=no watch@${{secrets.SERVER_IP}} "cd /home/watch/sites && bash update_sites.sh"
