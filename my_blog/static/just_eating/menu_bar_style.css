@@ -1,4 +1,4 @@
-@import url(http://weloveiconfonts.com/api/?family=fontawesome);
+@import url(./fontawesome.css);
 html, body {
   height: 100%;
   position: relative;
