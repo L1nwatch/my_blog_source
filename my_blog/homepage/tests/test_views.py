@@ -48,7 +48,7 @@ class TestHomePage(BasicTest):
         response = self.client.get(self.unique_url)
         self.assertContains(response, "jira")
         self.assertContains(response, "https://w4tch.atlassian.net/jira")
-        self.assertContains(response, "icon-key")
+        self.assertContains(response, "icon-loop")
 
     def test_homepage_include_confluence_link(self):
         response = self.client.get(self.unique_url)
