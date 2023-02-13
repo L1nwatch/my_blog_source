@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2023.02.13 新增 alibaba 菜单测试
 2017.06.24 新增 sangfor 菜单测试, 将硬编码的 URL 改成常量
 2017.05.15 新增有关转盘页面选择地点功能的相关测试
 2017.03.22 新增有关转盘的相关测试
@@ -70,7 +71,7 @@ class TestHomeView(TestCase):
         """
         测试首页有链接到各个地方吃饭计划表的按钮
         """
-        for each_place in ("home", "school", "sangfor"):
+        for each_place in ("home", "school", "sangfor", "alibaba"):
             response = self.client.get(self.unique_url)
             self.assertContains(response, "{}{}".format(self.unique_url, each_place),
                                 msg_prefix="[-] 缺少指向 {} 的链接".format(each_place))
@@ -80,7 +81,8 @@ class TestEatingView(TestCase):
     """
     测试 sangfor/school 的菜单显示
     """
-    unique_urls = [const.JUST_EATING_SCHOOL_MENU_URL, const.JUST_EATING_SANGFOR_MENU_URL]
+    unique_urls = [const.JUST_EATING_SCHOOL_MENU_URL, const.JUST_EATING_SANGFOR_MENU_URL,
+                   const.JUST_EATING_ALIBABA_MENU_URL]
 
     def test_school_eating_template(self):
         for each_url in self.unique_urls:
@@ -90,9 +92,9 @@ class TestEatingView(TestCase):
 
     def test_display_school_eating_plan(self):
         """
-        测试是否显示了 School/Sangfor 的吃饭计划
+        测试是否显示了 School/Sangfor/Alibaba 的吃饭计划
         """
-        for each_url, each_title in zip(self.unique_urls, ["School", "Sangfor"]):
+        for each_url, each_title in zip(self.unique_urls, ["School", "Sangfor", "Alibaba"]):
             response = self.client.get(each_url)
             self.assertContains(response, each_title, msg_prefix="[-] 缺少地点 {} 的吃饭计划".format(each_title))
 

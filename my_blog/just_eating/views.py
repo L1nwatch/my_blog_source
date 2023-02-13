@@ -98,6 +98,23 @@ def create_sangfor_menu():
     return sangfor_menu
 
 
+def create_alibaba_menu():
+    sangfor_menu = list()
+
+    monday = const.EATING_MENU_STRUCTURE("周一", "公司\n无乳糖牛奶", "近铁\n大米先生", "美餐\n馄饨")
+    tuesday = const.EATING_MENU_STRUCTURE("周二", "公司\n无乳糖牛奶", "近铁\n小杨生煎", "美餐\n寿司")
+    wednesday = const.EATING_MENU_STRUCTURE("周三", "公司\n无乳糖牛奶", "近铁\n老乡鸡", "美餐\n面汤")
+    thursday = const.EATING_MENU_STRUCTURE("周四", "公司\n无乳糖牛奶", "近铁\n麦当劳-工作餐", "美餐\n便当饭")
+    friday = const.EATING_MENU_STRUCTURE("周五", "武宁\n煎饼", "近铁\n酸菜鱼", "美餐\n减脂餐")
+    saturday = const.EATING_MENU_STRUCTURE("周六", "武宁\n自己做饭", "武宁\n自己做饭", "武宁\n自己做饭")
+    sunday = const.EATING_MENU_STRUCTURE("周日", "武宁\n自己做饭", "武宁\n自己做饭", "武宁\n自己做饭")
+
+    for each_day in [monday, tuesday, wednesday, thursday, friday, saturday, sunday]:
+        sangfor_menu.append(each_day)
+
+    return sangfor_menu
+
+
 @log_wrapper(str_format="查看了菜单", logger=logger)
 def just_eating_home_view(request, eating_place):
     eating_times = ["", "早餐", "午餐", "晚餐"]
@@ -111,6 +128,9 @@ def just_eating_home_view(request, eating_place):
     elif eating_place == "sangfor":
         menu = create_sangfor_menu()
         eating_place_name = "Sangfor"
+    elif eating_place == "alibaba":
+        menu = create_alibaba_menu()
+        eating_place_name = "Alibaba"
     else:
         raise Http404
     return render(request, "just_eating_base.html", {"eating_days": menu,
