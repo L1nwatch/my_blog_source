@@ -77,6 +77,7 @@ const.EATING_MENU_STRUCTURE = namedtuple("eating_menu", ["day_time", "morning", 
 const.JUST_EATING_HOME_URL = "/just_eating/"
 const.JUST_EATING_SCHOOL_MENU_URL = const.JUST_EATING_HOME_URL + "school"
 const.JUST_EATING_SANGFOR_MENU_URL = const.JUST_EATING_HOME_URL + "sangfor"
+const.JUST_EATING_ALIBABA_MENU_URL = const.JUST_EATING_HOME_URL + "alibaba"
 
 # ====================================================================================================================
 
