@@ -9,7 +9,7 @@
 import re
 
 from .base import FunctionalTest
-from just_eating.views import school_lunch_backup_list, school_dinner_backup_list
+from just_eating.views import school_lunch_backup_list, school_dinner_backup_list, menu_type_backup_list
 from selenium.webdriver.common.by import By
 
 __author__ = '__L1n__w@tch'
@@ -87,7 +87,7 @@ class JustEatingHomeViewTest(FunctionalTest):
         spinner = self.browser.find_element(By.ID, "id_spinner")
         page_source = self.browser.page_source
         self.assertTrue(all(
-            [x in page_source for x in school_lunch_backup_list]
+            [x in page_source for x in menu_type_backup_list]
         ))
 
         # 它看到大转盘的指针颜色现在是无, 而且还有个 "Spin me" 按钮
@@ -109,16 +109,16 @@ class JustEatingHomeViewTest(FunctionalTest):
         # Y 进入了转盘页面
         self.browser.find_element(By.ID, "id_random_eating").click()
 
-        # 它发现页面出现了大标题, 内容是学校午饭备选菜单
+        # 它发现页面出现了大标题, 内容是随机的备选菜单
         eating_what_title = self.browser.find_element(By.ID, "id_eating_what")
-        self.assertEqual("学校午饭", eating_what_title.text)
+        self.assertEqual("随机", eating_what_title.text)
         page_source = self.browser.page_source
         self.assertTrue(all(
-            [x in page_source for x in school_lunch_backup_list]
+            [x in page_source for x in menu_type_backup_list]
         ))
         current_url = self.browser.current_url
 
-        # Y 现在想要知道在学校应该吃什么晚饭, 不是午饭, 于是 Y 选择了地点切换按钮
+        # Y 现在想要知道在学校应该吃什么晚饭, 不是随机, 于是 Y 选择了地点切换按钮
         # Y 选中了学校晚饭这一个选项
         self.browser.execute_script('document.getElementById("id_school_dinner").click()')
 
@@ -129,4 +129,17 @@ class JustEatingHomeViewTest(FunctionalTest):
         page_source = self.browser.page_source
         self.assertTrue(all(
             [x in page_source for x in school_dinner_backup_list]
+        ))
+
+        # Y 现在想要知道在学校应该吃什么午饭, 于是 Y 选择了地点切换按钮
+        # Y 选中了学校午饭这一个选项
+        self.browser.execute_script('document.getElementById("id_school_lunch").click()')
+
+        # Y 发现页面重定向了, 而且页面大标题也改了, 菜单内容也改了
+        self.assertNotEqual(self.browser.current_url, current_url)
+        eating_what_title = self.browser.find_element(By.ID, "id_eating_what")
+        self.assertEqual("学校午饭", eating_what_title.text)
+        page_source = self.browser.page_source
+        self.assertTrue(all(
+            [x in page_source for x in school_lunch_backup_list]
         ))
