@@ -21,6 +21,7 @@ logger = logging.getLogger("my_blog.just_eating.views")
 school_breakfast_backup_list = ["海棠-山东杂粮煎饼", "暂无其他早饭列表", "暂无其他早饭列表", "暂无其他早饭列表", "暂无其他早饭列表"]
 school_lunch_backup_list = ["快餐", "微辣香锅", "新综香干炒肉", "食欲中西简餐", "暂无其他午饭列表", "暂无其他午饭列表"]
 school_dinner_backup_list = ["海棠-瓦罐汤", "暂无其他晚饭列表", "暂无其他晚饭列表", "暂无其他晚饭列表", "暂无其他晚饭列表"]
+menu_type_backup_list = ["日韩料理", "西餐/自助", "海鲜/烧烤", "烤肉/烧肉", "川菜/湘菜", "粤菜/茶餐厅", "火锅"]
 
 
 def create_home_menu():
@@ -146,6 +147,9 @@ def random_eating(request, eating_place):
     elif eating_place == "school_dinner":
         food_list = school_dinner_backup_list
         place = "学校晚饭"
+    elif eating_place == "menu_type":
+        food_list = menu_type_backup_list
+        place = "随机"
     else:
         raise Http404
     return render(request, "just_eating_spinner.html", {"food_list": food_list, "eating_place": place})
