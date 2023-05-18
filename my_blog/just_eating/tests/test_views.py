@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2023.05.18 新增 随机餐厅 菜单测试
 2023.02.13 新增 alibaba 菜单测试
 2017.06.24 新增 sangfor 菜单测试, 将硬编码的 URL 改成常量
 2017.05.15 新增有关转盘页面选择地点功能的相关测试
@@ -12,7 +13,8 @@
 from django.test import TestCase
 
 # 自己的模块
-from just_eating.views import school_lunch_backup_list, school_dinner_backup_list
+from just_eating.views import school_lunch_backup_list, school_dinner_backup_list, restaurant_list, \
+    menu_type_backup_list
 import my_constant as const
 
 __author__ = '__L1n__w@tch'
@@ -115,6 +117,17 @@ class TestRandomEatingView(TestCase):
         response = self.client.get(self.unique_url.format("school_dinner"))
         for each_backup_food in school_dinner_backup_list:
             self.assertContains(response, each_backup_food)
+
+        # 随机的菜单
+        response = self.client.get(self.unique_url.format("menu_type"))
+        for each_type in menu_type_backup_list:
+            self.assertContains(response, each_type)
+
+        # 餐厅列表
+        response = self.client.get(self.unique_url.format("menu_type"))
+        for each_restaurant in restaurant_list:
+            self.assertContains(response, each_restaurant["type"])
+            self.assertContains(response, each_restaurant["name"])
 
     def test_use_spinner_template(self):
         response = self.client.get(self.unique_url.format("school_lunch"))
