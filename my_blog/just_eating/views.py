@@ -22,6 +22,19 @@ school_breakfast_backup_list = ["海棠-山东杂粮煎饼", "暂无其他早饭
 school_lunch_backup_list = ["快餐", "微辣香锅", "新综香干炒肉", "食欲中西简餐", "暂无其他午饭列表", "暂无其他午饭列表"]
 school_dinner_backup_list = ["海棠-瓦罐汤", "暂无其他晚饭列表", "暂无其他晚饭列表", "暂无其他晚饭列表", "暂无其他晚饭列表"]
 menu_type_backup_list = ["日韩料理", "西餐/自助", "海鲜/烧烤", "烤肉/烧肉", "川菜/湘菜", "粤菜/茶餐厅", "火锅"]
+restaurant_list = [
+    {"type": "火锅", "name": "呷哺呷哺，八合里"},
+    {"type": "炒菜", "name": "蜀谭记，巡湘记"},
+    {"type": "茶点", "name": "繁楼"},
+    {"type": "甜点", "name": "西丽丽丰园自助"},
+    {"type": "韩料", "name": "春熙台"},
+    {"type": "烤肉", "name": "厚贞"},
+    {"type": "海鲜", "name": "八号鱼巷、蔚海之都蒸汽海鲜料理(大世界店)"},
+    {"type": "烧烤", "name": "丰茂烤串，烧烤码头"},
+    {"type": "自助", "name": "東盛自助料理(淮海中路店)"},
+    {"type": "日料", "name": "光绪寿喜锅自助，和风铁板烧"},
+    {"type": "西餐", "name": "快乐爱斯米"}
+]
 
 
 def create_home_menu():
@@ -152,4 +165,5 @@ def random_eating(request, eating_place):
         place = "随机"
     else:
         raise Http404
-    return render(request, "just_eating_spinner.html", {"food_list": food_list, "eating_place": place})
+    return render(request, "just_eating_spinner.html",
+                  {"food_list": food_list, "eating_place": place, "restaurant_list": restaurant_list})
