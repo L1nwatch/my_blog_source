@@ -27,21 +27,17 @@ def locate_using_ip_address(ip_address):
     if ipaddress.ip_address(ip_address).is_private:
         return "内网 IP"
 
-    response = requests.get("https://ip.taobao.com/outGetIpInfo?ip={ip_address}&accessKey=alibaba-inc".format(ip_address=ip_address))
-    if response.status_code == 502:
-        # 遇到不知名的错误
-        return "Unknown Country"
-    result = json.loads(response.content.decode("utf8"))
-    if "data" not in result or "country" not in result["data"]:
-        return "Unknown Country"
-    else:
+    try:
+        response = requests.get(
+            "https://ip.taobao.com/outGetIpInfo?ip={ip_address}&accessKey=alibaba-inc".format(ip_address=ip_address))
+        result = json.loads(response.content.decode("utf8"))
         country = result["data"]["country"]
-
-
-    if country == "中国":
-        return "{}-{}".format(country, result["data"]["city"])
-    else:
-        return country
+        if country == "中国":
+            return "{}-{}".format(country, result["data"]["city"])
+        else:
+            return country
+    except (json.decoder.JSONDecodeError, KeyError) as e:
+        return "Unknown"
 
 
 def get_ip_from_django_request(request):
@@ -54,5 +50,3 @@ def get_ip_from_django_request(request):
     :return: ip 地址, 比如 116.26.110.36
     """
     return get_ip(request)
-
-
