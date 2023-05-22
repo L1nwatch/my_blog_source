@@ -36,7 +36,7 @@ def locate_using_ip_address(ip_address):
             return "{}-{}".format(country, result["data"]["city"])
         else:
             return country
-    except (json.decoder.JSONDecodeError, KeyError) as e:
+    except (json.decoder.JSONDecodeError, KeyError, requests.exceptions.ConnectionError) as e:
         return "Unknown"
 
 
