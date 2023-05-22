@@ -384,9 +384,9 @@ def _update_static_files(source_folder, virtualenv_folder, site_name):
 
 
 def _update_database(source_folder, virtualenv_folder, site_name):
-    run("cd {source_folder} && {virtualenv_folder}/bin/python3 {site_name}/manage.py makemigrations --noinput"
+    sudo("cd {source_folder} && {virtualenv_folder}/bin/python3 {site_name}/manage.py makemigrations --noinput"
         .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder, site_name=site_name))
-    run("cd {source_folder} && {virtualenv_folder}/bin/python3 {site_name}/manage.py migrate --noinput"
+    sudo("cd {source_folder} && {virtualenv_folder}/bin/python3 {site_name}/manage.py migrate --noinput"
         .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder, site_name=site_name))
 
 
