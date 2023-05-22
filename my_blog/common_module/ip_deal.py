@@ -30,9 +30,13 @@ def locate_using_ip_address(ip_address):
     response = requests.get("https://ip.taobao.com/outGetIpInfo?ip={ip_address}&accessKey=alibaba-inc".format(ip_address=ip_address))
     if response.status_code == 502:
         # 遇到不知名的错误
-        return "中国"
+        return "Unknown Country"
     result = json.loads(response.content.decode("utf8"))
-    country = result["data"]["country"]
+    if "data" not in result or "country" not in result["data"]:
+        return "Unknown Country"
+    else:
+        country = result["data"]["country"]
+
 
     if country == "中国":
         return "{}-{}".format(country, result["data"]["city"])
