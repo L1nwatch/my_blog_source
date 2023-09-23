@@ -22,8 +22,6 @@ logger = logging.getLogger("my_blog.artificial_intelligence.views")
 file_path = os.path.join(os.path.dirname(__file__), "temp", "test_update.json")
 cp = configparser.ConfigParser()
 cp.read(const.USER_CONFIG_PATH)
-openai.api_key = cp.get("email_info", "openai_key")
-
 
 @log_wrapper(str_format="让 AI 更新了文件", level="info", logger=logger)
 def update_file_and_send_email(request):
@@ -42,16 +40,17 @@ def update_file_and_send_email(request):
 
 
 def _call_chatGPT_and_update_file():
+    openai.api_key = cp.get("email_info", "openai_key")
     with open(file_path, "r") as json_file:
         data = json.load(json_file)
 
-    completion = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "user", "content": data["Question"]}
-        ]
-    )
-    data["Answer"] = json.dumps(completion)
+    # completion = openai.ChatCompletion.create(
+    #     model="gpt-3.5-turbo",
+    #     messages=[
+    #         {"role": "user", "content": data["Question"]}
+    #     ]
+    # )
+    # data["Answer"] = json.dumps(completion)
     data["date"] = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     with open(file_path, "w") as json_file:
         json.dump(data, json_file)
