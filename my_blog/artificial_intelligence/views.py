@@ -27,12 +27,11 @@ cp.read(const.USER_CONFIG_PATH)
 def update_file_and_send_email(request):
     try:
         if _call_chatGPT_and_update_file():
-            # command = f"cd {const.NOTES_PATH_PARENT_DIR} && git add {file_path} && git commit -m 'AI generate' && git push"
-            # os.system(command)
+            command = f"cd {const.NOTES_PATH_PARENT_DIR} && git add {file_path} && git commit -m 'AI generate' && git push"
+            os.system(command)
             es = EmailSend()
-            # es.default_send_email(message="test send from Canada", logger=logger)
+            es.default_send_email(message="test send from Canada", logger=logger)
     except Exception as e:
-        print(e)
         logger.error(e)
     finally:
         response = HttpResponse("What did you do?")
@@ -44,13 +43,13 @@ def _call_chatGPT_and_update_file():
     with open(file_path, "r") as json_file:
         data = json.load(json_file)
 
-    # completion = openai.ChatCompletion.create(
-    #     model="gpt-3.5-turbo",
-    #     messages=[
-    #         {"role": "user", "content": data["Question"]}
-    #     ]
-    # )
-    # data["Answer"] = json.dumps(completion)
+    completion = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "user", "content": data["Question"]}
+        ]
+    )
+    data["Answer"] = json.dumps(completion)
     data["date"] = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     with open(file_path, "w") as json_file:
         json.dump(data, json_file)
