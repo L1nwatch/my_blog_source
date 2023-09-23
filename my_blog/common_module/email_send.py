@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 负责发送邮件
 
+2023.09.23 增加发邮件的逻辑
 2017.06.03 继续重写代码逻辑, 避免数据库锁定以及发邮件卡顿的问题
 2017.06.02 更改检索数据库 IP 的代码, 避免由于多线程导致没法立即检索数据库然后抛出异常
 2017.05.30 完善发送邮件的内容, 邮件标题加上访问 IP 的地理信息
@@ -13,6 +14,16 @@
 # 自己的模块
 from common_module.models import VisitedIP
 import my_constant as const
+import datetime
+import smtplib
+from email.mime.multipart import MIMEMultipart
+
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
+from email.mime.text import MIMEText
+from email.header import Header
 
 # 标准库
 from django.core.mail import send_mail
@@ -90,6 +101,38 @@ class EmailSend:
         if send_email_check:
             self.try_to_send_email(message, logger, ip_address, location)
 
+    def default_send_email(self, *, message, logger):
+        """
+        默认发送邮件
+        :param message: str(), 邮件正文
+        :param logger: logger 对象, 日志记录使用
+        """
+        today = datetime.datetime.today().strftime("%Y-%m-%d")
+        logger.info(f"[*] {today} 开始尝试发送邮件")
+
+        sender = 'watch@watch0.top'
+        receivers = ['490772448@qq.com', "watch@watch0.top", "watch1602@gmail.com"]
+
+        msgRoot = MIMEMultipart('related')
+        msgRoot['From'] = Header(sender, 'utf-8')
+        msgRoot['To'] = Header(",".join(receivers), 'utf-8')
+        subject = "[watch0top] {} default email subject".format(today)
+        msgRoot['Subject'] = Header(subject, 'utf-8')
+
+        msgAlternative = MIMEMultipart('alternative')
+        msgRoot.attach(msgAlternative)
+        msgAlternative.attach(MIMEText(message, 'html', 'utf-8'))
+
+        # 获取 username 和 password
+        cp = configparser.ConfigParser()
+        cp.read(const.USER_CONFIG_PATH)
+        username, password = cp.get("email_info", "smtp_user"), cp.get("email_info", "smtp_password")
+        address, port = cp.get("email_info", "smtp_server_host"), cp.get("email_info", "smtp_server_port")
+
+        with smtplib.SMTP_SSL(address, int(port)) as server:
+            server.set_debuglevel(1)
+            server.login(username, "cBhrpFWpgrbaaEbY")
+            server.sendmail(sender, receivers, msgRoot.as_string())
+
 
 email_sender = EmailSend(want_send_email=const.WANT_SEND_EMAIL)
-
