@@ -1,4 +1,1 @@
-{
-  "Question": "Hello! Can you tell me what's the result of 1+1 ?",
-  "Answer": "{\"id\": \"chatcmpl-821x4eSWPNMjZKDEgcW26KYrxES9i\", \"object\": \"chat.completion\", \"created\": 1695494850, \"model\": \"gpt-3.5-turbo-0613\", \"choices\": [{\"index\": 0, \"message\": {\"role\": \"assistant\", \"content\": \"Hello! The result of 1 + 1 is 2.\"}, \"finish_reason\": \"stop\"}], \"usage\": {\"prompt_tokens\": 23, \"completion_tokens\": 14, \"total_tokens\": 37}}"
-}
+{"Question": "Hello! Can you tell me what's the result of 1+1 ?", "Answer": "{\"id\": \"chatcmpl-8223FoF6zdbcXx3Xxik3b9l8txgNl\", \"object\": \"chat.completion\", \"created\": 1695495233, \"model\": \"gpt-3.5-turbo-0613\", \"choices\": [{\"index\": 0, \"message\": {\"role\": \"assistant\", \"content\": \"Hello! The result of 1 + 1 is 2.\"}, \"finish_reason\": \"stop\"}], \"usage\": {\"prompt_tokens\": 23, \"completion_tokens\": 14, \"total_tokens\": 37}}", "date": "2023-09-24 02:53:54"}

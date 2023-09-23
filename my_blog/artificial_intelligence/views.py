@@ -9,6 +9,7 @@ try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
+import datetime
 import logging
 import json
 import openai
@@ -28,8 +29,8 @@ openai.api_key = cp.get("email_info", "openai_key")
 def update_file_and_send_email(request):
     try:
         if _call_chatGPT_and_update_file():
-            command = f"cd {const.NOTES_PATH_PARENT_DIR} && git add {file_path} && git commit -m 'AI generate' && git push"
-            os.system(command)
+            # command = f"cd {const.NOTES_PATH_PARENT_DIR} && git add {file_path} && git commit -m 'AI generate' && git push"
+            # os.system(command)
             es = EmailSend()
             # es.default_send_email(message="test send from Canada", logger=logger)
     except Exception as e:
@@ -51,6 +52,7 @@ def _call_chatGPT_and_update_file():
         ]
     )
     data["Answer"] = json.dumps(completion)
+    data["date"] = datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     with open(file_path, "w") as json_file:
         json.dump(data, json_file)
     return True
