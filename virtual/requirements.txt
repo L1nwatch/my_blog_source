@@ -19,7 +19,7 @@ django-ipware==1.1.6
 ecdsa==0.13.3
 exceptiongroup==1.1.0
 Fabric3==1.12.post1
-frozenlist>=1.4.0
+frozenlist==1.4.0
 gunicorn==19.6.0
 h11==0.14.0
 html5lib==0.999999999
