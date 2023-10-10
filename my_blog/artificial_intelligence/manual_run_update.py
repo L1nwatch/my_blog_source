@@ -37,7 +37,8 @@ def build_message(feature, file_path):
 
 def call_openai_api(messages):
     openai.api_key = cp.get("email_info", "openai_key")
-    completion = openai.ChatCompletion.create(model="gpt-4", messages=messages)
+    # completion = openai.ChatCompletion.create(model="gpt-4", messages=messages)
+    completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
     print(completion.usage)
     return completion.choices[0].message["content"]
 
