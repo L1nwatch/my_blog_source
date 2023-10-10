@@ -3,6 +3,7 @@
 # version: Python3.X
 """ 定义定义常量类以及整个工程的各个 my_constant 变量
 
+2023.09.23 update email 相关的常量
 2017.07.09 新增 summary 结构体, 方便生成 html
 2017.07.07 新增 event timeline 结构体, 方便生成 html
 2017.06.30 新增 life_summary 相关变量
@@ -88,6 +89,7 @@ const.FUNCTION_TEST = True  # True if input("是否进行功能测试?(yes/no)")
 
 # 发送邮件
 const.WANT_SEND_EMAIL = True
+const.USER_CONFIG_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, "deploy_tools", "user_pass.conf")
 
 # 搜索页面
 const.ID_SEARCH_RESULT_TITLE = "id_search_result_title"
@@ -185,7 +187,6 @@ const.TRAVEL_EVENT_STRUCTURE = namedtuple("travel_event_structure", ["day", "mon
 
 const.HOMEPAGE_URL = "/"
 const.HOMEPAGE_TEMPLATE = "index_home.html"
-
 
 # ====================================================================================================================
 
