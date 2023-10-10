@@ -50,8 +50,8 @@ tqdm==4.66.1
 trio==0.22.0
 trio-websocket==0.9.2
 typing==3.7.4
-urllib3==1.26.13
 webencodings==0.5.1
+urllib3==1.26.17
 webkit2png==0.8.2
 wechatpy==1.8.0
 wsproto==1.2.0
