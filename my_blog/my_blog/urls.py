@@ -15,6 +15,7 @@ Including another URL conf
 
 
 # 更新
+2023.09.23 新增 AI 这个 APP
 2021.10.08 新增 homepage 首页这个 APP
 2019.03.21 新增 weixin 这个 APP
 2017.06.30 新增 app_life_summary 这个 APP
@@ -58,6 +59,7 @@ urlpatterns = [
     url(r"^timeline_app/", include("app_timeline.urls")),
     url(r"^life_summary_app/", include("app_life_summary.urls")),
     url(r"^weixin/", include("weixin.urls")),
+    url(r"^ai/", include("artificial_intelligence.urls")),
 ]
 
 if settings.DEBUG:
