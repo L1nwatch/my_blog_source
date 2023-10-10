@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2023.10.10 write a main function to let LLM update the file for me
 2023.09.23 新增第一个视图函数，实现更新
 """
 import os.path
@@ -22,6 +23,7 @@ logger = logging.getLogger("my_blog.artificial_intelligence.views")
 file_path = os.path.join(os.path.dirname(__file__), "temp", "test_update.json")
 cp = configparser.ConfigParser()
 cp.read(const.USER_CONFIG_PATH)
+
 
 @log_wrapper(str_format="让 AI 更新了文件", level="info", logger=logger)
 def update_file_and_send_email(request):
