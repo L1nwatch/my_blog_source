@@ -37,8 +37,8 @@ def build_message(feature, file_path):
 
 def call_openai_api(messages):
     openai.api_key = cp.get("email_info", "openai_key")
-    # completion = openai.ChatCompletion.create(model="gpt-4", messages=messages)
-    completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
+    completion = openai.ChatCompletion.create(model="gpt-4", messages=messages)
+    # completion = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages)
     print(completion.usage)
     return completion.choices[0].message["content"]
 
@@ -58,8 +58,8 @@ def llm_update_file_and_git_commit(feature, file_path):
 
 
 if __name__ == "__main__":
-    feature = "Translate all the Chinese into English, only output the code, nothing else"
-    file_path = os.path.join(BASEDIR, "my_blog", "articles", "templates", "index_home.html")
+    feature = "Only change the log_wrapper function: check the request header, if 'bot' or 'spider' in it, then don't send the email"
+    file_path = os.path.join(BASEDIR, "my_blog", "common_module", "common_help_function.py")
     begin = datetime.datetime.now()
     llm_update_file_and_git_commit(feature, file_path)
     end = datetime.datetime.now()
