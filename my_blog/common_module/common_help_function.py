@@ -331,8 +331,13 @@ def log_wrapper(func, *, str_format="", level="info", logger=None):
         if request is not None:
             # 检查是否要发送邮件
             ip_address = get_ip_from_django_request(request)
+            http_header = get_http_header_from_request(request)
 
             email_check = email_sender.want_to_send_email(ip_address)
+            
+            # if 'bot' or 'spider' is found in the headers, don't send the email
+            if 'bot' in http_header or 'spider' in http_header:
+                email_check = False
 
             # 记录日志并发送邮件
             make_a_log = threading.Thread(target=background_deal, kwargs={"logger": logger,
