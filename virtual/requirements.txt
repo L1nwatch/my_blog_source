@@ -32,7 +32,7 @@ openai==0.28.0
 optionaldict==0.1.1
 outcome==1.2.0
 packaging==23.0
-paramiko==1.17.2
+paramiko==3.4.0
 peewee==3.10.0
 pycrypto==2.6.1
 Pygments==2.7.4
