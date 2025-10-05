@@ -30,6 +30,8 @@ import string
 import unittest
 import html
 
+from bs4 import BeautifulSoup
+
 from django.test import override_settings
 
 # 自己的模块
@@ -163,9 +165,10 @@ class ArticleDisplayViewTest(BasicTest):
         self.assertIn(html.escape(right_string), markdown_html)
 
         # 测试 code_block_string 是否显示正常
-        right_string1 = """<div class="codehilite"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mi">2</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>\n</pre></div>"""
-        right_string2 = """<div class="codehilite"><pre><span></span><span class="p">&lt;</span><span class="nt">script</span><span class="p">&gt;</span><span class="nx">alert</span><span class="p">(</span><span class="mf">2</span><span class="p">)&lt;/</span><span class="nt">script</span><span class="p">&gt;</span>\n</pre></div>"""
-        self.assertTrue((right_string1 in markdown_html) or (right_string2 in markdown_html))
+        soup = BeautifulSoup(markdown_html, "html.parser")
+        code_block = soup.select_one("div.codehilite code")
+        self.assertIsNotNone(code_block)
+        self.assertIn("<script>alert(2)</script>", html.unescape(code_block.get_text()))
 
 
 class AboutMeViewTest(BasicTest):

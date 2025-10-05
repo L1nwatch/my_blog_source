@@ -12,7 +12,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: ['3.8', '3.9']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
 
     steps:
     - uses: actions/checkout@v2
@@ -64,3 +64,9 @@ jobs:
     - name: Run Tests - homepage
       run: |
         python my_blog/manage.py test homepage
+    - name: Run Tests - deploy_tools
+      env:
+        PYTHONPATH: ${{ github.workspace }}/my_blog
+        DJANGO_SETTINGS_MODULE: my_blog.settings
+      run: |
+        python -m unittest discover deploy_tools
