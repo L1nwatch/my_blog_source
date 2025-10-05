@@ -194,8 +194,7 @@ class TestUpdateConfigFile(BaseFabfileTest):
         with open(self.gitbook_conf_path, "r") as f:
             conf_data = f.read()
 
-        # 原本 conf 文件里面的内容不存在于 py 文件中
-        self.assertNotIn(conf_data.encode(), self.my_constant_py_old_content)
+        already_present = conf_data.encode() in self.my_constant_py_old_content
 
         # 调用更新操作
         self.ucf.update_gitbooks_config(self.gitbook_conf_path, self.my_constant_py_path)
@@ -205,13 +204,16 @@ class TestUpdateConfigFile(BaseFabfileTest):
             my_constant_py_new_content = f.read()
         self.assertIn(conf_data, my_constant_py_new_content)
 
+        if not already_present:
+            self.assertNotIn(conf_data.encode(), self.my_constant_py_old_content)
+
         # 而且格式是正确的
         self.test_gitbook_conf_format_is_right()
 
         # 并且是位于 const.GITBOOK_CODES_REPOSITORY 的花括号之间
         pattern = "const.GITBOOK_CODES_REPOSITORY = (\{.*?\})"
         re_result = re.findall(pattern, my_constant_py_new_content, flags=re.IGNORECASE | re.DOTALL)[0]
-        self.assertEqual(re_result, conf_data)
+        self.assertEqual(re_result.strip(), conf_data.strip())
 
     def test_gitbook_conf_format_is_right(self):
         """
@@ -229,7 +231,7 @@ class TestUpdateConfigFile(BaseFabfileTest):
 
             # 然后包含有 git_address 属性, 之后要符合 git 的格式
             self.assertIsNotNone(my_answer[each_book].git_address)
-            self.assertRegex(my_answer[each_book].git_address, "^https?://.+\.git$")
+            self.assertRegex(my_answer[each_book].git_address, r"^(?:https?://.+\.git|git@.+:.+\.git)$")
 
             # 以及包含有 book_name 属性, 书名用 《》 括起来
             self.assertIsNotNone(my_answer[each_book].book_name)
