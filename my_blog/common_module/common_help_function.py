@@ -374,6 +374,13 @@ def is_valid_ip(ip_address, *, ip_list=None):
         except ValueError:
             pass
 
+        fallback_ips = const.DOMAIN_IP_FALLBACK.get(candidate.lower(), [])
+        for fallback in fallback_ips:
+            try:
+                true_ip_list.append(ipaddress.ip_address(fallback))
+            except ValueError:
+                logger.warning("[!] 预设的域名映射 %s -> %s 非法，忽略该项", candidate, fallback)
+
         try:
             resolved = socket.gethostbyname(candidate)
         except socket.gaierror:
