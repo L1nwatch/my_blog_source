@@ -367,13 +367,38 @@ def is_valid_ip(ip_address, *, ip_list=None):
     true_ip_list = list()
 
     for each in ip_list:
+        candidate = each
         try:
-            each = ipaddress.ip_address(each)
+            true_ip_list.append(ipaddress.ip_address(candidate))
+            continue
         except ValueError:
-            each = ipaddress.ip_address(socket.gethostbyname(each))
-        true_ip_list.append(each)
+            pass
 
-    return ipaddress.ip_address(ip_address) in true_ip_list
+        fallback_ips = const.DOMAIN_IP_FALLBACK.get(candidate.lower(), [])
+        for fallback in fallback_ips:
+            try:
+                true_ip_list.append(ipaddress.ip_address(fallback))
+            except ValueError:
+                logger.warning("[!] 预设的域名映射 %s -> %s 非法，忽略该项", candidate, fallback)
+
+        try:
+            resolved = socket.gethostbyname(candidate)
+        except socket.gaierror:
+            logger.warning("[!] 无法解析 IP 限制域名 %s，忽略该项", candidate)
+            continue
+
+        try:
+            true_ip_list.append(ipaddress.ip_address(resolved))
+        except ValueError:
+            logger.warning("[!] 解析后的地址 %s 不是有效 IP，忽略该项", resolved)
+
+    try:
+        visitor_ip = ipaddress.ip_address(ip_address)
+    except ValueError:
+        logger.warning("[!] 访问者 IP %s 非法，拒绝访问", ip_address)
+        return False
+
+    return visitor_ip in true_ip_list
 
 
 @decorator_with_args

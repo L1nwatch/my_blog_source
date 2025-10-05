@@ -22,6 +22,7 @@ import string
 import os
 import sys
 import re
+from urllib.parse import urlsplit, urlunsplit
 from collections import namedtuple
 
 # 兼容 Python 3 和 2 的导入
@@ -30,8 +31,34 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-from fabric.contrib.files import append, exists, sed
-from fabric.api import env, run, sudo
+append = None
+exists = None
+sed = None
+env = None
+run = None
+sudo = None
+
+
+def _ensure_fabric(*required_names):
+    """Lazy-load Fabric only when specific helpers are needed."""
+    global append, exists, sed, env, run, sudo
+
+    missing = [name for name in required_names if globals().get(name) is None]
+    if not missing:
+        return
+
+    try:
+        from fabric.contrib.files import append as fabric_append, exists as fabric_exists, sed as fabric_sed
+        from fabric.api import env as fabric_env, run as fabric_run, sudo as fabric_sudo
+    except Exception as exc:  # pragma: no cover - surfaced in test setup
+        raise ImportError("Fabric and its dependencies are required for deployment operations") from exc
+
+    append = fabric_append
+    exists = fabric_exists
+    sed = fabric_sed
+    env = fabric_env
+    run = fabric_run
+    sudo = fabric_sudo
 
 __author__ = '__L1n__w@tch'
 
@@ -183,8 +210,10 @@ class UpdateConfigFile:
 
         def __sub_callback(raw_string, user, pw):
             url = raw_string.group(1)
-            new_url = "{0}//{username}:{password}@{1}".format(url.split("//")[0], url.split("//")[1],
-                                                              username=user, password=pw)
+            parsed = urlsplit(url)
+            host = parsed.netloc.split("@", 1)[-1]
+            new_netloc = f"{user}:{pw}@{host}"
+            new_url = urlunsplit((parsed.scheme, new_netloc, parsed.path, parsed.query, parsed.fragment))
 
             return 'const.JOURNALS_GIT_REPOSITORY = "{}"'.format(new_url)
 
@@ -213,6 +242,7 @@ class UpdateConfigFile:
         :param user_config_path: str(), user_pass.conf 文件的路径, 该文件保存用户部署时交互输入的信息
         :return: None
         """
+        _ensure_fabric("sed", "exists", "append")
         # Fabric 提供的 sed 函数, 类似于 sed 命令
         sed(settings_py_path, "DEBUG = True", "DEBUG = False")  # 关闭调试模式
         sed(settings_py_path, 'DOMAIN = "localhost"', 'DOMAIN = "{0}"'.format(self.host_name))
@@ -220,13 +250,15 @@ class UpdateConfigFile:
         # 修改发送邮件相关配置
         cp = configparser.ConfigParser()
         cp.read(user_config_path)
-        sed(settings_py_path, 'EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"',
+        sed(settings_py_path, 'EMAIL_BACKEND = ".*"',
             'EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"')
-        sed(settings_py_path, 'EMAIL_HOST = ""', 'EMAIL_HOST = "{}"'.format(cp.get("email_info", "smtp_server_host")))
-        sed(settings_py_path, 'EMAIL_PORT = 465', 'EMAIL_PORT = {}'.format(cp.get("email_info", "smtp_server_port")))
-        sed(settings_py_path, 'EMAIL_HOST_USER = ""',
+        sed(settings_py_path, 'EMAIL_HOST = ".*"',
+            'EMAIL_HOST = "{}"'.format(cp.get("email_info", "smtp_server_host")))
+        sed(settings_py_path, 'EMAIL_PORT = .*',
+            'EMAIL_PORT = {}'.format(cp.get("email_info", "smtp_server_port")))
+        sed(settings_py_path, 'EMAIL_HOST_USER = ".*"',
             'EMAIL_HOST_USER = "{}"'.format(cp.get("email_info", "smtp_user")))
-        sed(settings_py_path, 'EMAIL_HOST_PASSWORD = ""',
+        sed(settings_py_path, 'EMAIL_HOST_PASSWORD = ".*"',
             'EMAIL_HOST_PASSWORD = "{}"'.format(cp.get("email_info", "smtp_password")))
 
         # 加密密钥
@@ -246,6 +278,7 @@ def deploy():
     2016.10.04 根据之前的自动化部署代码进行更改, 这里要进行的几个操作包括:
         创建文件夹目录,获取最新版本代码,更新 settings 文件, 更新 Python 虚拟环境, 更新静态文件, 更新数据库, 设置 nginx 和 gunicorn
     """
+    _ensure_fabric("env", "run", "sudo", "exists", "append", "sed")
     # env.host 的值是在命令行中指定的服务器地址，例如 watch0.top, env.user 的值是登录服务器时使用的用户名
     site_folder = "/home/{}/sites/{}".format(env.user, env.host)
     source_folder = os.path.join(site_folder, "source")
@@ -293,6 +326,7 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder):
     :param site_folder: 网站所在的根目录, 即 source 的父目录
     :return:
     """
+    _ensure_fabric("sudo")
     # 大部分代码与 __set_locale_for_supervisor 类似, 这里是第 2 次使用, 如果使用了 3 次的话就要重构了
     temp_file1_name, temp_file2_name = "tEmP_conf1", "tEmP_conf2"
     temp_file1_path = os.path.join(source_folder, temp_file1_name)
@@ -330,6 +364,7 @@ def _set_cron_job(source_folder, virtualenv_folder, site_name, site_folder):
 
 
 def _create_directory_structure_if_necessary(site_folder):
+    _ensure_fabric("run")
     for sub_folder in ["virtualenv", "log"]:
         # run 的作用是在服务器中执行指定的 shell 命令
         # mkdir -p 是 mkdir 的一个有用变种，它有两个优势，其一是深入多个文件夹层级创建目录；其二，只在必要时创建目录。
@@ -347,6 +382,7 @@ def _get_latest_source(source_folder):
     :param source_folder: 代码所在的文件夹路径
     :return:
     """
+    _ensure_fabric("run", "exists")
     # exists 检查服务器中是否有指定的文件夹或文件。我们指定的是隐藏文件夹 .git，检查仓库是否已经克隆到文件夹中。
     if exists(source_folder + "/.git"):
         # 很多命令都以 cd 开头，其目的是设定当前工作目录。Fabric 没有状态记忆，所以下次运行 run 命令时不知道在哪个目录中
@@ -369,6 +405,7 @@ def _get_latest_source(source_folder):
 
 
 def _update_virtualenv(source_folder, virtualenv_folder):
+    _ensure_fabric("run", "exists")
     # 在 virtualenv 文件夹中查找可执行文件 pip，以检查虚拟环境是否存在
     if not exists(virtualenv_folder + "/bin/pip"):
         run("virtualenv --python=python3 {}".format(virtualenv_folder))
@@ -378,12 +415,14 @@ def _update_virtualenv(source_folder, virtualenv_folder):
 
 
 def _update_static_files(source_folder, virtualenv_folder, site_name):
+    _ensure_fabric("sudo")
     # 如果需要执行 Django 的 manage.py 命令，就要指定虚拟环境中二进制文件夹，确保使用的是虚拟环境中的 Django 版本，而不是系统中的版本
     sudo("cd {source_folder} && {virtualenv_folder}/bin/python3 {site_name}/manage.py collectstatic --noinput"
         .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder, site_name=site_name))
 
 
 def _update_database(source_folder, virtualenv_folder, site_name):
+    _ensure_fabric("sudo")
     sudo("cd {source_folder} && {virtualenv_folder}/bin/python3 {site_name}/manage.py makemigrations --noinput"
         .format(source_folder=source_folder, virtualenv_folder=virtualenv_folder, site_name=site_name))
     sudo("cd {source_folder} && {virtualenv_folder}/bin/python3 {site_name}/manage.py migrate --noinput"
@@ -395,6 +434,7 @@ def __set_locale_for_supervisor(source_folder):
     查找 supervisord.conf 中是否已经设定了 environment, 如果没有就添加该行设定
     :return:
     """
+    _ensure_fabric("sudo")
     temp_file1_name, temp_file2_name = "tEmP_conf1", "tEmP_conf2"
     temp_file1_path = os.path.join(source_folder, temp_file1_name)
     temp_file2_path = os.path.join(source_folder, temp_file2_name)
@@ -456,6 +496,7 @@ def _set_nginx_gunicorn_supervisor(source_folder, host_name, site_name, user):
     :param user: 用户名, 比如 "watch"
     :return:
     """
+    _ensure_fabric("sudo")
     # 编写 nginx 配置文件
     sudo('cd {}'
          ' && sed "s/HOST_NAME/{host}/g" deploy_tools/nginx.template.conf'

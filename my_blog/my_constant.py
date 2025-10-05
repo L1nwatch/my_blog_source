@@ -64,6 +64,10 @@ const.NOTES_PATH_PARENT_DIR = os.path.dirname(settings.BASE_DIR)
 const.ARTICLE_STRUCTURE = namedtuple("article_post", ["note", "content", "type"])
 const.MARKDOWN_TREE_STRUCTURE = namedtuple("toc_tree", ["title", "id", "child"])
 const.IP_LIMIT = ["127.0.0.1", "watch0.top", "ss.watch0.top"]
+const.DOMAIN_IP_FALLBACK = {
+    "watch0.top": ["173.199.70.145"],
+    "ss.watch0.top": ["173.199.70.145"],
+}
 
 # 日记页面
 const.JOURNAL_NOT_FOUND = "(●￣(ｴ)￣●)那天居然没写日记(O_o)??"
@@ -99,12 +103,12 @@ const.SEARCH_CHOICE_HELP_TEXT = "请选择要查询的范围"
 
 # 用来形成博客的文章 git
 const.NOTES_PATH_NAME = "notes"
-const.ARTICLES_GIT_REPOSITORY = "https://git.oschina.net/w4tch/notes_set.git"
+const.ARTICLES_GIT_REPOSITORY = "https://github.com/L1nwatch/my_notes_set.git"
 const.NOTES_GIT_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.NOTES_PATH_NAME)
 
 # 用来形成日记的文章 git
 const.JOURNALS_PATH_NAME = "journals"
-const.JOURNALS_GIT_REPOSITORY = "https://git.oschina.net/w4tch/sxf_notes_set.git"
+const.JOURNALS_GIT_REPOSITORY = "https://w4tch:H3jENLdPSvOI7PK5@git.oschina.net/w4tch/sxf_notes_set.git"
 const.JOURNALS_GIT_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.JOURNALS_PATH_NAME)
 
 # ====================================================================================================================
@@ -122,9 +126,19 @@ const.GITBOOK_CODES_PATH = os.path.join(const.NOTES_PATH_PARENT_DIR, const.GITBO
 const.GITBOOK_USER_NAME = "l1nwatch"
 const.GITBOOK_INFO = namedtuple("gitbook_info", ["git_address", "book_name", "tag_names"])
 const.GITBOOK_CODES_REPOSITORY = {
-    "pythonweb": const.GITBOOK_INFO("https://git.oschina.net/w4tch/PythonWeb.git", "《PythonWeb 开发: 测试驱动方法》",
-                                    ["Python"]),
+  "writing_solid_python_code_gitbook": const.GITBOOK_INFO("https://github.com/L1nwatch/writing_solid_python_code_gitbook.git","《编写高质量代码改善 Python 程序的 91 个建议》", ["Python"]),
+  "ctf": const.GITBOOK_INFO("https://github.com/L1nwatch/CTF.git", "《CTF 汇总》", ["CTF", "Hack"]),
+  "it_people_healthy": const.GITBOOK_INFO("https://github.com/L1nwatch/it_people_healthy.git","《程序员健康指南》", []),
+  "interview_exercise": const.GITBOOK_INFO("https://github.com/L1nwatch/interview_collect.git","《面试练习题汇总》", ["Python", "C", "软件测试"]),
+  "violent-python": const.GITBOOK_INFO("https://github.com/L1nwatch/violent-python.git", "《Python 绝技运用 Python 称为顶级黑客》", ["Python", "Hack"]),
+  "programming_ruby_zhcn": const.GITBOOK_INFO("https://github.com/L1nwatch/Programming_Ruby_zhCN_gitbook.git", "《ProgrammingRuby中文版第2版》", ["Ruby"]),
+  "pythonweb": const.GITBOOK_INFO("https://github.com/L1nwatch/PythonWeb.git", "《PythonWeb 开发: 测试驱动方法》", ["Python", "软件测试"]),
+  "python-cookbook": const.GITBOOK_INFO("https://github.com/L1nwatch/python-cookbook.git", "《Python Cookbook》", ["Python"]),
+  "flask_web_gitbook": const.GITBOOK_INFO("https://github.com/L1nwatch/Flask-Web-Python-Web-.git", "《Flask Web开发：基于Python的Web应用开发实战》", ["Python","Flask"]),
+  "continuous-delivery": const.GITBOOK_INFO("https://github.com/L1nwatch/continuous-delivery.git", "《持续交付——发布可靠软件的系统方法》", ["CI"]),
+  "rework_code_gitbook": const.GITBOOK_INFO("git@github.com:L1nwatch/refactoring-improving_the_design_of_existing_code.git", "《重构-改善既有代码的设计》", ["Code"]),
 }
+
 
 # ====================================================================================================================
 
