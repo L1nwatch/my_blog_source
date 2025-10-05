@@ -67,7 +67,14 @@ class CreateTestData:
         if not content:
             content = "test journal"
         if not date:
-            date = datetime.datetime.today() + datetime.timedelta(days=random.randint(0, 365))
+            base_date = datetime.date.today()
+            offset = 0
+            # 保证生成的日期在测试数据库中唯一，避免触发 unique 约束
+            while Journal.objects.filter(date=base_date + datetime.timedelta(days=offset)).exists():
+                offset += 1
+            date = base_date + datetime.timedelta(days=offset)
+        elif isinstance(date, datetime.datetime):
+            date = date.date()
         if not category:
             category = "category"
         if not click_times:
@@ -234,4 +241,3 @@ class BasicTest(CreateTestData, TestCase):
             "journals": const.JOURNAL_DISPLAY_URL,
             "gitbooks": const.GITBOOK_DISPLAY_URL,
         }[types]
-
