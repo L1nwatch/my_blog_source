@@ -18,7 +18,7 @@ django-debug-toolbar==3.2.1
 django-ipware==1.1.6
 ecdsa==0.13.3
 exceptiongroup==1.1.0
-Fabric3==1.12.post1
+Fabric3==1.14.post1
 frozenlist==1.4.0
 gunicorn==19.6.0
 h11==0.14.0
@@ -33,7 +33,7 @@ openai==0.28.0
 optionaldict==0.1.1
 outcome==1.2.0
 packaging==23.0
-paramiko==1.17.2
+paramiko==2.12.0
 peewee==3.10.0
 pycryptodome==3.23.0
 Pygments==2.7.4
