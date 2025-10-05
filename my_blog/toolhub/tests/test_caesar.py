@@ -21,9 +21,9 @@ class TestCaesar(TestCase):
     def test_caesar(self):
         caesar = Caesar(self.test_string)
         cipher_text = caesar.encrypt(self.test_string, self.shift)
-        self.failUnless(cipher_text == self.answer_string)
+        self.assertTrue(cipher_text == self.answer_string)
         plaintext = caesar.decrypt(self.answer_string, self.shift)
-        self.failUnless(plaintext == self.test_string)
+        self.assertTrue(plaintext == self.test_string)
 
     def test_dictionary(self):
         """
@@ -32,9 +32,9 @@ class TestCaesar(TestCase):
         """
         caesar = Caesar()
         cipher_text = caesar.encrypt(self.test_string, self.shift)
-        self.failUnless(cipher_text == self.answer_string)
+        self.assertTrue(cipher_text == self.answer_string)
         plaintext = caesar.decrypt(self.answer_string, self.shift)
-        self.failUnless(plaintext == self.test_string)
+        self.assertTrue(plaintext == self.test_string)
 
     def test_demo(self):
         """
