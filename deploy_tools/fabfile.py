@@ -279,6 +279,7 @@ def deploy():
         创建文件夹目录,获取最新版本代码,更新 settings 文件, 更新 Python 虚拟环境, 更新静态文件, 更新数据库, 设置 nginx 和 gunicorn
     """
     _ensure_fabric("env", "run", "sudo", "exists", "append", "sed")
+    env.forward_agent = True
     # env.host 的值是在命令行中指定的服务器地址，例如 watch0.top, env.user 的值是登录服务器时使用的用户名
     site_folder = "/home/{}/sites/{}".format(env.user, env.host)
     source_folder = os.path.join(site_folder, "source")
