@@ -66,6 +66,10 @@ __author__ = '__L1n__w@tch'
 REPO_URL = "https://github.com/L1nwatch/my_blog_source.git"
 USER_PASS_CONF = "user_pass.conf"
 GITBOOKS_CONF = "gitbooks_git.conf"
+# Map SSH entrypoints to the canonical host used for deployment paths
+DEPLOY_HOST_ALIASES = {
+    "ssh.watch0.top": "watch0.top",
+}
 
 
 class ConfigInteractive:
@@ -281,23 +285,24 @@ def deploy():
     _ensure_fabric("env", "run", "sudo", "exists", "append", "sed")
     env.forward_agent = True
 
-    # Preserve the actual host information even when SSH uses a jump/bastion proxy
-    original_host = env.host
+    # Preserve the canonical host even when SSH uses an alternative entrypoint
+    connect_host = env.host
+    canonical_host = DEPLOY_HOST_ALIASES.get(connect_host, connect_host)
     original_port = getattr(env, "port", None)
-    if os.environ.get("SSH_CONNECTION") and original_host in {"watch0.top"}:
+    if os.environ.get("SSH_CONNECTION") and connect_host in DEPLOY_HOST_ALIASES:
         host_string = "{}@{}".format(env.user, "127.0.0.1")
         if original_port:
             host_string = "{}:{}".format(host_string, original_port)
         env.host_string = host_string
-        env.host = original_host
         env.port = original_port
+    env.host = canonical_host
 
     # env.host 的值是在命令行中指定的服务器地址，例如 watch0.top, env.user 的值是登录服务器时使用的用户名
-    site_folder = "/home/{}/sites/{}".format(env.user, original_host)
+    site_folder = "/home/{}/sites/{}".format(env.user, canonical_host)
     source_folder = os.path.join(site_folder, "source")
     virtualenv_folder = os.path.join(site_folder, "virtualenv")
     site_name = "my_blog"
-    host_name = original_host
+    host_name = canonical_host
     user = env.user
 
     # 创建结构树
