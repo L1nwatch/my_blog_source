@@ -280,12 +280,24 @@ def deploy():
     """
     _ensure_fabric("env", "run", "sudo", "exists", "append", "sed")
     env.forward_agent = True
+
+    # Preserve the actual host information even when SSH uses a jump/bastion proxy
+    original_host = env.host
+    original_port = getattr(env, "port", None)
+    if os.environ.get("SSH_CONNECTION") and original_host in {"watch0.top"}:
+        host_string = "{}@{}".format(env.user, "127.0.0.1")
+        if original_port:
+            host_string = "{}:{}".format(host_string, original_port)
+        env.host_string = host_string
+        env.host = original_host
+        env.port = original_port
+
     # env.host 的值是在命令行中指定的服务器地址，例如 watch0.top, env.user 的值是登录服务器时使用的用户名
-    site_folder = "/home/{}/sites/{}".format(env.user, env.host)
+    site_folder = "/home/{}/sites/{}".format(env.user, original_host)
     source_folder = os.path.join(site_folder, "source")
     virtualenv_folder = os.path.join(site_folder, "virtualenv")
     site_name = "my_blog"
-    host_name = env.host
+    host_name = original_host
     user = env.user
 
     # 创建结构树
