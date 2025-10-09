@@ -1,0 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.pyc
+
+# Virtual environments
+venv/
+env/
+ENV/
+virtual/
+
+# Django
+*.log
+db.sqlite3
+*.sqlite3
+/static/
+/media/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Python pickle files
+*.pkl
+
+# Test coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# User-specific files
+deploy_tools/user_pass.conf
+
+# Migrations (optional - uncomment if you don't want to track migrations)
+# **/migrations/*.py
+# !**/migrations/__init__.py
+
+# Temporary files
+temp/
+*.tmp
+
+# Screenshots
+screendumps/
