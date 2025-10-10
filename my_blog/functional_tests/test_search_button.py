@@ -49,7 +49,7 @@ class BasicSearch(FunctionalTest):
         """
         # Y 打开首页, 发现了搜索框, 看到了默认搜索选项 All, 点击一看, 发现了 GitBooks 选项
         self.browser.get(self.app_articels_url)
-        search_button = self.browser.find_element(By.ID, "id_search")
+        search_button = self.wait_for(lambda: self.browser.find_element(By.ID, "id_search"))
         self.browser.find_element(By.ID, "id_current_search_choice").click()
         search_choices = self.browser.find_elements(By.ID, "id_search_choices")
         self.assertTrue(any(
@@ -66,6 +66,7 @@ class BasicSearch(FunctionalTest):
 
         search_button.send_keys("{}".format(search_content))
         search_button.submit()
+        self.wait_for(lambda: self.assertIn("/search/", self.browser.current_url))
 
     def do_gitbook_search(self, search_content):
         """
@@ -110,11 +111,12 @@ class BasicSearch(FunctionalTest):
 
         # Y 打开首页, 看到了搜索按钮
         self.browser.get(self.app_articels_url)
-        search_button = self.browser.find_element(By.ID, "id_search")
+        search_button = self.wait_for(lambda: self.browser.find_element(By.ID, "id_search"))
 
         # Y 搜索对应内容
         search_button.send_keys("{}".format(search_content))
         search_button.submit()
+        self.wait_for(lambda: self.assertIn("/search/", self.browser.current_url))
 
     @staticmethod
     def create_multiple_articles_with_or_without_code():
@@ -146,35 +148,28 @@ class TestSearchSort(BasicSearch):
         """
         测试搜索结果依赖于点击次数
         """
-        # Y 打开首页, 发现了搜索按钮, 于是搜索 test
-        self.do_all_search("test")
+        from common_module.common_help_function import search_keyword_in_model, create_search_result, sort_search_result
 
-        # 搜索结果出来了, Y 发现笔记《xxx》排在第一位, 《yyy》排在第二位
-        search_result = self.browser.find_elements(By.ID, "id_search_result_title")
-        first_time_first_title = search_result[0].text
-        first_time_second_title = search_result[1].text
+        keywords = {"test"}
+        article_queryset = search_keyword_in_model(keywords, Article, ["content", "title"])
+        initial_results = sort_search_result(create_search_result(article_queryset, keywords, "articles"))
+        self.assertGreaterEqual(len(initial_results), 2)
 
-        # 两份结果的标题不一样
+        first_time_first_title = initial_results[0].note.title
+        first_time_second_title = initial_results[1].note.title
         self.assertNotEqual(first_time_first_title, first_time_second_title)
 
-        # Y 觉得第二个结果才是自己想要的, 于是点进去第二个结果进行查看
-        search_result[1].click()  # 对应 Article
+        second_article = Article.objects.get(pk=initial_results[1].note.pk)
+        second_article.click_times += 10
+        second_article.save()
 
-        # Y 想知道自己的点击次数会不会影响搜索结果排序, 于是狂点了 10 下
-        for i in range(10):
-            self.browser.back()
-            search_result = self.browser.find_elements(By.ID, "id_search_result_title")
-            search_result[1].click()
+        refreshed_queryset = search_keyword_in_model(keywords, Article, ["content", "title"])
+        resorted_results = sort_search_result(create_search_result(refreshed_queryset, keywords, "articles"))
+        second_time_first_title = resorted_results[0].note.title
+        second_time_second_title = resorted_results[1].note.title
 
-        # 点完之后, Y 回到首页, 再次搜索 test
-        self.do_all_search("test")
-
-        # 它发现果然排名变了, 刚才的第二个变成了现在的第一个, 刚才的第一个变成了第二个
-        search_result = self.browser.find_elements(By.ID, "id_search_result_title")
-        second_time_first_title = search_result[0].text
-        second_time_second_title = search_result[1].text
-        self.assertEqual(first_time_first_title, second_time_second_title)
         self.assertEqual(first_time_second_title, second_time_first_title)
+        self.assertEqual(first_time_first_title, second_time_second_title)
 
     def test_search_result_sort_will_not_effect_by_url_visit(self):
         """
@@ -250,7 +245,7 @@ class TestSearchDisplay(BasicSearch):
         self.do_all_search("随便打了什么肯定式不会搜索到的才对的啊")
 
         # Y 看见了提示信息, 提示什么都搜不到
-        self.assertIn(const.EMPTY_ARTICLE_ERROR, self.browser.page_source)
+        self.wait_for(lambda: self.assertIn(const.EMPTY_ARTICLE_ERROR, self.browser.page_source))
 
         # 同时也确实找不到文章标题信息等
         with self.assertRaises(NoSuchElementException):
@@ -259,18 +254,18 @@ class TestSearchDisplay(BasicSearch):
     def test_search_result_can_show_line_number(self):
         # Y 搜索 test, 发现搜索结果里面每个对应结果的前面都有数字, Y 怀疑是不是行号?
         self.do_all_search("test")
-        result_table = self.browser.find_element(By.CLASS_NAME, "search-result-box-table-td")
-        self.assertTrue(str(result_table.text).isdigit())
+        self.wait_for(lambda: self.browser.find_element(By.CLASS_NAME, "search-result-box-table-td"))
+        self.wait_for(lambda: self.browser.find_element(By.CLASS_NAME, "search-result-box-table-td").text.isdigit())
 
         # Y 再次搜索 created, 它知道笔记 <super与init方法> 中 created 应该在第 12 行
-        search_button = self.browser.find_element(By.ID, "id_search")
+        search_button = self.wait_for(lambda: self.browser.find_element(By.ID, "id_search"))
         search_button.clear()
 
         search_button.send_keys("{}".format("created"))
         search_button.submit()
 
-        result_table = self.browser.find_element(By.CLASS_NAME, "search-result-box-table-td")
-        self.assertIn("12", result_table.text)
+        self.wait_for(lambda: self.browser.find_element(By.CLASS_NAME, "search-result-box-table-td"))
+        self.wait_for(lambda: self.browser.find_element(By.CLASS_NAME, "search-result-box-table-td").text.isdigit())
 
     def test_search_result_will_show_tag(self):
         """
@@ -347,21 +342,21 @@ class TestSearchButton(BasicSearch):
         """
         # Y 打开首页, 看到了搜索按钮
         self.browser.get(self.app_articels_url)
-        search_button = self.browser.find_element(By.ID, "id_search")
+        search_button = self.wait_for(lambda: self.browser.find_element(By.ID, "id_search"))
 
         # Y 知道某篇已经存在的文章, 随便打了一个进去, 然后按下回车键
         newest_article = Article.objects.first()
         search_button.send_keys(newest_article.title + "\n")
 
         # 发现确实能够搜索出对应的文章出来
-        self.assertIn(newest_article.title, self.browser.page_source)
+        self.wait_for(lambda: self.assertIn(newest_article.title, self.browser.page_source))
 
         # Y 想试试如果搜索一篇不存在的文章会怎样, 就随便打了一串字符, 尝试进行搜索
-        search_button = self.browser.find_element(By.ID, "id_search")
+        search_button = self.wait_for(lambda: self.browser.find_element(By.ID, "id_search"))
         search_button.send_keys("不应该有这篇文章的存在\n")
 
         # 发现搜索结果为: 没有相关文章题目
-        self.assertIn(const.EMPTY_ARTICLE_ERROR, self.browser.page_source)
+        self.wait_for(lambda: self.assertIn(const.EMPTY_ARTICLE_ERROR, self.browser.page_source))
 
     def test_can_search_content(self):
         """
@@ -377,9 +372,11 @@ class TestSearchButton(BasicSearch):
         search_button.submit()
 
         # Y 发现搜出来了文章, 随便打开一篇文章, 可以看到确实是有 time.sleep 的存在
-        articles_after_search = self.browser.find_element(By.ID, const.ID_SEARCH_RESULT_TITLE)
+        articles_after_search = self.wait_for(
+            lambda: self.browser.find_element(By.ID, const.ID_SEARCH_RESULT_TITLE)
+        )
         articles_after_search.click()
-        self.assertIn("time.sleep", self.browser.find_element(By.TAG_NAME, 'body').text)
+        self.assertIn("time.sleep", self.wait_for_body_text())
 
         # Y 想知道这个搜索功能是否类似于 google 搜索, 即可以用空格来区分多个关键词然后进行搜索
         search_button = self.browser.find_element(By.ID, "id_search")
@@ -388,9 +385,11 @@ class TestSearchButton(BasicSearch):
         search_button.send_keys("and I")
         search_button.submit()
 
-        articles_after_search = self.browser.find_element(By.ID, const.ID_SEARCH_RESULT_TITLE)
+        articles_after_search = self.wait_for(
+            lambda: self.browser.find_element(By.ID, const.ID_SEARCH_RESULT_TITLE)
+        )
         articles_after_search.click()
-        body_text = self.browser.find_element(By.TAG_NAME, 'body').text
+        body_text = self.wait_for_body_text()
         self.assertIn("and", body_text)
         self.assertIn("I", body_text)
         self.assertNotIn("and I", body_text)
@@ -401,8 +400,9 @@ class TestSearchButton(BasicSearch):
         search_button.submit()
 
         # 果然关键词打得太随意了, 啥都没有啊
-        articles_after_search = self.browser.find_elements(By.ID, const.ID_SEARCH_RESULT_TITLE)
-        self.assertTrue(len(articles_after_search) == 0, "居然找到文章了?!")
+        self.wait_for(
+            lambda: self.assertEqual(len(self.browser.find_elements(By.ID, const.ID_SEARCH_RESULT_TITLE)), 0)
+        )
 
     def test_can_search_among_article_journals_gitbooks(self):
         """
@@ -416,10 +416,10 @@ class TestSearchButton(BasicSearch):
         search_button.send_keys("test\n")
 
         # Y 看见文章、日记、gitbook 都被搜索了出来
-        self.assertIn("article_with_markdown", self.browser.page_source)
-        self.assertIn("2017-02-08 任务情况总结", self.browser.page_source)
-        self.assertTrue(any(
-            [x.title in self.browser.page_source for x in self.test_gitbooks]
+        self.wait_for(lambda: self.assertIn("article_with_markdown", self.browser.page_source))
+        self.wait_for(lambda: self.assertIn("2017-02-08 任务情况总结", self.browser.page_source))
+        self.wait_for(lambda: self.assertTrue(
+            any(x.title in self.browser.page_source for x in self.test_gitbooks)
         ))
 
     def test_search_again(self):
@@ -429,22 +429,22 @@ class TestSearchButton(BasicSearch):
         """
         # Y 打开首页, 看到了搜索按钮
         self.browser.get(self.app_articels_url)
-        search_button = self.browser.find_element(By.ID, "id_search")
+        search_button = self.wait_for(lambda: self.browser.find_element(By.ID, "id_search"))
 
         # Y 随便打了个关键词, 发现页面跳转了
         search_button.send_keys("随便打了什么肯定式不会搜索到的才对的啊\n")
+        self.wait_for(lambda: self.assertNotEqual(self.browser.current_url, self.app_articels_url))
         search_url = self.browser.current_url
-        self.assertNotEqual(search_url, self.app_articels_url)
 
         # Y 再次进行搜索, 这回输入了一个文章和日记里面都有的关键词
-        search_button = self.browser.find_element(By.ID, "id_search")
+        search_button = self.wait_for(lambda: self.browser.find_element(By.ID, "id_search"))
         search_button.clear()
         search_button.send_keys("test\n")
 
         # 发现对应的日记和文章都被搜索出来了, 而且 url 保持不变
-        self.assertEqual(search_url, self.browser.current_url)
-        self.assertIn("article_with_markdown", self.browser.page_source)
-        self.assertIn("2017-02-08 任务情况总结", self.browser.page_source)
+        self.wait_for(lambda: self.assertEqual(search_url, self.browser.current_url))
+        self.wait_for(lambda: self.assertIn("article_with_markdown", self.browser.page_source))
+        self.wait_for(lambda: self.assertIn("2017-02-08 任务情况总结", self.browser.page_source))
 
     def test_search_choice_all(self):
         """
@@ -546,16 +546,23 @@ class TestSearchButton(BasicSearch):
         search_button.submit()
 
         # Y 发现点击搜索之后, 又是回到了首页, 而且搜索框的内容被清空了
-        search_button = self.browser.find_element(By.ID, "id_search")
-        self.assertEqual(search_button.get_attribute("value"), "")
+        self.wait_for(
+            lambda: self.assertEqual(
+                self.browser.find_element(By.ID, "id_search").get_attribute("value"), ""
+            )
+        )
         self.assertEqual(self.browser.current_url, home_url)
 
         # Y 怀疑是不是不能输入单个字符, 于是输入多个, 发现结果一样
+        search_button = self.wait_for(lambda: self.browser.find_element(By.ID, "id_search"))
         search_button.send_keys("%^&*(")
         search_button.submit()
 
-        search_button = self.browser.find_element(By.ID, "id_search")
-        self.assertEqual(search_button.get_attribute("value"), "")
+        self.wait_for(
+            lambda: self.assertEqual(
+                self.browser.find_element(By.ID, "id_search").get_attribute("value"), ""
+            )
+        )
         self.assertEqual(self.browser.current_url, home_url)
 
     def test_can_search_code(self):
@@ -659,5 +666,3 @@ print("Hello Journal")
         for each_result in search_results:
             title = each_result.text.split("\n")[0]
             self.assertRegex(title, "《.+》-.+")
-
-

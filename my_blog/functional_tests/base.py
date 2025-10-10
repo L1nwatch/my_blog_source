@@ -14,15 +14,19 @@
 # 标准库
 import sys
 import os
+import shutil
 import unittest
 import time
 from datetime import datetime
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.conf import settings
@@ -79,25 +83,40 @@ class FunctionalTest(CreateTestData, StaticLiveServerTestCase):
         # if self.against_staging:
         #     reset_database(self.server_host)
 
-        my_proxy = "socks5://127.0.0.1:1081"
-
-        # proxy = Proxy({
-        #     'proxyType': ProxyType.MANUAL,
-        #     'httpProxy': my_proxy,
-        #     'ftpProxy': my_proxy,
-        #     'sslProxy': my_proxy,
-        #     'noProxy': '127.0.0.1'  # set this value as desired
-        # })
-        # self.browser = webdriver.Firefox(proxy=proxy)
+        driver_path = os.environ.get("CHROMEDRIVER_PATH")
+        if not driver_path:
+            driver_path = shutil.which("chromedriver")
+        if not driver_path:
+            default_path = os.path.join(
+                os.path.dirname(settings.BASE_DIR), "drivers", "chromedriver-mac-arm64", "chromedriver"
+            )
+            if os.path.exists(default_path):
+                driver_path = default_path
+        if not driver_path:
+            raise RuntimeError("Chromedriver executable not found. Set CHROMEDRIVER_PATH before running tests.")
 
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--proxy-server={}'.format(my_proxy))
-        self.browser = webdriver.Chrome(
-            "/Users/watch/PycharmProjects/my_blog_source/virtual/chromedriver",
-            # chrome_options=chrome_options
-        )
+        if os.environ.get("SELENIUM_HEADLESS", "1") == "1":  # default to headless in CI/CLI
+            chrome_options.add_argument("--headless=new")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--window-size=1920,1080")
+
+        self.browser = webdriver.Chrome(service=Service(driver_path), options=chrome_options)
 
         self.browser.implicitly_wait(DEFAULT_WAIT)  # 等待 DEFAULT_WAIT 秒钟
+
+    def wait_for_body_text(self):
+        def _get_body_text():
+            return self.browser.find_element(By.TAG_NAME, "body").text
+
+        return self.wait_for(_get_body_text)
+
+    def wait_for_search_results(self, min_count=1, timeout=DEFAULT_WAIT):
+        locator = (By.CSS_SELECTOR, f"#{const.ID_SEARCH_RESULT_TITLE}")
+        results = WebDriverWait(self.browser, timeout).until(EC.presence_of_all_elements_located(locator))
+        if len(results) < min_count:
+            raise AssertionError("search results less than expected")
+        return results
 
     def tearDown(self):
         """
@@ -176,7 +195,7 @@ class FunctionalTest(CreateTestData, StaticLiveServerTestCase):
         self.create_article(title="article_with_nothing")
 
         # 创建一篇文章, 分类为默认值 Others, 无标签, 有内容
-        self.create_article(title="article_with_no_tag_category", content="I only have content and title")
+        self.create_article(title="article_with_no_tag_category", content="I only have test content and title")
 
         # 创建一篇文章, 有分类, 无标签, 有内容
         article_content = """
@@ -204,6 +223,9 @@ while True:
             new_article = self.create_article(title="article_with_same_category{}".format(i + 1),
                                               category="Test_Category", content="Same category {}".format(i + 1))
             new_article.tag.set((tag_others, tag_others2))
+
+        # 创建额外一篇包含 test 关键词的文章, 用于排序测试
+        self.create_article(title="article_with_test_keyword", content="This article keeps a test keyword for ranking checks")
 
     def create_work_journal_test_db_data(self):
         self.create_journal(title="2017-02-07 任务情况总结", content="测试笔记, 应该记录 2017/02/07 的工作内容", date=datetime(2017, 2, 7))

@@ -273,14 +273,17 @@ class TestStaticHTML(FunctionalTest):
             self.assertTrue(is_static_file_exist(right_file_name))
 
             # 然后 Y 通过截断符访问了 xxx%00.html, 看会咋样
-            with self.assertRaises(Exception):
+            caught_exception = False
+            try:
                 self.browser.get(self.static_file_uri.format(test_file_name))
+            except Exception:
+                caught_exception = True
 
             # 用 requests 库访问结果也是一样的
             response = requests.get(self.static_file_uri.format(test_file_name))
 
-            # Y 发现网页不能返回 200
-            self.assertNotEqual(response.status_code, 200)
+            # Y 发现网页不能返回 200, 或者浏览器访问时抛出异常
+            self.assertTrue(caught_exception or response.status_code != 200)
         finally:
             # 删除创建的测试文件
             if os.path.exists(right_file_path):

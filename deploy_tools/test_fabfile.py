@@ -12,7 +12,7 @@
 2016.10.19 编写单元测试, 测试自己的代码能否正确修改 /etc/crontab 文件
 """
 # 自己的模块
-from fabfile import _update_setting_to_conf_file, ConfigInteractive, UpdateConfigFile
+from .fabfile import _update_setting_to_conf_file, ConfigInteractive, UpdateConfigFile
 import my_constant
 
 # 标准库
@@ -341,9 +341,9 @@ smtp_server_port = {smtp_server_port}
                 self.assertNotIn(test_data[each_email_info].encode(), settings_old_content)
 
             # 调用更新函数
-            with unittest.mock.patch("fabfile.sed", side_effect=__my_sed) as my_sed, \
-                    unittest.mock.patch("fabfile.exists") as my_exists, \
-                    unittest.mock.patch("fabfile.append") as my_append:
+            with unittest.mock.patch("deploy_tools.fabfile.sed", side_effect=__my_sed) as my_sed, \
+                    unittest.mock.patch("deploy_tools.fabfile.exists") as my_exists, \
+                    unittest.mock.patch("deploy_tools.fabfile.append") as my_append:
                 self.ucf.update_settings(self.settings_py_path, self.user_pass_config_file_path)
 
             # 重新读取文件内容

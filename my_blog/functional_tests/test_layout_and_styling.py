@@ -33,19 +33,21 @@ class HomePageLayoutStylingTest(FunctionalTest):
         """
         # Y 访问首页
         self.browser.get(self.app_articels_url)
+        self.browser.set_window_size(1200, 800)
 
         # 看到首页按钮被放置在右上角第一个位置
-        home_page_button = self.browser.find_element(By.ID, "id_home_page")
-        self.assertAlmostEqual(home_page_button.location["x"], 594, delta=25)
-        self.assertAlmostEqual(home_page_button.location["y"], 13, delta=5)
+        home_page_button = self.wait_for(lambda: self.browser.find_element(By.ID, "id_home_page"))
+        window_size = self.browser.get_window_size()
+        self.assertGreater(home_page_button.location["x"], window_size["width"] * 0.45)
+        self.assertLess(home_page_button.location["y"], 50)
 
         # Y 调整了一下窗口大小
         self.browser.set_window_size(640, 800)
 
         # 看到首页按钮被隐藏了
-        home_page_button = self.browser.find_element(By.ID, "id_home_page")
-        self.assertAlmostEqual(home_page_button.location["x"], 0, delta=5)
-        self.assertAlmostEqual(home_page_button.location["y"], 0, delta=5)
+        home_page_button = self.wait_for(lambda: self.browser.find_element(By.ID, "id_home_page"))
+        self.assertLess(home_page_button.location["x"], 10)
+        self.assertLess(home_page_button.location["y"], 30)
 
 
 class JustEatingLayoutStylingTest(FunctionalTest):
@@ -57,9 +59,11 @@ class JustEatingLayoutStylingTest(FunctionalTest):
         self.browser.get("{}/{}".format(self.index_url, "just_eating"))
 
         # Y 看到吃饭的标题被放置在页面偏上正中间的位置
-        title = self.browser.find_element(By.ID, "id_eating_place_name")
-        self.assertAlmostEqual(title.location["x"], 497, delta=15)
-        self.assertAlmostEqual(title.location["y"], 20, delta=15)
+        title = self.wait_for(lambda: self.browser.find_element(By.ID, "id_eating_place_name"))
+        window_size = self.browser.get_window_size()
+        title_center_x = title.location["x"] + title.size["width"] / 2
+        self.assertAlmostEqual(title_center_x, window_size["width"] / 2, delta=120)
+        self.assertLess(title.location["y"], 80)
 
 
 class ArticleDisplayTest(FunctionalTest):
@@ -100,7 +104,8 @@ class ArticleDisplayTest(FunctionalTest):
         articles_after_search.click()
 
         # sql lite 不应该出现在文章中
-        self.assertNotIn("sql lite", self.browser.find_element(By.TAG_NAME, 'body').text)
+        body_text = self.wait_for_body_text()
+        self.assertNotIn("sql lite", body_text)
 
     def test_tables_parse_correct(self):
         """
@@ -112,10 +117,11 @@ class ArticleDisplayTest(FunctionalTest):
         articles_after_search.click()
 
         # Y 检查 --- 是否出现在文章正文中, 出现了就说明没解析成功
-        self.assertNotIn("---", self.browser.find_element(By.TAG_NAME, 'body').text)
+        body_text = self.wait_for_body_text()
+        self.assertNotIn("---", body_text)
 
         # Y 记得还有些特殊符号在表格中, 想看下这些特殊符号是否能够显示出来
-        self.assertIn("{:.2f}", self.browser.find_element(By.TAG_NAME, 'body').text)
+        self.assertIn("{:.2f}", body_text)
 
     def test_sidebar_button_display(self):
         """

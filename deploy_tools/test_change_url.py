@@ -4,7 +4,7 @@
 """ Description
 """
 from unittest import TestCase
-from gitbook_db_delete import change_url
+from .gitbook_db_delete import change_url
 
 __author__ = '__L1n__w@tch'
 

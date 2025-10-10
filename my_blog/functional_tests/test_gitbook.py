@@ -52,4 +52,4 @@ class GitBookSearchTest(FunctionalTest):
         search_button.send_keys("{}\n".format("not_exist_key_word"))
 
         # 结果发现搜索页面提示搜索结果为空
-        self.assertIn(const.EMPTY_ARTICLE_ERROR, self.browser.page_source)
+        self.wait_for(lambda: self.assertIn(const.EMPTY_ARTICLE_ERROR, self.browser.page_source))

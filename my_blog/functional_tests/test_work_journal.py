@@ -179,12 +179,12 @@ class TestWorkJournalSearch(FunctionalTest):
         # Y 也知道存在这个关键字的文章标题为 <article_with_python>, 所在行内容为 <I am `Python`>
 
         # Y 只看到了日记
-        search_result = self.browser.find_element(By.TAG_NAME, "body").text
+        search_result = self.wait_for_body_text()
         self.assertIn("2017-02-08 任务情况总结", search_result)
         self.assertIn("Test pyThon", search_result)
 
         # Y 没看到对应的文章
-        search_result = self.browser.find_element(By.TAG_NAME, "body").text
+        search_result = self.wait_for_body_text()
         self.assertNotIn("I am Python", search_result)
         self.assertNotIn("article_with_python", search_result)
 
@@ -243,4 +243,3 @@ class Test404Page(FunctionalTest):
         today = datetime.datetime.today()
         journal_title = self.browser.find_element(By.ID, "id_search_result_title")
         self.assertRegex(journal_title.text, "{}-\d?{}-\d?{}".format(today.year, today.month, today.day))
-
